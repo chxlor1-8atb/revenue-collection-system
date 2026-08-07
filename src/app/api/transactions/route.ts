@@ -3,6 +3,7 @@ import { put } from "@vercel/blob";
 import { db } from "@/lib/db";
 import { qrCodes, transactions } from "@/lib/schema";
 import { eq } from "drizzle-orm";
+import { sendSlipNotification } from "@/lib/telegram";
 
 export async function POST(request: Request) {
   try {
@@ -19,13 +20,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid qrCodeId" }, { status: 400 });
     }
 
-    // Verify QR Code exists and is active
-    const qrResult = await db.select().from(qrCodes).where(eq(qrCodes.id, qrCodeId)).limit(1);
-    if (qrResult.length === 0 || !qrResult[0].active) {
+    const qrResult = await db
+      .select({
+        qrCode: qrCodes,
+        collector: {
+          telegramChatId: collectors.telegramChatId
+        }
+      })
+      .from(qrCodes)
+      .innerJoin(collectors, eq(qrCodes.collectorId, collectors.id))
+      .where(eq(qrCodes.id, qrCodeId))
+      .limit(1);
+
+    if (qrResult.length === 0 || !qrResult[0].qrCode.active) {
       return NextResponse.json({ error: "QR Code not found or inactive" }, { status: 404 });
     }
 
-    const qrCode = qrResult[0];
+    const { qrCode, collector } = qrResult[0];
 
     // Upload slip to Vercel Blob
     const blob = await put(`slips/${Date.now()}-${file.name}`, file, {
@@ -39,6 +50,11 @@ export async function POST(request: Request) {
       slipImageUrl: blob.url,
       slipStatus: "pending",
     });
+
+    // Send Telegram Notification
+    if (collector.telegramChatId) {
+      await sendSlipNotification(collector.telegramChatId, blob.url);
+    }
 
     // In a future phase, we will trigger Slip API checking here asynchronously.
 
