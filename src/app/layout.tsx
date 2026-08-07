@@ -30,6 +30,9 @@ export const viewport: Viewport = {
   themeColor: "#1F2E22",
 };
 
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
@@ -39,6 +42,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-full flex flex-col">
         <PwaRegister />
         {children}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
