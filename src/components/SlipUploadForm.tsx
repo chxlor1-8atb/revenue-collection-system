@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function SlipUploadForm({ qrCodeId }: { qrCodeId: string }) {
+export default function SlipUploadForm({ qrCodeId, invoiceIds }: { qrCodeId: string, invoiceIds?: string }) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -27,6 +27,9 @@ export default function SlipUploadForm({ qrCodeId }: { qrCodeId: string }) {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("qrCodeId", qrCodeId);
+      if (invoiceIds) {
+        formData.append("invoiceIds", invoiceIds);
+      }
 
       const res = await fetch("/api/transactions", {
         method: "POST",

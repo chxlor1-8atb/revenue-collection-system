@@ -1,16 +1,25 @@
 import { db } from "@/lib/db";
 import { qrCodes, collectors } from "@/lib/schema";
-import { eq } from "drizzle-orm";
-import { notFound } from "next/navigation";
+import { eq, inArray } from "drizzle-orm";
+import { notFound, redirect } from "next/navigation";
 import generatePayload from "promptpay-qr";
 import qrcode from "qrcode";
 import SlipUploadForm from "@/components/SlipUploadForm";
 
-export default async function PayPage({ params }: { params: Promise<{ qrCodeId: string }> }) {
+export default async function PayPage({ params, searchParams }: { params: Promise<{ qrCodeId: string }>, searchParams: Promise<{ invoices?: string }> }) {
   const qrCodeId = parseInt((await params).qrCodeId, 10);
+  const sp = await searchParams;
+  const invoiceIdsStr = sp.invoices;
   
-  if (isNaN(qrCodeId)) {
-    notFound();
+  if (isNaN(qrCodeId) || !invoiceIdsStr) {
+    // We need invoices to pay for! If not provided, redirect to home.
+    redirect("/");
+  }
+
+  const invoiceIds = invoiceIdsStr.split(",").map(id => parseInt(id, 10)).filter(id => !isNaN(id));
+  
+  if (invoiceIds.length === 0) {
+    redirect("/");
   }
 
   const result = await db
@@ -29,9 +38,19 @@ export default async function PayPage({ params }: { params: Promise<{ qrCodeId: 
 
   const { collector } = result[0];
 
-  // Generate PromptPay QR Data (payload)
-  // Amount is intentionally 0 or omitted because the payer will enter the amount themselves on their banking app
-  const payload = generatePayload(collector.promptPayId, { amount: 0 });
+  // Fetch invoices to verify they exist and get the total amount
+  const { invoices } = await import("@/lib/schema");
+  const selectedInvoices = await db.select().from(invoices).where(inArray(invoices.id, invoiceIds));
+  
+  if (selectedInvoices.length === 0) {
+    redirect("/");
+  }
+
+  // Calculate total amount
+  const totalAmount = selectedInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
+
+  // Generate PromptPay QR Data (payload) with exact total amount
+  const payload = generatePayload(collector.promptPayId, { amount: totalAmount });
   
   // Generate Data URI for the QR Code image
   const qrDataUri = await qrcode.toDataURL(payload, {
@@ -69,7 +88,7 @@ export default async function PayPage({ params }: { params: Promise<{ qrCodeId: 
           </div>
         </div>
 
-        <SlipUploadForm qrCodeId={qrCodeId.toString()} />
+        <SlipUploadForm qrCodeId={qrCodeId.toString()} invoiceIds={invoiceIdsStr} />
       </div>
     </div>
   );

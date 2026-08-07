@@ -1,4 +1,4 @@
-import { pgTable, serial, text, boolean, timestamp, integer, numeric } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, boolean, timestamp, integer, numeric, date } from 'drizzle-orm/pg-core';
 
 export const collectors = pgTable('collectors', {
   id: serial('id').primaryKey(),
@@ -17,6 +17,14 @@ export const qrCodes = pgTable('qr_codes', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+export const houses = pgTable('houses', {
+  id: serial('id').primaryKey(),
+  houseNumber: text('house_number').notNull().unique(), // บ้านเลขที่
+  ownerName: text('owner_name').notNull(), // ชื่อเจ้าบ้าน
+  zone: text('zone'), // ชุมชน/หมู่
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 export const transactions = pgTable('transactions', {
   id: serial('id').primaryKey(),
   qrCodeId: integer('qr_code_id').references(() => qrCodes.id).notNull(),
@@ -27,13 +35,24 @@ export const transactions = pgTable('transactions', {
 
   slipImageUrl: text('slip_image_url').notNull(),
   slipRefId: text('slip_ref_id').unique(),
-  slipStatus: text('slip_status').notNull().default('pending'),
+  slipStatus: text('slip_status').notNull().default('pending'), // pending, verified, rejected, manual_review
 
   payerNote: text('payer_note'),
   paidAt: timestamp('paid_at'),
   createdAt: timestamp('created_at').defaultNow(),
   notifiedAt: timestamp('notified_at'),
   verifiedBy: text('verified_by'),
+});
+
+export const invoices = pgTable('invoices', {
+  id: serial('id').primaryKey(),
+  houseId: integer('house_id').references(() => houses.id).notNull(),
+  monthYear: text('month_year').notNull(), // e.g. "2024-01"
+  amount: numeric('amount', { precision: 12, scale: 2 }).notNull(),
+  status: text('status').notNull().default('unpaid'), // unpaid, pending, paid
+  transactionId: integer('transaction_id').references(() => transactions.id), // Link to the payment if any
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
 export const adminUsers = pgTable('admin_users', {
