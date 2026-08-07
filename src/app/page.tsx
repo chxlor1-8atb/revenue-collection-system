@@ -47,11 +47,11 @@ export default function Home() {
       <Recycle className="waste-watermark" strokeWidth={0.5} />
       
       {/* Subtle top header band */}
-      <div className="absolute top-0 left-0 w-full bg-[#1F2E22] text-[#F6F4EC] text-xs font-mono py-1 px-4 text-center opacity-90 tracking-widest z-10 hidden md:block">
+      <div className="absolute top-0 left-0 w-full bg-[#1F2E22] text-[#F6F4EC] text-[10px] md:text-xs font-mono py-1 md:py-1.5 px-2 md:px-4 text-center opacity-90 tracking-widest z-10">
         แบบพิมพ์ที่ ๑ - เทศบาลเมืองนางรอง (ระบบจัดเก็บค่าธรรมเนียมขยะมูลฝอย)
       </div>
 
-      <main className="pwa-main relative z-10 mt-4 md:mt-8">
+      <main className="pwa-main relative z-10 mt-8 md:mt-12">
         <div className="grid grid-cols-1 md:grid-cols-2 md:gap-12 md:items-center">
           
           {/* Left Column: Hero / Welcome */}
