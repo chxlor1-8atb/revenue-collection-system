@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import AnimatedButton from "@/components/AnimatedButton";
 
 export default function Home() {
   const [houseNumber, setHouseNumber] = useState("");
@@ -72,9 +73,9 @@ export default function Home() {
             />
           </div>
           
-          <button type="submit" disabled={isSearching} className="btn btn-primary w-full mt-4 font-serif">
-            {isSearching ? "กำลังค้นหา..." : "ค้นหาข้อมูล"}
-          </button>
+          <AnimatedButton type="submit" disabled={isSearching} className="btn btn-primary w-full mt-4 font-serif">
+            {isSearching ? "กำลังตรวจสอบ..." : "ตรวจสอบรายการ"}
+          </AnimatedButton>
         </form>
       </div>
 

@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import AnimatedCard from "./AnimatedCard";
+import AnimatedButton from "./AnimatedButton";
+
 export default function InvoiceSelectionForm({ invoices, houseId }: { invoices: any[], houseId: number }) {
   const [selectedInvoices, setSelectedInvoices] = useState<number[]>([]);
   const router = useRouter();
@@ -44,51 +47,59 @@ export default function InvoiceSelectionForm({ invoices, houseId }: { invoices: 
         {invoices.length === 0 ? (
           <p className="text-center text-sm text-gray-500">ไม่พบรายการบิลค่าขยะ</p>
         ) : (
-          invoices.map((inv) => {
+          invoices.map((inv, index) => {
             const isUnpaid = inv.status === 'unpaid';
+            if (!isUnpaid) return null;
             return (
-              <div key={inv.id} className={`p-3 border flex justify-between items-center ${isUnpaid ? 'bg-white cursor-pointer hover:border-[#3A5A40]' : 'bg-[#F6F4EC] opacity-75'}`}
-                   onClick={() => isUnpaid && handleToggle(inv.id)}>
-                <div className="flex items-center gap-3">
-                  {isUnpaid ? (
-                    <input 
-                      type="checkbox" 
-                      checked={selectedInvoices.includes(inv.id)} 
-                      onChange={() => handleToggle(inv.id)}
-                      className="w-4 h-4 accent-[#3A5A40]"
-                    />
-                  ) : (
-                    <div className="w-4"></div> /* Placeholder for alignment */
-                  )}
-                  <div>
-                    <p className="font-mono font-semibold">{inv.monthYear}</p>
-                    <p className="text-xs">{getStatusDisplay(inv.status)}</p>
-                  </div>
+              <AnimatedCard 
+                key={inv.id} 
+                delay={index * 0.1}
+                className={`border p-4 mb-3 flex items-center gap-4 cursor-pointer transition-colors ${
+                  selectedInvoices.includes(inv.id) ? "bg-[#eaf1ec] border-[#3A5A40]" : "bg-white border-gray-200"
+                }`}
+                onClick={() => handleToggle(inv.id)}
+              >
+                <input 
+                  type="checkbox" 
+                  checked={selectedInvoices.includes(inv.id)}
+                  onChange={() => handleToggle(inv.id)}
+                  className="w-5 h-5 accent-[#3A5A40]"
+                />
+                <div className="flex-1">
+                  <p className="font-serif font-bold text-lg">ค่าขยะประจำเดือน {inv.monthYear}</p>
+                  <p className="font-mono text-status-pending">ยอดค้างชำระ: {parseFloat(inv.amount).toFixed(2)} ฿</p>
                 </div>
-                <div className="font-mono font-bold">
-                  {parseFloat(inv.amount).toFixed(2)} ฿
-                </div>
-              </div>
+              </AnimatedCard>
             );
           })
         )}
       </div>
 
-      <div className="perforation-line"></div>
+      <div className="perforation-line my-6"></div>
 
-      <div className="flex justify-between items-center mb-6 mt-4">
-        <span className="font-serif font-bold text-lg">ยอดรวมที่ต้องชำระ:</span>
-        <span className="font-mono font-bold text-xl text-[#3A5A40]">{calculateTotal().toFixed(2)} ฿</span>
+      <div className="flex justify-between items-end mb-6">
+        <p className="font-serif text-gray-500">รวมยอดที่ต้องชำระ:</p>
+        <p className="font-mono text-3xl font-bold text-[#1F2E22]">
+          {calculateTotal().toFixed(2)} ฿
+        </p>
       </div>
 
-      <button 
-        onClick={handleProceedToPayment}
-        disabled={selectedInvoices.length === 0} 
-        className="btn btn-primary w-full font-serif text-lg py-2"
-        style={{ opacity: selectedInvoices.length === 0 ? 0.5 : 1 }}
-      >
-        สร้าง QR Code ชำระเงิน
-      </button>
+      <div className="flex gap-4">
+        <AnimatedButton 
+          className="btn font-serif flex-1" 
+          style={{ backgroundColor: "#e5e7eb", color: "#374151" }}
+          onClick={() => router.push("/")}
+        >
+          ย้อนกลับ
+        </AnimatedButton>
+        <AnimatedButton 
+          className="btn btn-primary font-serif flex-1"
+          disabled={selectedInvoices.length === 0}
+          onClick={handleProceedToPayment}
+        >
+          สร้าง QR Code ชำระเงิน
+        </AnimatedButton>
+      </div>
     </div>
   );
 }

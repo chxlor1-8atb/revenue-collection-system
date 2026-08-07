@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import AnimatedButton from "./AnimatedButton";
 
 export default function SlipUploadForm({ qrCodeId, invoiceIds }: { qrCodeId: string, invoiceIds?: string }) {
   const [file, setFile] = useState<File | null>(null);
@@ -87,13 +88,13 @@ export default function SlipUploadForm({ qrCodeId, invoiceIds }: { qrCodeId: str
         </div>
       )}
 
-      <button
+      <AnimatedButton
         type="submit"
         disabled={!file || isUploading}
         className="btn btn-primary w-full py-3 text-lg font-serif tracking-wide disabled:opacity-50"
       >
         {isUploading ? "กำลังประมวลผล..." : "ส่งสลิปเพื่อตรวจสอบ"}
-      </button>
+      </AnimatedButton>
     </form>
   );
 }
