@@ -52,8 +52,8 @@ export default function Home() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
           >
-            <div className="inline-block p-3 bg-white border border-[#D8D3C3] rounded-sm shadow-sm mb-6 mx-auto md:mx-0" style={{ width: "fit-content" }}>
-              <span style={{ fontSize: "2.5rem" }}>🏛️</span>
+            <div className="mb-6 mx-auto md:mx-0" style={{ width: "fit-content" }}>
+              <img src="/nangrong-logo.png" alt="ตราสัญลักษณ์เทศบาลเมืองนางรอง" style={{ width: "6rem", height: "6rem", objectFit: "contain", filter: "drop-shadow(0 4px 6px rgba(0,0,0,0.1))" }} />
             </div>
             <h1 className="font-serif font-bold text-fluid-hero text-[#1F2E22] mb-4">
               เทศบาลเมืองนางรอง

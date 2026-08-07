@@ -69,7 +69,8 @@ export default async function PayPage({ params, searchParams }: { params: Promis
         {/* Decorative slip corner */}
         <div className="absolute top-0 right-0 w-8 h-8 bg-[#F6F4EC] border-l border-b border-[#D8D3C3] -mt-1 -mr-1 transform rotate-45"></div>
 
-        <div className="text-center mb-6">
+        <div className="text-center mb-6 flex flex-col items-center">
+          <img src="/nangrong-logo.png" alt="ตราสัญลักษณ์เทศบาลเมืองนางรอง" style={{ width: "4rem", height: "4rem", objectFit: "contain", marginBottom: "0.5rem" }} />
           <h1 className="font-serif text-2xl font-bold mb-1">เทศบาลเมืองนางรอง</h1>
           <p className="font-sans text-sm text-status-dark">ระบบจัดเก็บรายได้ออนไลน์</p>
         </div>

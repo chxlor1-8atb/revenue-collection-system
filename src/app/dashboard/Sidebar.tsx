@@ -18,7 +18,8 @@ export default function Sidebar({ userName }: { userName: string }) {
 
   return (
     <aside style={{ width: "250px", backgroundColor: "#fff", borderRight: "1px solid var(--border)", display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: "1.5rem", borderBottom: "1px solid var(--border)" }}>
+      <div style={{ padding: "1.5rem", borderBottom: "1px solid var(--border)", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+        <img src="/nangrong-logo.png" alt="เทศบาลเมืองนางรอง" style={{ width: "3rem", height: "3rem", objectFit: "contain", marginBottom: "0.5rem" }} />
         <h2 className="font-serif font-bold text-lg">สมุดบัญชีรายได้</h2>
         <p className="font-sans text-xs text-status-dark">เทศบาลเมืองนางรอง</p>
       </div>

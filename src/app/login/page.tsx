@@ -36,8 +36,9 @@ export default function LoginPage() {
   return (
     <div className="layout-center">
       <div className="receipt-card max-w-sm">
-        <div className="text-center mb-6">
-          <h1 className="font-serif text-2xl">ระบบจัดเก็บรายได้</h1>
+        <div className="text-center mb-6 flex flex-col items-center">
+          <img src="/nangrong-logo.png" alt="ตราสัญลักษณ์เทศบาลเมืองนางรอง" style={{ width: "4rem", height: "4rem", objectFit: "contain", marginBottom: "0.5rem" }} />
+          <h1 className="font-serif text-2xl font-bold">ระบบจัดเก็บรายได้</h1>
           <p className="font-sans text-status-dark">เทศบาลเมืองนางรอง</p>
         </div>
         
