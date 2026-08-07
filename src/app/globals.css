@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Noto+Serif+Thai:wght@400;600;700&display=swap');
+
+:root {
+  --background: #F6F4EC;
+  --foreground: #1F2E22;
+  --primary: #3A5A40;
+  --primary-hover: #2d4732;
+  --warning: #C9A227;
+  --border: #D8D3C3;
+  --radius: 2px; /* Not rounded */
+  --font-sans: "IBM Plex Sans Thai", "Inter", sans-serif;
+  --font-serif: "Noto Serif Thai", "Fraunces", serif;
+  --font-mono: "IBM Plex Mono", "JetBrains Mono", monospace;
+}
+
+/* No dark mode preference as per the ledger aesthetic */
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Base Utility Classes for Premium Design */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid transparent;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.card {
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Typography utilities */
+.font-serif { font-family: var(--font-serif); }
+.font-mono { font-family: var(--font-mono); }
+.font-sans { font-family: var(--font-sans); }
+
+/* Ledger Theme Utilities */
+.receipt-card {
+  background-color: #FFFFFF; /* Pure white for the paper receipt contrast */
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.05);
+  position: relative;
+  border-radius: var(--radius);
+}
+
+.receipt-stamp-ref {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  font-family: var(--font-mono);
+  color: var(--primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 2px solid var(--primary);
+  padding: 0.25rem 0.5rem;
+  transform: rotate(2deg);
+  opacity: 0.8;
+}
+
+.perforation-line {
+  border-top: 2px dashed var(--border);
+  margin: 1.5rem 0;
+  position: relative;
+}
+
+/* Status Colors */
+.text-status-verified { color: var(--primary); font-weight: 600; }
+.text-status-warning { color: var(--warning); font-weight: 600; }
+.text-status-dark { color: var(--foreground); }
+
+/* Animation: Stamp effect */
+@keyframes stamp-in {
+  0% { transform: scale(1.5) rotate(5deg); opacity: 0; }
+  100% { transform: scale(1) rotate(2deg); opacity: 0.8; }
+}
+
+.animate-stamp {
+  animation: stamp-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
