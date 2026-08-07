@@ -290,3 +290,28 @@ a {
   position: relative;
   border-radius: 0 0 var(--radius) var(--radius);
 }
+
+/* Watermark styles */
+.waste-watermark {
+  position: fixed;
+  bottom: -5vh;
+  left: -5vw;
+  width: 50vmin;
+  height: 50vmin;
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+  color: #1F2E22;
+  transform: rotate(-15deg);
+}
+
+.ledger-card-home {
+  background-color: #FFFFFF;
+  border: 1px solid var(--border);
+  border-top: 3px dashed #D8D3C3; /* Stronger perforation */
+  padding: 2rem 1.5rem;
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+  position: relative;
+  border-radius: 0 0 2px 2px;
+  width: 100%;
+}

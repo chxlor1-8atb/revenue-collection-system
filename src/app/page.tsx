@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import AnimatedButton from "@/components/AnimatedButton";
 import { motion } from "framer-motion";
+import { Recycle } from "lucide-react"; // Import a waste management icon
 
 export default function Home() {
   const [houseNumber, setHouseNumber] = useState("");
@@ -41,8 +42,16 @@ export default function Home() {
   };
 
   return (
-    <div className="pwa-container">
-      <main className="pwa-main">
+    <div className="pwa-container relative overflow-hidden">
+      {/* Background Watermark for context */}
+      <Recycle className="waste-watermark" strokeWidth={0.5} />
+      
+      {/* Subtle top header band */}
+      <div className="absolute top-0 left-0 w-full bg-[#1F2E22] text-[#F6F4EC] text-xs font-mono py-1 px-4 text-center opacity-90 tracking-widest z-10 hidden md:block">
+        แบบพิมพ์ที่ ๑ - เทศบาลเมืองนางรอง (ระบบจัดเก็บค่าธรรมเนียมขยะมูลฝอย)
+      </div>
+
+      <main className="pwa-main relative z-10 mt-4 md:mt-8">
         <div className="grid grid-cols-1 md:grid-cols-2 md:gap-12 md:items-center">
           
           {/* Left Column: Hero / Welcome */}
@@ -53,7 +62,11 @@ export default function Home() {
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
           >
             <div className="mb-6 mx-auto md:mx-0" style={{ width: "fit-content" }}>
-              <img src="/nangrong-logo.png" alt="ตราสัญลักษณ์เทศบาลเมืองนางรอง" style={{ width: "6rem", height: "6rem", objectFit: "contain", filter: "drop-shadow(0 4px 6px rgba(0,0,0,0.1))" }} />
+              <img 
+                src="/nangrong-logo.png" 
+                alt="ตราสัญลักษณ์เทศบาลเมืองนางรอง" 
+                style={{ width: "6rem", height: "6rem", objectFit: "contain" }} 
+              />
             </div>
             <h1 className="font-serif font-bold text-fluid-hero text-[#1F2E22] mb-4">
               เทศบาลเมืองนางรอง
@@ -62,7 +75,7 @@ export default function Home() {
               ระบบตรวจสอบและชำระค่าธรรมเนียมเก็บขนมูลฝอย
             </p>
             <p className="font-sans text-gray-500 mb-8 max-w-md mx-auto md:mx-0">
-              เพื่อความสะดวก รวดเร็ว และโปร่งใส ท่านสามารถตรวจสอบยอดค้างชำระและสแกนจ่ายผ่าน QR Code ได้ทันที
+              กรุณาระบุบ้านเลขที่ เพื่อตรวจสอบยอดและชำระค่าธรรมเนียม
             </p>
           </motion.div>
 
@@ -73,16 +86,18 @@ export default function Home() {
             transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.1 }}
             className="flex justify-center md:justify-end"
           >
-            <div className="receipt-card max-w-sm w-full">
-              {/* Decorative slip corner */}
-              <div className="absolute top-0 right-0 w-8 h-8 bg-[#F6F4EC] border-l border-b border-[#D8D3C3] -mt-1 -mr-1 transform rotate-45"></div>
+            <div className="ledger-card-home max-w-sm w-full">
+              {/* Invoice Reference Number */}
+              <div className="absolute top-2 right-3 font-mono text-[10px] text-gray-400 border border-gray-200 px-1 py-0.5 rounded-sm">
+                เล่มที่ ๐๑/๒๕๖๙
+              </div>
 
-              <div className="text-center mb-6">
+              <div className="text-center mb-6 mt-4">
                 <h2 className="font-serif text-2xl font-bold mb-1">ตรวจสอบยอดชำระ</h2>
                 <p className="font-sans text-sm text-status-dark">กรอกบ้านเลขที่ของท่าน</p>
               </div>
               
-              <div className="perforation-line"></div>
+              <div className="perforation-line" style={{ display: 'none' }}></div> {/* Removed internal perforation, moved to top of card */}
               
               <form onSubmit={handleSearch} className="form-container mt-6">
                 {error && (
@@ -103,7 +118,12 @@ export default function Home() {
                   />
                 </div>
                 
-                <AnimatedButton type="submit" disabled={isSearching} className="btn btn-primary w-full mt-6 py-3 font-serif text-lg shadow-sm">
+                <AnimatedButton 
+                  type="submit" 
+                  disabled={isSearching} 
+                  className="btn btn-primary w-full mt-6 py-3 font-serif text-lg shadow-sm"
+                  style={{ borderRadius: "2px" }}
+                >
                   {isSearching ? "กำลังตรวจสอบ..." : "ตรวจสอบรายการ"}
                 </AnimatedButton>
               </form>
@@ -112,7 +132,7 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="p-4 text-center">
+      <footer className="p-4 text-center relative z-10">
         <a href="/login" className="text-sm text-gray-400 hover:text-gray-600 underline font-sans transition-colors">
           สำหรับเจ้าหน้าที่ (เข้าสู่ระบบ)
         </a>
