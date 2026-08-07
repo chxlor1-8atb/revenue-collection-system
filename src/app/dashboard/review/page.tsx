@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { transactions, invoices, houses } from "@/lib/schema";
 import { eq, desc, inArray } from "drizzle-orm";
 import SlipReviewForm from "./SlipReviewForm";
+import { FileSignature } from "lucide-react";
 
 export default async function SlipReviewPage() {
   // Fetch pending transactions
@@ -39,11 +40,12 @@ export default async function SlipReviewPage() {
 
   return (
     <div>
-      <h1 className="font-serif text-3xl mb-6">ตรวจสลิปโอนเงิน (รอดำเนินการ)</h1>
+      <h1 className="font-serif font-bold text-3xl mb-6 text-[#1F2E22]">ตรวจสลิปโอนเงิน (รอดำเนินการ)</h1>
       
       {transactionsWithInvoices.length === 0 ? (
-        <div className="receipt-card text-center py-12">
-          <p className="text-status-dark">ไม่มีสลิปที่รอตรวจสอบในขณะนี้ 🎉</p>
+        <div className="ledger-card text-center py-16 flex flex-col items-center justify-center">
+          <FileSignature size={48} strokeWidth={1} color="#C9A227" className="mb-4 opacity-70" />
+          <p className="font-serif text-lg text-gray-500">ยังไม่มีรายการรอตรวจสอบ</p>
         </div>
       ) : (
         <div className="space-y-6">

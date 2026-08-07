@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { CheckCircle, XCircle } from "lucide-react";
+
 export default function SlipReviewForm({ transaction }: { transaction: any }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
@@ -37,7 +39,7 @@ export default function SlipReviewForm({ transaction }: { transaction: any }) {
   };
 
   return (
-    <div className="receipt-card">
+    <div className="ledger-card">
       <div className="flex gap-4">
         {/* Left side: Slip Image */}
         <div style={{ flex: "0 0 300px" }}>
@@ -79,17 +81,17 @@ export default function SlipReviewForm({ transaction }: { transaction: any }) {
             <button 
               onClick={() => handleReview('verified')}
               disabled={isSubmitting}
-              className="btn btn-primary font-serif flex-1"
+              className="btn btn-primary font-serif flex-1 flex items-center justify-center gap-2"
             >
-              ✅ อนุมัติ (ยอดเงินถูกต้อง)
+              <CheckCircle size={18} strokeWidth={1.5} /> อนุมัติ (ยอดเงินถูกต้อง)
             </button>
             <button 
               onClick={() => handleReview('rejected')}
               disabled={isSubmitting}
-              className="btn font-serif flex-1"
+              className="btn font-serif flex-1 flex items-center justify-center gap-2"
               style={{ backgroundColor: "#fee2e2", color: "#b91c1c", border: "1px solid #fca5a5" }}
             >
-              ❌ ปฏิเสธ (สลิปมีปัญหา)
+              <XCircle size={18} strokeWidth={1.5} /> ปฏิเสธ (สลิปมีปัญหา)
             </button>
           </div>
         </div>

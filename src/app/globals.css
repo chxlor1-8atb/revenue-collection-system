@@ -279,3 +279,14 @@ a {
     padding-right: 2rem;
   }
 }
+
+/* Ledger specific styling */
+.ledger-card {
+  background-color: #FFFFFF;
+  border: 1px solid var(--border);
+  border-top: 2px dashed #D8D3C3;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  position: relative;
+  border-radius: 0 0 var(--radius) var(--radius);
+}

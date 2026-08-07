@@ -10,7 +10,7 @@ export default async function HousesPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="font-serif text-3xl">จัดการข้อมูลบ้าน</h1>
+        <h1 className="font-serif font-bold text-3xl text-[#1F2E22]">จัดการข้อมูลบ้าน</h1>
         
         <div className="flex gap-4">
           <button className="btn btn-primary font-serif">+ เพิ่มบ้านใหม่</button>
