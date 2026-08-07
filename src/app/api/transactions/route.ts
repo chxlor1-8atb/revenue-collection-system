@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import { db } from "@/lib/db";
-import { qrCodes, transactions } from "@/lib/schema";
+import { qrCodes, transactions, collectors } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import { sendSlipNotification } from "@/lib/telegram";
 

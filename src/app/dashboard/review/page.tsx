@@ -11,7 +11,7 @@ export default async function SlipReviewPage() {
     .orderBy(desc(transactions.createdAt));
 
   // If there are pending transactions, fetch their associated invoices and houses
-  let transactionsWithInvoices = [];
+  let transactionsWithInvoices: any[] = [];
 
   if (pendingTransactions.length > 0) {
     const txIds = pendingTransactions.map(t => t.id);
