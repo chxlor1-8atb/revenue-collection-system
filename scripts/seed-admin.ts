@@ -1,9 +1,13 @@
-import { db } from '../src/lib/db';
+import postgres from 'postgres';
+import { drizzle } from 'drizzle-orm/postgres-js';
 import { adminUsers } from '../src/lib/schema';
 import * as bcrypt from 'bcryptjs';
 import * as dotenv from 'dotenv';
 
 dotenv.config({ path: '.env.local' });
+
+const client = postgres(process.env.DATABASE_URL!);
+const db = drizzle(client);
 
 async function seed() {
   console.log('Seeding initial admin user...');
