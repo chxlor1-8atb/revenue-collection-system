@@ -1,8 +1,9 @@
 import { db } from "@/lib/db";
 import { houses, invoices } from "@/lib/schema";
 import { eq, asc } from "drizzle-orm";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import InvoiceSelectionForm from "@/components/InvoiceSelectionForm";
+import { Home as HomeIcon, User, MapPin, ArrowLeft } from "lucide-react";
 
 export default async function HouseDashboard({ params }: { params: Promise<{ houseId: string }> }) {
   const houseId = parseInt((await params).houseId, 10);
@@ -25,31 +26,50 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
     .orderBy(asc(invoices.monthYear));
 
   return (
-    <div className="layout-center flex-col">
-      <div className="receipt-card max-w-md w-full">
-        <div className="absolute top-0 right-0 w-8 h-8 bg-[#F6F4EC] border-l border-b border-[#D8D3C3] -mt-1 -mr-1 transform rotate-45"></div>
-
-        <div className="text-center mb-4">
-          <h1 className="font-serif text-2xl font-bold mb-1">สมุดบัญชีรายรับค่าขยะ</h1>
-          <p className="font-sans text-sm text-status-dark">เทศบาลเมืองนางรอง</p>
+    <div className="layout-center flex-col relative overflow-hidden bg-slate-50">
+      <div className="receipt-card max-w-sm w-full relative border border-slate-200 shadow-md bg-white p-6 rounded-xl">
+        <div className="text-center mb-5">
+          <h1 className="font-serif text-xl font-bold text-slate-800">สมุดบัญชีรายรับค่าขยะ</h1>
+          <p className="font-sans text-[10px] text-teal-600 font-semibold tracking-wide uppercase mt-0.5">
+            เทศบาลเมืองนางรอง
+          </p>
         </div>
         
         <div className="perforation-line"></div>
 
-        <div className="mb-6 font-mono text-sm space-y-1">
-          <p><strong>บ้านเลขที่:</strong> {house.houseNumber}</p>
-          <p><strong>ชื่อเจ้าบ้าน:</strong> {house.ownerName}</p>
-          <p><strong>ชุมชน/หมู่:</strong> {house.zone || "-"}</p>
+        <div className="mb-5 font-sans text-xs space-y-2.5 bg-slate-50 p-4.5 rounded-lg border border-slate-100">
+          <div className="flex items-center gap-3">
+            <HomeIcon className="w-4 h-4 text-teal-600 shrink-0" />
+            <div className="flex justify-between w-full">
+              <span className="text-slate-500">บ้านเลขที่:</span>
+              <span className="font-mono text-slate-800 font-bold">{house.houseNumber}</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <User className="w-4 h-4 text-teal-600 shrink-0" />
+            <div className="flex justify-between w-full">
+              <span className="text-slate-500">ชื่อเจ้าบ้าน:</span>
+              <span className="text-slate-800 font-semibold">{house.ownerName}</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <MapPin className="w-4 h-4 text-teal-600 shrink-0" />
+            <div className="flex justify-between w-full">
+              <span className="text-slate-500">ชุมชน/หมู่:</span>
+              <span className="text-slate-800 font-semibold">{house.zone || "-"}</span>
+            </div>
+          </div>
         </div>
 
-        <h2 className="font-serif font-bold text-lg mb-4">รายการบิลค่าขยะ</h2>
+        <h2 className="font-sans font-bold text-sm mb-3.5 text-slate-800">รายการบิลค่าธรรมเนียมขยะ</h2>
         
         <InvoiceSelectionForm invoices={houseInvoices} houseId={houseId} />
         
       </div>
       
-      <a href="/" className="mt-8 text-sm text-gray-500 underline font-sans">
-        กลับไปหน้าค้นหา
+      <a href="/" className="mt-6 text-xs text-slate-500 hover:text-teal-600 transition-colors underline font-sans flex items-center gap-1 z-10">
+        <ArrowLeft className="w-3.5 h-3.5" />
+        กลับไปหน้าค้นหาข้อมูล
       </a>
     </div>
   );

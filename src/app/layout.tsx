@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1F2E22",
+  themeColor: "#f8fafc",
 };
 
 import { Analytics } from "@vercel/analytics/react";
