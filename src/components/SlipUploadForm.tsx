@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { UploadCloud, CheckCircle, Receipt, ArrowRight } from "lucide-react";
 
 export default function SlipUploadForm({ qrCodeId, invoiceIds }: { qrCodeId: string, invoiceIds?: string }) {
