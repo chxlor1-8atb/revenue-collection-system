@@ -146,7 +146,7 @@ export default function Home() {
             {/* Footer of the card */}
             <div className="bg-slate-50 border-t border-slate-100 p-4 text-center">
               <p className="text-xs text-slate-400 font-medium">
-                หากไม่พบข้อมูล กรุณาติดต่อกองคลัง เทศบาลเมืองนางรอง
+                หากไม่พบข้อมูล กรุณาติดต่อกองสาธารณสุข เทศบาลเมืองนางรอง
               </p>
             </div>
           </div>
