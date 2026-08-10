@@ -56,10 +56,7 @@ export async function POST(request: Request) {
     }
     const collectorId = qrCode[0].collectorId;
 
-    // We only check against pending transactions created in the last 3 minutes
-    const expiryTime = new Date();
-    expiryTime.setMinutes(expiryTime.getMinutes() - 3);
-
+    // We use the expiryTime defined at the top of the function for checking against pending transactions
     let finalAmount = baseAmount;
     let attempts = 0;
     let isUnique = false;
