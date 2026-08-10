@@ -15,6 +15,13 @@
       "when": 1786090857223,
       "tag": "0001_harsh_sage",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786332331242,
+      "tag": "0002_amusing_kang",
+      "breakpoints": true
     }
   ]
 }

@@ -105,14 +105,18 @@ export default async function PayPage({ params, searchParams }: { params: Promis
               <p className="font-mono text-sm text-emerald-600 font-medium">PromptPay: {collector.promptPayId}</p>
             </div>
 
-            <div className="w-full h-px bg-slate-100 mb-8 relative">
-              <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-4 text-xs font-medium text-slate-400 uppercase tracking-widest">
-                แนบหลักฐาน
-              </div>
-            </div>
-
-            <div className="w-full">
-              <SlipUploadForm qrCodeId={qrCodeId.toString()} invoiceIds={invoiceIdsStr} />
+            <div className="w-full text-center">
+              <a 
+                href="https://line.me/R/ti/p/@yourbotid" 
+                target="_blank"
+                rel="noreferrer"
+                className="w-full flex items-center justify-center gap-2 bg-[#06C755] hover:bg-[#05b34c] text-white font-sans font-semibold py-4 px-6 rounded-xl shadow-lg shadow-[#06C755]/30 transition-all transform hover:-translate-y-1 active:translate-y-0"
+              >
+                <span>คลิกเพื่อส่งสลิปผ่านทาง LINE</span>
+              </a>
+              <p className="mt-4 text-xs font-sans text-slate-500 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                แคปหน้าจอรูปคิวอาร์โค้ดนี้เพื่อชำระเงิน <br/>หลังจากโอนเสร็จแล้วให้กดปุ่มสีเขียวเพื่อส่งสลิปผ่านแชท LINE ของเทศบาล
+              </p>
             </div>
 
           </div>

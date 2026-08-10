@@ -63,3 +63,15 @@ export const adminUsers = pgTable('admin_users', {
   collectorId: integer('collector_id').references(() => collectors.id),
   createdAt: timestamp('created_at').defaultNow(),
 });
+
+export const lineMessages = pgTable('line_messages', {
+  id: serial('id').primaryKey(),
+  lineUserId: text('line_user_id').notNull(),
+  type: text('type').notNull(), // 'image' or 'text'
+  imageUrl: text('image_url'),
+  houseNumber: text('house_number'),
+  status: text('status').notNull().default('pending'), // 'pending', 'processed', 'rejected'
+  transactionId: integer('transaction_id').references(() => transactions.id),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+

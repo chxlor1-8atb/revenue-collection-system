@@ -23,6 +23,7 @@ export default function Sidebar({ userName }: { userName: string }) {
     { name: "ประวัติการรับชำระเงิน", href: "/dashboard/history", icon: <History size={18} strokeWidth={1.5} /> },
     { name: "จัดการข้อมูลบ้าน", href: "/dashboard/houses", icon: <Home size={18} strokeWidth={1.5} /> },
     { name: "จัดการพนักงาน", href: "/dashboard/collectors", icon: <Users size={18} strokeWidth={1.5} /> },
+    { name: "สลิปจาก LINE", href: "/dashboard/line-slips", icon: <CheckSquare size={18} strokeWidth={1.5} /> },
     { name: "ตั้งค่าระบบ", href: "/dashboard/settings", icon: <Settings size={18} strokeWidth={1.5} /> },
   ];
 
