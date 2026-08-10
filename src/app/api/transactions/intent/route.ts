@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { transactions, invoices, qrCodes } from "@/lib/schema";
-import { inArray, eq, and, gte } from "drizzle-orm";
+import { inArray, eq, and, gte, lt } from "drizzle-orm";
 
 export async function POST(request: Request) {
   try {
@@ -9,6 +9,35 @@ export async function POST(request: Request) {
 
     if (!invoiceIds || invoiceIds.length === 0) {
       return NextResponse.json({ error: "No invoices provided" }, { status: 400 });
+    }
+
+    // 0. Auto-cleanup: Clear old stuck transactions
+    const expiryTime = new Date();
+    expiryTime.setMinutes(expiryTime.getMinutes() - 3);
+
+    try {
+      // Find expired waiting_for_slip transactions
+      const expiredTxs = await db.select().from(transactions).where(
+        and(
+          eq(transactions.slipStatus, 'waiting_for_slip'),
+          lt(transactions.createdAt, expiryTime)
+        )
+      );
+      
+      const expiredIds = expiredTxs.map(t => t.id);
+      if (expiredIds.length > 0) {
+        // Unlink invoices first
+        await db.update(invoices)
+          .set({ transactionId: null })
+          .where(inArray(invoices.transactionId, expiredIds));
+        
+        // Delete the transactions
+        await db.delete(transactions)
+          .where(inArray(transactions.id, expiredIds));
+      }
+    } catch (cleanupError) {
+      console.error("Cleanup Error:", cleanupError);
+      // Ignore cleanup error, proceed with intent creation
     }
 
     // Get invoices

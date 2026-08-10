@@ -74,9 +74,8 @@ export async function POST(request: Request) {
       .set({ transactionId: newTransactionId })
       .where(inArray(invoices.id, invoiceIds));
 
-    // 6. Mark old transaction as expired
-    await db.update(transactions)
-      .set({ slipStatus: "expired" })
+    // 6. Delete old transaction instead of just marking as expired to save database space
+    await db.delete(transactions)
       .where(eq(transactions.id, oldTx.id));
 
     return NextResponse.json({ 
