@@ -27,8 +27,7 @@ export async function POST(request: Request) {
             await replyMessage(replyToken, "ขออภัยค่ะ ระบบไม่สามารถดาวน์โหลดรูปภาพได้ กรุณาส่งใหม่อีกครั้งค่ะ");
             continue;
           }
-
-          const base64Image = imageBuffer.toString('base64');
+          const base64Image = `data:image/jpeg;base64,${imageBuffer.toString('base64')}`;
 
           // 2. Upload to Vercel Blob
           const blob = await put(`line-slips/${Date.now()}-${event.message.id}.jpg`, imageBuffer, {
