@@ -108,7 +108,7 @@ export default function LoginPage() {
                     type="text" 
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-slate-50 border-2 border-slate-200 text-slate-900 rounded-xl font-mono text-sm focus:outline-none focus:ring-0 focus:border-emerald-500 focus:bg-white transition-all duration-200"
+                    className="w-full pl-10 pr-4 py-2 bg-slate-50 border-2 border-slate-200 text-slate-900 rounded-xl font-sans text-sm focus:outline-none focus:ring-0 focus:border-emerald-500 focus:bg-white transition-all duration-200"
                     placeholder="ระบุรหัสผู้ใช้งาน"
                     required
                   />
@@ -127,7 +127,7 @@ export default function LoginPage() {
                     type="password" 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-slate-50 border-2 border-slate-200 text-slate-900 rounded-xl font-mono text-sm focus:outline-none focus:ring-0 focus:border-emerald-500 focus:bg-white transition-all duration-200"
+                    className="w-full pl-10 pr-4 py-2 bg-slate-50 border-2 border-slate-200 text-slate-900 rounded-xl font-sans text-sm focus:outline-none focus:ring-0 focus:border-emerald-500 focus:bg-white transition-all duration-200"
                     placeholder="••••••••"
                     required
                   />
