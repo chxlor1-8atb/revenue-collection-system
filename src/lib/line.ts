@@ -25,9 +25,19 @@ export async function replyMessage(replyToken: string, text: string) {
 
 export async function getMessageContent(messageId: string): Promise<Buffer | null> {
   const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
-  if (!token) return null;
+  if (!token) {
+    console.error('LINE_CHANNEL_ACCESS_TOKEN not set');
+    return null;
+  }
 
-  const response = await fetch(`${LINE_CONTENT_API_URL}/${messageId}/content`, {
+  // Log first 10 chars of token for debugging (do not expose full token in prod)
+  console.log('🔑 LINE token preview:', token.slice(0, 10) + '...');
+
+  // Encode messageId because it may contain +, =, / characters
+  const safeId = encodeURIComponent(messageId);
+  console.log('Fetching image content – messageId:', messageId, 'encoded:', safeId);
+
+  const response = await fetch(`${LINE_CONTENT_API_URL}/${safeId}/content`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -35,7 +45,7 @@ export async function getMessageContent(messageId: string): Promise<Buffer | nul
 
   if (!response.ok) {
     const errText = await response.text();
-    console.error(`Failed to fetch image from LINE – status ${response.status}: ${response.statusText}\nResponse body: ${errText}`);
+    console.error(`Failed to fetch image from LINE – status ${response.status}: ${response.statusText}\nResponse body: ${errText}\nMessage ID used: ${messageId} (encoded: ${safeId})`);
     return null;
   }
 
