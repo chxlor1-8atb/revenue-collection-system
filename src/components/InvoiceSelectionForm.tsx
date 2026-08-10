@@ -44,6 +44,25 @@ export default function InvoiceSelectionForm({ invoices, houseId }: { invoices: 
       .reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
   };
 
+  const formatThaiMonth = (monthYear: string) => {
+    if (!monthYear) return "";
+    const [yearStr, monthStr] = monthYear.split('-');
+    if (!yearStr || !monthStr) return monthYear;
+    
+    const months = [
+      "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+      "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+    ];
+    
+    const monthIndex = parseInt(monthStr, 10) - 1;
+    const thaiYear = parseInt(yearStr, 10) + 543;
+    
+    if (monthIndex >= 0 && monthIndex < 12) {
+      return `${months[monthIndex]} ${thaiYear}`;
+    }
+    return monthYear;
+  };
+
   return (
     <div className="flex flex-col">
       <div className="space-y-3 mb-8">
@@ -90,12 +109,9 @@ export default function InvoiceSelectionForm({ invoices, houseId }: { invoices: 
                     </div>
                     <div>
                       <p className={`font-sans font-medium text-sm transition-colors ${isSelected ? 'text-emerald-900' : 'text-slate-700'}`}>
-                        ประจำเดือน {inv.monthYear}
+                        ประจำเดือน {formatThaiMonth(inv.monthYear)}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
-                        <p className="font-mono text-xs text-slate-400">
-                          REF: INV-{inv.id.toString().padStart(5, '0')}
-                        </p>
                         {isOverdue ? (
                           <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 border border-red-200">ค้างชำระ</span>
                         ) : (
@@ -107,7 +123,7 @@ export default function InvoiceSelectionForm({ invoices, houseId }: { invoices: 
                   
                   <div className="z-10 text-right">
                     <p className={`font-mono text-lg font-bold transition-colors ${isSelected ? 'text-emerald-700' : 'text-slate-900'}`}>
-                      ฿{parseFloat(inv.amount).toFixed(2)}
+                      {parseFloat(inv.amount).toFixed(2)} <span className="text-sm font-sans font-medium">บาท</span>
                     </p>
                   </div>
                 </motion.div>
@@ -123,7 +139,7 @@ export default function InvoiceSelectionForm({ invoices, houseId }: { invoices: 
           <p className="font-sans text-sm font-medium text-slate-500 uppercase tracking-widest">ยอดรวมที่ต้องชำระ</p>
           <div className="text-right">
             <p className="font-mono text-4xl font-bold text-slate-900 tracking-tighter">
-              ฿{calculateTotal().toFixed(2)}
+              {calculateTotal().toFixed(2)} <span className="text-lg font-sans font-medium text-slate-500">บาท</span>
             </p>
           </div>
         </div>
