@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import AnimatedButton from "@/components/AnimatedButton";
-import { motion } from "framer-motion";
-import { Recycle } from "lucide-react"; // Import a waste management icon
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, MapPin, Activity } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
   const [houseNumber, setHouseNumber] = useState("");
@@ -42,100 +42,121 @@ export default function Home() {
   };
 
   return (
-    <div className="pwa-container relative overflow-hidden">
-      {/* Background Watermark for context */}
-      <Recycle className="waste-watermark" strokeWidth={0.5} />
-      
-      {/* Subtle top header band */}
-      <div className="absolute top-0 left-0 w-full bg-[#1F2E22] text-[#F6F4EC] text-[10px] md:text-xs font-mono py-1 md:py-1.5 px-2 md:px-4 text-center opacity-90 tracking-widest z-10">
-        แบบพิมพ์ที่ ๑ - เทศบาลเมืองนางรอง (ระบบจัดเก็บค่าธรรมเนียมขยะมูลฝอย)
+    <div className="min-h-screen relative overflow-hidden bg-slate-50 flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8">
+      {/* Background abstract grid */}
+      <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
+           style={{ backgroundImage: 'radial-gradient(#0F172A 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
       </div>
 
-      <main className="pwa-main relative z-10 mt-8 md:mt-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 md:gap-12 md:items-center">
-          
-          {/* Left Column: Hero / Welcome */}
-          <motion.div 
-            className="welcome-banner text-center md:text-left"
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ type: "spring", stiffness: 200, damping: 20 }}
-          >
-            <div className="mb-6 mx-auto md:mx-0" style={{ width: "fit-content" }}>
-              <img 
-                src="/nangrong-logo.png" 
-                alt="ตราสัญลักษณ์เทศบาลเมืองนางรอง" 
-                style={{ width: "6rem", height: "6rem", objectFit: "contain" }} 
-              />
-            </div>
-            <h1 className="font-serif font-bold text-fluid-hero text-[#1F2E22] mb-4">
-              เทศบาลเมืองนางรอง
-            </h1>
-            <p className="font-sans text-fluid-sub text-[#3A5A40] mb-2 font-semibold">
-              ระบบตรวจสอบและชำระค่าธรรมเนียมเก็บขนมูลฝอย
-            </p>
-            <p className="font-sans text-gray-500 mb-8 max-w-md mx-auto md:mx-0">
-              กรุณาระบุบ้านเลขที่ เพื่อตรวจสอบยอดและชำระค่าธรรมเนียม
-            </p>
-          </motion.div>
+      <main className="w-full max-w-md relative z-10 mt-8">
+        {/* Header / Brand */}
+        <motion.div 
+          className="text-center mb-8"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <div className="inline-flex items-center justify-center p-3 bg-white rounded-2xl shadow-sm mb-4 border border-slate-100">
+             <img src="/nangrong-logo.png" alt="ตราสัญลักษณ์" className="w-16 h-16 object-contain" />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-2">
+            เทศบาลเมืองนางรอง
+          </h1>
+          <p className="text-sm sm:text-base text-slate-500 font-medium">
+            ตรวจสอบและชำระค่าธรรมเนียมออนไลน์
+          </p>
+        </motion.div>
 
-          {/* Right Column: Search Card */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.1 }}
-            className="flex justify-center md:justify-end"
-          >
-            <div className="ledger-card-home max-w-sm w-full">
-              {/* Invoice Reference Number */}
-              <div className="absolute top-2 right-3 font-mono text-[10px] text-gray-400 border border-gray-200 px-1 py-0.5 rounded-sm">
-                เล่มที่ ๐๑/๒๕๖๙
-              </div>
-
-              <div className="text-center mb-6 mt-4">
-                <h2 className="font-serif text-2xl font-bold mb-1">ตรวจสอบยอดชำระ</h2>
-                <p className="font-sans text-sm text-status-dark">กรอกบ้านเลขที่ของท่าน</p>
+        {/* The "Modern Ticket" Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+        >
+          <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+            <div className="p-8 sm:p-10">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-lg font-bold text-slate-900">ค้นหาข้อมูลบ้าน</h2>
+                <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
+                  <Activity size={12} /> ระบบออนไลน์
+                </span>
               </div>
               
-              <div className="perforation-line" style={{ display: 'none' }}></div> {/* Removed internal perforation, moved to top of card */}
-              
-              <form onSubmit={handleSearch} className="form-container mt-6">
-                {error && (
-                  <div className="error-box text-center">
-                    {error}
-                  </div>
-                )}
+              <form onSubmit={handleSearch} className="space-y-6">
+                <AnimatePresence>
+                  {error && (
+                    <motion.div 
+                      initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                      animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+                      exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                      className="bg-red-50 text-red-600 text-sm p-4 rounded-xl border border-red-100 flex items-start gap-3 overflow-hidden"
+                    >
+                      <span>{error}</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
                 
-                <div className="form-group text-center">
-                  <label className="font-serif block font-bold mb-2 text-[#3A5A40]">บ้านเลขที่</label>
-                  <input 
-                    type="text" 
-                    value={houseNumber}
-                    onChange={(e) => setHouseNumber(e.target.value)}
-                    className="ledger-input font-mono text-center text-xl tracking-widest py-3"
-                    placeholder="เช่น 123/4"
-                    required
-                  />
+                <div className="space-y-2 relative group">
+                  <label htmlFor="houseNumber" className="block text-sm font-semibold text-slate-700 transition-colors group-focus-within:text-emerald-600">
+                    บ้านเลขที่
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors">
+                      <MapPin size={20} />
+                    </div>
+                    <input 
+                      id="houseNumber"
+                      type="text" 
+                      value={houseNumber}
+                      onChange={(e) => setHouseNumber(e.target.value)}
+                      className="w-full pl-11 pr-4 py-4 bg-slate-50 border-2 border-slate-100 text-slate-900 rounded-xl font-mono text-lg focus:outline-none focus:ring-0 focus:border-emerald-500 focus:bg-white transition-all duration-200"
+                      placeholder="เช่น 123/4"
+                      required
+                    />
+                  </div>
                 </div>
                 
-                <AnimatedButton 
+                <button 
                   type="submit" 
                   disabled={isSearching} 
-                  className="btn btn-primary w-full mt-6 py-3 font-serif text-lg shadow-sm"
-                  style={{ borderRadius: "2px" }}
+                  className="w-full relative overflow-hidden group bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 rounded-xl transition-all duration-200 shadow-md shadow-emerald-600/20 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  {isSearching ? "กำลังตรวจสอบ..." : "ตรวจสอบรายการ"}
-                </AnimatedButton>
+                  {isSearching ? (
+                    <>
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                      >
+                        <Search size={20} />
+                      </motion.div>
+                      กำลังค้นหา...
+                    </>
+                  ) : (
+                    <>
+                      <Search size={20} />
+                      ตรวจสอบรายการ
+                    </>
+                  )}
+                  {/* Subtle sweep animation on hover */}
+                  <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                </button>
               </form>
             </div>
-          </motion.div>
-        </div>
+            
+            {/* Footer of the card */}
+            <div className="bg-slate-50 border-t border-slate-100 p-4 text-center">
+              <p className="text-xs text-slate-400 font-medium">
+                หากไม่พบข้อมูล กรุณาติดต่อกองคลัง เทศบาลเมืองนางรอง
+              </p>
+            </div>
+          </div>
+        </motion.div>
       </main>
 
-      <footer className="p-4 text-center relative z-10">
-        <a href="/login" className="text-sm text-gray-400 hover:text-gray-600 underline font-sans transition-colors">
+      <footer className="mt-12 relative z-10">
+        <Link href="/login" className="text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors decoration-slate-300 underline-offset-4 hover:underline">
           สำหรับเจ้าหน้าที่ (เข้าสู่ระบบ)
-        </a>
+        </Link>
       </footer>
     </div>
   );

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import AnimatedButton from "./AnimatedButton";
+import { motion } from "framer-motion";
+import { UploadCloud, CheckCircle, Receipt, ArrowRight } from "lucide-react";
 
 export default function SlipUploadForm({ qrCodeId, invoiceIds }: { qrCodeId: string, invoiceIds?: string }) {
   const [file, setFile] = useState<File | null>(null);
@@ -50,51 +51,116 @@ export default function SlipUploadForm({ qrCodeId, invoiceIds }: { qrCodeId: str
 
   if (status === "success") {
     return (
-      <div className="receipt-card animate-stamp text-center mt-6">
-        <div className="receipt-stamp-ref">VERIFIED</div>
-        <h3 className="font-serif text-xl mb-2 text-status-verified">ส่งข้อมูลสำเร็จ</h3>
-        <p className="font-sans text-sm text-status-dark">
-          ระบบได้รับสลิปของคุณแล้ว ขอบคุณครับ
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full h-full absolute inset-0 z-50 bg-emerald-600 rounded-3xl overflow-hidden flex flex-col items-center justify-center p-8 text-white shadow-2xl"
+      >
+        {/* Confetti or subtle background shapes could go here */}
+        
+        <motion.div
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.1 }}
+          className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg shadow-emerald-900/20 mb-6 relative"
+        >
+          <CheckCircle size={48} className="text-emerald-500" strokeWidth={3} />
+          
+          {/* Ripple effect */}
+          <motion.div 
+            initial={{ scale: 1, opacity: 0.5 }}
+            animate={{ scale: 1.5, opacity: 0 }}
+            transition={{ repeat: Infinity, duration: 1.5 }}
+            className="absolute inset-0 rounded-full border-4 border-white"
+          />
+        </motion.div>
+
+        {/* The VERIFIED Stamp Animation */}
+        <motion.div
+          initial={{ scale: 3, opacity: 0, rotate: -15 }}
+          animate={{ scale: 1, opacity: 1, rotate: -5 }}
+          transition={{ type: "spring", stiffness: 300, damping: 12, delay: 0.5 }}
+          className="border-4 border-white text-white font-mono font-bold text-2xl tracking-widest px-4 py-1 rounded mb-8 shadow-sm backdrop-blur-sm bg-emerald-500/30"
+        >
+          VERIFIED
+        </motion.div>
+
+        <h3 className="font-sans text-2xl font-bold mb-2">ทำรายการสำเร็จ</h3>
+        <p className="font-sans text-emerald-100 text-center text-sm max-w-[200px] mb-10">
+          ระบบได้รับหลักฐานการโอนเงินของคุณแล้ว
         </p>
-      </div>
+
+        <button 
+          onClick={() => window.location.href = "/"}
+          className="bg-white text-emerald-700 font-semibold py-3 px-6 rounded-xl hover:bg-emerald-50 transition-colors shadow-md flex items-center gap-2"
+        >
+          กลับสู่หน้าหลัก <ArrowRight size={18} />
+        </button>
+      </motion.div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-6">
-      <div className="perforation-line"></div>
-      
-      <div className="mb-4">
-        <label className="font-serif block mb-2 text-sm font-bold">แนบสลิปการโอนเงิน</label>
-        <div className="border-2 border-dashed border-gray-300 p-4 text-center rounded bg-gray-50 hover:bg-gray-100 transition-colors">
+    <form onSubmit={handleSubmit} className="w-full">
+      <div className="mb-6">
+        <div className="relative border-2 border-dashed border-slate-300 bg-slate-50 hover:bg-slate-100 transition-colors rounded-2xl p-6 text-center group overflow-hidden">
           <input
             type="file"
             accept="image/jpeg, image/png, image/webp"
             onChange={handleFileChange}
-            className="block w-full text-sm text-gray-500
-              file:mr-4 file:py-2 file:px-4
-              file:rounded file:border-0
-              file:text-sm file:font-semibold
-              file:bg-[#3A5A40] file:text-white
-              hover:file:bg-[#2d4732] cursor-pointer"
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
             required
           />
+          <div className="flex flex-col items-center justify-center space-y-2 relative z-0">
+            <div className="w-12 h-12 rounded-full bg-slate-200 group-hover:bg-emerald-100 flex items-center justify-center transition-colors">
+              <UploadCloud size={24} className="text-slate-500 group-hover:text-emerald-600 transition-colors" />
+            </div>
+            <p className="font-sans text-sm font-semibold text-slate-700">อัปโหลดสลิปการโอนเงิน</p>
+            <p className="font-sans text-xs text-slate-400">คลิก หรือ ลากไฟล์มาวางที่นี่</p>
+          </div>
         </div>
       </div>
 
-      {preview && (
-        <div className="mb-6 flex justify-center">
-          <img src={preview} alt="Slip preview" className="max-h-64 rounded shadow-sm border border-[#D8D3C3]" />
-        </div>
-      )}
+      <AnimatePresence>
+        {preview && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginBottom: 24 }}
+            exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+            className="flex justify-center overflow-hidden"
+          >
+            <div className="relative rounded-xl border-4 border-slate-100 shadow-inner overflow-hidden">
+              <img src={preview} alt="Slip preview" className="max-h-48 object-contain bg-slate-900/5" />
+              <div className="absolute top-2 right-2 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1">
+                <Receipt size={12} /> SLIP
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <AnimatedButton
+      <button
         type="submit"
         disabled={!file || isUploading}
-        className="btn btn-primary w-full py-3 text-lg font-serif tracking-wide disabled:opacity-50"
+        className="w-full relative overflow-hidden group bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 rounded-xl transition-all duration-200 shadow-lg shadow-emerald-600/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
-        {isUploading ? "กำลังประมวลผล..." : "ส่งสลิปเพื่อตรวจสอบ"}
-      </AnimatedButton>
+        {isUploading ? (
+          <>
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+              className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+            />
+            <span>กำลังตรวจสอบ...</span>
+          </>
+        ) : (
+          <>
+            <CheckCircle size={20} />
+            <span>ยืนยันการชำระเงิน</span>
+          </>
+        )}
+        <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+      </button>
     </form>
   );
 }

@@ -1,8 +1,9 @@
 import { db } from "@/lib/db";
 import { houses, invoices } from "@/lib/schema";
 import { eq, asc } from "drizzle-orm";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import InvoiceSelectionForm from "@/components/InvoiceSelectionForm";
+import Link from "next/link";
 
 export default async function HouseDashboard({ params }: { params: Promise<{ houseId: string }> }) {
   const houseId = parseInt((await params).houseId, 10);
@@ -24,33 +25,88 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
     .where(eq(invoices.houseId, houseId))
     .orderBy(asc(invoices.monthYear));
 
+  // A simple function to generate a fake "barcode" pattern
+  const generateBarcode = () => {
+    return Array.from({ length: 40 }).map((_, i) => {
+      const width = Math.random() > 0.5 ? 'w-1' : 'w-0.5';
+      const opacity = Math.random() > 0.7 ? 'opacity-40' : 'opacity-100';
+      return <div key={i} className={`h-full bg-slate-300/30 ${width} ${opacity} mx-[1px]`}></div>
+    });
+  };
+
   return (
-    <div className="layout-center flex-col">
-      <div className="receipt-card max-w-md w-full">
-        <div className="absolute top-0 right-0 w-8 h-8 bg-[#F6F4EC] border-l border-b border-[#D8D3C3] -mt-1 -mr-1 transform rotate-45"></div>
+    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 flex flex-col items-center">
+      {/* Background abstract grid */}
+      <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
+           style={{ backgroundImage: 'radial-gradient(#0F172A 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
+      </div>
 
-        <div className="text-center mb-4">
-          <h1 className="font-serif text-2xl font-bold mb-1">สมุดบัญชีรายรับค่าขยะ</h1>
-          <p className="font-sans text-sm text-status-dark">เทศบาลเมืองนางรอง</p>
+      <div className="w-full max-w-lg relative z-10 flex flex-col drop-shadow-2xl">
+        {/* TOP SECTION: Identity Stub (Deep Navy) */}
+        <div className="bg-slate-900 rounded-t-3xl p-8 sm:p-10 text-white relative overflow-hidden">
+          
+          <div className="flex justify-between items-start relative z-10">
+            <div>
+              <p className="text-xs font-sans text-slate-400 uppercase tracking-widest mb-1">เลขประจำบ้าน / House No.</p>
+              <h1 className="font-mono text-4xl sm:text-5xl font-bold tracking-tight mb-6">
+                {house.houseNumber}
+              </h1>
+              
+              <div className="space-y-4">
+                <div>
+                  <p className="text-[10px] text-slate-500 uppercase tracking-widest">ชื่อเจ้าบ้าน / Owner</p>
+                  <p className="font-sans text-lg font-medium text-slate-100">{house.ownerName}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-500 uppercase tracking-widest">ชุมชน / Zone</p>
+                  <p className="font-sans text-sm font-medium text-slate-200">{house.zone || "-"}</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Decorative Barcode */}
+            <div className="h-32 flex items-center justify-end rotate-90 sm:rotate-0 origin-right opacity-80 mix-blend-screen ml-4">
+              {generateBarcode()}
+            </div>
+          </div>
+          
+          {/* "Watermark" Logo large */}
+          <div className="absolute -bottom-10 -right-10 opacity-[0.03] pointer-events-none">
+             <img src="/nangrong-logo.png" alt="" className="w-64 h-64 grayscale" />
+          </div>
         </div>
-        
-        <div className="perforation-line"></div>
 
-        <div className="mb-6 font-mono text-sm space-y-1">
-          <p><strong>บ้านเลขที่:</strong> {house.houseNumber}</p>
-          <p><strong>ชื่อเจ้าบ้าน:</strong> {house.ownerName}</p>
-          <p><strong>ชุมชน/หมู่:</strong> {house.zone || "-"}</p>
+        {/* PERFORATION DIVIDER */}
+        <div className="relative w-full h-8 bg-slate-50 flex items-center justify-center overflow-hidden -my-1 z-20">
+          <svg width="100%" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <defs>
+              <pattern id="sawtooth" x="0" y="0" width="20" height="32" patternUnits="userSpaceOnUse">
+                <path d="M 0,16 L 10,0 L 20,16 L 10,32 Z" fill="#F8FAFC" />
+              </pattern>
+            </defs>
+            {/* The navy background behind the cutouts */}
+            <rect width="100%" height="16" y="0" fill="#0F172A" />
+            {/* The white background behind the cutouts below */}
+            <rect width="100%" height="16" y="16" fill="#FFFFFF" />
+            {/* The actual sawtooth pattern colored the same as the body background (slate-50) */}
+            <rect width="100%" height="32" fill="url(#sawtooth)" />
+          </svg>
         </div>
 
-        <h2 className="font-serif font-bold text-lg mb-4">รายการบิลค่าขยะ</h2>
-        
-        <InvoiceSelectionForm invoices={houseInvoices} houseId={houseId} />
-        
+        {/* BOTTOM SECTION: Transaction Ledger (White) */}
+        <div className="bg-white rounded-b-3xl p-8 sm:p-10 relative shadow-inner">
+          <div className="mb-6 flex items-baseline justify-between">
+            <h2 className="text-xl font-bold text-slate-900">รายการค้างชำระ</h2>
+            <span className="text-xs font-semibold text-slate-400 tracking-wider">INVOICES</span>
+          </div>
+          
+          <InvoiceSelectionForm invoices={houseInvoices} houseId={houseId} />
+        </div>
       </div>
       
-      <a href="/" className="mt-8 text-sm text-gray-500 underline font-sans">
-        กลับไปหน้าค้นหา
-      </a>
+      <Link href="/" className="mt-8 text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors underline-offset-4 hover:underline relative z-10">
+        ← กลับไปหน้าค้นหา
+      </Link>
     </div>
   );
 }

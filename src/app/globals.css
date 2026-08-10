@@ -1,24 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Noto+Serif+Thai:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap');
+
+@import "tailwindcss";
 
 :root {
-  --background: #F6F4EC;
-  --foreground: #1F2E22;
-  --primary: #3A5A40;
-  --primary-hover: #2d4732;
-  --warning: #C9A227;
-  --border: #D8D3C3;
-  --radius: 2px; /* Not rounded */
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+  --primary: #059669;
+  --primary-hover: #047857;
+  --warning: #D97706;
+  --border: #E2E8F0;
+  --radius: 0.5rem;
   --font-sans: "IBM Plex Sans Thai", "Inter", sans-serif;
-  --font-serif: "Noto Serif Thai", "Fraunces", serif;
   --font-mono: "IBM Plex Mono", "JetBrains Mono", monospace;
 }
 
-/* No dark mode preference as per the ledger aesthetic */
+@theme {
+  --color-primary: #059669;
+  --font-sans: "IBM Plex Sans Thai", "Inter", sans-serif;
+  --font-mono: "IBM Plex Mono", "JetBrains Mono", monospace;
+}
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
+html, body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
@@ -68,19 +70,17 @@ a {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-/* Typography utilities */
-.font-serif { font-family: var(--font-serif); }
 .font-mono { font-family: var(--font-mono); }
 .font-sans { font-family: var(--font-sans); }
 
 /* Ledger Theme Utilities */
 .receipt-card {
-  background-color: #FFFFFF; /* Pure white for the paper receipt contrast */
+  background-color: #FFFFFF;
   border: 1px solid var(--border);
   padding: 1.5rem;
-  box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
   position: relative;
-  border-radius: var(--radius);
+  border-radius: 1rem;
 }
 
 .receipt-stamp-ref {
@@ -107,6 +107,7 @@ a {
 .text-status-verified { color: var(--primary); font-weight: 600; }
 .text-status-warning { color: var(--warning); font-weight: 600; }
 .text-status-dark { color: var(--foreground); }
+.text-status-pending { color: var(--warning); }
 
 /* Animation: Stamp effect */
 @keyframes stamp-in {
@@ -117,51 +118,6 @@ a {
 .animate-stamp {
   animation: stamp-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
-
-/* Basic Layouts */
-.layout-center {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-
-.max-w-sm { width: 100%; max-width: 24rem; }
-.max-w-md { width: 100%; max-width: 28rem; }
-.max-w-4xl { width: 100%; max-width: 56rem; margin-left: auto; margin-right: auto; }
-.w-full { width: 100%; }
-
-.text-center { text-align: center; }
-.text-right { text-align: right; }
-.text-2xl { font-size: 1.5rem; line-height: 2rem; }
-.text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
-.text-lg { font-size: 1.125rem; }
-.text-sm { font-size: 0.875rem; }
-.font-bold { font-weight: 700; }
-.font-semibold { font-weight: 600; }
-
-.mb-1 { margin-bottom: 0.25rem; }
-.mb-2 { margin-bottom: 0.5rem; }
-.mb-4 { margin-bottom: 1rem; }
-.mb-6 { margin-bottom: 1.5rem; }
-.mb-8 { margin-bottom: 2rem; }
-.mt-2 { margin-top: 0.5rem; }
-.mt-4 { margin-top: 1rem; }
-.mt-6 { margin-top: 1.5rem; }
-.my-6 { margin-top: 1.5rem; margin-bottom: 1.5rem; }
-.py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
-.px-1 { padding-left: 0.25rem; padding-right: 0.25rem; }
-.p-8 { padding: 2rem; }
-
-.flex { display: flex; }
-.flex-col { flex-direction: column; }
-.justify-between { justify-content: space-between; }
-.items-end { align-items: flex-end; }
-.items-center { align-items: center; }
-.inline-block { display: inline-block; }
-.gap-4 { gap: 1rem; }
-.space-y-1 > * + * { margin-top: 0.25rem; }
 
 /* Forms */
 .form-container {
@@ -194,62 +150,19 @@ a {
   padding: 0.75rem;
   border: 1px solid var(--warning);
 }
-.text-status-pending { color: var(--warning); }
-.underline { text-decoration: underline; }
-.hover\:text-red-700:hover { color: #b91c1c; }
 
-/* Utilities */
-.block { display: block; }
-.opacity-50 { opacity: 0.5; }
-.tracking-widest { letter-spacing: 0.1em; }
-.shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
-.rounded-sm { border-radius: 0.125rem; }
-.relative { position: relative; }
-.absolute { position: absolute; }
-.top-0 { top: 0; }
-.right-0 { right: 0; }
-.w-8 { width: 2rem; }
-.h-8 { height: 2rem; }
-.w-48 { width: 12rem; }
-.h-48 { height: 12rem; }
-.bg-white { background-color: #ffffff; }
-.border { border-width: 1px; border-style: solid; border-color: var(--border); }
-.border-l { border-left-width: 1px; border-style: solid; border-color: var(--border); }
-.border-b { border-bottom-width: 1px; border-style: solid; border-color: var(--border); }
-.-mt-1 { margin-top: -0.25rem; }
-.-mr-1 { margin-right: -0.25rem; }
-.transform { transform: translate(0, 0); }
-.rotate-45 { transform: rotate(45deg); }
-.bg-\[\#F6F4EC\] { background-color: #F6F4EC; }
-
-/* Responsive Grid System */
-.grid { display: grid; }
-.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-.gap-8 { gap: 2rem; }
-.gap-12 { gap: 3rem; }
-
-@media (min-width: 768px) {
-  .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .md\:gap-12 { gap: 3rem; }
-  .md\:items-center { align-items: center; }
-  .md\:text-left { text-align: left; }
-}
-
-/* Fluid Typography using clamp() */
-.text-fluid-hero {
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  line-height: 1.2;
-}
-
-.text-fluid-sub {
-  font-size: clamp(1rem, 2vw, 1.25rem);
-  line-height: 1.5;
+/* Basic Layouts */
+.layout-center {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
 }
 
 /* PWA App-like refinements */
 .pwa-container {
   min-height: 100vh;
-  /* Safe area padding for notched phones */
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   display: flex;
   flex-direction: column;
@@ -284,11 +197,10 @@ a {
 .ledger-card {
   background-color: #FFFFFF;
   border: 1px solid var(--border);
-  border-top: 2px dashed #D8D3C3;
   padding: 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
   position: relative;
-  border-radius: 0 0 var(--radius) var(--radius);
+  border-radius: 1rem;
 }
 
 /* Watermark styles */
@@ -308,10 +220,15 @@ a {
 .ledger-card-home {
   background-color: #FFFFFF;
   border: 1px solid var(--border);
-  border-top: 3px dashed #D8D3C3; /* Stronger perforation */
-  padding: 2rem 1.5rem;
-  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+  padding: 2.5rem 2rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   position: relative;
-  border-radius: 0 0 2px 2px;
+  border-radius: 1.5rem;
   width: 100%;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }

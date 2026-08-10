@@ -12,7 +12,6 @@ export default async function PayPage({ params, searchParams }: { params: Promis
   const invoiceIdsStr = sp.invoices;
   
   if (isNaN(qrCodeId) || !invoiceIdsStr) {
-    // We need invoices to pay for! If not provided, redirect to home.
     redirect("/");
   }
 
@@ -38,7 +37,6 @@ export default async function PayPage({ params, searchParams }: { params: Promis
 
   const { collector } = result[0];
 
-  // Fetch invoices to verify they exist and get the total amount
   const { invoices } = await import("@/lib/schema");
   const selectedInvoices = await db.select().from(invoices).where(inArray(invoices.id, invoiceIds));
   
@@ -46,50 +44,81 @@ export default async function PayPage({ params, searchParams }: { params: Promis
     redirect("/");
   }
 
-  // Calculate total amount
   const totalAmount = selectedInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
 
-  // Generate PromptPay QR Data (payload) with exact total amount
   const payload = generatePayload(collector.promptPayId, { amount: totalAmount });
   
-  // Generate Data URI for the QR Code image
   const qrDataUri = await qrcode.toDataURL(payload, {
     errorCorrectionLevel: 'H',
     type: 'image/png',
     margin: 1,
     color: {
-      dark: '#1F2E22', // Ink green from our palette
+      dark: '#0F172A', // Deep Navy for the QR code
       light: '#ffffff'
     }
   });
 
   return (
-    <div className="min-h-screen p-4 flex flex-col items-center py-12">
-      <div className="receipt-card max-w-md w-full relative">
-        {/* Decorative slip corner */}
-        <div className="absolute top-0 right-0 w-8 h-8 bg-[#F6F4EC] border-l border-b border-[#D8D3C3] -mt-1 -mr-1 transform rotate-45"></div>
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center py-12 px-4 sm:px-6 relative overflow-hidden">
+      {/* Background grid */}
+      <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
+           style={{ backgroundImage: 'radial-gradient(#0F172A 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
+      </div>
 
-        <div className="text-center mb-6 flex flex-col items-center">
-          <img src="/nangrong-logo.png" alt="ตราสัญลักษณ์เทศบาลเมืองนางรอง" style={{ width: "4rem", height: "4rem", objectFit: "contain", marginBottom: "0.5rem" }} />
-          <h1 className="font-serif text-2xl font-bold mb-1">เทศบาลเมืองนางรอง</h1>
-          <p className="font-sans text-sm text-status-dark">ระบบจัดเก็บรายได้ออนไลน์</p>
-        </div>
-        
-        <div className="perforation-line"></div>
-
-        <div className="my-6 flex flex-col items-center">
-          <p className="font-serif font-bold text-lg mb-2">สแกนเพื่อชำระเงิน</p>
-          <div className="p-2 bg-white border border-[#D8D3C3] shadow-sm rounded-sm mb-4 inline-block">
-            <img src={qrDataUri} alt="PromptPay QR Code" className="w-48 h-48" />
-          </div>
+      <div className="w-full max-w-md relative z-10">
+        <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden">
           
-          <div className="text-center font-mono text-sm space-y-1 mt-2">
-            <p className="font-sans font-semibold">ชื่อผู้รับเงิน: <span className="font-mono">{collector.name}</span></p>
-            <p className="text-gray-600">PromptPay: {collector.promptPayId}</p>
+          {/* Top Info Banner - The Book Number Badge */}
+          <div className="bg-slate-900 px-6 py-3 flex justify-between items-center text-white">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="text-xs font-medium tracking-widest uppercase text-slate-300">SECURE PAYMENT</span>
+            </div>
+            <div className="font-mono text-sm border border-slate-700 bg-slate-800 px-3 py-1 rounded-md shadow-inner text-emerald-400">
+              เล่มที่ ๐๑/๒๕๖๙
+            </div>
+          </div>
+
+          <div className="p-8 sm:p-10 flex flex-col items-center">
+            
+            <div className="mb-8 text-center">
+              <p className="font-sans text-sm font-semibold text-slate-400 tracking-widest uppercase mb-2">ยอดชำระสุทธิ</p>
+              <h1 className="font-mono text-5xl font-bold text-slate-900 tracking-tighter">
+                ฿{totalAmount.toFixed(2)}
+              </h1>
+            </div>
+
+            {/* QR Code Frame */}
+            <div className="relative p-1 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 mb-6">
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-emerald-100">
+                <img src={qrDataUri} alt="PromptPay QR Code" className="w-56 h-56 object-contain" />
+              </div>
+              
+              {/* Corner brackets */}
+              <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-emerald-500 rounded-tl-2xl"></div>
+              <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-emerald-500 rounded-tr-2xl"></div>
+              <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-emerald-500 rounded-bl-2xl"></div>
+              <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-emerald-500 rounded-br-2xl"></div>
+            </div>
+
+            <div className="w-full text-center mb-8 px-4 py-3 bg-slate-50 rounded-xl border border-slate-100">
+              <p className="font-sans text-xs text-slate-500 uppercase tracking-widest mb-1">โอนเงินเข้าบัญชี</p>
+              <p className="font-sans font-semibold text-slate-900">{collector.name}</p>
+              <p className="font-mono text-sm text-emerald-600 font-medium">PromptPay: {collector.promptPayId}</p>
+            </div>
+
+            <div className="w-full h-px bg-slate-100 mb-8 relative">
+              <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-4 text-xs font-medium text-slate-400 uppercase tracking-widest">
+                แนบหลักฐาน
+              </div>
+            </div>
+
+            <div className="w-full">
+              <SlipUploadForm qrCodeId={qrCodeId.toString()} invoiceIds={invoiceIdsStr} />
+            </div>
+
           </div>
         </div>
-
-        <SlipUploadForm qrCodeId={qrCodeId.toString()} invoiceIds={invoiceIdsStr} />
       </div>
     </div>
   );
