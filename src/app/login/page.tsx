@@ -96,8 +96,6 @@ export default function LoginPage() {
                 )}
               </AnimatePresence>
               
-              <div className="space-y-2 group">
-                <label className="block text-xs font-sans font-bold text-slate-500 uppercase tracking-wider group-focus-within:text-emerald-600 transition-colors">
               <div className="space-y-1.5 group">
                 <label className="block text-[10px] font-sans font-bold text-slate-500 uppercase tracking-wider group-focus-within:text-emerald-600 transition-colors">
                   รหัสเจ้าหน้าที่ (Username)
@@ -106,14 +104,14 @@ export default function LoginPage() {
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors">
                     <User size={16} />
                   </div>
-                    <input 
-                      type="text" 
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 bg-slate-50 border-2 border-slate-200 text-slate-900 rounded-xl font-mono text-sm focus:outline-none focus:ring-0 focus:border-emerald-500 focus:bg-white transition-all duration-200"
-                      placeholder="ระบุรหัสผู้ใช้งาน"
-                      required
-                    />
+                  <input 
+                    type="text" 
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 bg-slate-50 border-2 border-slate-200 text-slate-900 rounded-xl font-mono text-sm focus:outline-none focus:ring-0 focus:border-emerald-500 focus:bg-white transition-all duration-200"
+                    placeholder="ระบุรหัสผู้ใช้งาน"
+                    required
+                  />
                 </div>
               </div>
               
@@ -125,14 +123,14 @@ export default function LoginPage() {
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors">
                     <Lock size={16} />
                   </div>
-                    <input 
-                      type="password" 
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 bg-slate-50 border-2 border-slate-200 text-slate-900 rounded-xl font-mono text-sm focus:outline-none focus:ring-0 focus:border-emerald-500 focus:bg-white transition-all duration-200"
-                      placeholder="••••••••"
-                      required
-                    />
+                  <input 
+                    type="password" 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 bg-slate-50 border-2 border-slate-200 text-slate-900 rounded-xl font-mono text-sm focus:outline-none focus:ring-0 focus:border-emerald-500 focus:bg-white transition-all duration-200"
+                    placeholder="••••••••"
+                    required
+                  />
                 </div>
               </div>
               
