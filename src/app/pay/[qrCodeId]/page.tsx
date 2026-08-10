@@ -107,7 +107,7 @@ export default async function PayPage({ params, searchParams }: { params: Promis
 
             <div className="w-full text-center">
               <a 
-                href="https://line.me/R/ti/p/@yourbotid" 
+                href="https://line.me/R/ti/p/@618apcbm" 
                 target="_blank"
                 rel="noreferrer"
                 className="w-full flex items-center justify-center gap-2 bg-[#06C755] hover:bg-[#05b34c] text-white font-sans font-semibold py-4 px-6 rounded-xl shadow-lg shadow-[#06C755]/30 transition-all transform hover:-translate-y-1 active:translate-y-0"
