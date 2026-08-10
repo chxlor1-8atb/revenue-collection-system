@@ -31,7 +31,9 @@ export async function verifySlipWithBase64(base64Image: string): Promise<Slip2Go
         "x-api-secret": apiKey, // Adding both common headers to be safe based on docs
       },
       body: JSON.stringify({
-        payload: base64Image
+        payload: {
+          imageBase64: base64Image
+        }
       }),
     });
 
