@@ -5,7 +5,6 @@ import { notFound, redirect } from "next/navigation";
 import generatePayload from "promptpay-qr";
 import qrcode from "qrcode";
 import SlipUploadForm from "@/components/SlipUploadForm";
-import { CreditCard, ShieldCheck } from "lucide-react";
 
 export default async function PayPage({ params, searchParams }: { params: Promise<{ qrCodeId: string }>, searchParams: Promise<{ invoices?: string }> }) {
   const qrCodeId = parseInt((await params).qrCodeId, 10);
@@ -59,61 +58,39 @@ export default async function PayPage({ params, searchParams }: { params: Promis
     type: 'image/png',
     margin: 1,
     color: {
-      dark: '#0f172a', // Ink dark navy
+      dark: '#1F2E22', // Ink green from our palette
       light: '#ffffff'
     }
   });
 
   return (
-    <div className="min-h-screen p-4 flex flex-col items-center py-10 justify-center bg-slate-50 relative overflow-hidden">
-      <div className="receipt-card max-w-sm w-full relative border border-slate-200 shadow-md bg-white p-6 rounded-xl">
-        <div className="text-center mb-5 flex flex-col items-center">
-          <img 
-            src="/nangrong-logo.png" 
-            alt="ตราสัญลักษณ์เทศบาลเมืองนางรอง" 
-            className="w-16 h-16 object-contain mb-2" 
-          />
-          <h1 className="font-serif text-xl font-bold text-slate-800">ชำระเงินออนไลน์</h1>
-          <p className="font-sans text-[10px] text-teal-600 font-semibold tracking-wide uppercase mt-0.5">
-            เทศบาลเมืองนางรอง
-          </p>
+    <div className="min-h-screen p-4 flex flex-col items-center py-12">
+      <div className="receipt-card max-w-md w-full relative">
+        {/* Decorative slip corner */}
+        <div className="absolute top-0 right-0 w-8 h-8 bg-[#F6F4EC] border-l border-b border-[#D8D3C3] -mt-1 -mr-1 transform rotate-45"></div>
+
+        <div className="text-center mb-6 flex flex-col items-center">
+          <img src="/nangrong-logo.png" alt="ตราสัญลักษณ์เทศบาลเมืองนางรอง" style={{ width: "4rem", height: "4rem", objectFit: "contain", marginBottom: "0.5rem" }} />
+          <h1 className="font-serif text-2xl font-bold mb-1">เทศบาลเมืองนางรอง</h1>
+          <p className="font-sans text-sm text-status-dark">ระบบจัดเก็บรายได้ออนไลน์</p>
         </div>
         
         <div className="perforation-line"></div>
 
-        <div className="my-5 flex flex-col items-center">
-          <div className="flex items-center gap-1.5 mb-4 bg-slate-100 border border-slate-200 text-slate-600 px-3 py-1 rounded-full text-xs font-semibold">
-            <CreditCard className="w-3.5 h-3.5" />
-            <span>สแกน QR Code ชำระเงิน</span>
-          </div>
-
-          <div className="p-2.5 bg-white border border-slate-200 shadow-sm rounded-lg mb-4 inline-block">
-            <img src={qrDataUri} alt="PromptPay QR Code" className="w-44 h-44 rounded" />
+        <div className="my-6 flex flex-col items-center">
+          <p className="font-serif font-bold text-lg mb-2">สแกนเพื่อชำระเงิน</p>
+          <div className="p-2 bg-white border border-[#D8D3C3] shadow-sm rounded-sm mb-4 inline-block">
+            <img src={qrDataUri} alt="PromptPay QR Code" className="w-48 h-48" />
           </div>
           
-          <div className="text-left font-sans text-xs space-y-2 mt-2 bg-slate-50 border border-slate-100 p-3 rounded-lg w-full">
-            <div className="flex justify-between items-center text-slate-500">
-              <span>บัญชีผู้รับเงิน:</span>
-              <span className="font-semibold text-slate-800">{collector.name}</span>
-            </div>
-            <div className="flex justify-between items-center text-slate-500">
-              <span>พร้อมเพย์ (PromptPay):</span>
-              <span className="font-mono text-slate-800 font-semibold">{collector.promptPayId}</span>
-            </div>
-            <div className="flex justify-between items-center text-slate-500 border-t border-slate-200/60 pt-2 mt-1.5 font-bold">
-              <span className="text-slate-700">ยอดเงินที่ต้องชำระ:</span>
-              <span className="font-mono text-teal-600 text-base">฿{totalAmount.toFixed(2)}</span>
-            </div>
+          <div className="text-center font-mono text-sm space-y-1 mt-2">
+            <p className="font-sans font-semibold">ชื่อผู้รับเงิน: <span className="font-mono">{collector.name}</span></p>
+            <p className="text-gray-600">PromptPay: {collector.promptPayId}</p>
           </div>
         </div>
 
         <SlipUploadForm qrCodeId={qrCodeId.toString()} invoiceIds={invoiceIdsStr} />
       </div>
-      
-      <a href="/" className="mt-6 text-xs text-slate-500 hover:text-teal-600 transition-colors underline font-sans flex items-center gap-1">
-        <ShieldCheck className="w-3.5 h-3.5" />
-        กลับไปหน้าหลักค้นหาข้อมูล
-      </a>
     </div>
   );
 }

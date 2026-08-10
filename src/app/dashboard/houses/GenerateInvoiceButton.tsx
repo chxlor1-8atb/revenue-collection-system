@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { Receipt } from "lucide-react";
-
 export default function GenerateInvoiceButton() {
   const [isGenerating, setIsGenerating] = useState(false);
   const router = useRouter();
@@ -43,10 +41,10 @@ export default function GenerateInvoiceButton() {
     <button 
       onClick={handleGenerate} 
       disabled={isGenerating}
-      className="btn font-sans border border-white/10 text-slate-300 hover:bg-white/5 hover:text-white text-sm py-2 px-4 flex items-center gap-1.5"
+      className="btn font-serif" 
+      style={{ backgroundColor: "#C9A227", color: "#1F2E22" }}
     >
-      <Receipt className="w-4 h-4 text-emerald-400" />
-      {isGenerating ? "กำลังสร้าง..." : "สร้างบิลประจำเดือน (ทุกบ้าน)"}
+      {isGenerating ? "กำลังสร้าง..." : "🧾 สร้างบิลประจำเดือน (ทุกบ้าน)"}
     </button>
   );
 }

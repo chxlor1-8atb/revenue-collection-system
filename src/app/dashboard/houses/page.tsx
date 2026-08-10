@@ -1,83 +1,56 @@
 import { db } from "@/lib/db";
-import { houses } from "@/lib/schema";
-import { desc } from "drizzle-orm";
+import { houses, invoices } from "@/lib/schema";
+import { desc, eq, count } from "drizzle-orm";
 import Link from "next/link";
 import GenerateInvoiceButton from "./GenerateInvoiceButton";
-import { Home, User, MapPin, ExternalLink, PlusCircle } from "lucide-react";
 
 export default async function HousesPage() {
   const allHouses = await db.select().from(houses).orderBy(desc(houses.createdAt));
 
   return (
-    <div className="space-y-6 font-sans">
-      <div className="flex justify-between items-center flex-wrap gap-4 mb-6">
-        <h1 className="font-serif font-bold text-3xl text-slate-800 flex items-center gap-2">
-          <Home className="w-8 h-8 text-teal-600" />
-          จัดการข้อมูลบ้าน
-        </h1>
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="font-serif font-bold text-3xl text-[#1F2E22]">จัดการข้อมูลบ้าน</h1>
         
-        <div className="flex gap-3">
-          <button className="btn btn-primary font-sans text-sm py-2 px-4 flex items-center gap-1.5">
-            <PlusCircle className="w-4 h-4" />
-            เพิ่มบ้านใหม่
-          </button>
+        <div className="flex gap-4">
+          <button className="btn btn-primary font-serif">+ เพิ่มบ้านใหม่</button>
           <GenerateInvoiceButton />
         </div>
       </div>
       
-      <div className="receipt-card p-0 overflow-hidden border border-slate-200 bg-white shadow-sm rounded-xl">
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid #e2e8f0", backgroundColor: "#f8fafc" }}>
-                <th className="p-4 font-sans text-xs font-semibold text-slate-500 uppercase tracking-wider">บ้านเลขที่</th>
-                <th className="p-4 font-sans text-xs font-semibold text-slate-500 uppercase tracking-wider">ชื่อเจ้าบ้าน</th>
-                <th className="p-4 font-sans text-xs font-semibold text-slate-500 uppercase tracking-wider">ชุมชน / หมู่</th>
-                <th className="p-4 font-sans text-xs font-semibold text-slate-500 uppercase tracking-wider">การจัดการ</th>
+      <div className="receipt-card p-0 overflow-hidden">
+        <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+          <thead>
+            <tr style={{ borderBottom: "2px solid var(--border)", backgroundColor: "#f9f9f9" }}>
+              <th className="p-4 font-serif">บ้านเลขที่</th>
+              <th className="p-4 font-serif">ชื่อเจ้าบ้าน</th>
+              <th className="p-4 font-serif">ชุมชน/หมู่</th>
+              <th className="p-4 font-serif">การจัดการ</th>
+            </tr>
+          </thead>
+          <tbody>
+            {allHouses.map((house) => (
+              <tr key={house.id} style={{ borderBottom: "1px solid var(--border)" }}>
+                <td className="p-4 font-mono font-bold">{house.houseNumber}</td>
+                <td className="p-4 font-sans">{house.ownerName}</td>
+                <td className="p-4 font-sans">{house.zone || "-"}</td>
+                <td className="p-4">
+                  <Link href={`/house/${house.id}`} target="_blank" className="text-status-pending underline text-sm hover:text-green-800 font-sans">
+                    ดูสมุดบัญชี (หน้าบ้าน)
+                  </Link>
+                </td>
               </tr>
-            </thead>
-            <tbody className="font-sans text-sm">
-              {allHouses.map((house) => (
-                <tr key={house.id} style={{ borderBottom: "1px solid #f1f5f9" }} className="hover:bg-slate-50/50 transition-colors">
-                  <td className="p-4 font-mono font-bold text-slate-800 flex items-center gap-2">
-                    <Home className="w-4 h-4 text-teal-600" />
-                    {house.houseNumber}
-                  </td>
-                  <td className="p-4 text-slate-600">
-                    <div className="flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5 text-slate-400" />
-                      {house.ownerName}
-                    </div>
-                  </td>
-                  <td className="p-4 text-slate-500">
-                    <div className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                      {house.zone || "-"}
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <Link 
-                      href={`/house/${house.id}`} 
-                      target="_blank" 
-                      className="text-teal-600 hover:text-teal-700 font-semibold transition-colors flex items-center gap-1 text-xs"
-                    >
-                      ดูสมุดบัญชี (หน้าบ้าน)
-                      <ExternalLink className="w-3 h-3" />
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-              
-              {allHouses.length === 0 && (
-                <tr>
-                  <td colSpan={4} className="p-8 text-center text-slate-400 font-sans">
-                    ไม่มีข้อมูลบ้านในระบบขณะนี้
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+            ))}
+            
+            {allHouses.length === 0 && (
+              <tr>
+                <td colSpan={4} className="p-8 text-center text-gray-500">
+                  ไม่มีข้อมูลบ้าน
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );

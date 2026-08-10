@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Sidebar from "./Sidebar";
@@ -11,12 +12,12 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   }
 
   return (
-    <div className="flex w-full" style={{ minHeight: "100vh", backgroundColor: "var(--bg-primary)" }}>
+    <div className="flex" style={{ minHeight: "100vh", backgroundColor: "var(--background)" }}>
       {/* Sidebar */}
       <Sidebar userName={session.user?.name || "admin"} />
 
       {/* Main Content */}
-      <main style={{ flex: 1, padding: "2.5rem 2rem", overflowY: "auto", position: "relative", zIndex: 10 }}>
+      <main style={{ flex: 1, padding: "2rem", overflowY: "auto" }}>
         {children}
       </main>
     </div>

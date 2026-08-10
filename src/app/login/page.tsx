@@ -3,9 +3,6 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { User, Lock, AlertCircle, ArrowLeft, ShieldAlert } from "lucide-react";
-import AnimatedButton from "@/components/AnimatedButton";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -37,96 +34,50 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="layout-center flex-col relative overflow-hidden bg-slate-50">
-      <motion.div 
-        className="receipt-card max-w-sm w-full relative border border-slate-200 bg-white shadow-md"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        <div className="text-center mb-5 flex flex-col items-center">
-          <img 
-            src="/nangrong-logo.png" 
-            alt="ตราสัญลักษณ์เทศบาลเมืองนางรอง" 
-            className="w-16 h-16 object-contain mb-2" 
-          />
-          <h1 className="font-serif text-xl font-bold text-slate-800">เข้าสู่ระบบเจ้าหน้าที่</h1>
-          <p className="font-sans text-[10px] text-teal-600 font-semibold tracking-wide uppercase mt-0.5">
-            เทศบาลเมืองนางรอง
-          </p>
+    <div className="layout-center">
+      <div className="receipt-card max-w-sm">
+        <div className="text-center mb-6 flex flex-col items-center">
+          <img src="/nangrong-logo.png" alt="ตราสัญลักษณ์เทศบาลเมืองนางรอง" style={{ width: "4rem", height: "4rem", objectFit: "contain", marginBottom: "0.5rem" }} />
+          <h1 className="font-serif text-2xl font-bold">ระบบจัดเก็บรายได้</h1>
+          <p className="font-sans text-status-dark">เทศบาลเมืองนางรอง</p>
         </div>
         
         <div className="perforation-line"></div>
         
-        <form onSubmit={handleSubmit} className="form-container mt-4">
+        <form onSubmit={handleSubmit} className="form-container mt-6">
           {error && (
-            <motion.div 
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="error-box flex items-start gap-2"
-            >
-              <AlertCircle className="w-4.5 h-4.5 shrink-0 text-red-500 mt-0.5" />
-              <span>{error}</span>
-            </motion.div>
+            <div className="error-box text-center">
+              {error}
+            </div>
           )}
           
           <div className="form-group">
-            <label className="font-sans text-xs font-semibold text-slate-600 mb-2">รหัสผู้ใช้งาน</label>
-            <div className="relative">
-              <input 
-                type="text" 
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="ledger-input font-mono pl-9 border-slate-200 text-slate-800"
-                placeholder="Username"
-                required
-              />
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            </div>
+            <label className="font-serif block font-bold mb-1">รหัสผู้ใช้งาน</label>
+            <input 
+              type="text" 
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="ledger-input font-mono"
+              required
+            />
           </div>
           
           <div className="form-group">
-            <label className="font-sans text-xs font-semibold text-slate-600 mb-2">รหัสผ่าน</label>
-            <div className="relative">
-              <input 
-                type="password" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="ledger-input font-mono pl-9 border-slate-200 text-slate-800"
-                placeholder="Password"
-                required
-              />
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            </div>
+            <label className="font-serif block font-bold mb-1">รหัสผ่าน</label>
+            <input 
+              type="password" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="ledger-input font-mono"
+              required
+            />
           </div>
           
-          <AnimatedButton 
-            type="submit" 
-            disabled={isSubmitting} 
-            className="btn btn-primary w-full mt-2 py-2.5 text-sm font-semibold"
-          >
-            {isSubmitting ? (
-              <span className="flex items-center gap-1.5 justify-center">
-                <svg className="animate-spin h-4 w-4 text-current" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-                กำลังเข้าสู่ระบบ...
-              </span>
-            ) : (
-              <span className="flex items-center gap-1.5 justify-center">
-                <ShieldAlert className="w-4 h-4" />
-                เข้าสู่ระบบ
-              </span>
-            )}
-          </AnimatedButton>
+          <button type="submit" disabled={isSubmitting} className="btn btn-primary w-full mt-4 font-serif">
+            {isSubmitting ? "กำลังตรวจสอบ..." : "เข้าสู่ระบบ"}
+          </button>
         </form>
-      </motion.div>
-
-      <a href="/" className="mt-6 text-xs text-slate-500 hover:text-teal-600 transition-colors underline font-sans flex items-center gap-1 z-10">
-        <ArrowLeft className="w-3.5 h-3.5" />
-        กลับสู่หน้าหลักระบบประชาชน
-      </a>
+      </div>
     </div>
   );
 }

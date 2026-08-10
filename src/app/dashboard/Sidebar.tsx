@@ -11,8 +11,7 @@ import {
   Users, 
   Settings, 
   User,
-  LogOut,
-  FolderOpen
+  LogOut
 } from "lucide-react";
 
 export default function Sidebar({ userName }: { userName: string }) {
@@ -28,20 +27,20 @@ export default function Sidebar({ userName }: { userName: string }) {
   ];
 
   return (
-    <aside style={{ width: "260px", backgroundColor: "#0f172a", color: "#f8fafc", borderRight: "1px solid #1e293b", display: "flex", flexDirection: "column" }} className="font-sans">
-      <div style={{ padding: "1.75rem 1.5rem", borderBottom: "1px solid #1e293b", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", position: "relative" }}>
+    <aside style={{ width: "250px", backgroundColor: "#1F2E22", color: "#F6F4EC", borderRight: "1px solid #2d4732", display: "flex", flexDirection: "column" }}>
+      <div style={{ padding: "1.5rem", borderBottom: "1px solid #2d4732", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", position: "relative" }}>
         
-        {/* Clean Admin badge */}
-        <div style={{ position: "absolute", top: "12px", left: "12px", fontSize: "0.6rem", fontWeight: 700, fontFamily: "var(--font-mono)", border: "1px solid #0d9488", color: "#14b8a6", padding: "1px 5px", borderRadius: "4px", background: "rgba(13, 148, 136, 0.1)" }}>
-          ADMIN
+        {/* Ledger Stamp / Reference */}
+        <div style={{ position: "absolute", top: "10px", left: "10px", fontSize: "0.65rem", opacity: 0.6, fontFamily: "var(--font-mono)", border: "1px solid rgba(246, 244, 236, 0.3)", padding: "2px 4px" }}>
+          อ้างอิง. ๐๑/๒๕๖๙
         </div>
 
-        <img src="/nangrong-logo.png" alt="เทศบาลเมืองนางรอง" style={{ width: "3.2rem", height: "3.2rem", objectFit: "contain", marginBottom: "0.75rem" }} />
-        <h2 className="font-serif font-bold text-base" style={{ letterSpacing: "0.02em", color: "white" }}>สมุดบัญชีรายได้</h2>
-        <p className="font-sans text-[10px]" style={{ color: "#94a3b8" }}>เทศบาลเมืองนางรอง</p>
+        <img src="/nangrong-logo.png" alt="เทศบาลเมืองนางรอง" style={{ width: "3.5rem", height: "3.5rem", objectFit: "contain", marginBottom: "0.75rem", filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />
+        <h2 className="font-serif font-bold text-lg" style={{ letterSpacing: "0.02em" }}>สมุดบัญชีรายได้</h2>
+        <p className="font-sans text-xs" style={{ color: "#D8D3C3" }}>เทศบาลเมืองนางรอง</p>
       </div>
       
-      <nav style={{ flex: 1, padding: "1.5rem 0.75rem" }}>
+      <nav style={{ flex: 1, padding: "1.5rem 0" }}>
         <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "0.25rem" }}>
           {navItems.map((item) => {
             const isActive = pathname === item.href;
@@ -53,16 +52,16 @@ export default function Sidebar({ userName }: { userName: string }) {
                     display: "flex",
                     alignItems: "center",
                     gap: "0.75rem",
-                    padding: "0.65rem 0.875rem", 
-                    borderRadius: "6px",
-                    backgroundColor: isActive ? "rgba(13, 148, 136, 0.15)" : "transparent",
-                    color: isActive ? "#2dd4bf" : "#94a3b8",
-                    transition: "all 0.15s"
+                    padding: "0.75rem 1.5rem", 
+                    borderLeft: isActive ? "3px solid #C9A227" : "3px solid transparent",
+                    backgroundColor: isActive ? "rgba(255,255,255,0.03)" : "transparent",
+                    color: isActive ? "#F6F4EC" : "#A3B1A6",
+                    transition: "all 0.2s"
                   }}
-                  className="hover:bg-white/5 hover:text-white"
+                  className="hover:bg-white/5 hover:text-[#F6F4EC]"
                 >
-                  <span style={{ display: "flex", alignItems: "center", color: isActive ? "#2dd4bf" : "#64748b" }}>{item.icon}</span>
-                  <span className={`font-sans text-xs ${isActive ? "font-semibold" : "font-normal"}`}>
+                  <span style={{ display: "flex", alignItems: "center", opacity: isActive ? 1 : 0.8 }}>{item.icon}</span>
+                  <span className={`font-sans ${isActive ? "font-semibold" : "font-normal"}`}>
                     {item.name}
                   </span>
                 </Link>
@@ -72,18 +71,18 @@ export default function Sidebar({ userName }: { userName: string }) {
         </ul>
       </nav>
       
-      <div style={{ padding: "1.25rem 1.5rem", borderTop: "1px solid #1e293b", background: "rgba(0,0,0,0.1)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem", color: "#f8fafc" }}>
-          <User size={13} className="text-teal-400" />
-          <p className="font-mono text-[10px] font-semibold" style={{ wordBreak: 'break-all' }}>{userName}</p>
+      <div style={{ padding: "1rem 1.5rem", borderTop: "1px solid #2d4732" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem", color: "#D8D3C3" }}>
+          <User size={14} strokeWidth={1.5} />
+          <p className="font-mono text-sm" style={{ wordBreak: 'break-all' }}>{userName}</p>
         </div>
         <button 
           onClick={() => signOut({ callbackUrl: '/login' })}
-          className="bg-transparent border-none cursor-pointer p-0 font-sans flex items-center gap-1"
-          style={{ color: "#f87171", fontSize: "0.75rem", opacity: 0.9 }}
+          className="bg-transparent border-none cursor-pointer p-0 font-sans flex items-center gap-2"
+          style={{ color: "#C9A227", fontSize: "0.875rem", opacity: 0.9 }}
         >
-          <LogOut size={12} />
-          <span className="underline hover:text-red-400 transition-colors">ออกจากระบบ</span>
+          <LogOut size={14} strokeWidth={1.5} />
+          <span className="underline">ออกจากระบบ</span>
         </button>
       </div>
     </aside>

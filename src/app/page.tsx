@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import AnimatedButton from "@/components/AnimatedButton";
 import { motion } from "framer-motion";
-import { Recycle, Search, AlertCircle, ArrowRight } from "lucide-react";
+import { Recycle } from "lucide-react"; // Import a waste management icon
 
 export default function Home() {
   const [houseNumber, setHouseNumber] = useState("");
@@ -42,104 +42,89 @@ export default function Home() {
   };
 
   return (
-    <div className="pwa-container relative overflow-hidden flex flex-col justify-between min-h-screen bg-slate-50">
-      {/* Background Watermark/Decoration */}
-      <Recycle className="waste-watermark text-teal-600/5" strokeWidth={0.5} />
-
+    <div className="pwa-container relative overflow-hidden">
+      {/* Background Watermark for context */}
+      <Recycle className="waste-watermark" strokeWidth={0.5} />
+      
       {/* Subtle top header band */}
-      <div className="w-full bg-slate-900 text-slate-300 text-[10px] md:text-xs font-mono py-2.5 px-4 text-center tracking-widest z-10 font-medium">
-        ระบบบริการประชาชนอิเล็กทรอนิกส์ • เทศบาลเมืองนางรอง
+      <div className="absolute top-0 left-0 w-full bg-[#1F2E22] text-[#F6F4EC] text-[10px] md:text-xs font-mono py-1 md:py-1.5 px-2 md:px-4 text-center opacity-90 tracking-widest z-10">
+        แบบพิมพ์ที่ ๑ - เทศบาลเมืองนางรอง (ระบบจัดเก็บค่าธรรมเนียมขยะมูลฝอย)
       </div>
 
-      <main className="pwa-main relative z-10 flex-1 flex items-center justify-center py-10">
-        <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+      <main className="pwa-main relative z-10 mt-8 md:mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 md:gap-12 md:items-center">
           
           {/* Left Column: Hero / Welcome */}
           <motion.div 
-            className="welcome-banner text-center md:text-left md:col-span-7 flex flex-col justify-center"
-            initial={{ opacity: 0, x: -10 }}
+            className="welcome-banner text-center md:text-left"
+            initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4 }}
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
           >
-            <div className="mb-5 mx-auto md:mx-0">
+            <div className="mb-6 mx-auto md:mx-0" style={{ width: "fit-content" }}>
               <img 
                 src="/nangrong-logo.png" 
                 alt="ตราสัญลักษณ์เทศบาลเมืองนางรอง" 
-                className="w-20 h-20 md:w-24 md:h-24 object-contain"
+                style={{ width: "6rem", height: "6rem", objectFit: "contain" }} 
               />
             </div>
-            <h1 className="font-serif font-bold text-fluid-hero text-slate-900 mb-3 tracking-tight leading-tight">
+            <h1 className="font-serif font-bold text-fluid-hero text-[#1F2E22] mb-4">
               เทศบาลเมืองนางรอง
             </h1>
-            <p className="font-sans text-fluid-sub mb-3 font-semibold text-teal-700">
+            <p className="font-sans text-fluid-sub text-[#3A5A40] mb-2 font-semibold">
               ระบบตรวจสอบและชำระค่าธรรมเนียมเก็บขนมูลฝอย
             </p>
-            <p className="font-sans text-slate-500 text-xs md:text-sm max-w-md mx-auto md:mx-0 leading-relaxed">
-              สืบค้น ค้นหาบิลค่าบริการขนขยะมูลฝอยประจำเดือนของบ้านเลขที่ท่าน 
-              ตรวจสอบยอดชำระค้างส่ง พร้อมสแกนจ่ายเงินผ่าน QR Code ได้สะดวก รวดเร็ว และแม่นยำ
+            <p className="font-sans text-gray-500 mb-8 max-w-md mx-auto md:mx-0">
+              กรุณาระบุบ้านเลขที่ เพื่อตรวจสอบยอดและชำระค่าธรรมเนียม
             </p>
           </motion.div>
 
           {/* Right Column: Search Card */}
           <motion.div
-            className="md:col-span-5 flex justify-center md:justify-end w-full"
-            initial={{ opacity: 0, x: 10 }}
+            initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4, delay: 0.05 }}
+            transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.1 }}
+            className="flex justify-center md:justify-end"
           >
-            <div className="ledger-card-home w-full max-w-sm border border-slate-200 bg-white shadow-md p-6 rounded-xl">
-              <div className="text-center md:text-left mb-6">
-                <h2 className="font-sans text-lg font-bold text-slate-800 mb-1">สืบค้นข้อมูลยอดชำระ</h2>
-                <p className="font-sans text-xs text-slate-400">ระบุเลขที่บ้านของท่านเพื่อดำเนินงาน</p>
+            <div className="ledger-card-home max-w-sm w-full">
+              {/* Invoice Reference Number */}
+              <div className="absolute top-2 right-3 font-mono text-[10px] text-gray-400 border border-gray-200 px-1 py-0.5 rounded-sm">
+                เล่มที่ ๐๑/๒๕๖๙
+              </div>
+
+              <div className="text-center mb-6 mt-4">
+                <h2 className="font-serif text-2xl font-bold mb-1">ตรวจสอบยอดชำระ</h2>
+                <p className="font-sans text-sm text-status-dark">กรอกบ้านเลขที่ของท่าน</p>
               </div>
               
-              <form onSubmit={handleSearch} className="form-container">
+              <div className="perforation-line" style={{ display: 'none' }}></div> {/* Removed internal perforation, moved to top of card */}
+              
+              <form onSubmit={handleSearch} className="form-container mt-6">
                 {error && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="error-box flex items-start gap-2"
-                  >
-                    <AlertCircle className="w-4 h-4 shrink-0 text-red-500 mt-0.5" />
-                    <span>{error}</span>
-                  </motion.div>
+                  <div className="error-box text-center">
+                    {error}
+                  </div>
                 )}
                 
-                <div className="form-group relative">
-                  <label className="font-sans text-xs font-semibold text-slate-600 mb-2">บ้านเลขที่</label>
-                  <div className="relative">
-                    <input 
-                      type="text" 
-                      value={houseNumber}
-                      onChange={(e) => setHouseNumber(e.target.value)}
-                      className="ledger-input font-mono text-center text-lg py-2.5 pr-4 pl-9 border-slate-200 focus:border-teal-500 rounded-lg text-slate-800"
-                      placeholder="เช่น 123/4"
-                      required
-                    />
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
-                  </div>
-                  <p className="text-[10px] text-slate-400 mt-1.5 text-center">ตัวอย่าง: 12/3, 45, 102/5</p>
+                <div className="form-group text-center">
+                  <label className="font-serif block font-bold mb-2 text-[#3A5A40]">บ้านเลขที่</label>
+                  <input 
+                    type="text" 
+                    value={houseNumber}
+                    onChange={(e) => setHouseNumber(e.target.value)}
+                    className="ledger-input font-mono text-center text-xl tracking-widest py-3"
+                    placeholder="เช่น 123/4"
+                    required
+                  />
                 </div>
                 
                 <AnimatedButton 
                   type="submit" 
                   disabled={isSearching} 
-                  className="btn btn-primary w-full py-2.5 text-sm font-semibold mt-2"
+                  className="btn btn-primary w-full mt-6 py-3 font-serif text-lg shadow-sm"
+                  style={{ borderRadius: "2px" }}
                 >
-                  {isSearching ? (
-                    <span className="flex items-center gap-1.5 justify-center">
-                      <svg className="animate-spin h-4 w-4 text-current" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                      </svg>
-                      กำลังดำเนินการ...
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-1.5 justify-center">
-                      ค้นหาบิลค่าบริการ
-                      <ArrowRight className="w-4 h-4" />
-                    </span>
-                  )}
+                  {isSearching ? "กำลังตรวจสอบ..." : "ตรวจสอบรายการ"}
                 </AnimatedButton>
               </form>
             </div>
@@ -147,9 +132,9 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="w-full text-center py-5 border-t border-slate-200 bg-white/60 backdrop-blur-sm z-10">
-        <a href="/login" className="text-xs text-slate-400 hover:text-teal-600 underline font-sans transition-colors">
-          ระบบสารสนเทศผู้บริหารและพนักงานจัดเก็บรายได้
+      <footer className="p-4 text-center relative z-10">
+        <a href="/login" className="text-sm text-gray-400 hover:text-gray-600 underline font-sans transition-colors">
+          สำหรับเจ้าหน้าที่ (เข้าสู่ระบบ)
         </a>
       </footer>
     </div>
