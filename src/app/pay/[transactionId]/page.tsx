@@ -98,7 +98,7 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
               <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-emerald-500 rounded-br-2xl"></div>
             </div>
 
-            {tx.createdAt && <CountdownTimer createdAt={tx.createdAt} />}
+            {tx.createdAt && <CountdownTimer createdAt={tx.createdAt} transactionId={transactionId} />}
 
             <div className="w-full text-center mb-8 mt-2 px-4 py-3 bg-slate-50 rounded-xl border border-slate-100">
               <p className="font-sans text-xs text-slate-500 uppercase tracking-widest mb-1">โอนเงินเข้าบัญชี</p>
