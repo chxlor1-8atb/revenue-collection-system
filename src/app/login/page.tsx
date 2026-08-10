@@ -48,7 +48,7 @@ export default function LoginPage() {
         {/* Back Button */}
         <Link 
           href="/" 
-          className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors mb-6 group"
+          className="inline-flex items-center gap-2 text-sm font-sans font-semibold text-slate-500 hover:text-slate-800 transition-colors mb-6 group"
         >
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
           กลับสู่ระบบประชาชน
@@ -71,10 +71,10 @@ export default function LoginPage() {
             <div className="inline-flex items-center justify-center p-3 bg-white rounded-2xl shadow-lg mb-6 relative z-10">
                <img src="/nangrong-logo.png" alt="ตราสัญลักษณ์เทศบาล" className="w-12 h-12 object-contain" />
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight relative z-10">
+            <h1 className="text-2xl font-sans font-bold text-white tracking-tight relative z-10">
               ระบบสารสนเทศภายใน
             </h1>
-            <p className="text-sm text-slate-400 mt-2 font-medium tracking-wide uppercase relative z-10">
+            <p className="text-sm font-sans text-slate-400 mt-2 font-medium tracking-wide uppercase relative z-10">
               Staff Authentication Gateway
             </p>
           </div>
@@ -97,7 +97,7 @@ export default function LoginPage() {
               </AnimatePresence>
               
               <div className="space-y-2 group">
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider group-focus-within:text-emerald-600 transition-colors">
+                <label className="block text-xs font-sans font-bold text-slate-500 uppercase tracking-wider group-focus-within:text-emerald-600 transition-colors">
                   รหัสเจ้าหน้าที่ (Username)
                 </label>
                 <div className="relative">
@@ -116,7 +116,7 @@ export default function LoginPage() {
               </div>
               
               <div className="space-y-2 group">
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider group-focus-within:text-emerald-600 transition-colors">
+                <label className="block text-xs font-sans font-bold text-slate-500 uppercase tracking-wider group-focus-within:text-emerald-600 transition-colors">
                   รหัสผ่าน (Password)
                 </label>
                 <div className="relative">
@@ -137,7 +137,7 @@ export default function LoginPage() {
               <button 
                 type="submit" 
                 disabled={isSubmitting} 
-                className="w-full mt-6 relative overflow-hidden group bg-slate-900 hover:bg-slate-800 text-white font-semibold py-4 rounded-xl transition-all duration-200 shadow-md disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full mt-6 relative overflow-hidden group font-sans bg-slate-900 hover:bg-slate-800 text-white font-semibold py-4 rounded-xl transition-all duration-200 shadow-md disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (
                   <>
@@ -158,7 +158,7 @@ export default function LoginPage() {
           </div>
           
           <div className="bg-slate-50 border-t border-slate-100 p-4 text-center">
-            <p className="text-xs text-slate-400 font-medium">
+            <p className="text-xs font-sans text-slate-400 font-medium">
               ระบบนี้จำกัดสิทธิ์เฉพาะเจ้าหน้าที่ที่ได้รับอนุญาตเท่านั้น
             </p>
           </div>
