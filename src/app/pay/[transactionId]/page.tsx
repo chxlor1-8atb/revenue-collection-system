@@ -1,48 +1,42 @@
 import { db } from "@/lib/db";
-import { qrCodes, collectors } from "@/lib/schema";
-import { eq, inArray } from "drizzle-orm";
+import { qrCodes, collectors, transactions } from "@/lib/schema";
+import { eq } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
 import generatePayload from "promptpay-qr";
 import qrcode from "qrcode";
 import SlipUploadForm from "@/components/SlipUploadForm";
 
-export default async function PayPage({ params, searchParams }: { params: Promise<{ qrCodeId: string }>, searchParams: Promise<{ invoices?: string }> }) {
-  const qrCodeId = parseInt((await params).qrCodeId, 10);
-  const sp = await searchParams;
-  const invoiceIdsStr = sp.invoices;
+export default async function PayPage({ params }: { params: Promise<{ transactionId: string }> }) {
+  const transactionId = parseInt((await params).transactionId, 10);
   
-  if (isNaN(qrCodeId) || !invoiceIdsStr) {
+  if (isNaN(transactionId)) {
     redirect("/");
   }
 
-  const invoiceIds = invoiceIdsStr.split(",").map(id => parseInt(id, 10)).filter(id => !isNaN(id));
-  
-  if (invoiceIds.length === 0) {
-    redirect("/");
-  }
+  // Find the pending transaction
+  const result = await db.select({
+    tx: transactions,
+    qrCode: qrCodes,
+    collector: collectors
+  })
+  .from(transactions)
+  .innerJoin(qrCodes, eq(transactions.qrCodeId, qrCodes.id))
+  .innerJoin(collectors, eq(transactions.collectorId, collectors.id))
+  .where(eq(transactions.id, transactionId))
+  .limit(1);
 
-  const { invoices } = await import("@/lib/schema");
-  
-  const [result, selectedInvoices] = await Promise.all([
-    db.select({ qrCode: qrCodes, collector: collectors })
-      .from(qrCodes)
-      .innerJoin(collectors, eq(qrCodes.collectorId, collectors.id))
-      .where(eq(qrCodes.id, qrCodeId))
-      .limit(1),
-    db.select().from(invoices).where(inArray(invoices.id, invoiceIds))
-  ]);
-
-  if (result.length === 0 || !result[0].qrCode.active) {
+  if (result.length === 0) {
     notFound();
   }
 
-  const { collector } = result[0];
+  const { tx, collector, qrCode } = result[0];
 
-  if (selectedInvoices.length === 0) {
-    redirect("/");
+  if (tx.slipStatus !== "waiting_for_slip" && tx.slipStatus !== "pending") {
+    // If it's already verified or processed, maybe show a success message or redirect
+    // For now, let them see it or redirect. We'll just show the amount.
   }
 
-  const totalAmount = selectedInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
+  const totalAmount = parseFloat(tx.amount || "0");
 
   let qrDataUri = "";
   if (collector.qrCodeImageUrl) {
@@ -82,9 +76,12 @@ export default async function PayPage({ params, searchParams }: { params: Promis
             
             <div className="mb-8 text-center">
               <p className="font-sans text-sm font-semibold text-slate-400 tracking-widest uppercase mb-2">ยอดชำระสุทธิ</p>
-              <h1 className="font-mono text-5xl font-bold text-slate-900 tracking-tighter">
-                ฿{totalAmount.toFixed(2)}
+              <h1 className="font-mono text-5xl font-bold text-slate-900 tracking-tighter flex items-end justify-center gap-1">
+                ฿{Math.floor(totalAmount)}.<span className="text-emerald-600">{(totalAmount % 1).toFixed(2).substring(2)}</span>
               </h1>
+              <p className="text-xs text-amber-600 bg-amber-50 px-3 py-1 rounded-full mt-3 font-medium">
+                *กรุณาโอนเงินให้ตรงตามเศษสตางค์ เพื่อการยืนยันอัตโนมัติ
+              </p>
             </div>
 
             {/* QR Code Frame */}
@@ -116,7 +113,7 @@ export default async function PayPage({ params, searchParams }: { params: Promis
                 <span>คลิกเพื่อส่งสลิปผ่านทาง LINE</span>
               </a>
               <p className="mt-4 text-xs font-sans text-slate-500 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                แคปหน้าจอรูปคิวอาร์โค้ดนี้เพื่อชำระเงิน <br/>หลังจากโอนเสร็จแล้วให้กดปุ่มสีเขียวเพื่อส่งสลิปผ่านแชท LINE ของเทศบาล
+                โอนเสร็จแล้วกดปุ่มสีเขียวเพื่อส่งสลิปเข้าไปในแชท LINE<br/>ระบบจะจับคู่ยอดเงิน <b>{totalAmount.toFixed(2)} บาท</b> และตัดหนี้ให้อัตโนมัติ!
               </p>
             </div>
 

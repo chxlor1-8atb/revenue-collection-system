@@ -44,19 +44,65 @@ export async function POST(request: Request) {
             continue;
           }
 
-          // 4. Save to database
+          const slipAmount = verification.data?.amount.toString();
+
+          // 3.5 Check if this exact amount matches any waiting_for_slip transaction
+          const waitingTx = await db.select()
+            .from(transactions)
+            .where(and(
+              eq(transactions.amount, slipAmount || "0"), 
+              eq(transactions.slipStatus, 'waiting_for_slip')
+            ))
+            .orderBy(desc(transactions.createdAt))
+            .limit(1);
+
+          if (waitingTx.length > 0) {
+            const tx = waitingTx[0];
+            // Perfect decimal match!
+            await db.update(transactions)
+              .set({ slipImageUrl: blob.url, slipStatus: 'verified', paidAt: new Date(), verifiedBy: 'line_bot' })
+              .where(eq(transactions.id, tx.id));
+            
+            await db.update(invoices)
+              .set({ status: 'paid' })
+              .where(eq(invoices.transactionId, tx.id));
+            
+            await db.insert(lineMessages).values({
+              lineUserId: userId,
+              type: "image",
+              imageUrl: blob.url,
+              status: "verified_auto",
+              amount: slipAmount,
+              senderName: verification.data?.sender.name,
+              isVerified: true,
+              transactionId: tx.id
+            });
+            
+            // Try to find house number for a better reply
+            const txInvoices = await db.select().from(invoices).where(eq(invoices.transactionId, tx.id)).limit(1);
+            let houseText = "";
+            if (txInvoices.length > 0) {
+               const house = await db.select().from(houses).where(eq(houses.id, txInvoices[0].houseId)).limit(1);
+               if (house.length > 0) houseText = ` (บ้านเลขที่ ${house[0].houseNumber})`;
+            }
+            
+            await replyMessage(replyToken, `ตรวจสอบสลิปสำเร็จ! ✅\nยอดเงิน: ${slipAmount} บาท\nระบบได้ทำการตัดยอดหนี้ให้เรียบร้อยแล้วค่ะ${houseText} ขอบคุณที่ใช้บริการ 💚`);
+            continue;
+          }
+
+          // 4. Save to database (Normal fallback flow)
           await db.insert(lineMessages).values({
             lineUserId: userId,
             type: "image",
             imageUrl: blob.url,
             status: "pending",
-            amount: verification.data?.amount.toString(),
+            amount: slipAmount,
             senderName: verification.data?.sender.name,
             isVerified: true,
           });
 
           // 5. Reply asking for house number
-          await replyMessage(replyToken, `ตรวจสอบสลิปสำเร็จ! ✅\nยอดเงิน: ${verification.data?.amount} บาท\nผู้โอน: ${verification.data?.sender.name}\n\nกรุณาพิมพ์ 'บ้านเลขที่' ของคุณ (เช่น 123/45) เพื่อให้ระบบตัดยอดหนี้อัตโนมัติค่ะ 🙏`);
+          await replyMessage(replyToken, `ตรวจสอบสลิปสำเร็จ! ✅\nยอดเงิน: ${slipAmount} บาท\nผู้โอน: ${verification.data?.sender.name}\n\nกรุณาพิมพ์ 'บ้านเลขที่' ของคุณ (เช่น 123/45) เพื่อให้ระบบตัดยอดหนี้อัตโนมัติค่ะ 🙏`);
 
         } else if (event.message.type === "text") {
           const text = event.message.text.trim();

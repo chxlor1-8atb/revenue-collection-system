@@ -17,10 +17,25 @@ export default function InvoiceSelectionForm({ invoices, houseId }: { invoices: 
     );
   };
 
-  const handleProceedToPayment = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleProceedToPayment = async () => {
     if (selectedInvoices.length === 0) return;
-    const invoiceIdsStr = selectedInvoices.join(",");
-    router.push(`/pay/1?invoices=${invoiceIdsStr}`);
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/transactions/intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ invoiceIds: selectedInvoices, qrCodeId: 1 })
+      });
+      const data = await res.json();
+      if (data.transactionId) {
+        router.push(`/pay/${data.transactionId}`);
+      }
+    } catch (error) {
+      console.error("Failed to generate payment intent", error);
+      setIsLoading(false);
+    }
   };
 
   const calculateTotal = () => {
@@ -115,11 +130,11 @@ export default function InvoiceSelectionForm({ invoices, houseId }: { invoices: 
 
         <button 
           className="w-full relative overflow-hidden group bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 rounded-xl transition-all duration-200 shadow-lg shadow-emerald-600/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          disabled={selectedInvoices.length === 0}
+          disabled={selectedInvoices.length === 0 || isLoading}
           onClick={handleProceedToPayment}
         >
           <QrCode size={20} />
-          <span>สร้าง QR Code ชำระเงิน</span>
+          <span>{isLoading ? "กำลังประมวลผล..." : "สร้าง QR Code ชำระเงิน"}</span>
           <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
         </button>
       </div>
