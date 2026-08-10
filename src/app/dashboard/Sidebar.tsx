@@ -37,7 +37,7 @@ export default function Sidebar({ userName }: { userName: string }) {
         <p className="font-sans text-xs" style={{ color: "#D8D3C3" }}>เทศบาลเมืองนางรอง</p>
       </div>
       
-      <nav style={{ flex: 1, padding: "1.5rem 0" }}>
+      <nav style={{ flex: 1, padding: "1.5rem 0", overflowY: "auto" }}>
         <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "0.25rem" }}>
           {navItems.map((item) => {
             const isActive = pathname === item.href;
