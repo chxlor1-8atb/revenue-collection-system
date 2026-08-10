@@ -12,7 +12,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id, name, promptPayId, qrCodeBase64 } = await request.json();
+    const { id, name, promptPayId, qrCodeBase64, removeQrCode } = await request.json();
 
     if (!id || !name || !promptPayId) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
@@ -32,9 +32,12 @@ export async function POST(request: Request) {
       qrCodeImageUrl = blob.url;
     }
 
-    // Only update qrCodeImageUrl if a new image was uploaded
+    // Only update qrCodeImageUrl if a new image was uploaded or if it's explicitly removed
     const updateData: any = { name, promptPayId };
-    if (qrCodeImageUrl) {
+    
+    if (removeQrCode) {
+      updateData.qrCodeImageUrl = null;
+    } else if (qrCodeImageUrl) {
       updateData.qrCodeImageUrl = qrCodeImageUrl;
     }
 
