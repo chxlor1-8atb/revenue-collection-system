@@ -70,7 +70,13 @@ export const lineMessages = pgTable('line_messages', {
   type: text('type').notNull(), // 'image' or 'text'
   imageUrl: text('image_url'),
   houseNumber: text('house_number'),
-  status: text('status').notNull().default('pending'), // 'pending', 'processed', 'rejected'
+  
+  // Slip2Go verification data
+  amount: numeric('amount', { precision: 12, scale: 2 }),
+  senderName: text('sender_name'),
+  isVerified: boolean('is_verified').default(false),
+  
+  status: text('status').notNull().default('pending'), // 'pending', 'processed', 'rejected', 'verified_auto'
   transactionId: integer('transaction_id').references(() => transactions.id),
   createdAt: timestamp('created_at').defaultNow(),
 });

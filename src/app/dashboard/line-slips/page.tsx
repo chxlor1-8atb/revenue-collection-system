@@ -28,6 +28,7 @@ export default async function LineSlipsPage() {
               <tr className="bg-slate-50 border-b border-slate-200">
                 <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans">วัน-เวลา</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans">รูปสลิป</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans">ข้อมูลจาก Slip2Go</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans">บ้านเลขที่ (ที่พิมพ์แจ้งมา)</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans text-right">การจัดการ</th>
               </tr>
@@ -45,6 +46,21 @@ export default async function LineSlipsPage() {
                       </a>
                     ) : (
                       <span className="text-slate-400 text-sm font-sans">-</span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 font-sans">
+                    {slip.isVerified ? (
+                      <div className="flex flex-col">
+                        <span className="text-emerald-600 font-bold text-sm bg-emerald-50 px-2 py-1 rounded-md inline-block w-fit mb-1 border border-emerald-100">
+                          สลิปแท้
+                        </span>
+                        <span className="text-xs text-slate-500 mt-1">ยอดเงิน: <strong className="text-slate-800">฿{slip.amount}</strong></span>
+                        <span className="text-xs text-slate-500">ผู้โอน: {slip.senderName}</span>
+                      </div>
+                    ) : (
+                      <span className="text-red-500 font-bold text-sm bg-red-50 px-2 py-1 rounded-md inline-block border border-red-100">
+                        ไม่ผ่านการตรวจสอบ
+                      </span>
                     )}
                   </td>
                   <td className="px-6 py-4 font-sans">

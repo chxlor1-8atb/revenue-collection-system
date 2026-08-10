@@ -22,6 +22,13 @@
       "when": 1786332331242,
       "tag": "0002_amusing_kang",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1786332740733,
+      "tag": "0003_fat_pride",
+      "breakpoints": true
     }
   ]
 }
