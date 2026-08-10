@@ -32,15 +32,14 @@ export default function InvoiceSelectionForm({ invoices, houseId }: { invoices: 
   return (
     <div className="flex flex-col">
       <div className="space-y-3 mb-8">
-        {invoices.length === 0 ? (
+        {invoices.filter(inv => inv.status === 'unpaid').length === 0 ? (
           <div className="py-8 text-center bg-slate-50 rounded-xl border border-dashed border-slate-200">
             <p className="text-sm text-slate-500 font-medium">ไม่พบรายการค้างชำระ</p>
           </div>
         ) : (
-          invoices.map((inv, index) => {
-            if (inv.status !== 'unpaid') return null;
+          invoices.filter(inv => inv.status === 'unpaid').map((inv, index, arr) => {
             const isSelected = selectedInvoices.includes(inv.id);
-            
+            const isOverdue = index < arr.length - 1;
             return (
               <motion.div
                 key={inv.id}
@@ -78,9 +77,16 @@ export default function InvoiceSelectionForm({ invoices, houseId }: { invoices: 
                       <p className={`font-sans font-medium text-sm transition-colors ${isSelected ? 'text-emerald-900' : 'text-slate-700'}`}>
                         ประจำเดือน {inv.monthYear}
                       </p>
-                      <p className="font-mono text-xs text-slate-400 mt-0.5">
-                        REF: INV-{inv.id.toString().padStart(5, '0')}
-                      </p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <p className="font-mono text-xs text-slate-400">
+                          REF: INV-{inv.id.toString().padStart(5, '0')}
+                        </p>
+                        {isOverdue ? (
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 border border-red-200">ค้างชำระ</span>
+                        ) : (
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">รอบปัจจุบัน</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                   

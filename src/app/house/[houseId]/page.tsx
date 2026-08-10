@@ -35,7 +35,7 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 flex flex-col items-center">
+    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 flex flex-col items-center relative">
       {/* Background abstract grid */}
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
            style={{ backgroundImage: 'radial-gradient(#0F172A 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
@@ -45,34 +45,43 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
         {/* TOP SECTION: Identity Stub (Deep Navy) */}
         <div className="bg-slate-900 rounded-t-3xl p-8 sm:p-10 text-white relative overflow-hidden">
           
+          {/* Diagonal Watermark (คาดสะพาย) */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden">
+             <span className="text-4xl sm:text-5xl font-sans font-bold text-slate-100/5 -rotate-[25deg] whitespace-nowrap tracking-widest scale-125">
+               กองสาธารณสุขและสิ่งแวดล้อม
+             </span>
+          </div>
+
+          {/* Small Logo in Top Right */}
+          <div className="absolute top-8 right-8 z-10 opacity-90 drop-shadow-md">
+             <img src="/nangrong-logo.png" alt="Municipal Logo" className="w-10 h-10 object-contain" />
+          </div>
+          
           <div className="flex justify-between items-start relative z-10">
-            <div>
-              <p className="text-xs font-sans text-slate-400 uppercase tracking-widest mb-1">เลขประจำบ้าน / House No.</p>
+            <div className="pr-12"> {/* Padding to avoid logo overlap */}
+              <p className="text-[10px] font-sans text-slate-400 uppercase tracking-widest mb-1 font-semibold">
+                กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองนางรอง
+              </p>
               <h1 className="font-mono text-4xl sm:text-5xl font-bold tracking-tight mb-6">
                 {house.houseNumber}
               </h1>
               
               <div className="space-y-4">
                 <div>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-widest">ชื่อเจ้าบ้าน / Owner</p>
+                  <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">ชื่อเจ้าบ้าน / Owner</p>
                   <p className="font-sans text-lg font-medium text-slate-100">{house.ownerName}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-widest">ชุมชน / Zone</p>
+                  <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">ชุมชน / Zone</p>
                   <p className="font-sans text-sm font-medium text-slate-200">{house.zone || "-"}</p>
                 </div>
               </div>
             </div>
             
             {/* Decorative Barcode */}
-            <div className="h-32 flex items-center justify-end rotate-90 sm:rotate-0 origin-right opacity-80 mix-blend-screen ml-4">
+            <div className="hidden sm:flex h-32 items-center justify-end origin-right opacity-80 mix-blend-screen ml-4 mt-8">
               {generateBarcode()}
             </div>
-          </div>
-          
-          {/* "Watermark" Logo large */}
-          <div className="absolute -bottom-10 -right-10 opacity-[0.03] pointer-events-none">
-             <img src="/nangrong-logo.png" alt="" className="w-64 h-64 grayscale" />
           </div>
         </div>
 
@@ -84,23 +93,31 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
                 <path d="M 0,16 L 10,0 L 20,16 L 10,32 Z" fill="#F8FAFC" />
               </pattern>
             </defs>
-            {/* The navy background behind the cutouts */}
             <rect width="100%" height="16" y="0" fill="#0F172A" />
-            {/* The white background behind the cutouts below */}
             <rect width="100%" height="16" y="16" fill="#FFFFFF" />
-            {/* The actual sawtooth pattern colored the same as the body background (slate-50) */}
             <rect width="100%" height="32" fill="url(#sawtooth)" />
           </svg>
         </div>
 
         {/* BOTTOM SECTION: Transaction Ledger (White) */}
         <div className="bg-white rounded-b-3xl p-8 sm:p-10 relative shadow-inner">
-          <div className="mb-6 flex items-baseline justify-between">
-            <h2 className="text-xl font-bold text-slate-900">รายการค้างชำระ</h2>
+          <div className="mb-6 flex items-baseline justify-between border-b border-slate-100 pb-4">
+            <div>
+              <h2 className="text-xl font-bold text-slate-900">รายการแจ้งหนี้ค่าขยะ</h2>
+              <p className="text-xs text-slate-500 mt-1">กำหนดชำระภายในวันที่ 15 ของทุกเดือน</p>
+            </div>
             <span className="text-xs font-semibold text-slate-400 tracking-wider">INVOICES</span>
           </div>
           
           <InvoiceSelectionForm invoices={houseInvoices} houseId={houseId} />
+
+          {/* Contact Info Footer */}
+          <div className="mt-8 pt-4 border-t border-slate-100 text-center">
+            <p className="text-xs text-slate-400">
+              กรณีมีข้อสงสัย ติดต่อ <strong>กองสาธารณสุขและสิ่งแวดล้อม</strong><br/>
+              โทร: 044-631-419 (เทศบาลเมืองนางรอง)
+            </p>
+          </div>
         </div>
       </div>
       

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, MapPin, Activity } from "lucide-react";
+import { Search, Trash2, Truck } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
@@ -42,24 +42,24 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-slate-50 flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen relative overflow-hidden bg-slate-50 flex flex-col justify-center items-center py-4 px-4 sm:px-6 lg:px-8">
       {/* Background abstract grid */}
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
            style={{ backgroundImage: 'radial-gradient(#0F172A 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
       </div>
 
-      <main className="w-full max-w-md relative z-10 mt-8">
+      <main className="w-full max-w-md relative z-10 mt-4">
         {/* Header / Brand */}
         <motion.div 
-          className="text-center mb-8"
+          className="text-center mb-4"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
-          <div className="inline-flex items-center justify-center p-3 bg-white rounded-2xl shadow-sm mb-4 border border-slate-100">
-             <img src="/nangrong-logo.png" alt="ตราสัญลักษณ์" className="w-16 h-16 object-contain" />
+          <div className="inline-flex items-center justify-center p-2 bg-white rounded-2xl shadow-sm mb-3 border border-slate-100">
+             <img src="/nangrong-logo.png" alt="ตราสัญลักษณ์" className="w-12 h-12 object-contain" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-1">
             เทศบาลเมืองนางรอง
           </h1>
           <p className="text-sm sm:text-base text-slate-500 font-medium">
@@ -74,15 +74,15 @@ export default function Home() {
           transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
         >
           <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
-            <div className="p-8 sm:p-10">
-              <div className="flex items-center justify-between mb-8">
+            <div className="p-6 sm:p-8">
+              <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-bold text-slate-900">ค้นหาข้อมูลบ้าน</h2>
                 <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
-                  <Activity size={12} /> ระบบออนไลน์
+                  <Truck size={14} /> ค่าธรรมเนียมขยะ
                 </span>
               </div>
               
-              <form onSubmit={handleSearch} className="space-y-6">
+              <form onSubmit={handleSearch} className="space-y-4">
                 <AnimatePresence>
                   {error && (
                     <motion.div 
@@ -102,7 +102,7 @@ export default function Home() {
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors">
-                      <MapPin size={20} />
+                      <Trash2 size={20} />
                     </div>
                     <input 
                       id="houseNumber"
@@ -153,7 +153,7 @@ export default function Home() {
         </motion.div>
       </main>
 
-      <footer className="mt-12 relative z-10">
+      <footer className="mt-8 relative z-10">
         <Link href="/login" className="text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors decoration-slate-300 underline-offset-4 hover:underline">
           สำหรับเจ้าหน้าที่ (เข้าสู่ระบบ)
         </Link>
