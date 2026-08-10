@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { replyMessage, getMessageContent } from "@/lib/line";
 import { db } from "@/lib/db";
 import { lineMessages, houses, invoices, transactions } from "@/lib/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, gte } from "drizzle-orm";
 import { put } from "@vercel/blob";
 import { verifySlipWithBase64 } from "@/lib/slip2go";
 
@@ -46,12 +46,16 @@ export async function POST(request: Request) {
 
           const slipAmount = verification.data?.amount.toString();
 
-          // 3.5 Check if this exact amount matches any waiting_for_slip transaction
+          // 3.5 Check if this exact amount matches any waiting_for_slip transaction within the last 15 minutes
+          const expiryTime = new Date();
+          expiryTime.setMinutes(expiryTime.getMinutes() - 15);
+
           const waitingTx = await db.select()
             .from(transactions)
             .where(and(
               eq(transactions.amount, slipAmount || "0"), 
-              eq(transactions.slipStatus, 'waiting_for_slip')
+              eq(transactions.slipStatus, 'waiting_for_slip'),
+              gte(transactions.createdAt, expiryTime)
             ))
             .orderBy(desc(transactions.createdAt))
             .limit(1);

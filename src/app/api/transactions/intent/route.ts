@@ -27,9 +27,9 @@ export async function POST(request: Request) {
     }
     const collectorId = qrCode[0].collectorId;
 
-    // We only check against pending transactions created in the last 24 hours
-    const yesterday = new Date();
-    yesterday.setHours(yesterday.getHours() - 24);
+    // We only check against pending transactions created in the last 15 minutes
+    const expiryTime = new Date();
+    expiryTime.setMinutes(expiryTime.getMinutes() - 15);
 
     let finalAmount = baseAmount;
     let attempts = 0;
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
       const existing = await db.select().from(transactions).where(and(
          eq(transactions.amount, amountCandidate.toString()),
          eq(transactions.slipStatus, 'waiting_for_slip'),
-         gte(transactions.createdAt, yesterday)
+         gte(transactions.createdAt, expiryTime)
       )).limit(1);
 
       if (existing.length === 0) {
