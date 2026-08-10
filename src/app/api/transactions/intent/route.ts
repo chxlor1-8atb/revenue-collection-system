@@ -27,9 +27,9 @@ export async function POST(request: Request) {
     }
     const collectorId = qrCode[0].collectorId;
 
-    // We only check against pending transactions created in the last 15 minutes
+    // We only check against pending transactions created in the last 3 minutes
     const expiryTime = new Date();
-    expiryTime.setMinutes(expiryTime.getMinutes() - 15);
+    expiryTime.setMinutes(expiryTime.getMinutes() - 3);
 
     let finalAmount = baseAmount;
     let attempts = 0;

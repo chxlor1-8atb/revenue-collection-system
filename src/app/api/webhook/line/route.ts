@@ -46,9 +46,9 @@ export async function POST(request: Request) {
 
           const slipAmount = verification.data?.amount.toString();
 
-          // 3.5 Check if this exact amount matches any waiting_for_slip transaction within the last 15 minutes
+          // 3.5 Check if this exact amount matches any waiting_for_slip transaction within the last 3 minutes
           const expiryTime = new Date();
-          expiryTime.setMinutes(expiryTime.getMinutes() - 15);
+          expiryTime.setMinutes(expiryTime.getMinutes() - 3);
 
           const waitingTx = await db.select()
             .from(transactions)
