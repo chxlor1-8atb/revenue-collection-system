@@ -34,7 +34,8 @@ export async function getMessageContent(messageId: string): Promise<Buffer | nul
   });
 
   if (!response.ok) {
-    console.error("Failed to fetch image from LINE", response.statusText);
+    const errText = await response.text();
+    console.error(`Failed to fetch image from LINE – status ${response.status}: ${response.statusText}\nResponse body: ${errText}`);
     return null;
   }
 
