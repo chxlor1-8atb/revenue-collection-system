@@ -10,6 +10,7 @@ export default function Home() {
   const [houseNumber, setHouseNumber] = useState("");
   const [error, setError] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [results, setResults] = useState<any[]>([]);
   const router = useRouter();
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -18,6 +19,7 @@ export default function Home() {
     
     setIsSearching(true);
     setError("");
+    setResults([]);
     
     try {
       const res = await fetch("/api/houses/lookup", {
@@ -27,13 +29,23 @@ export default function Home() {
       });
 
       if (!res.ok) {
-        setError("ไม่พบข้อมูลบ้านเลขที่นี้ กรุณาตรวจสอบอีกครั้ง");
+        setError("ไม่พบข้อมูล กรุณาตรวจสอบอีกครั้ง");
         setIsSearching(false);
         return;
       }
 
       const data = await res.json();
-      router.push(`/house/${data.id}`);
+      
+      if (Array.isArray(data)) {
+        if (data.length === 1) {
+          router.push(`/house/${data[0].id}`);
+        } else {
+          setResults(data);
+          setIsSearching(false);
+        }
+      } else {
+        router.push(`/house/${data.id}`);
+      }
     } catch (err) {
       console.error(err);
       setError("เกิดข้อผิดพลาดในการเชื่อมต่อระบบ");
@@ -98,7 +110,7 @@ export default function Home() {
                 
                 <div className="space-y-2 relative group">
                   <label htmlFor="houseNumber" className="block text-sm font-semibold text-slate-700 transition-colors group-focus-within:text-emerald-600">
-                    บ้านเลขที่
+                    บ้านเลขที่ หรือ ชื่อเจ้าบ้าน
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors">
@@ -110,7 +122,7 @@ export default function Home() {
                       value={houseNumber}
                       onChange={(e) => setHouseNumber(e.target.value)}
                       className="w-full pl-11 pr-4 py-4 bg-slate-50 border-2 border-slate-100 text-slate-900 rounded-xl font-mono text-lg focus:outline-none focus:ring-0 focus:border-emerald-500 focus:bg-white transition-all duration-200"
-                      placeholder="เช่น 123/4"
+                      placeholder="เช่น 123/4 หรือ สมชาย"
                       required
                     />
                   </div>
@@ -141,6 +153,39 @@ export default function Home() {
                   <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
                 </button>
               </form>
+
+              {/* Display Results */}
+              <AnimatePresence>
+                {results.length > 0 && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="mt-6 space-y-3"
+                  >
+                    <h3 className="text-sm font-semibold text-slate-700 mb-2">พบ {results.length} รายการ กรุณาเลือก:</h3>
+                    {results.map((house) => (
+                      <Link 
+                        href={`/house/${house.id}`} 
+                        key={house.id}
+                        className="block w-full p-4 bg-slate-50 hover:bg-emerald-50 border border-slate-100 hover:border-emerald-200 rounded-xl transition-colors cursor-pointer"
+                      >
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="font-bold text-slate-900 font-mono text-lg">{house.houseNumber}</p>
+                            <p className="text-sm text-slate-500 font-sans">{house.ownerName}</p>
+                          </div>
+                          {house.zone && (
+                            <span className="text-xs bg-white px-2 py-1 rounded-md text-slate-500 border border-slate-100">
+                              {house.zone}
+                            </span>
+                          )}
+                        </div>
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
             
             {/* Footer of the card */}

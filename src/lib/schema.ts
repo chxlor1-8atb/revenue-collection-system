@@ -19,7 +19,7 @@ export const qrCodes = pgTable('qr_codes', {
 
 export const houses = pgTable('houses', {
   id: serial('id').primaryKey(),
-  houseNumber: text('house_number').notNull().unique(), // บ้านเลขที่
+  houseNumber: text('house_number').notNull(), // บ้านเลขที่
   ownerName: text('owner_name').notNull(), // ชื่อเจ้าบ้าน
   zone: text('zone'), // ชุมชน/หมู่
   createdAt: timestamp('created_at').defaultNow(),

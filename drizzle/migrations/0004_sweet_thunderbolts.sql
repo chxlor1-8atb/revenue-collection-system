@@ -1,0 +1,1 @@
+ALTER TABLE "houses" DROP CONSTRAINT "houses_house_number_unique";
