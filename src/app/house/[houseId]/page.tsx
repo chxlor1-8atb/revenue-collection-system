@@ -12,18 +12,16 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
     notFound();
   }
 
-  const result = await db.select().from(houses).where(eq(houses.id, houseId)).limit(1);
+  const [result, houseInvoices] = await Promise.all([
+    db.select().from(houses).where(eq(houses.id, houseId)).limit(1),
+    db.select().from(invoices).where(eq(invoices.houseId, houseId)).orderBy(asc(invoices.monthYear))
+  ]);
 
   if (result.length === 0) {
     notFound();
   }
 
   const house = result[0];
-
-  const houseInvoices = await db.select()
-    .from(invoices)
-    .where(eq(invoices.houseId, houseId))
-    .orderBy(asc(invoices.monthYear));
 
   // A simple function to generate a fake "barcode" pattern
   const generateBarcode = () => {

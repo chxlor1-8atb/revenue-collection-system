@@ -21,15 +21,16 @@ export default async function PayPage({ params, searchParams }: { params: Promis
     redirect("/");
   }
 
-  const result = await db
-    .select({
-      qrCode: qrCodes,
-      collector: collectors,
-    })
-    .from(qrCodes)
-    .innerJoin(collectors, eq(qrCodes.collectorId, collectors.id))
-    .where(eq(qrCodes.id, qrCodeId))
-    .limit(1);
+  const { invoices } = await import("@/lib/schema");
+  
+  const [result, selectedInvoices] = await Promise.all([
+    db.select({ qrCode: qrCodes, collector: collectors })
+      .from(qrCodes)
+      .innerJoin(collectors, eq(qrCodes.collectorId, collectors.id))
+      .where(eq(qrCodes.id, qrCodeId))
+      .limit(1),
+    db.select().from(invoices).where(inArray(invoices.id, invoiceIds))
+  ]);
 
   if (result.length === 0 || !result[0].qrCode.active) {
     notFound();
@@ -37,9 +38,6 @@ export default async function PayPage({ params, searchParams }: { params: Promis
 
   const { collector } = result[0];
 
-  const { invoices } = await import("@/lib/schema");
-  const selectedInvoices = await db.select().from(invoices).where(inArray(invoices.id, invoiceIds));
-  
   if (selectedInvoices.length === 0) {
     redirect("/");
   }
