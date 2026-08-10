@@ -7,16 +7,35 @@ export default function SettingsForm({
   collectorId,
   initialName,
   initialPromptPay,
+  initialQrCodeImageUrl,
 }: {
   collectorId: number;
   initialName: string;
   initialPromptPay: string;
+  initialQrCodeImageUrl?: string | null;
 }) {
   const [name, setName] = useState(initialName);
   const [promptPayId, setPromptPayId] = useState(initialPromptPay);
+  const [qrCodeFile, setQrCodeFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(initialQrCodeImageUrl || null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
   const router = useRouter();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setQrCodeFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const toBase64 = (file: File) => new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = error => reject(error);
+  });
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -24,16 +43,21 @@ export default function SettingsForm({
     setMessage("");
 
     try {
+      let qrCodeBase64 = null;
+      if (qrCodeFile) {
+        qrCodeBase64 = await toBase64(qrCodeFile);
+      }
+
       const res = await fetch("/api/settings/promptpay", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id: collectorId, name, promptPayId }),
+        body: JSON.stringify({ id: collectorId, name, promptPayId, qrCodeBase64 }),
       });
 
       if (res.ok) {
-        setMessage("✅ บันทึกข้อมูลสำเร็จ QR Code เปลี่ยนแล้วครับ");
+        setMessage("✅ บันทึกข้อมูลสำเร็จ");
         router.refresh();
       } else {
         setMessage("❌ เกิดข้อผิดพลาดในการบันทึก");
@@ -66,7 +90,7 @@ export default function SettingsForm({
 
         <div>
           <label className="block text-sm font-semibold text-slate-700 mb-2 font-sans">
-            เบอร์พร้อมเพย์ (เลขบัตรปชช. / เบอร์โทร / เลขนิติบุคคล)
+            เบอร์พร้อมเพย์ (สำหรับสร้างอัตโนมัติหากไม่อัปโหลดรูป)
           </label>
           <input
             type="text"
@@ -76,9 +100,32 @@ export default function SettingsForm({
             placeholder="เช่น 0994000160759"
             className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors font-mono"
           />
-          <p className="text-xs text-slate-500 mt-2 font-sans">
-            *ระบบจะนำเบอร์พร้อมเพย์นี้ไปสร้างเป็นรูป QR Code ในหน้าชำระเงินอัตโนมัติ
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-slate-700 mb-2 font-sans">
+            รูป QR Code (ไม่บังคับ)
+          </label>
+          <p className="text-xs text-slate-500 mb-3 font-sans">
+            หากอัปโหลดรูป ระบบจะแสดงรูปนี้แทนการสร้างอัตโนมัติจากเบอร์พร้อมเพย์
           </p>
+          
+          <div className="flex flex-col items-start gap-4">
+            {previewUrl && (
+              <div className="relative p-2 border border-slate-200 rounded-lg bg-slate-50">
+                <img src={previewUrl} alt="QR Code Preview" className="w-32 h-32 object-contain" />
+              </div>
+            )}
+            <label className="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 px-4 rounded-lg text-sm font-medium transition-colors font-sans border border-slate-200">
+              <span>อัปโหลดรูป QR Code</span>
+              <input 
+                type="file" 
+                accept="image/*" 
+                className="hidden" 
+                onChange={handleFileChange} 
+              />
+            </label>
+          </div>
         </div>
 
         {message && (

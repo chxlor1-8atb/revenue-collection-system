@@ -4,6 +4,7 @@ export const collectors = pgTable('collectors', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
   promptPayId: text('prompt_pay_id').notNull(),
+  qrCodeImageUrl: text('qr_code_image_url'),
   telegramChatId: text('telegram_chat_id'),
   active: boolean('active').default(true),
   createdAt: timestamp('created_at').defaultNow(),

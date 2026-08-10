@@ -44,17 +44,21 @@ export default async function PayPage({ params, searchParams }: { params: Promis
 
   const totalAmount = selectedInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
 
-  const payload = generatePayload(collector.promptPayId, { amount: totalAmount });
-  
-  const qrDataUri = await qrcode.toDataURL(payload, {
-    errorCorrectionLevel: 'H',
-    type: 'image/png',
-    margin: 1,
-    color: {
-      dark: '#0F172A', // Deep Navy for the QR code
-      light: '#ffffff'
-    }
-  });
+  let qrDataUri = "";
+  if (collector.qrCodeImageUrl) {
+    qrDataUri = collector.qrCodeImageUrl;
+  } else {
+    const payload = generatePayload(collector.promptPayId, { amount: totalAmount });
+    qrDataUri = await qrcode.toDataURL(payload, {
+      errorCorrectionLevel: 'H',
+      type: 'image/png',
+      margin: 1,
+      color: {
+        dark: '#0F172A', // Deep Navy for the QR code
+        light: '#ffffff'
+      }
+    });
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center py-12 px-4 sm:px-6 relative overflow-hidden">

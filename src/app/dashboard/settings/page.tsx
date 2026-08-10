@@ -16,7 +16,8 @@ export default async function SettingsPage() {
         <SettingsForm 
           collectorId={collector.id} 
           initialName={collector.name} 
-          initialPromptPay={collector.promptPayId} 
+          initialPromptPay={collector.promptPayId}
+          initialQrCodeImageUrl={collector.qrCodeImageUrl} 
         />
       ) : (
         <div className="bg-red-50 text-red-600 p-6 rounded-xl font-sans">
