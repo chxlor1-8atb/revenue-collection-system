@@ -66,14 +66,11 @@ export default async function PayPage({ params, searchParams }: { params: Promis
       <div className="w-full max-w-md relative z-10">
         <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden">
           
-          {/* Top Info Banner - The Book Number Badge */}
-          <div className="bg-slate-900 px-6 py-3 flex justify-between items-center text-white">
+          {/* Top Info Banner */}
+          <div className="bg-slate-900 px-6 py-3 flex justify-center items-center text-white">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               <span className="text-xs font-medium tracking-widest uppercase text-slate-300">SECURE PAYMENT</span>
-            </div>
-            <div className="font-mono text-sm border border-slate-700 bg-slate-800 px-3 py-1 rounded-md shadow-inner text-emerald-400">
-              เล่มที่ ๐๑/๒๕๖๙
             </div>
           </div>
 
