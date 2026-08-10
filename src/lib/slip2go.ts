@@ -23,7 +23,7 @@ export async function verifySlipWithBase64(base64Image: string): Promise<Slip2Go
   }
 
   try {
-    const response = await fetch("https://connect.slip2go.com/api/verify-slip/base64/info", {
+    const response = await fetch("https://connect.slip2go.com/api/verify-slip/qr-base64/info", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -31,9 +31,7 @@ export async function verifySlipWithBase64(base64Image: string): Promise<Slip2Go
         "x-api-secret": apiKey, // Adding both common headers to be safe based on docs
       },
       body: JSON.stringify({
-        payload: {
-          image: base64Image
-        }
+        payload: base64Image
       }),
     });
 
