@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { transactions, invoices, qrCodes } from "@/lib/schema";
-import { inArray, eq } from "drizzle-orm";
+import { inArray, eq, and, gte } from "drizzle-orm";
 
 export async function POST(request: Request) {
   try {
@@ -27,11 +27,31 @@ export async function POST(request: Request) {
     }
     const collectorId = qrCode[0].collectorId;
 
-    // Generate random decimal between .01 and .99
-    // In a real production system, you'd want to loop and check for collisions
-    // against pending transactions in the last 24h. For now, we assume low collision rate.
-    const randomCents = Math.floor(Math.random() * 99) + 1;
-    const finalAmount = baseAmount + (randomCents / 100);
+    // We only check against pending transactions created in the last 24 hours
+    const yesterday = new Date();
+    yesterday.setHours(yesterday.getHours() - 24);
+
+    let finalAmount = baseAmount;
+    let attempts = 0;
+    let isUnique = false;
+
+    // Loop up to 10 times to find a unique decimal
+    while (!isUnique && attempts < 10) {
+      const randomCents = Math.floor(Math.random() * 99) + 1;
+      const amountCandidate = baseAmount + (randomCents / 100);
+      
+      const existing = await db.select().from(transactions).where(and(
+         eq(transactions.amount, amountCandidate.toString()),
+         eq(transactions.slipStatus, 'waiting_for_slip'),
+         gte(transactions.createdAt, yesterday)
+      )).limit(1);
+
+      if (existing.length === 0) {
+        finalAmount = amountCandidate;
+        isUnique = true;
+      }
+      attempts++;
+    }
 
     // Create a waiting transaction
     const newTx = await db.insert(transactions).values({
