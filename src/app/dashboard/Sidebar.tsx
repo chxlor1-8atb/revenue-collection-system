@@ -30,10 +30,6 @@ export default function Sidebar({ userName }: { userName: string }) {
     <aside style={{ width: "250px", backgroundColor: "#1F2E22", color: "#F6F4EC", borderRight: "1px solid #2d4732", display: "flex", flexDirection: "column" }}>
       <div style={{ padding: "1.5rem", borderBottom: "1px solid #2d4732", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", position: "relative" }}>
         
-        {/* Ledger Stamp / Reference */}
-        <div style={{ position: "absolute", top: "10px", left: "10px", fontSize: "0.65rem", opacity: 0.6, fontFamily: "var(--font-mono)", border: "1px solid rgba(246, 244, 236, 0.3)", padding: "2px 4px" }}>
-          อ้างอิง. ๐๑/๒๕๖๙
-        </div>
 
         <img src="/nangrong-logo.png" alt="เทศบาลเมืองนางรอง" style={{ width: "3.5rem", height: "3.5rem", objectFit: "contain", marginBottom: "0.75rem", filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />
         <h2 className="font-serif font-bold text-lg" style={{ letterSpacing: "0.02em" }}>สมุดบัญชีรายได้</h2>
