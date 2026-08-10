@@ -3,6 +3,9 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { Lock, User, ArrowLeft, ShieldCheck } from "lucide-react";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -34,49 +37,132 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="layout-center">
-      <div className="receipt-card max-w-sm">
-        <div className="text-center mb-6 flex flex-col items-center">
-          <img src="/nangrong-logo.png" alt="ตราสัญลักษณ์เทศบาลเมืองนางรอง" style={{ width: "4rem", height: "4rem", objectFit: "contain", marginBottom: "0.5rem" }} />
-          <h1 className="font-serif text-2xl font-bold">ระบบจัดเก็บรายได้</h1>
-          <p className="font-sans text-status-dark">เทศบาลเมืองนางรอง</p>
-        </div>
+    <div className="min-h-screen relative overflow-hidden bg-slate-50 flex flex-col justify-center items-center py-8 px-4 sm:px-6 lg:px-8">
+      {/* Background abstract grid */}
+      <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
+           style={{ backgroundImage: 'radial-gradient(#0F172A 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
+      </div>
+
+      <div className="w-full max-w-md relative z-10">
         
-        <div className="perforation-line"></div>
-        
-        <form onSubmit={handleSubmit} className="form-container mt-6">
-          {error && (
-            <div className="error-box text-center">
-              {error}
+        {/* Back Button */}
+        <Link 
+          href="/" 
+          className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors mb-6 group"
+        >
+          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          กลับสู่ระบบประชาชน
+        </Link>
+
+        {/* Secure Login Card */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="bg-white rounded-3xl shadow-2xl shadow-slate-900/10 border border-slate-200 overflow-hidden"
+        >
+          {/* Header Section */}
+          <div className="bg-slate-900 p-8 sm:p-10 text-center relative overflow-hidden">
+            {/* Watermark */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03]">
+              <ShieldCheck size={200} />
             </div>
-          )}
-          
-          <div className="form-group">
-            <label className="font-serif block font-bold mb-1">รหัสผู้ใช้งาน</label>
-            <input 
-              type="text" 
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="ledger-input font-mono"
-              required
-            />
+
+            <div className="inline-flex items-center justify-center p-3 bg-white rounded-2xl shadow-lg mb-6 relative z-10">
+               <img src="/nangrong-logo.png" alt="ตราสัญลักษณ์เทศบาล" className="w-12 h-12 object-contain" />
+            </div>
+            <h1 className="text-2xl font-bold text-white tracking-tight relative z-10">
+              ระบบสารสนเทศภายใน
+            </h1>
+            <p className="text-sm text-slate-400 mt-2 font-medium tracking-wide uppercase relative z-10">
+              Staff Authentication Gateway
+            </p>
+          </div>
+
+          {/* Form Section */}
+          <div className="p-8 sm:p-10">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              
+              <AnimatePresence>
+                {error && (
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                    animate={{ opacity: 1, height: 'auto', marginBottom: 20 }}
+                    exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                    className="bg-red-50 text-red-600 text-sm font-medium p-4 rounded-xl border border-red-100 text-center"
+                  >
+                    {error}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              
+              <div className="space-y-2 group">
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider group-focus-within:text-emerald-600 transition-colors">
+                  รหัสเจ้าหน้าที่ (Username)
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors">
+                    <User size={18} />
+                  </div>
+                  <input 
+                    type="text" 
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border-2 border-slate-200 text-slate-900 rounded-xl font-mono text-base focus:outline-none focus:ring-0 focus:border-emerald-500 focus:bg-white transition-all duration-200"
+                    placeholder="ระบุรหัสผู้ใช้งาน"
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2 group">
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider group-focus-within:text-emerald-600 transition-colors">
+                  รหัสผ่าน (Password)
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors">
+                    <Lock size={18} />
+                  </div>
+                  <input 
+                    type="password" 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border-2 border-slate-200 text-slate-900 rounded-xl font-mono text-base focus:outline-none focus:ring-0 focus:border-emerald-500 focus:bg-white transition-all duration-200"
+                    placeholder="••••••••"
+                    required
+                  />
+                </div>
+              </div>
+              
+              <button 
+                type="submit" 
+                disabled={isSubmitting} 
+                className="w-full mt-6 relative overflow-hidden group bg-slate-900 hover:bg-slate-800 text-white font-semibold py-4 rounded-xl transition-all duration-200 shadow-md disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isSubmitting ? (
+                  <>
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                      className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                    />
+                    <span>กำลังตรวจสอบ...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>เข้าสู่ระบบจัดการข้อมูล</span>
+                  </>
+                )}
+              </button>
+            </form>
           </div>
           
-          <div className="form-group">
-            <label className="font-serif block font-bold mb-1">รหัสผ่าน</label>
-            <input 
-              type="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="ledger-input font-mono"
-              required
-            />
+          <div className="bg-slate-50 border-t border-slate-100 p-4 text-center">
+            <p className="text-xs text-slate-400 font-medium">
+              ระบบนี้จำกัดสิทธิ์เฉพาะเจ้าหน้าที่ที่ได้รับอนุญาตเท่านั้น
+            </p>
           </div>
-          
-          <button type="submit" disabled={isSubmitting} className="btn btn-primary w-full mt-4 font-serif">
-            {isSubmitting ? "กำลังตรวจสอบ..." : "เข้าสู่ระบบ"}
-          </button>
-        </form>
+        </motion.div>
       </div>
     </div>
   );
