@@ -24,7 +24,7 @@ export async function verifySlipWithBuffer(imageBuffer: Buffer): Promise<Slip2Go
 
   try {
     const formData = new FormData();
-    formData.append('file', new Blob([imageBuffer], { type: 'image/jpeg' }), 'slip.jpg');
+    formData.append('file', new Blob([imageBuffer as any], { type: 'image/jpeg' }), 'slip.jpg');
 
     const response = await fetch("https://connect.slip2go.com/api/verify-slip/qr-image/info", {
       method: "POST",
