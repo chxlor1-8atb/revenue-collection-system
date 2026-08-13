@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -10,6 +10,11 @@ export default function GenerateInvoiceButton() {
   const handleGenerate = async () => {
     const month = prompt("กรุณาระบุเดือน/ปี สำหรับบิลที่จะสร้าง (เช่น 2024-04):", new Date().toISOString().slice(0, 7));
     if (!month) return;
+    
+    if (!/^\d{4}-\d{2}$/.test(month)) {
+      alert("รูปแบบเดือน/ปี ไม่ถูกต้อง! กรุณาระบุในรูปแบบ YYYY-MM เช่น 2024-04");
+      return;
+    }
 
     if (!confirm(`คุณต้องการสร้างบิลค่าขยะรอบเดือน ${month} ให้กับบ้านทุกหลังใช่หรือไม่?`)) return;
 
