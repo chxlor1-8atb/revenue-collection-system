@@ -99,26 +99,30 @@ export default function DatePicker({
 
   return (
     <div className="relative" ref={containerRef}>
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => !disabled && setIsOpen(!isOpen)}
-          disabled={disabled}
-          className={`w-full flex items-center justify-between px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-50' : 'hover:border-slate-400'}`}
-        >
-          <span className={`text-sm ${parsedDate ? 'text-slate-800 font-medium' : 'text-slate-400'}`}>{displayValue}</span>
-          <CalendarIcon size={14} className="text-slate-400" />
-        </button>
-        {value && !disabled && (
-          <button 
-            type="button" 
-            onClick={() => onChange("")}
-            className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors absolute right-10"
-            style={{ zIndex: 10 }}
-          >
-            <X size={14} />
-          </button>
-        )}
+      <div 
+        className={`w-full flex items-center justify-between px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-emerald-500 transition-colors ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-50' : 'hover:border-slate-400 cursor-pointer'}`}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+      >
+        <span className={`text-sm truncate mr-2 ${parsedDate ? 'text-slate-800 font-medium' : 'text-slate-400'}`}>
+          {displayValue}
+        </span>
+        
+        <div className="flex items-center gap-1 text-slate-400 shrink-0">
+          {value && !disabled && (
+            <div 
+              role="button"
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                onChange(""); 
+              }}
+              className="p-1 hover:text-slate-600 hover:bg-slate-100 rounded transition-colors"
+              title="ล้างข้อมูล"
+            >
+              <X size={14} />
+            </div>
+          )}
+          <CalendarIcon size={14} />
+        </div>
       </div>
 
       <AnimatePresence>
