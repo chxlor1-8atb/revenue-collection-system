@@ -10,8 +10,8 @@ function formatThaiMonth(monthYear: string) {
   return `${thaiMonths[parseInt(month, 10)]} ${parseInt(year, 10) + 543}`;
 }
 
-export default async function ReceiptPage({ params }: { params: { txId: string } }) {
-  const txId = parseInt(params.txId, 10);
+export default async function ReceiptPage({ params }: { params: Promise<{ txId: string }> }) {
+  const txId = parseInt((await params).txId, 10);
   if (isNaN(txId)) return notFound();
 
   // Fetch transaction
@@ -142,7 +142,7 @@ export default async function ReceiptPage({ params }: { params: { txId: string }
         </div>
 
         {/* Print Only Notice */}
-        <div className="absolute bottom-8 left-0 right-0 text-center text-xs text-slate-400 print:block hidden">
+        <div suppressHydrationWarning className="absolute bottom-8 left-0 right-0 text-center text-xs text-slate-400 print:block hidden">
           เอกสารฉบับนี้ถูกสร้างขึ้นด้วยระบบอิเล็กทรอนิกส์ • วันที่พิมพ์: {new Date().toLocaleString('th-TH')}
         </div>
 

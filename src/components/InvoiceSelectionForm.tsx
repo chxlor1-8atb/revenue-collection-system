@@ -26,7 +26,7 @@ export default function InvoiceSelectionForm({ invoices, houseId }: { invoices: 
       const res = await fetch("/api/transactions/intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invoiceIds: selectedInvoices, qrCodeId: 1 })
+        body: JSON.stringify({ invoiceIds: selectedInvoices })
       });
       const data = await res.json();
       if (!res.ok) {

@@ -22,10 +22,9 @@ export default function Home() {
     setResults([]);
     
     try {
-      const res = await fetch("/api/houses/lookup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ houseNumber: houseNumber.trim() })
+      const res = await fetch(`/api/houses/lookup?q=${encodeURIComponent(houseNumber.trim())}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
       });
 
       if (!res.ok) {

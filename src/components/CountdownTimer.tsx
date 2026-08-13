@@ -2,14 +2,13 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Clock, RefreshCw, CheckCircle2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 export default function CountdownTimer({ createdAt, transactionId }: { createdAt: Date, transactionId?: number }) {
   const [timeLeft, setTimeLeft] = useState<number>(3 * 60);
   const [isExpired, setIsExpired] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const isRegeneratingRef = useRef(false);
   const [isVerified, setIsVerified] = useState(false);
-  const router = useRouter();
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
   // Poll transaction status every 3 seconds
@@ -72,8 +71,9 @@ export default function CountdownTimer({ createdAt, transactionId }: { createdAt
 
   const handleExpiry = async () => {
     setIsExpired(true);
-    if (!transactionId || isRegenerating) return;
+    if (!transactionId || isRegeneratingRef.current) return;
     
+    isRegeneratingRef.current = true;
     setIsRegenerating(true);
     try {
       const res = await fetch("/api/transactions/regenerate", {
@@ -87,6 +87,7 @@ export default function CountdownTimer({ createdAt, transactionId }: { createdAt
       }
     } catch (e) {
       console.error(e);
+      isRegeneratingRef.current = false;
       setIsRegenerating(false);
     }
   };

@@ -4,8 +4,10 @@ import { useState } from "react";
 import { searchHouseByNumber, getUnpaidInvoicesForHouse, approveLineSlip, rejectLineSlip } from "./actions";
 import { CheckCircle2, Clock } from "lucide-react";
 import SlipModalButton from "@/components/SlipModalButton";
+import { useRouter } from "next/navigation";
 
 export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendingSlips: any[], verifiedSlips: any[] }) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<"pending" | "verified">("pending");
   const [selectedSlip, setSelectedSlip] = useState<any | null>(null);
   const [searchHouseNumber, setSearchHouseNumber] = useState("");
@@ -87,7 +89,12 @@ export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendi
 
   const handleReject = async (slipId: number) => {
     if (confirm("คุณแน่ใจหรือไม่ว่าต้องการปฏิเสธสลิปใบนี้?")) {
-      await rejectLineSlip(slipId);
+      const res = await rejectLineSlip(slipId);
+      if (res.success) {
+        router.refresh();
+      } else {
+        alert(res.error || "เกิดข้อผิดพลาดในการปฏิเสธ");
+      }
     }
   };
 

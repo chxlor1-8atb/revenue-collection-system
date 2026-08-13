@@ -3,10 +3,10 @@ import { db } from "@/lib/db";
 import { houses } from "@/lib/schema";
 import { eq, or, ilike } from "drizzle-orm";
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
   try {
-    const { houseNumber } = await request.json(); // Keeping parameter name for frontend compatibility, though it acts as a generic query now
-    const query = houseNumber;
+    const { searchParams } = new URL(request.url);
+    const query = searchParams.get('q');
 
     if (!query) {
       return NextResponse.json({ error: "Missing search query" }, { status: 400 });

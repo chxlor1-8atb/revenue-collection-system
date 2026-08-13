@@ -11,6 +11,7 @@ export default function HousesClient({ initialHouses }: { initialHouses: HouseDa
   const [editingHouse, setEditingHouse] = useState<HouseData | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
   const [deletingHouse, setDeletingHouse] = useState<{ id: number; houseNumber: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleAdd = () => {
     setEditingHouse(undefined);
@@ -31,7 +32,9 @@ export default function HousesClient({ initialHouses }: { initialHouses: HouseDa
   const handleDelete = async () => {
     if (!deletingHouse) return;
     setError(null);
+    setIsDeleting(true);
     const res = await deleteHouse(deletingHouse.id);
+    setIsDeleting(false);
     if (!res.success) {
       setError(res.error || "เกิดข้อผิดพลาดในการลบ");
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -149,15 +152,17 @@ export default function HousesClient({ initialHouses }: { initialHouses: HouseDa
             <div className="flex gap-3">
               <button
                 onClick={() => setDeletingHouse(null)}
-                className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition-colors"
+                disabled={isDeleting}
+                className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition-colors disabled:opacity-50"
               >
                 ยกเลิก
               </button>
               <button
                 onClick={handleDelete}
-                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl transition-colors"
+                disabled={isDeleting}
+                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl transition-colors flex items-center justify-center disabled:opacity-50"
               >
-                ลบข้อมูล
+                {isDeleting ? "กำลังลบ..." : "ลบข้อมูล"}
               </button>
             </div>
           </div>

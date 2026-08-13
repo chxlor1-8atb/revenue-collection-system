@@ -111,7 +111,17 @@ export async function POST(request: Request) {
     const baseAmount = targetInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
 
     // Get QR Code info to find collectorId
-    const qrCode = await db.select().from(qrCodes).where(eq(qrCodes.id, qrCodeId || 1)).limit(1);
+    let targetQrCodeId = qrCodeId;
+    if (!targetQrCodeId) {
+      const defaultQr = await db.select().from(qrCodes).where(eq(qrCodes.active, true)).limit(1);
+      if (defaultQr.length > 0) {
+        targetQrCodeId = defaultQr[0].id;
+      } else {
+        return NextResponse.json({ error: "No active QR Code found in system. Please configure it in Settings." }, { status: 400 });
+      }
+    }
+
+    const qrCode = await db.select().from(qrCodes).where(eq(qrCodes.id, targetQrCodeId)).limit(1);
     if (qrCode.length === 0) {
       return NextResponse.json({ error: "QR Code not found" }, { status: 404 });
     }
