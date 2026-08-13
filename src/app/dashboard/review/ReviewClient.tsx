@@ -34,8 +34,8 @@ export default function ReviewClient() {
       {waiting.length > 0 && (
         <div className="mb-8 bg-amber-50 rounded-2xl border border-amber-200 p-6 shadow-sm">
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-amber-100 rounded-xl">
-              <QrCode className="text-amber-600" size={24} />
+            <div className="p-2 bg-slate-200 rounded-xl">
+              <QrCode className="text-slate-900" size={24} />
             </div>
             <div>
               <h2 className="text-lg font-bold text-amber-900">กำลังทำรายการชำระเงิน ({waiting.length})</h2>
