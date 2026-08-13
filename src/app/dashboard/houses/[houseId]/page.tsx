@@ -4,6 +4,7 @@ import { eq, desc } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Home, User, MapPin, ExternalLink, Receipt, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import SlipModalButton from "@/components/SlipModalButton";
 
 export const dynamic = "force-dynamic";
 
@@ -136,14 +137,7 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
                     </td>
                     <td className="px-6 py-4 text-right">
                       {inv.tx?.slipImageUrl && inv.tx.slipImageUrl !== "pending" && (
-                        <a 
-                          href={inv.tx.slipImageUrl} 
-                          target="_blank" 
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 rounded-lg border border-emerald-200 transition-colors font-medium"
-                        >
-                          <Receipt size={14} /> ดูสลิป
-                        </a>
+                        <SlipModalButton imageUrl={inv.tx.slipImageUrl} buttonStyle="house" />
                       )}
                     </td>
                   </tr>

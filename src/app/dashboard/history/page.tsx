@@ -1,7 +1,8 @@
 import { db } from "@/lib/db";
 import { transactions, invoices, houses, collectors, lineMessages } from "@/lib/schema";
 import { eq, desc, inArray, and } from "drizzle-orm";
-import { CheckCircle2, Smartphone, Globe, Calendar, Home, User, ReceiptText } from "lucide-react";
+import { CheckCircle2, Smartphone, Globe, Calendar, Home, User } from "lucide-react";
+import SlipModalButton from "@/components/SlipModalButton";
 
 export const dynamic = "force-dynamic";
 
@@ -141,14 +142,7 @@ export default async function HistoryPage() {
                   </div>
                   {item.slipImageUrl && item.slipImageUrl !== "pending" && (
                     <div className="mt-2 flex justify-end">
-                      <a 
-                        href={item.slipImageUrl} 
-                        target="_blank" 
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 rounded-lg border border-emerald-200 transition-colors font-medium"
-                      >
-                        <ReceiptText size={14} /> ดูสลิป
-                      </a>
+                      <SlipModalButton imageUrl={item.slipImageUrl} buttonStyle="history" />
                     </div>
                   )}
                 </div>
