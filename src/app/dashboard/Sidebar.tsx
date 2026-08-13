@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -33,7 +33,7 @@ export default function Sidebar({ userName }: { userName: string }) {
         
 
         <img src="/nangrong-logo.png" alt="เทศบาลเมืองนางรอง" style={{ width: "3.5rem", height: "3.5rem", objectFit: "contain", marginBottom: "0.75rem", filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />
-        <h2 className="font-serif font-bold text-lg" style={{ letterSpacing: "0.02em" }}>สมุดบัญชีรายได้</h2>
+        <h2 className="font-bold text-lg" style={{ letterSpacing: "0.02em" }}>สมุดบัญชีรายได้</h2>
         <p className="font-sans text-xs" style={{ color: "#D8D3C3" }}>เทศบาลเมืองนางรอง</p>
       </div>
       

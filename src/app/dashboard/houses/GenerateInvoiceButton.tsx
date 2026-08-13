@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -41,7 +41,7 @@ export default function GenerateInvoiceButton() {
     <button 
       onClick={handleGenerate} 
       disabled={isGenerating}
-      className="btn font-serif" 
+      className="btn " 
       style={{ backgroundColor: "#C9A227", color: "#1F2E22" }}
     >
       {isGenerating ? "กำลังสร้าง..." : "🧾 สร้างบิลประจำเดือน (ทุกบ้าน)"}

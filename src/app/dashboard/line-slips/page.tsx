@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+﻿import { db } from "@/lib/db";
 import { lineMessages } from "@/lib/schema";
 import { desc, or, eq } from "drizzle-orm";
 import LineSlipsClient from "./LineSlipsClient";
@@ -23,7 +23,7 @@ export default async function LineSlipsPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold font-serif mb-6 text-slate-800">
+      <h1 className="text-2xl font-bold mb-6 text-slate-800">
         สลิปจาก LINE
       </h1>
       <LineSlipsClient pendingSlips={pendingSlips} verifiedSlips={verifiedSlips} />

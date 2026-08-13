@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Plus, Edit2, Trash2 } from "lucide-react";
@@ -38,7 +38,7 @@ export default function HousesClient({ initialHouses }: { initialHouses: HouseDa
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="font-serif font-bold text-3xl text-[#1F2E22]">จัดการข้อมูลบ้าน</h1>
+        <h1 className="font-bold text-3xl text-[#1F2E22]">จัดการข้อมูลบ้าน</h1>
         <div className="flex gap-4">
           <button
             onClick={handleAdd}

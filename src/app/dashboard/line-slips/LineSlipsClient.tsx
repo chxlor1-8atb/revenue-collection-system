@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { searchHouseByNumber, getUnpaidInvoicesForHouse, approveLineSlip, rejectLineSlip } from "./actions";
@@ -253,7 +253,7 @@ export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendi
             
             {/* Modal Header */}
             <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-              <h2 className="text-xl font-bold font-serif text-slate-800">จับคู่บ้านและอนุมัติสลิป</h2>
+              <h2 className="text-xl font-bold text-slate-800">จับคู่บ้านและอนุมัติสลิป</h2>
               <button 
                 onClick={() => setSelectedSlip(null)}
                 className="text-slate-400 hover:text-slate-600 transition-colors"

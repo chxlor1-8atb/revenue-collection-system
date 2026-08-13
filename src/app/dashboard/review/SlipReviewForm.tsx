@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -53,7 +53,7 @@ export default function SlipReviewForm({ transaction }: { transaction: any }) {
         {/* Right side: Details & Actions */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
           <div className="flex justify-between items-start mb-4">
-            <h3 className="font-serif font-bold text-lg">รหัสทำรายการ: #{transaction.id}</h3>
+            <h3 className="font-bold text-lg">รหัสทำรายการ: #{transaction.id}</h3>
             <span className="font-mono font-bold text-xl text-[#3A5A40]">
               ยอดแจ้งชำระ: {parseFloat(transaction.amount).toFixed(2)} ฿
             </span>
@@ -62,7 +62,7 @@ export default function SlipReviewForm({ transaction }: { transaction: any }) {
           <div className="perforation-line" style={{ margin: "0.5rem 0 1rem 0" }}></div>
 
           <div className="mb-4">
-            <p className="font-serif font-bold mb-2">รายการบิลที่แนบมาด้วย:</p>
+            <p className="font-bold mb-2">รายการบิลที่แนบมาด้วย:</p>
             <ul className="font-mono text-sm space-y-1 bg-[#F6F4EC] p-3 rounded-sm border">
               {transaction.invoices.map((inv: any) => (
                 <li key={inv.id} className="flex justify-between">
@@ -81,14 +81,14 @@ export default function SlipReviewForm({ transaction }: { transaction: any }) {
             <button 
               onClick={() => handleReview('verified')}
               disabled={isSubmitting}
-              className="btn btn-primary font-serif flex-1 flex items-center justify-center gap-2"
+              className="btn btn-primary flex-1 flex items-center justify-center gap-2"
             >
               <CheckCircle size={18} strokeWidth={1.5} /> อนุมัติ (ยอดเงินถูกต้อง)
             </button>
             <button 
               onClick={() => handleReview('rejected')}
               disabled={isSubmitting}
-              className="btn font-serif flex-1 flex items-center justify-center gap-2"
+              className="btn flex-1 flex items-center justify-center gap-2"
               style={{ backgroundColor: "#fee2e2", color: "#b91c1c", border: "1px solid #fca5a5" }}
             >
               <XCircle size={18} strokeWidth={1.5} /> ปฏิเสธ (สลิปมีปัญหา)

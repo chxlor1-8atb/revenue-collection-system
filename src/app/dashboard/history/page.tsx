@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+﻿import { db } from "@/lib/db";
 import { transactions, invoices, houses, collectors, lineMessages } from "@/lib/schema";
 import { eq, desc, inArray, and } from "drizzle-orm";
 import { CheckCircle2, Smartphone, Globe, Calendar, Home, User } from "lucide-react";
@@ -64,7 +64,7 @@ export default async function HistoryPage() {
   return (
     <div className="max-w-5xl mx-auto pb-12">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="font-serif font-bold text-3xl text-[#1F2E22]">ประวัติการรับชำระเงิน</h1>
+        <h1 className="font-bold text-3xl text-[#1F2E22]">ประวัติการรับชำระเงิน</h1>
         <span className="bg-emerald-100 text-emerald-800 text-sm font-medium px-3 py-1 rounded-full border border-emerald-200">
           ทั้งหมด {historyItems.length} รายการ
         </span>

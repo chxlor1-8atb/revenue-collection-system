@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Plus, Edit2, CheckCircle2, XCircle } from "lucide-react";
@@ -28,7 +28,7 @@ export default function CollectorsClient({ initialCollectors }: { initialCollect
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="font-serif font-bold text-3xl text-[#1F2E22]">จัดการพนักงานรับเงิน</h1>
+        <h1 className="font-bold text-3xl text-[#1F2E22]">จัดการพนักงานรับเงิน</h1>
         <button
           onClick={handleAdd}
           className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm"

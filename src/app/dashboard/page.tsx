@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic';
+﻿export const dynamic = 'force-dynamic';
 
 import Link from "next/link";
 import { db } from "@/lib/db";
@@ -155,7 +155,7 @@ export default async function DashboardPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-200/80 pb-6">
         <div>
-          <h1 className="font-serif font-bold text-3xl text-[#1F2E22] tracking-tight">
+          <h1 className="font-bold text-3xl text-[#1F2E22] tracking-tight">
             ภาพรวมระบบบัญชีรายได้
           </h1>
           <p className="text-slate-500 text-sm mt-1">
@@ -354,7 +354,7 @@ export default async function DashboardPage() {
         <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <CheckCircle2 size={18} className="text-emerald-600" />
-            <h2 className="font-serif font-bold text-lg text-slate-800">
+            <h2 className="font-bold text-lg text-slate-800">
               รายการชำระเงินสำเร็จล่าสุด (5 รายการ)
             </h2>
           </div>

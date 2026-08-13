@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
@@ -12,14 +12,14 @@
   --radius: 0.5rem;
   --font-sans: "IBM Plex Sans Thai", "Inter", sans-serif;
   --font-mono: "IBM Plex Mono", "JetBrains Mono", monospace;
-  --font-serif: "IBM Plex Sans Thai", "Inter", sans-serif;
+  --: "IBM Plex Sans Thai", "Inter", sans-serif;
 }
 
 @theme {
   --color-primary: #059669;
   --font-sans: "IBM Plex Sans Thai", "Inter", sans-serif;
   --font-mono: "IBM Plex Mono", "JetBrains Mono", monospace;
-  --font-serif: "IBM Plex Sans Thai", "Inter", sans-serif;
+  --: "IBM Plex Sans Thai", "Inter", sans-serif;
 }
 
 html, body {

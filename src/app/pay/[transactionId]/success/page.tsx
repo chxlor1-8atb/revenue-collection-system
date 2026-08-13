@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+﻿import { db } from "@/lib/db";
 import { transactions, invoices, houses } from "@/lib/schema";
 import { eq, inArray } from "drizzle-orm";
 import { notFound } from "next/navigation";
@@ -63,7 +63,7 @@ export default async function PaySuccessPage({ params }: { params: Promise<{ tra
               <div className="absolute inset-0 rounded-full bg-emerald-400/20 animate-ping"></div>
             </div>
 
-            <h1 className="font-serif font-bold text-2xl text-slate-800 mb-1 text-center">ขอบคุณที่ชำระเงิน!</h1>
+            <h1 className="font-bold text-2xl text-slate-800 mb-1 text-center">ขอบคุณที่ชำระเงิน!</h1>
             <p className="text-slate-500 text-sm text-center mb-8">ระบบได้ยืนยันการชำระเงินและตัดยอดหนี้ให้แล้ว</p>
 
             {/* Receipt Card */}

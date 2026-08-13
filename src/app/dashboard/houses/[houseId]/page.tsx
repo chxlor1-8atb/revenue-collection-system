@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+﻿import { db } from "@/lib/db";
 import { houses, invoices, transactions } from "@/lib/schema";
 import { eq, desc } from "drizzle-orm";
 import { notFound } from "next/navigation";
@@ -51,7 +51,7 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
       {/* House Info Card */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
         <div className="bg-emerald-800 px-6 py-4 flex justify-between items-center">
-          <h1 className="font-serif font-bold text-2xl text-white flex items-center gap-2">
+          <h1 className="font-bold text-2xl text-white flex items-center gap-2">
             <Home size={24} /> ข้อมูลบ้านเลขที่ {house.houseNumber}
           </h1>
           <a href={`/house/${house.id}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-emerald-100 hover:text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
@@ -90,7 +90,7 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
       </div>
 
       {/* Invoices List */}
-      <h2 className="font-serif font-bold text-xl text-[#1F2E22] mb-4 flex items-center gap-2">
+      <h2 className="font-bold text-xl text-[#1F2E22] mb-4 flex items-center gap-2">
         <Receipt size={20} /> ประวัติรายการบิลทั้งหมด
       </h2>
       
