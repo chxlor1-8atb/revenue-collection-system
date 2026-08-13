@@ -242,6 +242,8 @@ export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendi
           </table>
         </div>
       )}
+      </div>
+      )}
 
       {/* Modal */}
       {selectedSlip && (
