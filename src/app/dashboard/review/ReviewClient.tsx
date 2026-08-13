@@ -43,24 +43,26 @@ export default function ReviewClient() {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-            {waiting.map((tx: any) => {
-              const houses = [...new Set(tx.invoices.map((i: any) => i.houseNumber))];
-              return (
-                <div key={tx.id} className="bg-white rounded-xl p-4 border border-amber-100 shadow-sm flex items-center justify-between">
-                   <div>
-                      <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">รหัสรายการ #{tx.id}</span>
-                      <span className="font-bold text-slate-700">บ้านเลขที่ {houses.join(", ")}</span>
-                   </div>
-                   <div className="text-right">
-                      <span className="block font-mono font-bold text-lg text-amber-600">{parseFloat(tx.amount).toFixed(2)} ฿</span>
-                      <span className="text-[10px] text-amber-500 flex items-center gap-1 justify-end mt-1">
-                        <Loader2 size={10} className="animate-spin" /> รอสลิป...
-                      </span>
-                   </div>
-                </div>
-              );
-            })}
+          <div className="max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
+              {waiting.map((tx: any) => {
+                const houses = [...new Set(tx.invoices.map((i: any) => i.houseNumber))];
+                return (
+                  <div key={tx.id} className="bg-white rounded-xl p-4 border border-amber-100 shadow-sm flex items-center justify-between">
+                     <div>
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">รหัสรายการ #{tx.id}</span>
+                        <span className="font-bold text-slate-700">บ้านเลขที่ {houses.join(", ")}</span>
+                     </div>
+                     <div className="text-right">
+                        <span className="block font-mono font-bold text-lg text-amber-600">{parseFloat(tx.amount).toFixed(2)} ฿</span>
+                        <span className="text-[10px] text-amber-500 flex items-center gap-1 justify-end mt-1">
+                          <Loader2 size={10} className="animate-spin" /> รอสลิป...
+                        </span>
+                     </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
