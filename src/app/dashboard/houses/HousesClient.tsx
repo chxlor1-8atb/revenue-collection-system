@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { Plus, Edit2, Trash2 } from "lucide-react";
@@ -10,6 +10,7 @@ export default function HousesClient({ initialHouses }: { initialHouses: HouseDa
   const [showForm, setShowForm] = useState(false);
   const [editingHouse, setEditingHouse] = useState<HouseData | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
+  const [deletingHouse, setDeletingHouse] = useState<{ id: number; houseNumber: string } | null>(null);
 
   const handleAdd = () => {
     setEditingHouse(undefined);
@@ -23,16 +24,19 @@ export default function HousesClient({ initialHouses }: { initialHouses: HouseDa
     setError(null);
   };
 
-  const handleDelete = async (id: number, houseNumber: string) => {
-    if (confirm(`คุณแน่ใจหรือไม่ที่จะลบข้อมูลบ้านเลขที่ ${houseNumber}?\n\n*หมายเหตุ: จะลบได้ก็ต่อเมื่อไม่มีบิลค้างอยู่ในระบบเท่านั้น`)) {
-      setError(null);
-      const res = await deleteHouse(id);
-      if (!res.success) {
-        setError(res.error || "เกิดข้อผิดพลาดในการลบ");
-        // Scroll to top to see error
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+  const confirmDelete = (id: number, houseNumber: string) => {
+    setDeletingHouse({ id, houseNumber });
+  };
+
+  const handleDelete = async () => {
+    if (!deletingHouse) return;
+    setError(null);
+    const res = await deleteHouse(deletingHouse.id);
+    if (!res.success) {
+      setError(res.error || "เกิดข้อผิดพลาดในการลบ");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+    setDeletingHouse(null);
   };
 
   return (
@@ -93,7 +97,7 @@ export default function HousesClient({ initialHouses }: { initialHouses: HouseDa
                         แก้ไข
                       </button>
                       <button
-                        onClick={() => handleDelete(house.id!, house.houseNumber)}
+                        onClick={() => confirmDelete(house.id!, house.houseNumber)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       >
                         <Trash2 size={14} />
@@ -124,6 +128,40 @@ export default function HousesClient({ initialHouses }: { initialHouses: HouseDa
           onClose={() => setShowForm(false)}
           onSuccess={() => setShowForm(false)} 
         />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deletingHouse && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200 p-6">
+            <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4">
+              <Trash2 size={24} />
+            </div>
+            <h3 className="text-xl font-bold text-center text-slate-800 mb-2">
+              ยืนยันการลบ
+            </h3>
+            <p className="text-center text-slate-600 mb-2">
+              คุณต้องการลบข้อมูลบ้านเลขที่ <strong className="text-slate-900">{deletingHouse.houseNumber}</strong> ใช่หรือไม่?
+            </p>
+            <p className="text-center text-xs text-red-500 mb-6 bg-red-50 p-2 rounded-lg">
+              *จะลบได้ก็ต่อเมื่อไม่มีบิลค้างอยู่ในระบบเท่านั้น
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeletingHouse(null)}
+                className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition-colors"
+              >
+                ยกเลิก
+              </button>
+              <button
+                onClick={handleDelete}
+                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl transition-colors"
+              >
+                ลบข้อมูล
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
