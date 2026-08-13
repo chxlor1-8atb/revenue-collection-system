@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { lineMessages, houses, invoices, transactions } from "@/lib/schema";
 import { eq, and, desc, gte } from "drizzle-orm";
 import { put } from "@vercel/blob";
-import { verifySlipWithBase64 } from "@/lib/slip2go";
+import { verifySlipWithBuffer } from "@/lib/slip2go";
 
 export async function POST(request: Request) {
   try {
@@ -32,8 +32,6 @@ export async function POST(request: Request) {
           }
           console.log(`[Webhook] Image downloaded – size: ${imageBuffer.length} bytes`);
 
-          const base64Image = `data:image/jpeg;base64,${imageBuffer.toString('base64')}`;
-
           // 2. Upload to Vercel Blob (with error handling)
           let blobUrl = "";
           try {
@@ -52,7 +50,7 @@ export async function POST(request: Request) {
 
           // 3. Verify with Slip2Go
           console.log("[Webhook] Sending to Slip2Go for verification...");
-          const verification = await verifySlipWithBase64(base64Image);
+          const verification = await verifySlipWithBuffer(imageBuffer);
           console.log("[Webhook] Slip2Go result:", JSON.stringify(verification));
 
           if (!verification.success) {

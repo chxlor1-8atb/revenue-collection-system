@@ -15,7 +15,7 @@ export interface Slip2GoResponse {
   error?: string;
 }
 
-export async function verifySlipWithBase64(base64Image: string): Promise<Slip2GoResponse> {
+export async function verifySlipWithBuffer(imageBuffer: Buffer): Promise<Slip2GoResponse> {
   const apiKey = process.env.SLIP2GO_API_KEY;
   if (!apiKey) {
     console.warn("SLIP2GO_API_KEY is not set. Skipping verification.");
@@ -23,18 +23,16 @@ export async function verifySlipWithBase64(base64Image: string): Promise<Slip2Go
   }
 
   try {
-    const response = await fetch("https://connect.slip2go.com/api/verify-slip/qr-base64/info", {
+    const formData = new FormData();
+    formData.append('file', new Blob([imageBuffer], { type: 'image/jpeg' }), 'slip.jpg');
+
+    const response = await fetch("https://connect.slip2go.com/api/verify-slip/qr-image/info", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         "Authorization": `Bearer ${apiKey}`,
         "x-api-secret": apiKey, // Adding both common headers to be safe based on docs
       },
-      body: JSON.stringify({
-        payload: {
-          imageBase64: base64Image
-        }
-      }),
+      body: formData,
     });
 
     if (!response.ok) {
