@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Clock, RefreshCw, CheckCircle2 } from "lucide-react";
+import { Clock, RefreshCw, CheckCircle2, AlertCircle } from "lucide-react";
 
 export default function CountdownTimer({ createdAt, transactionId }: { createdAt: Date, transactionId?: number }) {
   const [timeLeft, setTimeLeft] = useState<number>(3 * 60);
@@ -82,8 +82,13 @@ export default function CountdownTimer({ createdAt, transactionId }: { createdAt
         body: JSON.stringify({ transactionId })
       });
       const data = await res.json();
-      if (data.transactionId) {
+      if (res.ok && data.transactionId) {
         window.location.href = `/pay/${data.transactionId}`;
+      } else {
+        console.error("Regenerate failed:", data.error);
+        isRegeneratingRef.current = false;
+        setIsRegenerating(false);
+        setIsExpired(true);
       }
     } catch (e) {
       console.error(e);
@@ -108,9 +113,26 @@ export default function CountdownTimer({ createdAt, transactionId }: { createdAt
 
   if (isExpired) {
     return (
-      <div className="flex items-center justify-center gap-2 text-amber-600 bg-amber-50 py-3 px-6 rounded-xl border border-amber-200 mt-4 mb-2 shadow-sm animate-pulse">
-        <RefreshCw size={18} className="animate-spin" />
-        <span className="font-semibold text-sm">หมดเวลา! กำลังสร้าง QR Code ใหม่...</span>
+      <div className="flex flex-col items-center justify-center gap-3 bg-amber-50 py-4 px-6 rounded-xl border border-amber-200 mt-4 mb-2 shadow-sm">
+        {!isRegeneratingRef.current ? (
+          <>
+            <div className="flex items-center gap-2 text-amber-700">
+              <AlertCircle size={18} />
+              <span className="font-semibold text-sm">หมดเวลาหรือเกิดข้อผิดพลาดในการสร้างใหม่</span>
+            </div>
+            <button 
+              onClick={() => window.location.href = '/dashboard/houses'} 
+              className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm"
+            >
+              กลับไปเลือกบิลใหม่
+            </button>
+          </>
+        ) : (
+          <div className="flex items-center gap-2 text-amber-600 animate-pulse">
+            <RefreshCw size={18} className="animate-spin" />
+            <span className="font-semibold text-sm">หมดเวลา! กำลังสร้าง QR Code ใหม่...</span>
+          </div>
+        )}
       </div>
     );
   }

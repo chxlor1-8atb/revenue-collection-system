@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 
     // 0. Auto-cleanup: Clear old stuck transactions
     const expiryTime = new Date();
-    expiryTime.setMinutes(expiryTime.getMinutes() - 3);
+    expiryTime.setMinutes(expiryTime.getMinutes() - 5); // 5 minutes grace period for cleanup
 
     try {
       // Find expired waiting_for_slip transactions
@@ -77,7 +77,10 @@ export async function POST(request: Request) {
           txInvoiceIds.every((id, index) => id === requestedInvoiceIds[index]);
           
         if (isExactMatch) {
-          // Exact same request! Check if it's still active (not expired)
+          // Exact same request! Check if it's still active (not expired 3 min rule)
+          const strictExpiryTime = new Date();
+          strictExpiryTime.setMinutes(strictExpiryTime.getMinutes() - 3);
+
           const txData = await db.select({ amount: transactions.amount, createdAt: transactions.createdAt })
             .from(transactions)
             .where(eq(transactions.id, txId))
@@ -85,7 +88,7 @@ export async function POST(request: Request) {
             
           if (txData.length > 0) {
              const txCreatedAt = new Date(txData[0].createdAt || new Date());
-             if (txCreatedAt >= expiryTime) {
+             if (txCreatedAt >= strictExpiryTime) {
                // Still active, just return this one!
                return NextResponse.json({ 
                  transactionId: txId, 
@@ -127,7 +130,10 @@ export async function POST(request: Request) {
     }
     const collectorId = qrCode[0].collectorId;
 
-    // We use the expiryTime defined at the top of the function for checking against pending transactions
+    // We use the strict 3-minute expiryTime for checking against pending transactions
+    const strictExpiryTime = new Date();
+    strictExpiryTime.setMinutes(strictExpiryTime.getMinutes() - 3);
+    
     let finalAmount = baseAmount;
 
     // To assign sequential decimals (e.g. .01, .02) starting from the lowest available
@@ -135,7 +141,7 @@ export async function POST(request: Request) {
     const activeTransactions = await db.select({ amount: transactions.amount }).from(transactions).where(
       and(
         eq(transactions.slipStatus, 'waiting_for_slip'),
-        gte(transactions.createdAt, expiryTime)
+        gte(transactions.createdAt, strictExpiryTime)
       )
     );
 
