@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { CheckCircle2, Smartphone, Globe, Calendar, Home, User, Search, Download, Printer, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import SlipModalButton from "@/components/SlipModalButton";
+import DatePicker from "@/components/DatePicker";
 import Link from "next/link";
 
 function formatThaiMonth(monthYear: string) {
@@ -114,21 +115,19 @@ export default function HistoryClient() {
 
         <div className="flex gap-4 w-full md:w-auto">
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">ตั้งแต่วันที่</label>
-            <input
-              type="date"
+            <label className="block text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wider">ตั้งแต่</label>
+            <DatePicker
               value={startDate}
-              onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-slate-700"
+              onChange={(val) => { setStartDate(val); setPage(1); }}
+              placeholder="เลือกวันที่"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">ถึงวันที่</label>
-            <input
-              type="date"
+            <label className="block text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wider">ถึงวันที่</label>
+            <DatePicker
               value={endDate}
-              onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-slate-700"
+              onChange={(val) => { setEndDate(val); setPage(1); }}
+              placeholder="เลือกวันที่"
             />
           </div>
         </div>

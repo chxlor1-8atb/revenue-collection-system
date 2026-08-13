@@ -1,0 +1,119 @@
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+
+export default function MonthPicker({
+  value, // format "YYYY-MM"
+  onChange,
+  disabled = false,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  disabled?: boolean;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  const currentYear = value ? parseInt(value.split("-")[0], 10) : new Date().getFullYear();
+  const currentMonth = value ? parseInt(value.split("-")[1], 10) : new Date().getMonth() + 1;
+  
+  const [viewYear, setViewYear] = useState(currentYear);
+
+  const thaiMonths = [
+    "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+    "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."
+  ];
+
+  const fullThaiMonths = [
+    "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+    "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+  ];
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleSelect = (monthIndex: number) => {
+    const mm = (monthIndex + 1).toString().padStart(2, "0");
+    onChange(`${viewYear}-${mm}`);
+    setIsOpen(false);
+  };
+
+  const displayValue = value ? `${fullThaiMonths[currentMonth - 1]} ${currentYear + 543}` : "เลือกเดือน/ปี";
+
+  return (
+    <div className="relative" ref={containerRef}>
+      <button
+        type="button"
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        disabled={disabled}
+        className={`w-full flex items-center justify-between px-4 py-3 bg-white border border-slate-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-50' : 'hover:border-slate-400'}`}
+      >
+        <span className="text-sm font-medium text-slate-700">{displayValue}</span>
+        <CalendarIcon size={16} className="text-slate-400" />
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.15 }}
+            className="absolute z-50 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden"
+          >
+            {/* Header / Year Selector */}
+            <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-100">
+              <button 
+                type="button"
+                onClick={() => setViewYear(y => y - 1)}
+                className="p-1 rounded-full hover:bg-slate-200 text-slate-600 transition-colors"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <div className="font-bold text-slate-800">
+                พ.ศ. {viewYear + 543}
+              </div>
+              <button 
+                type="button"
+                onClick={() => setViewYear(y => y + 1)}
+                className="p-1 rounded-full hover:bg-slate-200 text-slate-600 transition-colors"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+
+            {/* Months Grid */}
+            <div className="grid grid-cols-3 gap-2 p-4">
+              {thaiMonths.map((m, idx) => {
+                const isSelected = viewYear === currentYear && (idx + 1) === currentMonth;
+                return (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => handleSelect(idx)}
+                    className={`py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isSelected 
+                        ? 'bg-emerald-600 text-white shadow-sm' 
+                        : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-700'
+                    }`}
+                  >
+                    {m}
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

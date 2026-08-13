@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { X, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
+import MonthPicker from "@/components/MonthPicker";
 
 export default function GenerateInvoiceButton() {
   const [showModal, setShowModal] = useState(false);
@@ -114,12 +115,10 @@ export default function GenerateInvoiceButton() {
                     <label className="block text-sm font-medium text-slate-700 mb-2">
                       ระบุเดือน/ปี สำหรับบิลที่จะสร้าง <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="month"
+                    <MonthPicker
                       value={month}
-                      onChange={(e) => setMonth(e.target.value)}
+                      onChange={setMonth}
                       disabled={isGenerating}
-                      className="block w-full rounded-xl border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-3 border px-4"
                     />
                   </div>
 
