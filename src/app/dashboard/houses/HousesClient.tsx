@@ -77,11 +77,10 @@ export default function HousesClient({ initialHouses }: { initialHouses: HouseDa
                   <td className="p-4 text-slate-500">{house.zone || "-"}</td>
                   <td className="p-4">
                     <Link 
-                      href={`/house/${house.id}`} 
-                      target="_blank" 
+                      href={`/dashboard/houses/${house.id}`} 
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200"
                     >
-                      ดูสมุดบัญชี
+                      ดูข้อมูลบิล
                     </Link>
                   </td>
                   <td className="p-4 text-right">
