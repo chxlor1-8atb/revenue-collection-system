@@ -131,7 +131,7 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
                       )}
                     </td>
                     <td className="px-6 py-4 text-sm text-slate-500">
-                      {inv.tx?.updatedAt ? new Date(inv.tx.updatedAt).toLocaleDateString("th-TH") : "-"}
+                      {inv.tx?.paidAt ? new Date(inv.tx.paidAt).toLocaleDateString("th-TH") : (inv.tx?.createdAt ? new Date(inv.tx.createdAt).toLocaleDateString("th-TH") : "-")}
                     </td>
                   </tr>
                 ))}
