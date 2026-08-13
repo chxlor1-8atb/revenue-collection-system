@@ -8,10 +8,12 @@ export default function MonthPicker({
   value, // format "YYYY-MM"
   onChange,
   disabled = false,
+  placement = "bottom",
 }: {
   value: string;
   onChange: (val: string) => void;
   disabled?: boolean;
+  placement?: "top" | "bottom";
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -64,11 +66,13 @@ export default function MonthPicker({
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: placement === "top" ? 10 : -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            exit={{ opacity: 0, y: placement === "top" ? 10 : -10 }}
             transition={{ duration: 0.15 }}
-            className="absolute z-50 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden"
+            className={`absolute z-50 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden right-0 md:left-0 md:right-auto ${
+              placement === "top" ? "bottom-full mb-2" : "mt-2"
+            }`}
           >
             {/* Header / Year Selector */}
             <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-100">

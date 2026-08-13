@@ -119,6 +119,7 @@ export default function GenerateInvoiceButton() {
                       value={month}
                       onChange={setMonth}
                       disabled={isGenerating}
+                      placement="top"
                     />
                   </div>
 
