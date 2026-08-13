@@ -12,12 +12,14 @@
   --radius: 0.5rem;
   --font-sans: "IBM Plex Sans Thai", "Inter", sans-serif;
   --font-mono: "IBM Plex Mono", "JetBrains Mono", monospace;
+  --font-serif: "IBM Plex Sans Thai", "Inter", sans-serif;
 }
 
 @theme {
   --color-primary: #059669;
   --font-sans: "IBM Plex Sans Thai", "Inter", sans-serif;
   --font-mono: "IBM Plex Mono", "JetBrains Mono", monospace;
+  --font-serif: "IBM Plex Sans Thai", "Inter", sans-serif;
 }
 
 html, body {
