@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-import { CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, XCircle, ImageOff } from "lucide-react";
 
 export default function SlipReviewForm({ 
   transaction, 
@@ -53,11 +52,18 @@ export default function SlipReviewForm({
       <div className="flex gap-4">
         {/* Left side: Slip Image */}
         <div style={{ flex: "0 0 300px" }}>
-          <img 
-            src={transaction.slipImageUrl} 
-            alt="Slip" 
-            style={{ width: "100%", borderRadius: "4px", border: "1px solid var(--border)" }} 
-          />
+          {transaction.slipImageUrl && transaction.slipImageUrl !== "pending" ? (
+            <img 
+              src={transaction.slipImageUrl} 
+              alt="Slip" 
+              style={{ width: "100%", borderRadius: "4px", border: "1px solid var(--border)" }} 
+            />
+          ) : (
+            <div style={{ width: "100%", aspectRatio: "3/4", borderRadius: "4px", border: "1px solid var(--border)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "8px", background: "#f8f9fa", color: "#94a3b8" }}>
+              <ImageOff size={32} strokeWidth={1.5} />
+              <span style={{ fontSize: "12px" }}>ไม่มีรูปสลิป</span>
+            </div>
+          )}
         </div>
         
         {/* Right side: Details & Actions */}
