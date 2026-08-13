@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { searchHouseByNumber, getUnpaidInvoicesForHouse, approveLineSlip, rejectLineSlip } from "./actions";
@@ -24,12 +24,14 @@ export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendi
     setErrorMsg("");
 
     // If houseNumber already exists from LINE text, search immediately
+    // Pass the slip directly to avoid stale state closure bug
     if (slip.houseNumber) {
-      await handleSearchHouse(slip.houseNumber);
+      await handleSearchHouseForSlip(slip.houseNumber, parseFloat(slip.amount || "0"));
     }
   };
 
-  const handleSearchHouse = async (houseNumber: string) => {
+  // Accept slipAmt as parameter to avoid stale closure on selectedSlip state
+  const handleSearchHouseForSlip = async (houseNumber: string, slipAmt: number) => {
     setIsLoading(true);
     setErrorMsg("");
     try {
@@ -38,10 +40,9 @@ export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendi
         setFoundHouse(house);
         const invoices = await getUnpaidInvoicesForHouse(house.id);
         setUnpaidInvoices(invoices);
-        // Pre-select all invoices if their total matches the slip amount exactly
-        const totalDebt = invoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
-        if (totalDebt > 0 && slipAmount === totalDebt) {
-          setSelectedInvoices(invoices.map(i => i.id));
+        const totalDebt = invoices.reduce((sum: number, inv: any) => sum + parseFloat(inv.amount), 0);
+        if (totalDebt > 0 && slipAmt === totalDebt) {
+          setSelectedInvoices(invoices.map((i: any) => i.id));
         }
       } else {
         setFoundHouse(null);
@@ -90,6 +91,10 @@ export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendi
     }
   };
 
+  const handleSearchHouse = (houseNumber: string) => {
+    handleSearchHouseForSlip(houseNumber, slipAmount);
+  };
+  
   const slipAmount = parseFloat(selectedSlip?.amount || "0");
   const selectedTotal = unpaidInvoices
     .filter(i => selectedInvoices.includes(i.id))

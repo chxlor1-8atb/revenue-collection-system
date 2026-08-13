@@ -23,11 +23,12 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
 
   const house = result[0];
 
-  // A simple function to generate a fake "barcode" pattern
+  // Deterministic barcode using houseId as seed to prevent SSR/client hydration mismatch
   const generateBarcode = () => {
     return Array.from({ length: 40 }).map((_, i) => {
-      const width = Math.random() > 0.5 ? 'w-1' : 'w-0.5';
-      const opacity = Math.random() > 0.7 ? 'opacity-40' : 'opacity-100';
+      const seed = (houseId * 31 + i * 17) % 100;
+      const width = seed > 50 ? 'w-1' : 'w-0.5';
+      const opacity = seed > 70 ? 'opacity-40' : 'opacity-100';
       return <div key={i} className={`h-full bg-slate-300/30 ${width} ${opacity} mx-[1px]`}></div>
     });
   };

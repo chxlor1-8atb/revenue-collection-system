@@ -4,7 +4,6 @@ import { eq } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
 import generatePayload from "promptpay-qr";
 import qrcode from "qrcode";
-import SlipUploadForm from "@/components/SlipUploadForm";
 import CountdownTimer from "@/components/CountdownTimer";
 
 export default async function PayPage({ params }: { params: Promise<{ transactionId: string }> }) {
