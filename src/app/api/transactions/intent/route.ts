@@ -61,16 +61,49 @@ export async function POST(request: Request) {
       );
 
     if (lockedInvoices.length > 0) {
-      // The user wants to generate a new QR, so we clear the old one instead of blocking them.
-      const txIdsToClear = [...new Set(lockedInvoices.map(i => i.transactionId))];
+      const activeTxIds = [...new Set(lockedInvoices.map(i => i.transactionId))];
       
-      if (txIdsToClear.length > 0) {
+      // If there is exactly ONE active transaction involved, let's check if it's an exact match
+      if (activeTxIds.length === 1) {
+        const txId = activeTxIds[0];
+        const invoicesForThisTx = await db.select({ id: invoices.id })
+          .from(invoices)
+          .where(eq(invoices.transactionId, txId));
+          
+        const txInvoiceIds = invoicesForThisTx.map(i => i.id).sort();
+        const requestedInvoiceIds = [...invoiceIds].sort();
+        
+        const isExactMatch = txInvoiceIds.length === requestedInvoiceIds.length && 
+          txInvoiceIds.every((id, index) => id === requestedInvoiceIds[index]);
+          
+        if (isExactMatch) {
+          // Exact same request! Check if it's still active (not expired)
+          const txData = await db.select({ amount: transactions.amount, createdAt: transactions.createdAt })
+            .from(transactions)
+            .where(eq(transactions.id, txId))
+            .limit(1);
+            
+          if (txData.length > 0) {
+             const txCreatedAt = new Date(txData[0].createdAt || new Date());
+             if (txCreatedAt >= expiryTime) {
+               // Still active, just return this one!
+               return NextResponse.json({ 
+                 transactionId: txId, 
+                 amount: parseFloat(txData[0].amount || "0") 
+               });
+             }
+          }
+        }
+      }
+
+      // If it's NOT an exact match (or it's expired), we clear the old one(s) instead of blocking.
+      if (activeTxIds.length > 0) {
         await db.update(invoices)
           .set({ transactionId: null })
-          .where(inArray(invoices.transactionId, txIdsToClear));
+          .where(inArray(invoices.transactionId, activeTxIds));
           
         await db.delete(transactions)
-          .where(inArray(transactions.id, txIdsToClear));
+          .where(inArray(transactions.id, activeTxIds));
       }
     }
 
