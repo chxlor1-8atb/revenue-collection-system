@@ -91,7 +91,7 @@ export async function POST(request: Request) {
             const tx = waitingTx[0];
             // Perfect decimal match!
             await db.update(transactions)
-              .set({ slipImageUrl: blob.url, slipStatus: 'verified', paidAt: new Date(), verifiedBy: 'line_bot' })
+              .set({ slipImageUrl: blobUrl, slipStatus: 'verified', paidAt: new Date(), verifiedBy: 'line_bot' })
               .where(eq(transactions.id, tx.id));
             
             await db.update(invoices)
@@ -101,7 +101,7 @@ export async function POST(request: Request) {
             await db.insert(lineMessages).values({
               lineUserId: userId,
               type: "image",
-              imageUrl: blob.url,
+              imageUrl: blobUrl,
               status: "verified_auto",
               amount: slipAmount,
               senderName: verification.data?.sender.name,
@@ -125,7 +125,7 @@ export async function POST(request: Request) {
           await db.insert(lineMessages).values({
             lineUserId: userId,
             type: "image",
-            imageUrl: blob.url,
+            imageUrl: blobUrl,
             status: "pending",
             amount: slipAmount,
             senderName: verification.data?.sender.name,
