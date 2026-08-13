@@ -137,31 +137,43 @@ export async function POST(request: Request) {
         .map(amt => Math.round((amt - baseAmount) * 100))
     );
 
-    // Find the lowest available decimal from 1 to 99
+    // Find the lowest available decimal from 1 to 99 with a retry loop
     let selectedCents = 1;
-    let foundUnique = false;
+    let newTx: any[] | null = null;
     
-    while (selectedCents <= 99) {
+    while (selectedCents <= 99 && !newTx) {
       if (!usedCents.has(selectedCents)) {
         finalAmount = baseAmount + (selectedCents / 100);
-        foundUnique = true;
-        break;
+        
+        try {
+          // Attempt to insert with a unique lockKey
+          // If another request already inserted this amount, it will throw a unique constraint error
+          newTx = await db.insert(transactions).values({
+            qrCodeId: qrCode[0].id,
+            collectorId: collectorId,
+            amount: finalAmount.toString(),
+            slipImageUrl: "pending", 
+            slipStatus: "waiting_for_slip",
+            lockKey: `waiting_${finalAmount}`, // Unique constraint handles race conditions
+          }).returning();
+        } catch (insertError: any) {
+          // If unique constraint error (e.g., code 23505 in Postgres), try the next cent
+          if (insertError.code === '23505' || insertError.message?.includes('unique constraint')) {
+            console.log(`Amount ${finalAmount} was just taken by another transaction. Retrying...`);
+            newTx = null; // Will loop again
+          } else {
+            throw insertError; // Unexpected error
+          }
+        }
       }
-      selectedCents++;
+      if (!newTx) {
+        selectedCents++;
+      }
     }
 
-    if (!foundUnique) {
+    if (!newTx) {
       return NextResponse.json({ error: "System busy. Too many transactions with this amount. Please try again in 3 minutes." }, { status: 429 });
     }
-
-    // Create a waiting transaction
-    const newTx = await db.insert(transactions).values({
-      qrCodeId: qrCode[0].id,
-      collectorId: collectorId,
-      amount: finalAmount.toString(),
-      slipImageUrl: "pending", // Placeholder since schema is notNull
-      slipStatus: "waiting_for_slip", // Special status
-    }).returning();
 
     const transactionId = newTx[0].id;
 

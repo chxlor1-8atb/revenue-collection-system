@@ -31,10 +31,10 @@ export async function POST(request: Request) {
       status: 'unpaid'
     }));
 
-    // 3. Bulk insert
-    // Note: In production, we'd want to check if the invoice already exists to avoid duplicates
-    // But for this simple implementation, we just insert.
-    await db.insert(invoices).values(newInvoices);
+    // 3. Bulk insert with conflict resolution
+    await db.insert(invoices).values(newInvoices).onConflictDoNothing({
+      target: [invoices.houseId, invoices.monthYear]
+    });
 
     return NextResponse.json({ success: true, count: newInvoices.length });
   } catch (error) {

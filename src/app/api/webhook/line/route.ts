@@ -72,25 +72,33 @@ export async function POST(request: Request) {
           const slipAmount = verification.data?.amount.toString();
 
           // 3.5 Check if this exact amount matches any waiting_for_slip transaction within the last 3 minutes
-          const expiryTime = new Date();
-          expiryTime.setMinutes(expiryTime.getMinutes() - 3);
+          // Important: Only match if we have a valid non-zero amount to prevent matching null or "0"
+          if (slipAmount && slipAmount !== "0" && slipAmount !== "0.00") {
+            const expiryTime = new Date();
+            expiryTime.setMinutes(expiryTime.getMinutes() - 3);
 
-          const waitingTx = await db.select()
-            .from(transactions)
-            .where(and(
-              eq(transactions.amount, slipAmount || "0"), 
-              eq(transactions.slipStatus, 'waiting_for_slip'),
-              gte(transactions.createdAt, expiryTime)
-            ))
-            .orderBy(desc(transactions.createdAt))
-            .limit(1);
+            const waitingTx = await db.select()
+              .from(transactions)
+              .where(and(
+                eq(transactions.amount, slipAmount), 
+                eq(transactions.slipStatus, 'waiting_for_slip'),
+                gte(transactions.createdAt, expiryTime)
+              ))
+              .orderBy(desc(transactions.createdAt))
+              .limit(1);
 
-          if (waitingTx.length > 0) {
-            const tx = waitingTx[0];
-            // Perfect decimal match!
-            await db.update(transactions)
-              .set({ slipImageUrl: blobUrl, slipStatus: 'verified', paidAt: new Date(), verifiedBy: 'line_bot' })
-              .where(eq(transactions.id, tx.id));
+            if (waitingTx.length > 0) {
+              const tx = waitingTx[0];
+              // Perfect decimal match!
+              await db.update(transactions)
+                .set({ 
+                  slipImageUrl: blobUrl, 
+                  slipStatus: 'verified', 
+                  paidAt: new Date(), 
+                  verifiedBy: 'line_bot',
+                  lockKey: null // Free up the lockKey so others can use this amount
+                })
+                .where(eq(transactions.id, tx.id));
             
             await db.update(invoices)
               .set({ status: 'paid' })
@@ -118,7 +126,7 @@ export async function POST(request: Request) {
             await replyMessage(replyToken, `ตรวจสอบสลิปสำเร็จ! ✅\nยอดเงิน: ${slipAmount} บาท\nระบบได้ทำการตัดยอดหนี้ให้เรียบร้อยแล้วค่ะ${houseText} ขอบคุณที่ใช้บริการ 💚`);
             continue;
           }
-
+          
           // 4. Save to database (Normal fallback flow)
           await db.insert(lineMessages).values({
             lineUserId: userId,

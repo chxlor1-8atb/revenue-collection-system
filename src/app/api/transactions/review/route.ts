@@ -99,7 +99,8 @@ export async function POST(request: Request) {
     await db.update(transactions)
       .set({ 
         slipStatus: status,
-        verifiedBy: session.user?.name || "admin"
+        verifiedBy: session.user?.name || "admin",
+        lockKey: null
       })
       .where(eq(transactions.id, transactionId));
 

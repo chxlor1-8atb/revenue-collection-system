@@ -1,4 +1,4 @@
-import { pgTable, serial, text, boolean, timestamp, integer, numeric, date } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, boolean, timestamp, integer, numeric, date, uniqueIndex } from 'drizzle-orm/pg-core';
 
 export const collectors = pgTable('collectors', {
   id: serial('id').primaryKey(),
@@ -43,6 +43,7 @@ export const transactions = pgTable('transactions', {
   createdAt: timestamp('created_at').defaultNow(),
   notifiedAt: timestamp('notified_at'),
   verifiedBy: text('verified_by'),
+  lockKey: text('lock_key').unique(),
 });
 
 export const invoices = pgTable('invoices', {
@@ -54,6 +55,10 @@ export const invoices = pgTable('invoices', {
   transactionId: integer('transaction_id').references(() => transactions.id), // Link to the payment if any
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => {
+  return {
+    uniqueHouseMonth: uniqueIndex('unique_house_month').on(table.houseId, table.monthYear),
+  };
 });
 
 export const adminUsers = pgTable('admin_users', {
