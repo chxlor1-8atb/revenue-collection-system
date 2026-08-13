@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { replyMessage, getMessageContent } from "@/lib/line";
 import { db } from "@/lib/db";
-import { lineMessages, houses, invoices, transactions } from "@/lib/schema";
+import { lineMessages, houses, invoices, transactions, qrCodes } from "@/lib/schema";
 import { eq, and, desc, gte } from "drizzle-orm";
 import { put } from "@vercel/blob";
 import { verifySlipWithBuffer } from "@/lib/slip2go";
@@ -166,11 +166,30 @@ export async function POST(request: Request) {
               
               if (totalDebt > 0 && slipData.amount && parseFloat(slipData.amount) === totalDebt) {
                 // Perfect match! Auto-approve
-                await db.update(lineMessages).set({ status: 'verified_auto' }).where(eq(lineMessages.id, slipData.id));
-                await db.update(invoices).set({ status: 'paid' }).where(eq(invoices.houseId, house.id));
-                
-                await replyMessage(replyToken, `✅ ยืนยันข้อมูลสำเร็จ!\nระบบได้ตัดยอดหนี้ ${totalDebt} บาท สำหรับบ้านเลขที่ ${text} เรียบร้อยแล้วค่ะ ขอบคุณที่ใช้บริการ 💚`);
-                return NextResponse.json({ status: "ok" });
+                // We need to create a transaction to record this in the ledger
+                const defaultQr = await db.select().from(qrCodes).where(eq(qrCodes.active, true)).limit(1);
+                if (defaultQr.length > 0) {
+                  const newTx = await db.insert(transactions).values({
+                    qrCodeId: defaultQr[0].id,
+                    collectorId: defaultQr[0].collectorId,
+                    amount: slipData.amount,
+                    amountClaimedByPayer: slipData.amount,
+                    slipImageUrl: slipData.imageUrl || "",
+                    slipStatus: "verified",
+                    paidAt: new Date(),
+                    verifiedBy: "line_bot_auto",
+                  }).returning();
+
+                  await db.update(lineMessages).set({ status: 'verified_auto', transactionId: newTx[0].id }).where(eq(lineMessages.id, slipData.id));
+                  await db.update(invoices).set({ status: 'paid', transactionId: newTx[0].id }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
+                  
+                  await replyMessage(replyToken, `✅ ยืนยันข้อมูลสำเร็จ!\nระบบได้ตัดยอดหนี้ ${totalDebt} บาท สำหรับบ้านเลขที่ ${text} เรียบร้อยแล้วค่ะ ขอบคุณที่ใช้บริการ 💚`);
+                  return NextResponse.json({ status: "ok" });
+                } else {
+                  // CRITICAL: Cannot create transaction without a QR code. Fallback to manual review.
+                  await replyMessage(replyToken, `ขอบคุณค่ะ! ระบบได้บันทึกสลิปสำหรับบ้านเลขที่ ${text} แล้ว\n\nเจ้าหน้าที่จะทำการตรวจสอบและอัปเดตยอดในระบบให้ภายใน 24 ชั่วโมงค่ะ 💚`);
+                  return NextResponse.json({ status: "ok" });
+                }
               }
             } else if (houseResult.length > 1) {
               await replyMessage(replyToken, `พบบ้านเลขที่ ${text} ซ้ำกันหลายรายการในระบบ\nเจ้าหน้าที่จะทำการตรวจสอบข้อมูลและอัปเดตยอดให้ภายใน 24 ชั่วโมงค่ะ 💚`);
