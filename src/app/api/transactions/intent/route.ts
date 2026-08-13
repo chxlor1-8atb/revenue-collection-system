@@ -47,22 +47,31 @@ export async function POST(request: Request) {
     }
 
     // Check if any invoice is currently locked (has an active waiting_for_slip transaction)
-    const lockedInvoices = await db.select({ id: invoices.id })
+    const lockedInvoices = await db.select({ 
+        id: invoices.id, 
+        transactionId: transactions.id 
+      })
       .from(invoices)
       .innerJoin(transactions, eq(invoices.transactionId, transactions.id))
       .where(
         and(
           inArray(invoices.id, invoiceIds),
-          eq(transactions.slipStatus, 'waiting_for_slip'),
-          gte(transactions.createdAt, expiryTime) // Still active (less than 3 mins old)
+          eq(transactions.slipStatus, 'waiting_for_slip')
         )
-      )
-      .limit(1);
+      );
 
     if (lockedInvoices.length > 0) {
-      return NextResponse.json({ 
-        error: "บิลบางรายการกำลังอยู่ระหว่างการทำรายการชำระเงิน กรุณารอ 3 นาทีแล้วลองใหม่" 
-      }, { status: 409 });
+      // The user wants to generate a new QR, so we clear the old one instead of blocking them.
+      const txIdsToClear = [...new Set(lockedInvoices.map(i => i.transactionId))];
+      
+      if (txIdsToClear.length > 0) {
+        await db.update(invoices)
+          .set({ transactionId: null })
+          .where(inArray(invoices.transactionId, txIdsToClear));
+          
+        await db.delete(transactions)
+          .where(inArray(transactions.id, txIdsToClear));
+      }
     }
 
     // Calculate base amount
