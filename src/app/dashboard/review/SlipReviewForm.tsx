@@ -1,11 +1,17 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { CheckCircle, XCircle } from "lucide-react";
 
-export default function SlipReviewForm({ transaction }: { transaction: any }) {
+export default function SlipReviewForm({ 
+  transaction, 
+  onReviewed 
+}: { 
+  transaction: any;
+  onReviewed?: () => void;
+}) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
@@ -26,7 +32,11 @@ export default function SlipReviewForm({ transaction }: { transaction: any }) {
       });
 
       if (res.ok) {
-        router.refresh(); // Refresh the page to remove the reviewed slip
+        if (onReviewed) {
+          onReviewed();
+        } else {
+          router.refresh();
+        }
       } else {
         alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
       }
