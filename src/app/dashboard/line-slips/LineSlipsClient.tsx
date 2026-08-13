@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { searchHouseByNumber, getUnpaidInvoicesForHouse, approveLineSlip, rejectLineSlip } from "./actions";
+import { CheckCircle2, Clock } from "lucide-react";
 
-export default function LineSlipsClient({ pendingSlips }: { pendingSlips: any[] }) {
+export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendingSlips: any[], verifiedSlips: any[] }) {
+  const [activeTab, setActiveTab] = useState<"pending" | "verified">("pending");
   const [selectedSlip, setSelectedSlip] = useState<any | null>(null);
   const [searchHouseNumber, setSearchHouseNumber] = useState("");
   const [foundHouse, setFoundHouse] = useState<any | null>(null);
@@ -93,12 +95,85 @@ export default function LineSlipsClient({ pendingSlips }: { pendingSlips: any[] 
     .reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-      {pendingSlips.length === 0 ? (
-        <div className="p-8 text-center text-slate-500 font-sans">
-          ไม่มีสลิปจาก LINE ที่รอดำเนินการ
+    <div className="space-y-4">
+      {/* Tabs */}
+      <div className="flex gap-1 bg-slate-100 p-1 rounded-xl w-fit">
+        <button
+          onClick={() => setActiveTab("pending")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "pending" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+        >
+          <Clock size={14} />
+          รอดำเนินการ
+          {pendingSlips.length > 0 && (
+            <span className="bg-amber-500 text-white text-xs px-1.5 py-0.5 rounded-full">{pendingSlips.length}</span>
+          )}
+        </button>
+        <button
+          onClick={() => setActiveTab("verified")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "verified" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+        >
+          <CheckCircle2 size={14} />
+          ยืนยันแล้ว
+          {verifiedSlips.length > 0 && (
+            <span className="bg-emerald-500 text-white text-xs px-1.5 py-0.5 rounded-full">{verifiedSlips.length}</span>
+          )}
+        </button>
+      </div>
+
+      {/* Verified Slips Tab */}
+      {activeTab === "verified" && (
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          {verifiedSlips.length === 0 ? (
+            <div className="p-8 text-center text-slate-500">ยังไม่มีสลิปที่ยืนยันสำเร็จอัตโนมัติ</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[600px]">
+                <thead>
+                  <tr className="bg-slate-50 border-b border-slate-200">
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">วัน-เวลา</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">รูปสลิป</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">ผู้โอน</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">ยอดเงิน</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">สถานะ</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {verifiedSlips.map((slip) => (
+                    <tr key={slip.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-6 py-4 font-mono text-sm text-slate-500">
+                        {slip.createdAt?.toLocaleString("th-TH")}
+                      </td>
+                      <td className="px-6 py-4">
+                        {slip.imageUrl ? (
+                          <a href={slip.imageUrl} target="_blank" rel="noreferrer">
+                            <img src={slip.imageUrl} alt="Slip" className="w-14 h-14 object-cover rounded-md border cursor-pointer hover:opacity-80" />
+                          </a>
+                        ) : <span className="text-slate-400 text-sm">-</span>}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-slate-700">{slip.senderName || "-"}</td>
+                      <td className="px-6 py-4 font-bold text-emerald-600">฿{slip.amount}</td>
+                      <td className="px-6 py-4">
+                        <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs px-2 py-1 rounded-full border border-emerald-100">
+                          <CheckCircle2 size={11} /> ยืนยันอัตโนมัติ
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
-      ) : (
+      )}
+
+      {/* Pending Slips Tab */}
+      {activeTab === "pending" && (
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        {pendingSlips.length === 0 ? (
+          <div className="p-8 text-center text-slate-500 font-sans">
+            ไม่มีสลิปจาก LINE ที่รอดำเนินการ
+          </div>
+        ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
@@ -313,10 +388,10 @@ export default function LineSlipsClient({ pendingSlips }: { pendingSlips: any[] 
                 </button>
               </div>
             </div>
-
           </div>
         </div>
       )}
+
     </div>
   );
 }
