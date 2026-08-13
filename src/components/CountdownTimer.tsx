@@ -25,7 +25,7 @@ export default function CountdownTimer({ createdAt, transactionId }: { createdAt
           if (pollingRef.current) clearInterval(pollingRef.current);
           // Small delay for the animation, then redirect
           setTimeout(() => {
-            router.push(`/pay/${transactionId}/success`);
+            window.location.href = `/pay/${transactionId}/success`;
           }, 1500);
         }
       } catch (e) {
@@ -83,7 +83,7 @@ export default function CountdownTimer({ createdAt, transactionId }: { createdAt
       });
       const data = await res.json();
       if (data.transactionId) {
-        router.push(`/pay/${data.transactionId}`);
+        window.location.href = `/pay/${data.transactionId}`;
       }
     } catch (e) {
       console.error(e);
