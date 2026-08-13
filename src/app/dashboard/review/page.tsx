@@ -8,10 +8,7 @@ export default async function SlipReviewPage() {
   // Fetch pending transactions
   const pendingTransactions = await db.select()
     .from(transactions)
-    .where(or(
-      eq(transactions.slipStatus, 'pending'),
-      eq(transactions.slipStatus, 'waiting_for_slip')
-    ))
+    .where(eq(transactions.slipStatus, 'pending'))
     .orderBy(desc(transactions.createdAt));
 
   // If there are pending transactions, fetch their associated invoices and houses
