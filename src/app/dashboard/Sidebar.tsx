@@ -30,16 +30,16 @@ export default function Sidebar({ userName }: { userName: string }) {
 
   return (
     <aside style={{ width: "250px", backgroundColor: "#1F2E22", color: "#F6F4EC", borderRight: "1px solid #2d4732", display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: "1.5rem", borderBottom: "1px solid #2d4732", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", position: "relative" }}>
+      <div style={{ padding: "1.25rem", borderBottom: "1px solid #2d4732", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", position: "relative" }}>
         
 
-        <img src="/nangrong-logo.png" alt="เทศบาลเมืองนางรอง" style={{ width: "3.5rem", height: "3.5rem", objectFit: "contain", marginBottom: "0.75rem", filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />
-        <h2 className="font-bold text-lg" style={{ letterSpacing: "0.02em" }}>สมุดบัญชีรายได้</h2>
-        <p className="font-sans text-xs" style={{ color: "#D8D3C3" }}>เทศบาลเมืองนางรอง</p>
+        <img src="/nangrong-logo.png" alt="เทศบาลเมืองนางรอง" style={{ width: "3rem", height: "3rem", objectFit: "contain", marginBottom: "0.5rem", filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />
+        <h2 className="font-bold text-base" style={{ letterSpacing: "0.02em" }}>สมุดบัญชีรายได้</h2>
+        <p className="font-sans text-[11px]" style={{ color: "#D8D3C3" }}>เทศบาลเมืองนางรอง</p>
       </div>
       
-      <nav style={{ flex: 1, padding: "1.5rem 0" }}>
-        <ul className="flex flex-col gap-2 px-3 m-0 list-none">
+      <nav style={{ flex: 1, padding: "1rem 0" }}>
+        <ul className="flex flex-col gap-1 px-3 m-0 list-none">
           {navItems.map((item, index) => {
             const isActive = pathname === item.href;
             return (
@@ -53,7 +53,7 @@ export default function Sidebar({ userName }: { userName: string }) {
                 <Link 
                   href={item.href} 
                   className={`
-                    relative flex items-center gap-3 px-4 py-3 rounded-xl transition-colors z-10 overflow-hidden group
+                    relative flex items-center gap-3 px-4 py-2.5 rounded-xl transition-colors z-10 overflow-hidden group
                     ${isActive ? "text-[#F6F4EC]" : "text-[#A3B1A6] hover:text-[#F6F4EC]"}
                   `}
                 >
@@ -97,7 +97,7 @@ export default function Sidebar({ userName }: { userName: string }) {
         </ul>
       </nav>
       
-      <div style={{ padding: "1rem 1.5rem", borderTop: "1px solid #2d4732" }}>
+      <div style={{ padding: "0.75rem 1.25rem", borderTop: "1px solid #2d4732" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem", color: "#D8D3C3" }}>
           <User size={14} strokeWidth={1.5} />
           <p className="font-mono text-sm" style={{ wordBreak: 'break-all' }}>{userName}</p>
