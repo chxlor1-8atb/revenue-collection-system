@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -13,6 +13,7 @@ import {
   User,
   LogOut
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Sidebar({ userName }: { userName: string }) {
   const pathname = usePathname();
@@ -38,31 +39,59 @@ export default function Sidebar({ userName }: { userName: string }) {
       </div>
       
       <nav style={{ flex: 1, padding: "1.5rem 0" }}>
-        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-          {navItems.map((item) => {
+        <ul className="flex flex-col gap-2 px-3 m-0 list-none">
+          {navItems.map((item, index) => {
             const isActive = pathname === item.href;
             return (
-              <li key={item.href}>
+              <motion.li 
+                key={item.href}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.05, duration: 0.3, ease: "easeOut" }}
+                className="relative"
+              >
                 <Link 
                   href={item.href} 
-                  style={{ 
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.75rem",
-                    padding: "0.75rem 1.5rem", 
-                    borderLeft: isActive ? "3px solid #C9A227" : "3px solid transparent",
-                    backgroundColor: isActive ? "rgba(255,255,255,0.03)" : "transparent",
-                    color: isActive ? "#F6F4EC" : "#A3B1A6",
-                    transition: "all 0.2s"
-                  }}
-                  className="hover:bg-white/5 hover:text-[#F6F4EC]"
+                  className={`
+                    relative flex items-center gap-3 px-4 py-3 rounded-xl transition-colors z-10 overflow-hidden group
+                    ${isActive ? "text-[#F6F4EC]" : "text-[#A3B1A6] hover:text-[#F6F4EC]"}
+                  `}
                 >
-                  <span style={{ display: "flex", alignItems: "center", opacity: isActive ? 1 : 0.8 }}>{item.icon}</span>
-                  <span className={`font-sans ${isActive ? "font-semibold" : "font-normal"}`}>
+                  {/* Sliding Active Background */}
+                  {isActive && (
+                    <motion.div
+                      layoutId="sidebar-active-pill"
+                      className="absolute inset-0 bg-white/10 rounded-xl z-[-1]"
+                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                    />
+                  )}
+                  
+                  {/* Subtle Hover Background for non-active */}
+                  {!isActive && (
+                    <div className="absolute inset-0 bg-white/0 group-hover:bg-white/5 rounded-xl z-[-1] transition-colors duration-300" />
+                  )}
+
+                  {/* Active Border Indicator (Left) */}
+                  {isActive && (
+                    <motion.div 
+                      layoutId="sidebar-active-indicator"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-[#C9A227] rounded-r-full shadow-[0_0_8px_rgba(201,162,39,0.5)]"
+                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                    />
+                  )}
+
+                  <motion.span 
+                    className="flex items-center relative z-10"
+                    animate={{ scale: isActive ? 1.1 : 1 }}
+                    transition={{ type: "spring", stiffness: 400 }}
+                  >
+                    {item.icon}
+                  </motion.span>
+                  <span className={`font-sans relative z-10 ${isActive ? "font-bold tracking-wide" : "font-medium"}`}>
                     {item.name}
                   </span>
                 </Link>
-              </li>
+              </motion.li>
             );
           })}
         </ul>
