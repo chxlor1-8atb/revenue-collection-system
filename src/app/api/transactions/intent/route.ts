@@ -119,25 +119,39 @@ export async function POST(request: Request) {
 
     // We use the expiryTime defined at the top of the function for checking against pending transactions
     let finalAmount = baseAmount;
-    let attempts = 0;
-    let isUnique = false;
 
-    // Loop up to 10 times to find a unique decimal
-    while (!isUnique && attempts < 10) {
-      const randomCents = Math.floor(Math.random() * 99) + 1;
-      const amountCandidate = baseAmount + (randomCents / 100);
-      
-      const existing = await db.select().from(transactions).where(and(
-         eq(transactions.amount, amountCandidate.toString()),
-         eq(transactions.slipStatus, 'waiting_for_slip'),
-         gte(transactions.createdAt, expiryTime)
-      )).limit(1);
+    // To assign sequential decimals (e.g. .01, .02) starting from the lowest available
+    // First, find all currently active waiting transactions to see which decimals are taken
+    const activeTransactions = await db.select({ amount: transactions.amount }).from(transactions).where(
+      and(
+        eq(transactions.slipStatus, 'waiting_for_slip'),
+        gte(transactions.createdAt, expiryTime)
+      )
+    );
 
-      if (existing.length === 0) {
-        finalAmount = amountCandidate;
-        isUnique = true;
+    // Extract the decimals (cents) that are currently in use for this exact baseAmount
+    const usedCents = new Set(
+      activeTransactions
+        .map(tx => parseFloat(tx.amount || "0"))
+        .filter(amt => Math.floor(amt) === baseAmount)
+        .map(amt => Math.round((amt - baseAmount) * 100))
+    );
+
+    // Find the lowest available decimal from 1 to 99
+    let selectedCents = 1;
+    let foundUnique = false;
+    
+    while (selectedCents <= 99) {
+      if (!usedCents.has(selectedCents)) {
+        finalAmount = baseAmount + (selectedCents / 100);
+        foundUnique = true;
+        break;
       }
-      attempts++;
+      selectedCents++;
+    }
+
+    if (!foundUnique) {
+      return NextResponse.json({ error: "System busy. Too many transactions with this amount. Please try again in 3 minutes." }, { status: 429 });
     }
 
     // Create a waiting transaction
