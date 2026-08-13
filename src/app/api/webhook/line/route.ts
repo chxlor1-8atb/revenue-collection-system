@@ -126,8 +126,9 @@ export async function POST(request: Request) {
             await replyMessage(replyToken, `ตรวจสอบสลิปสำเร็จ! ✅\nยอดเงิน: ${slipAmount} บาท\nระบบได้ทำการตัดยอดหนี้ให้เรียบร้อยแล้วค่ะ${houseText} ขอบคุณที่ใช้บริการ 💚`);
             continue;
           }
+        }
           
-          // 4. Save to database (Normal fallback flow)
+        // 4. Save to database (Normal fallback flow)
           await db.insert(lineMessages).values({
             lineUserId: userId,
             type: "image",
