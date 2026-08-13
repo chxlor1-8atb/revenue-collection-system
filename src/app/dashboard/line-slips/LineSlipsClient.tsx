@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { searchHouseByNumber, getUnpaidInvoicesForHouse, approveLineSlip, rejectLineSlip } from "./actions";
 import { CheckCircle2, Clock } from "lucide-react";
+import SlipModalButton from "@/components/SlipModalButton";
 
 export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendingSlips: any[], verifiedSlips: any[] }) {
   const [activeTab, setActiveTab] = useState<"pending" | "verified">("pending");
@@ -145,9 +146,9 @@ export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendi
                       </td>
                       <td className="px-6 py-4">
                         {slip.imageUrl ? (
-                          <a href={slip.imageUrl} target="_blank" rel="noreferrer">
+                          <SlipModalButton imageUrl={slip.imageUrl}>
                             <img src={slip.imageUrl} alt="Slip" className="w-14 h-14 object-cover rounded-md border cursor-pointer hover:opacity-80" />
-                          </a>
+                          </SlipModalButton>
                         ) : <span className="text-slate-400 text-sm">-</span>}
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-700">{slip.senderName || "-"}</td>
@@ -193,9 +194,9 @@ export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendi
                   </td>
                   <td className="px-6 py-4">
                     {slip.imageUrl ? (
-                      <a href={slip.imageUrl} target="_blank" rel="noreferrer">
+                      <SlipModalButton imageUrl={slip.imageUrl}>
                         <img src={slip.imageUrl} alt="Slip" className="w-16 h-16 object-cover rounded-md border border-slate-200 cursor-pointer hover:opacity-80 transition-opacity" />
-                      </a>
+                      </SlipModalButton>
                     ) : (
                       <span className="text-slate-400 text-sm font-sans">-</span>
                     )}
@@ -272,9 +273,9 @@ export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendi
                   <div className="text-sm text-slate-500 mb-4">ผู้โอน: {selectedSlip.senderName || '-'}</div>
                   
                   {selectedSlip.imageUrl ? (
-                    <a href={selectedSlip.imageUrl} target="_blank" rel="noreferrer">
+                    <SlipModalButton imageUrl={selectedSlip.imageUrl}>
                       <img src={selectedSlip.imageUrl} alt="Slip" className="w-full rounded-md border border-slate-200 cursor-zoom-in" />
-                    </a>
+                    </SlipModalButton>
                   ) : (
                     <div className="w-full aspect-[9/16] bg-slate-100 rounded flex items-center justify-center text-slate-400">ไม่มีรูป</div>
                   )}
