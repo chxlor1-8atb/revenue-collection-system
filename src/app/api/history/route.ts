@@ -71,10 +71,7 @@ export async function GET(req: NextRequest) {
     const totalCount = allMatchingTxs.length;
     const totalAmount = allMatchingTxs.reduce((sum, tx) => sum + parseFloat(tx.amount || "0"), 0);
 
-    // If exporting, fetch all, otherwise fetch paginated
-    let finalTxIds = allMatchingTxs.map(t => t.id);
-    
-    // Sort logic (descending by paidAt) -> We must fetch the actual records
+    // Sort logic (descending by paidAt)
     const pagedTxsQuery = db.select()
       .from(transactions)
       .where(and(...conditions))

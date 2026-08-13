@@ -32,9 +32,14 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
 
   const { tx, collector, qrCode } = result[0];
 
-  if (tx.slipStatus !== "waiting_for_slip" && tx.slipStatus !== "pending") {
-    // If it's already verified or processed, maybe show a success message or redirect
-    // For now, let them see it or redirect. We'll just show the amount.
+  // If transaction is already verified → redirect to success page
+  if (tx.slipStatus === "verified") {
+    redirect(`/pay/${transactionId}/success`);
+  }
+  
+  // If transaction is rejected → redirect back to house page (can't reuse a rejected transaction)
+  if (tx.slipStatus === "rejected" || tx.slipStatus === "expired") {
+    redirect("/");
   }
 
   const totalAmount = parseFloat(tx.amount || "0");
@@ -108,7 +113,7 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
 
             <div className="w-full text-center">
               <a 
-                href="https://line.me/R/ti/p/@618apcbm" 
+                href={process.env.NEXT_PUBLIC_LINE_BOT_URL || "https://line.me/R/ti/p/@618apcbm"}
                 target="_blank"
                 rel="noreferrer"
                 className="w-full flex items-center justify-center gap-2 bg-[#06C755] hover:bg-[#05b34c] text-white font-sans font-semibold py-4 px-6 rounded-xl shadow-lg shadow-[#06C755]/30 transition-all transform hover:-translate-y-1 active:translate-y-0"

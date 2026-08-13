@@ -30,7 +30,6 @@ export async function verifySlipWithBuffer(imageBuffer: Buffer): Promise<Slip2Go
       method: "POST",
       headers: {
         "Authorization": `Bearer ${apiKey}`,
-        "x-api-secret": apiKey, // Adding both common headers to be safe based on docs
       },
       body: formData,
     });

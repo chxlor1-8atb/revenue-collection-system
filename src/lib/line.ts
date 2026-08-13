@@ -30,12 +30,9 @@ export async function getMessageContent(messageId: string): Promise<Buffer | nul
     return null;
   }
 
-  // Log first 10 chars of token for debugging (do not expose full token in prod)
-  console.log('🔑 LINE token preview:', token.slice(0, 10) + '...');
-
   // Encode messageId because it may contain +, =, / characters
   const safeId = encodeURIComponent(messageId);
-  console.log('Fetching image content – messageId:', messageId, 'encoded:', safeId);
+  console.log('Fetching image content – messageId:', messageId);
 
   const response = await fetch(`${LINE_CONTENT_API_URL}/${safeId}/content`, {
     headers: {

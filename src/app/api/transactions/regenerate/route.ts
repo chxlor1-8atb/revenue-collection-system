@@ -33,39 +33,55 @@ export async function POST(request: Request) {
     // Calculate base amount
     const baseAmount = targetInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
 
-    // 3. Generate new decimal amount
+    // 3. Generate new decimal using sequential + lockKey (same logic as intent route)
     const expiryTime = new Date();
     expiryTime.setMinutes(expiryTime.getMinutes() - 3);
 
+    const activeTransactions = await db.select({ amount: transactions.amount })
+      .from(transactions)
+      .where(and(
+        eq(transactions.slipStatus, 'waiting_for_slip'),
+        gte(transactions.createdAt, expiryTime)
+      ));
+
+    const usedCents = new Set(
+      activeTransactions
+        .map(tx => parseFloat(tx.amount || "0"))
+        .filter(amt => Math.floor(amt) === baseAmount)
+        .map(amt => Math.round((amt - baseAmount) * 100))
+    );
+
+    let selectedCents = 1;
+    let newTx: any[] | null = null;
     let finalAmount = baseAmount;
-    let attempts = 0;
-    let isUnique = false;
 
-    while (!isUnique && attempts < 10) {
-      const randomCents = Math.floor(Math.random() * 99) + 1;
-      const amountCandidate = baseAmount + (randomCents / 100);
-      
-      const existing = await db.select().from(transactions).where(and(
-         eq(transactions.amount, amountCandidate.toString()),
-         eq(transactions.slipStatus, 'waiting_for_slip'),
-         gte(transactions.createdAt, expiryTime)
-      )).limit(1);
-
-      if (existing.length === 0) {
-        finalAmount = amountCandidate;
-        isUnique = true;
+    while (selectedCents <= 99 && !newTx) {
+      if (!usedCents.has(selectedCents)) {
+        finalAmount = baseAmount + (selectedCents / 100);
+        try {
+          newTx = await db.insert(transactions).values({
+            qrCodeId: oldTx.qrCodeId,
+            collectorId: oldTx.collectorId,
+            amount: finalAmount.toString(),
+            slipImageUrl: "pending",
+            slipStatus: "waiting_for_slip",
+            lockKey: `waiting_${finalAmount}`,
+          }).returning();
+        } catch (insertError: any) {
+          if (insertError.code === '23505' || insertError.message?.includes('unique constraint')) {
+            console.log(`Regenerate: Amount ${finalAmount} taken, retrying...`);
+            newTx = null;
+          } else {
+            throw insertError;
+          }
+        }
       }
-      attempts++;
+      if (!newTx) selectedCents++;
     }
 
-    // 4. Create new transaction
-    const newTx = await db.insert(transactions).values({
-      qrCodeId: oldTx.qrCodeId,
-      collectorId: oldTx.collectorId,
-      amount: finalAmount.toString(),
-      slipImageUrl: "pending", 
-      slipStatus: "waiting_for_slip", 
-    }).returning();
+    if (!newTx) {
+      return NextResponse.json({ error: "System busy. Please try again in 3 minutes." }, { status: 429 });
+    }
 
     const newTransactionId = newTx[0].id;
 
