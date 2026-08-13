@@ -107,7 +107,8 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
                   <th className="px-6 py-4">ประจำเดือน</th>
                   <th className="px-6 py-4">ยอดเงิน</th>
                   <th className="px-6 py-4">สถานะ</th>
-                  <th className="px-6 py-4">วันที่อัปเดตล่าสุด</th>
+                  <th className="px-6 py-4">วันที่ชำระ/ทำรายการ</th>
+                  <th className="px-6 py-4 text-right">หลักฐาน</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -132,6 +133,18 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
                     </td>
                     <td className="px-6 py-4 text-sm text-slate-500">
                       {inv.tx?.paidAt ? new Date(inv.tx.paidAt).toLocaleDateString("th-TH") : (inv.tx?.createdAt ? new Date(inv.tx.createdAt).toLocaleDateString("th-TH") : "-")}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      {inv.tx?.slipImageUrl && inv.tx.slipImageUrl !== "pending" && (
+                        <a 
+                          href={inv.tx.slipImageUrl} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 rounded-lg border border-emerald-200 transition-colors font-medium"
+                        >
+                          <Receipt size={14} /> ดูสลิป
+                        </a>
+                      )}
                     </td>
                   </tr>
                 ))}
