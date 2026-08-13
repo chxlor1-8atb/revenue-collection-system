@@ -1,4 +1,4 @@
-﻿export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic';
 
 import Link from "next/link";
 import { db } from "@/lib/db";
@@ -57,16 +57,11 @@ export default async function DashboardPage() {
   const totalHousesResult = await db.select({ id: houses.id }).from(houses);
   const totalHousesCount = totalHousesResult.length;
 
-  // 3. Number of transactions waiting for review (slipStatus='waiting_for_slip' OR 'pending')
+  // 3. Number of transactions waiting for review (slipStatus='pending')
   const reviewTxs = await db
     .select({ id: transactions.id })
     .from(transactions)
-    .where(
-      or(
-        eq(transactions.slipStatus, "waiting_for_slip"),
-        eq(transactions.slipStatus, "pending")
-      )
-    );
+    .where(eq(transactions.slipStatus, "pending"));
 
   const waitingForReviewCount = reviewTxs.length;
 
