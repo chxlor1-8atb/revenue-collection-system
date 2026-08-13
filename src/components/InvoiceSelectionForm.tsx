@@ -29,6 +29,12 @@ export default function InvoiceSelectionForm({ invoices, houseId }: { invoices: 
         body: JSON.stringify({ invoiceIds: selectedInvoices, qrCodeId: 1 })
       });
       const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || "เกิดข้อผิดพลาดในการสร้างรายการ");
+        setIsLoading(false);
+        return;
+      }
+      
       if (data.transactionId) {
         router.push(`/pay/${data.transactionId}`);
       }

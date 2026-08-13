@@ -46,6 +46,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invoices not found" }, { status: 404 });
     }
 
+    // Check if any invoice is currently locked (has an active waiting_for_slip transaction)
+    const lockedInvoices = await db.select({ id: invoices.id })
+      .from(invoices)
+      .innerJoin(transactions, eq(invoices.transactionId, transactions.id))
+      .where(
+        and(
+          inArray(invoices.id, invoiceIds),
+          eq(transactions.slipStatus, 'waiting_for_slip'),
+          gte(transactions.createdAt, expiryTime) // Still active (less than 3 mins old)
+        )
+      )
+      .limit(1);
+
+    if (lockedInvoices.length > 0) {
+      return NextResponse.json({ 
+        error: "บิลบางรายการกำลังอยู่ระหว่างการทำรายการชำระเงิน กรุณารอ 3 นาทีแล้วลองใหม่" 
+      }, { status: 409 });
+    }
+
     // Calculate base amount
     const baseAmount = targetInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
 
