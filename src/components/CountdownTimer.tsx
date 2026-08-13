@@ -1,14 +1,45 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Clock, RefreshCw } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Clock, RefreshCw, CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function CountdownTimer({ createdAt, transactionId }: { createdAt: Date, transactionId?: number }) {
-  const [timeLeft, setTimeLeft] = useState<number>(3 * 60); // Default to 3 mins
+  const [timeLeft, setTimeLeft] = useState<number>(3 * 60);
   const [isExpired, setIsExpired] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   const router = useRouter();
+  const pollingRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Poll transaction status every 3 seconds
+  useEffect(() => {
+    if (!transactionId) return;
+
+    const pollStatus = async () => {
+      try {
+        const res = await fetch(`/api/transactions/${transactionId}`);
+        const data = await res.json();
+        if (data.slipStatus === "verified") {
+          setIsVerified(true);
+          if (pollingRef.current) clearInterval(pollingRef.current);
+          // Small delay for the animation, then redirect
+          setTimeout(() => {
+            router.push(`/pay/${transactionId}/success`);
+          }, 1500);
+        }
+      } catch (e) {
+        // Ignore polling errors
+      }
+    };
+
+    pollingRef.current = setInterval(pollStatus, 3000);
+    pollStatus(); // Check immediately on mount
+
+    return () => {
+      if (pollingRef.current) clearInterval(pollingRef.current);
+    };
+  }, [transactionId]);
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -62,9 +93,17 @@ export default function CountdownTimer({ createdAt, transactionId }: { createdAt
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
-  
-  // Danger state if under 1 minute
   const isDanger = timeLeft < 60;
+
+  // Verified state
+  if (isVerified) {
+    return (
+      <div className="flex items-center justify-center gap-2 text-emerald-700 bg-emerald-50 py-3 px-6 rounded-xl border border-emerald-200 mt-4 mb-2 shadow-sm animate-pulse">
+        <CheckCircle2 size={18} />
+        <span className="font-semibold text-sm">ยืนยันการชำระเงินสำเร็จ! กำลังเปลี่ยนหน้า...</span>
+      </div>
+    );
+  }
 
   if (isExpired) {
     return (
