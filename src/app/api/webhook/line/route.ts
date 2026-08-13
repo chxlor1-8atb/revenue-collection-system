@@ -21,27 +21,55 @@ export async function POST(request: Request) {
         const replyToken = event.replyToken;
 
         if (event.message.type === "image") {
+          console.log(`[Webhook] Image received – messageId: ${event.message.id}`);
+
           // 1. Download image from LINE
           const imageBuffer = await getMessageContent(event.message.id);
           if (!imageBuffer) {
+            console.error("[Webhook] Failed to download image from LINE");
             await replyMessage(replyToken, "ขออภัยค่ะ ระบบไม่สามารถดาวน์โหลดรูปภาพได้ กรุณาส่งใหม่อีกครั้งค่ะ");
             continue;
           }
+          console.log(`[Webhook] Image downloaded – size: ${imageBuffer.length} bytes`);
+
           const base64Image = `data:image/jpeg;base64,${imageBuffer.toString('base64')}`;
 
-          // 2. Upload to Vercel Blob
-          const blob = await put(`line-slips/${Date.now()}-${event.message.id}.jpg`, imageBuffer, {
-            access: "public",
-            contentType: "image/jpeg",
-          });
+          // 2. Upload to Vercel Blob (with error handling)
+          let blobUrl = "";
+          try {
+            console.log("[Webhook] Uploading to Vercel Blob...");
+            const blob = await put(`line-slips/${Date.now()}-${event.message.id}.jpg`, imageBuffer, {
+              access: "public",
+              contentType: "image/jpeg",
+            });
+            blobUrl = blob.url;
+            console.log("[Webhook] Blob upload success:", blobUrl);
+          } catch (blobError: any) {
+            console.error("[Webhook] Blob upload FAILED:", blobError?.message || blobError);
+            // Continue without blob URL – we still want to verify & save to DB
+            blobUrl = `line://message/${event.message.id}`; // fallback reference
+          }
 
           // 3. Verify with Slip2Go
+          console.log("[Webhook] Sending to Slip2Go for verification...");
           const verification = await verifySlipWithBase64(base64Image);
+          console.log("[Webhook] Slip2Go result:", JSON.stringify(verification));
 
           if (!verification.success) {
-            await replyMessage(replyToken, `❌ สลิปไม่ถูกต้อง หรือไม่สามารถตรวจสอบได้ค่ะ\nรายละเอียด: ${verification.error}`);
+            // Save the image to DB even if slip verification fails, for manual admin review
+            try {
+              await db.insert(lineMessages).values({
+                lineUserId: userId,
+                type: "image",
+                imageUrl: blobUrl,
+                status: "pending",
+                isVerified: false,
+              });
+            } catch {}
+            await replyMessage(replyToken, `❌ ตรวจสอบสลิปไม่ผ่านค่ะ\nรายละเอียด: ${verification.error}\n\nกรุณาตรวจสอบว่าส่งรูปสลิปที่ชัดเจนและครบถ้วนนะคะ 🙏`);
             continue;
           }
+
 
           const slipAmount = verification.data?.amount.toString();
 
