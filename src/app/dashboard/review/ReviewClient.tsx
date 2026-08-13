@@ -26,13 +26,6 @@ export default function ReviewClient() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-bold text-3xl text-[#1F2E22]">ตรวจสลิปโอนเงิน</h1>
-        <div className="flex items-center gap-2">
-           <span className="relative flex h-3 w-3">
-             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-             <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-           </span>
-           <span className="text-xs font-semibold text-emerald-600 uppercase tracking-widest">Realtime Sync</span>
-        </div>
       </div>
 
       {/* Tabs */}
