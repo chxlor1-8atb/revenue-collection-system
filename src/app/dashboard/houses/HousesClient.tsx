@@ -72,6 +72,7 @@ export default function HousesClient({ initialHouses }: { initialHouses: HouseDa
                 <th className="p-4">บ้านเลขที่</th>
                 <th className="p-4">ชื่อเจ้าบ้าน</th>
                 <th className="p-4">ชุมชน/หมู่</th>
+                <th className="p-4">ถนน</th>
                 <th className="p-4">สมุดบัญชีบ้าน</th>
                 <th className="p-4 text-right">จัดการ</th>
               </tr>
@@ -82,6 +83,7 @@ export default function HousesClient({ initialHouses }: { initialHouses: HouseDa
                   <td className="p-4 font-mono font-bold text-slate-900">{house.houseNumber}</td>
                   <td className="p-4 font-medium">{house.ownerName}</td>
                   <td className="p-4 text-slate-500">{house.zone || "-"}</td>
+                  <td className="p-4 text-slate-500">{house.road || "-"}</td>
                   <td className="p-4">
                     <Link 
                       href={`/dashboard/houses/${house.id}`} 
@@ -113,7 +115,7 @@ export default function HousesClient({ initialHouses }: { initialHouses: HouseDa
               
               {initialHouses.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="p-12 text-center">
+                  <td colSpan={6} className="p-12 text-center">
                     <div className="text-slate-400 mb-2">🏠</div>
                     <div className="text-slate-500 font-medium">ยังไม่มีข้อมูลบ้านในระบบ</div>
                     <div className="text-sm text-slate-400 mt-1">กดปุ่ม "เพิ่มบ้านใหม่" ด้านบนเพื่อเริ่มต้น</div>

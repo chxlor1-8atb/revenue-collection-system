@@ -9,6 +9,7 @@ export async function addHouse(formData: FormData) {
   const houseNumber = formData.get("houseNumber")?.toString();
   const ownerName = formData.get("ownerName")?.toString();
   const zone = formData.get("zone")?.toString() || null;
+  const road = formData.get("road")?.toString() || null;
 
   if (!houseNumber || !ownerName) {
     return { success: false, error: "กรุณากรอกบ้านเลขที่และชื่อเจ้าบ้านให้ครบถ้วน" };
@@ -19,6 +20,7 @@ export async function addHouse(formData: FormData) {
       houseNumber,
       ownerName,
       zone,
+      road,
     });
 
     revalidatePath("/dashboard/houses");
@@ -33,6 +35,7 @@ export async function updateHouse(id: number, formData: FormData) {
   const houseNumber = formData.get("houseNumber")?.toString();
   const ownerName = formData.get("ownerName")?.toString();
   const zone = formData.get("zone")?.toString() || null;
+  const road = formData.get("road")?.toString() || null;
 
   if (!houseNumber || !ownerName) {
     return { success: false, error: "กรุณากรอกบ้านเลขที่และชื่อเจ้าบ้านให้ครบถ้วน" };
@@ -43,6 +46,7 @@ export async function updateHouse(id: number, formData: FormData) {
       houseNumber,
       ownerName,
       zone,
+      road,
     }).where(eq(houses.id, id));
 
     revalidatePath("/dashboard/houses");

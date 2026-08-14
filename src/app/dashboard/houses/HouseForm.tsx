@@ -9,6 +9,7 @@ export type HouseData = {
   houseNumber: string;
   ownerName: string;
   zone: string | null;
+  road: string | null;
 };
 
 export default function HouseForm({ 
@@ -129,6 +130,24 @@ export default function HouseForm({
                   defaultValue={initialData?.zone || ""}
                   className="pl-10 block w-full rounded-xl border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 border"
                   placeholder="เช่น หมู่ 1 ซอย 5"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                ถนน (ตัวเลือก)
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <MapPin size={16} className="text-slate-400" />
+                </div>
+                <input
+                  type="text"
+                  name="road"
+                  defaultValue={initialData?.road || ""}
+                  className="pl-10 block w-full rounded-xl border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 border"
+                  placeholder="เช่น ถนนสุขุมวิท"
                 />
               </div>
             </div>

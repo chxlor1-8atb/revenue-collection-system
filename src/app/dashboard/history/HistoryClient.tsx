@@ -126,20 +126,21 @@ export default function HistoryClient() {
       </div>
 
       {/* Filters & Actions */}
-      <div className="flex flex-wrap sm:flex-nowrap gap-3 items-end w-full">
+      <div className="flex flex-wrap sm:flex-nowrap gap-4 items-end w-full">
         {/* Search */}
-        <form onSubmit={handleSearch} className="flex-none">
+        <form onSubmit={handleSearch} className="flex-none sm:flex-1 max-w-2xl">
           <SearchAutocomplete
             value={searchInput}
             onChange={setSearchInput}
             onSubmit={() => { setPage(1); setSearch(searchInput); }}
             placeholder="ค้นหาบ้านเลขที่, ชื่อเจ้าบ้าน..."
+            className="w-11 focus:w-[280px] sm:w-full h-[42px] pl-[38px] pr-4 bg-white border-0 shadow-[0_4px_14px_rgba(0,0,0,0.05)] text-slate-900 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300 placeholder:text-transparent sm:placeholder:text-slate-400 focus:placeholder:text-slate-400 cursor-pointer sm:cursor-text focus:cursor-text relative z-0"
           />
         </form>
 
         {/* Date Pickers & Export */}
-        <div className="flex flex-1 flex-wrap sm:flex-nowrap gap-3 items-end sm:justify-end">
-          <div className="flex-1 min-w-[130px] sm:max-w-[180px]">
+        <div className="flex flex-1 sm:flex-none flex-wrap sm:flex-nowrap gap-3 items-end sm:justify-end shrink-0">
+          <div className="flex-1 min-w-[130px] sm:w-[180px] md:w-[220px]">
             <label className="block text-[11px] font-medium text-slate-500 mb-1 uppercase tracking-wider">ตั้งแต่</label>
             <DatePicker
               value={startDate}
@@ -147,7 +148,7 @@ export default function HistoryClient() {
               placeholder="เลือกวันที่"
             />
           </div>
-          <div className="flex-1 min-w-[130px] sm:max-w-[180px]">
+          <div className="flex-1 min-w-[130px] sm:w-[180px] md:w-[220px]">
             <label className="block text-[11px] font-medium text-slate-500 mb-1 uppercase tracking-wider">ถึงวันที่</label>
             <DatePicker
               value={endDate}
@@ -157,7 +158,7 @@ export default function HistoryClient() {
           </div>
           <button
             onClick={handleExportCSV}
-            className="bg-[#1F2E22] hover:bg-slate-800 text-white px-4 h-[42px] rounded-lg flex items-center justify-center gap-2 transition-colors whitespace-nowrap font-medium shadow-sm shrink-0"
+            className="bg-[#1F2E22] hover:bg-slate-800 text-white px-5 sm:px-6 h-[42px] rounded-lg flex items-center justify-center gap-2 transition-colors whitespace-nowrap font-medium shadow-sm shrink-0"
           >
             <Download size={16} /> ส่งออก CSV
           </button>

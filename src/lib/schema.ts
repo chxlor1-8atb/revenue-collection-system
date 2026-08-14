@@ -14,6 +14,7 @@ export const houses = pgTable('houses', {
   houseNumber: text('house_number').notNull(), // บ้านเลขที่
   ownerName: text('owner_name').notNull(), // ชื่อเจ้าบ้าน
   zone: text('zone'), // ชุมชน/หมู่
+  road: text('road'), // ถนน
   createdAt: timestamp('created_at').defaultNow(),
 });
 
