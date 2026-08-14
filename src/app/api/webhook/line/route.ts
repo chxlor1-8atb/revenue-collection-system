@@ -6,9 +6,26 @@ import { eq, and, desc, gte } from "drizzle-orm";
 import { put } from "@vercel/blob";
 import { verifySlipWithBuffer } from "@/lib/slip2go";
 
+import crypto from 'crypto';
+
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const textBody = await request.text();
+    const signature = request.headers.get('x-line-signature');
+    
+    if (!signature) {
+      return NextResponse.json({ error: "Missing signature" }, { status: 401 });
+    }
+
+    const channelSecret = process.env.LINE_CHANNEL_SECRET || "";
+    const hash = crypto.createHmac('sha256', channelSecret).update(textBody).digest('base64');
+    
+    if (hash !== signature) {
+      console.error("Invalid LINE signature");
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+    }
+
+    const body = JSON.parse(textBody);
     
     // LINE Webhook Verification check
     if (body.events.length === 0) {

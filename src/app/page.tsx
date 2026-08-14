@@ -112,15 +112,15 @@ export default function Home() {
                     บ้านเลขที่ หรือ ชื่อเจ้าบ้าน
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors">
-                      <Trash2 size={20} />
+                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors">
+                      <Search size={22} />
                     </div>
                     <input 
                       id="houseNumber"
                       type="text" 
                       value={houseNumber}
                       onChange={(e) => setHouseNumber(e.target.value)}
-                      className="w-full pl-11 pr-4 py-4 bg-slate-50 border-2 border-slate-100 text-slate-900 rounded-xl font-mono text-lg focus:outline-none focus:ring-0 focus:border-emerald-500 focus:bg-white transition-all duration-200"
+                      className="w-full pl-14 pr-6 py-4 bg-white border-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] text-slate-900 rounded-full font-mono text-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300"
                       placeholder="เช่น 123/4 หรือ สมชาย"
                       required
                     />

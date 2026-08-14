@@ -130,15 +130,15 @@ export default function HistoryClient() {
         <form onSubmit={handleSearch} className="w-full">
           <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">ค้นหา</label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search size={16} className="text-slate-400" />
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 focus-within:text-emerald-500 transition-colors">
+              <Search size={18} />
             </div>
             <input
               type="text"
               placeholder="บ้านเลขที่ หรือ ชื่อเจ้าบ้าน..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-shadow outline-none"
+              className="w-full pl-12 pr-6 py-2.5 bg-white border-0 shadow-[0_4px_14px_rgba(0,0,0,0.05)] text-slate-900 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300"
             />
           </div>
         </form>

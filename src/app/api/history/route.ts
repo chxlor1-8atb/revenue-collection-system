@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { transactions, invoices, houses, lineMessages } from "@/lib/schema";
 import { eq, desc, inArray, and, or, ilike, sql, gte, lte } from "drizzle-orm";
@@ -11,6 +12,11 @@ function formatThaiMonth(monthYear: string) {
 
 export async function GET(req: NextRequest) {
   try {
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const url = new URL(req.url);
     const page = parseInt(url.searchParams.get("page") || "1", 10);
     const limit = parseInt(url.searchParams.get("limit") || "20", 10);
