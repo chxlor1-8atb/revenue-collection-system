@@ -124,50 +124,46 @@ export default function HistoryClient() {
         </div>
       </div>
 
-      {/* Filter Bar */}
-      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-3">
-        {/* Row 1: Search */}
-        <form onSubmit={handleSearch} className="w-full">
-          <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">ค้นหา</label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 focus-within:text-emerald-500 transition-colors">
-              <Search size={18} />
-            </div>
-            <input
-              type="text"
-              placeholder="บ้านเลขที่ หรือ ชื่อเจ้าบ้าน..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-12 pr-6 py-2.5 bg-white border-0 shadow-[0_4px_14px_rgba(0,0,0,0.05)] text-slate-900 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300"
-            />
+      {/* Search */}
+      <form onSubmit={handleSearch} className="w-full">
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 focus-within:text-emerald-500 transition-colors">
+            <Search size={18} />
           </div>
-        </form>
-
-        {/* Row 2: Date pickers + Export */}
-        <div className="flex flex-wrap gap-3 items-end">
-          <div className="flex-1 min-w-[130px]">
-            <label className="block text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wider">ตั้งแต่</label>
-            <DatePicker
-              value={startDate}
-              onChange={(val) => { setStartDate(val); setPage(1); }}
-              placeholder="เลือกวันที่"
-            />
-          </div>
-          <div className="flex-1 min-w-[130px]">
-            <label className="block text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wider">ถึงวันที่</label>
-            <DatePicker
-              value={endDate}
-              onChange={(val) => { setEndDate(val); setPage(1); }}
-              placeholder="เลือกวันที่"
-            />
-          </div>
-          <button
-            onClick={handleExportCSV}
-            className="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors whitespace-nowrap font-medium h-[42px]"
-          >
-            <Download size={16} /> ส่งออก CSV
-          </button>
+          <input
+            type="text"
+            placeholder="บ้านเลขที่ หรือ ชื่อเจ้าบ้าน..."
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            className="w-full pl-12 pr-6 py-3 bg-white border-0 shadow-[0_4px_14px_rgba(0,0,0,0.05)] text-slate-900 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300"
+          />
         </div>
+      </form>
+
+      {/* Filter Bar */}
+      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-wrap gap-3 items-end">
+        <div className="flex-1 min-w-[130px]">
+          <label className="block text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wider">ตั้งแต่</label>
+          <DatePicker
+            value={startDate}
+            onChange={(val) => { setStartDate(val); setPage(1); }}
+            placeholder="เลือกวันที่"
+          />
+        </div>
+        <div className="flex-1 min-w-[130px]">
+          <label className="block text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wider">ถึงวันที่</label>
+          <DatePicker
+            value={endDate}
+            onChange={(val) => { setEndDate(val); setPage(1); }}
+            placeholder="เลือกวันที่"
+          />
+        </div>
+        <button
+          onClick={handleExportCSV}
+          className="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors whitespace-nowrap font-medium h-[42px]"
+        >
+          <Download size={16} /> ส่งออก CSV
+        </button>
       </div>
 
       {/* List */}
