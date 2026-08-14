@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { transactions, invoices, qrCodes } from "@/lib/schema";
-import { inArray, eq, and, gte, lt } from "drizzle-orm";
+import { inArray, eq, and, gte, lt, isNull } from "drizzle-orm";
 
 export async function POST(request: Request) {
   try {
@@ -193,10 +193,23 @@ export async function POST(request: Request) {
 
     const transactionId = newTx[0].id;
 
-    // Link invoices to this transaction
-    await db.update(invoices)
+    // Link invoices to this transaction with concurrency protection
+    const updatedInvoices = await db.update(invoices)
       .set({ transactionId: transactionId })
-      .where(inArray(invoices.id, invoiceIds));
+      .where(
+        and(
+          inArray(invoices.id, invoiceIds),
+          isNull(invoices.transactionId) // Ensure they weren't locked by a racing request
+        )
+      )
+      .returning({ id: invoices.id });
+
+    if (updatedInvoices.length !== invoiceIds.length) {
+      // Race condition detected! Another request grabbed these invoices.
+      // Rollback the transaction we just created
+      await db.delete(transactions).where(eq(transactions.id, transactionId));
+      return NextResponse.json({ error: "Invoices were locked by another request. Please try again." }, { status: 409 });
+    }
 
     return NextResponse.json({ 
       transactionId, 

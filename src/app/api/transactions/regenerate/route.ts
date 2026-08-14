@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { transactions, invoices, qrCodes } from "@/lib/schema";
-import { eq, inArray, and, gte } from "drizzle-orm";
+import { eq, inArray, and, gte, or, isNull } from "drizzle-orm";
 
 export async function POST(request: Request) {
   try {
@@ -86,9 +86,21 @@ export async function POST(request: Request) {
     const newTransactionId = newTx[0].id;
 
     // 5. Update invoices to point to the new transaction
-    await db.update(invoices)
+    const updatedInvoices = await db.update(invoices)
       .set({ transactionId: newTransactionId })
-      .where(inArray(invoices.id, invoiceIds));
+      .where(
+        and(
+          inArray(invoices.id, invoiceIds),
+          or(eq(invoices.transactionId, oldTx.id), isNull(invoices.transactionId))
+        )
+      )
+      .returning({ id: invoices.id });
+      
+    if (updatedInvoices.length !== invoiceIds.length) {
+      // Race condition!
+      await db.delete(transactions).where(eq(transactions.id, newTransactionId));
+      return NextResponse.json({ error: "Invoices were locked by another request" }, { status: 409 });
+    }
 
     // 6. Delete old transaction instead of just marking as expired to save database space
     await db.delete(transactions)

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import { db } from "@/lib/db";
-import { qrCodes, transactions, collectors } from "@/lib/schema";
-import { eq } from "drizzle-orm";
+import { qrCodes, transactions, collectors, invoices } from "@/lib/schema";
+import { eq, inArray, and, isNull } from "drizzle-orm";
 import { sendSlipNotification } from "@/lib/telegram";
 
 export async function POST(request: Request) {
@@ -65,14 +65,24 @@ export async function POST(request: Request) {
 
     try {
       // Link invoices to this transaction and mark as pending
-      await db.update(invoices)
+      const updatedInvoices = await db.update(invoices)
         .set({ status: 'pending', transactionId: newTransaction.id })
-        .where(inArray(invoices.id, invoiceIds));
+        .where(
+          and(
+            inArray(invoices.id, invoiceIds),
+            isNull(invoices.transactionId) // Ensure they aren't already locked
+          )
+        )
+        .returning({ id: invoices.id });
+        
+      if (updatedInvoices.length !== invoiceIds.length) {
+        throw new Error("Concurrency collision: invoices were already processed");
+      }
     } catch (linkError) {
       // Rollback: delete the orphaned transaction to keep data consistent
       console.error("Invoice link failed, rolling back transaction:", linkError);
       await db.delete(transactions).where(eq(transactions.id, newTransaction.id));
-      return NextResponse.json({ error: "Failed to link invoices. Please try again." }, { status: 500 });
+      return NextResponse.json({ error: "Failed to link invoices. Invoices might have been processed by another request. Please try again." }, { status: 409 });
     }
 
     // Send Telegram Notification

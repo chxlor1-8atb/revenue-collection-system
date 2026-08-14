@@ -89,16 +89,44 @@ export async function POST(request: Request) {
 
             if (waitingTx.length > 0) {
               const tx = waitingTx[0];
-              // Perfect decimal match!
+            const txInvoices = await db.select().from(invoices).where(eq(invoices.transactionId, tx.id));
+            
+            if (txInvoices.length === 0) {
+              // This is an orphaned transaction! The race condition rollback might have unlinked it, 
+              // or it's a bug. Do NOT mark it as verified since no debt will be cleared.
               await db.update(transactions)
                 .set({ 
                   slipImageUrl: blobUrl, 
-                  slipStatus: 'verified', 
-                  paidAt: new Date(), 
-                  verifiedBy: 'line_bot',
-                  lockKey: null // Free up the lockKey so others can use this amount
+                  slipStatus: 'manual_review', // Needs manual admin intervention
+                  payerNote: 'ยอดเงินเข้าจริง แต่ระบบหาบิลไม่พบ (Orphaned)'
                 })
                 .where(eq(transactions.id, tx.id));
+                
+              await db.insert(lineMessages).values({
+                lineUserId: userId,
+                type: "image",
+                imageUrl: blobUrl,
+                status: "pending",
+                amount: slipAmount,
+                senderName: verification.data?.sender.name,
+                isVerified: true,
+                transactionId: tx.id
+              });
+              
+              await replyMessage(replyToken, `ได้รับยอดเงิน ${slipAmount} บาท เรียบร้อยแล้วค่ะ ✅\nแต่ระบบเกิดขัดข้องไม่สามารถจับคู่บิลได้ (ไม่พบหนี้)\n\nกรุณาแจ้งแอดมินเพื่อตรวจสอบและตัดยอดให้แบบ Manual นะคะ 🙏`);
+              continue;
+            }
+
+            // Perfect decimal match with invoices!
+            await db.update(transactions)
+              .set({ 
+                slipImageUrl: blobUrl, 
+                slipStatus: 'verified', 
+                paidAt: new Date(), 
+                verifiedBy: 'line_bot',
+                lockKey: null // Free up the lockKey so others can use this amount
+              })
+              .where(eq(transactions.id, tx.id));
             
             await db.update(invoices)
               .set({ status: 'paid' })
@@ -115,8 +143,6 @@ export async function POST(request: Request) {
               transactionId: tx.id
             });
             
-            // Try to find house number for a better reply
-            const txInvoices = await db.select().from(invoices).where(eq(invoices.transactionId, tx.id)).limit(1);
             let houseText = "";
             if (txInvoices.length > 0) {
                const house = await db.select().from(houses).where(eq(houses.id, txInvoices[0].houseId)).limit(1);
