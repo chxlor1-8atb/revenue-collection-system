@@ -5,6 +5,7 @@ import { searchHouseByNumber, getUnpaidInvoicesForHouse, approveLineSlip, reject
 import { CheckCircle2, Clock, Search } from "lucide-react";
 import SlipModalButton from "@/components/SlipModalButton";
 import ConfirmModal from "@/components/ConfirmModal";
+import SearchAutocomplete from "@/components/SearchAutocomplete";
 import { useRouter } from "next/navigation";
 
 export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendingSlips: any[], verifiedSlips: any[] }) {
@@ -369,22 +370,18 @@ export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendi
               {/* Right Column: House and Invoices */}
               <div className="w-full md:w-2/3 flex flex-col">
                 <h3 className="font-bold text-slate-700 mb-3">ค้นหาบ้านเลขที่</h3>
-                <div className="flex gap-2 mb-4 relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                    <Search size={18} />
-                  </div>
-                  <input 
-                    type="text" 
-                    value={searchHouseNumber} 
-                    onChange={(e) => setSearchHouseNumber(e.target.value)}
-                    placeholder="ใส่บ้านเลขที่ (เช่น 123/4)" 
-                    className="w-full pl-12 pr-6 py-2 bg-white border-0 shadow-[0_4px_14px_rgba(0,0,0,0.05)] text-slate-900 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1F2E22] transition-all duration-300 flex-1"
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearchHouse(searchHouseNumber)}
+                <div className="flex gap-2 mb-4">
+                  <SearchAutocomplete 
+                    value={searchHouseNumber}
+                    onChange={setSearchHouseNumber}
+                    onSubmit={() => handleSearchHouse(searchHouseNumber)}
+                    placeholder="ใส่บ้านเลขที่ หรือ ชื่อเจ้าบ้าน..."
+                    className="w-full placeholder:text-slate-400 focus:ring-[#1F2E22] cursor-text"
                   />
                   <button 
                     onClick={() => handleSearchHouse(searchHouseNumber)}
                     disabled={isLoading || !searchHouseNumber}
-                    className="bg-[#1F2E22] hover:bg-slate-800 text-white px-6 py-2 rounded-full font-medium transition-colors disabled:opacity-50 shrink-0 shadow-sm"
+                    className="bg-[#1F2E22] hover:bg-slate-800 text-white px-6 h-[42px] rounded-full font-medium transition-colors disabled:opacity-50 shrink-0 shadow-sm"
                   >
                     ค้นหา
                   </button>

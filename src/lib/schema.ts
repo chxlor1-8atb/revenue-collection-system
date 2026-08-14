@@ -60,6 +60,7 @@ export const adminUsers = pgTable('admin_users', {
 
 export const lineMessages = pgTable('line_messages', {
   id: serial('id').primaryKey(),
+  lineMessageId: text('line_message_id').unique(),
   lineUserId: text('line_user_id').notNull(),
   type: text('type').notNull(), // 'image' or 'text'
   imageUrl: text('image_url'),

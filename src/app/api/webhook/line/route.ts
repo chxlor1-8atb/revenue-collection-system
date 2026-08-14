@@ -40,6 +40,13 @@ export async function POST(request: Request) {
         if (event.message.type === "image") {
           console.log(`[Webhook] Image received – messageId: ${event.message.id}`);
 
+          // Idempotency check
+          const existingMsg = await db.select().from(lineMessages).where(eq(lineMessages.lineMessageId, event.message.id)).limit(1);
+          if (existingMsg.length > 0) {
+            console.log(`[Webhook] Message ${event.message.id} already processed, skipping.`);
+            continue;
+          }
+
           // 1. Download image from LINE
           const imageBuffer = await getMessageContent(event.message.id);
           if (!imageBuffer) {
@@ -74,6 +81,7 @@ export async function POST(request: Request) {
             // Save the image to DB even if slip verification fails, for manual admin review
             try {
               await db.insert(lineMessages).values({
+                lineMessageId: event.message.id,
                 lineUserId: userId,
                 type: "image",
                 imageUrl: blobUrl,
@@ -120,6 +128,7 @@ export async function POST(request: Request) {
                 .where(eq(transactions.id, tx.id));
                 
               await db.insert(lineMessages).values({
+                lineMessageId: event.message.id,
                 lineUserId: userId,
                 type: "image",
                 imageUrl: blobUrl,
@@ -135,7 +144,7 @@ export async function POST(request: Request) {
             }
 
             // Perfect decimal match with invoices!
-            await db.update(transactions)
+            const updateResult = await db.update(transactions)
               .set({ 
                 slipImageUrl: blobUrl, 
                 slipStatus: 'verified', 
@@ -143,13 +152,17 @@ export async function POST(request: Request) {
                 verifiedBy: 'line_bot',
                 lockKey: null // Free up the lockKey so others can use this amount
               })
-              .where(eq(transactions.id, tx.id));
+              .where(and(eq(transactions.id, tx.id), eq(transactions.slipStatus, 'waiting_for_slip')))
+              .returning();
+              
+            if (updateResult.length === 0) continue; // Race condition: already processed
             
             await db.update(invoices)
               .set({ status: 'paid' })
               .where(eq(invoices.transactionId, tx.id));
             
             await db.insert(lineMessages).values({
+              lineMessageId: event.message.id,
               lineUserId: userId,
               type: "image",
               imageUrl: blobUrl,
@@ -173,6 +186,7 @@ export async function POST(request: Request) {
           
         // 4. Save to database (Normal fallback flow)
           await db.insert(lineMessages).values({
+            lineMessageId: event.message.id,
             lineUserId: userId,
             type: "image",
             imageUrl: blobUrl,
@@ -187,6 +201,18 @@ export async function POST(request: Request) {
 
         } else if (event.message.type === "text") {
           const text = event.message.text.trim();
+
+          // Idempotency check for text messages
+          const existingMsg = await db.select().from(lineMessages).where(eq(lineMessages.lineMessageId, event.message.id)).limit(1);
+          if (existingMsg.length > 0) continue;
+
+          // Save text message to lineMessages to prevent duplicate processing if retried
+          await db.insert(lineMessages).values({
+            lineMessageId: event.message.id,
+            lineUserId: userId,
+            type: "text",
+            status: "processed"
+          });
 
           // 1. Find the most recent pending image from this user
           const recentImages = await db.select()
@@ -216,7 +242,7 @@ export async function POST(request: Request) {
               const unpaidInvoices = await db.select().from(invoices).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
               const totalDebt = unpaidInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
               
-              if (totalDebt > 0 && slipData.amount && parseFloat(slipData.amount) === totalDebt) {
+              if (totalDebt > 0 && slipData.amount && Math.abs(parseFloat(slipData.amount) - totalDebt) < 0.01) {
                 // Perfect match! Auto-approve
                   const newTx = await db.insert(transactions).values({
                     amount: slipData.amount,

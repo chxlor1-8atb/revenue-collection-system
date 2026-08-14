@@ -3,6 +3,13 @@ import { db } from "@/lib/db";
 import { houses, invoices } from "@/lib/schema";
 import { auth } from "@/lib/auth";
 
+import { z } from "zod";
+
+const generateSchema = z.object({
+  monthYear: z.string().regex(/^\d{4}-\d{2}$/, "Invalid format, expected YYYY-MM"),
+  amount: z.union([z.string(), z.number()]).transform(v => v.toString()).refine(v => !isNaN(parseFloat(v)) && parseFloat(v) > 0, "Invalid amount"),
+});
+
 export async function POST(request: Request) {
   try {
     const session = await auth();
@@ -10,11 +17,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { monthYear, amount } = await request.json();
+    const body = await request.json();
+    const parseResult = generateSchema.safeParse(body);
 
-    if (!monthYear || !amount) {
-      return NextResponse.json({ error: "Missing monthYear or amount" }, { status: 400 });
+    if (!parseResult.success) {
+      return NextResponse.json({ error: parseResult.error.issues[0]?.message || "Validation failed" }, { status: 400 });
     }
+    
+    const { monthYear, amount } = parseResult.data;
 
     // 1. Fetch all houses
     const allHouses = await db.select({ id: houses.id }).from(houses);

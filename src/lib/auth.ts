@@ -38,18 +38,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     jwt({ token, user }) {
       if (user) {
-        // @ts-ignore
         token.role = user.role;
-        // @ts-ignore
-        token.collectorId = user.collectorId;
+        token.collectorId = user.collectorId || null;
       }
       return token;
     },
     session({ session, token }) {
       if (session.user) {
-        // @ts-ignore
         session.user.role = token.role as string;
-        // @ts-ignore
         session.user.collectorId = token.collectorId as number | null;
       }
       return session;

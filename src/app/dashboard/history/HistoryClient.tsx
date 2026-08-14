@@ -5,6 +5,7 @@ import { CheckCircle2, Smartphone, Globe, Calendar, Home, User, Search, Download
 import { motion, AnimatePresence } from "framer-motion";
 import SlipModalButton from "@/components/SlipModalButton";
 import DatePicker from "@/components/DatePicker";
+import SearchAutocomplete from "@/components/SearchAutocomplete";
 import ConfirmModal from "@/components/ConfirmModal";
 import Link from "next/link";
 
@@ -128,18 +129,12 @@ export default function HistoryClient() {
       <div className="flex flex-wrap sm:flex-nowrap gap-3 items-end w-full">
         {/* Search */}
         <form onSubmit={handleSearch} className="flex-none">
-          <div className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors z-10">
-              <Search size={18} />
-            </div>
-            <input
-              type="text"
-              placeholder="ค้นหาบ้านเลขที่..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              className="w-11 focus:w-[200px] sm:w-64 sm:focus:w-80 h-[42px] pl-[38px] pr-4 bg-white border-0 shadow-[0_4px_14px_rgba(0,0,0,0.05)] text-slate-900 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300 placeholder:text-transparent sm:placeholder:text-slate-400 focus:placeholder:text-slate-400 cursor-pointer sm:cursor-text focus:cursor-text relative z-0"
-            />
-          </div>
+          <SearchAutocomplete
+            value={searchInput}
+            onChange={setSearchInput}
+            onSubmit={() => { setPage(1); setSearch(searchInput); }}
+            placeholder="ค้นหาบ้านเลขที่, ชื่อเจ้าบ้าน..."
+          />
         </form>
 
         {/* Date Pickers & Export */}
