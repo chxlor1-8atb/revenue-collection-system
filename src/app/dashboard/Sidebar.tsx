@@ -35,7 +35,7 @@ export default function Sidebar({ userName }: { userName: string }) {
   return (
     <>
       {/* Mobile Header / Hamburger Toggle */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#1F2E22] flex items-center justify-between px-4 z-50 border-b border-[#2d4732]">
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#1F2E22] flex items-center justify-between px-4 z-50 border-b border-[#2d4732]">
         <div className="flex items-center gap-3">
           <img src="/nangrong-logo.png" alt="เทศบาลเมืองนางรอง" className="w-8 h-8 object-contain drop-shadow-md" />
           <h2 className="font-bold text-white tracking-tight">ระบบบัญชีรายได้</h2>
@@ -56,7 +56,7 @@ export default function Sidebar({ userName }: { userName: string }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsOpen(false)}
-            className="md:hidden fixed inset-0 bg-black/50 z-40"
+            className="lg:hidden fixed inset-0 bg-black/50 z-40"
           />
         )}
       </AnimatePresence>
@@ -64,12 +64,12 @@ export default function Sidebar({ userName }: { userName: string }) {
       {/* Sidebar Content */}
       <aside 
         className={`
-          fixed md:relative top-0 left-0 h-full w-64 bg-[#1F2E22] text-[#F6F4EC] 
+          fixed lg:relative top-0 left-0 h-full w-64 bg-[#1F2E22] text-[#F6F4EC] 
           border-r border-[#2d4732] flex flex-col z-50 transition-transform duration-300
-          ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+          ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
         `}
       >
-        <div className="p-5 border-b border-[#2d4732] flex flex-col items-center text-center relative md:pt-5 pt-16">
+        <div className="p-5 border-b border-[#2d4732] flex flex-col items-center text-center relative lg:pt-5 pt-16">
           <img src="/nangrong-logo.png" alt="เทศบาลเมืองนางรอง" className="w-12 h-12 object-contain mb-2 drop-shadow-md" />
           <h2 className="font-bold text-base tracking-wide">สมุดบัญชีรายได้</h2>
           <p className="font-sans text-[11px] text-[#D8D3C3]">เทศบาลเมืองนางรอง</p>

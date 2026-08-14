@@ -106,27 +106,28 @@ export default function HistoryClient() {
     <div className="max-w-6xl mx-auto pb-12 space-y-6">
       
       {/* Header & Stats */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h1 className="font-bold text-3xl text-[#1F2E22] tracking-tight">ประวัติการรับชำระเงิน</h1>
-          <p className="text-slate-500 mt-1">ประวัติการรับชำระเงินทั้งหมดที่ได้รับการยืนยันแล้ว</p>
+          <h1 className="font-bold text-2xl sm:text-3xl text-[#1F2E22] tracking-tight">ประวัติการรับชำระเงิน</h1>
+          <p className="text-slate-500 mt-1 text-sm">ประวัติการรับชำระเงินทั้งหมดที่ได้รับการยืนยันแล้ว</p>
         </div>
         
-        <div className="flex gap-4">
-          <div className="bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm flex flex-col items-end">
-            <div className="text-xs text-slate-500 font-medium uppercase tracking-wider">จำนวนรายการ</div>
-            <div className="text-xl font-bold text-slate-800">{totalCount.toLocaleString()} <span className="text-sm font-normal text-slate-500">รายการ</span></div>
+        <div className="flex gap-3 shrink-0">
+          <div className="bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm flex flex-col items-end">
+            <div className="text-xs text-slate-500 font-medium uppercase tracking-wider">รายการ</div>
+            <div className="text-lg font-bold text-slate-800">{totalCount.toLocaleString()}</div>
           </div>
-          <div className="bg-emerald-50 px-4 py-3 rounded-xl border border-emerald-100 shadow-sm flex flex-col items-end">
-            <div className="text-xs text-emerald-600 font-medium uppercase tracking-wider">ยอดเงินรวม</div>
-            <div className="text-xl font-bold font-mono text-emerald-700">฿{totalAmount.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+          <div className="bg-emerald-50 px-3 py-2 rounded-xl border border-emerald-100 shadow-sm flex flex-col items-end">
+            <div className="text-xs text-emerald-600 font-medium uppercase tracking-wider">ยอดรวม</div>
+            <div className="text-lg font-bold font-mono text-emerald-700">฿{totalAmount.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
           </div>
         </div>
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-4 items-end">
-        <form onSubmit={handleSearch} className="flex-1 w-full">
+      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-3">
+        {/* Row 1: Search */}
+        <form onSubmit={handleSearch} className="w-full">
           <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">ค้นหา</label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -142,8 +143,9 @@ export default function HistoryClient() {
           </div>
         </form>
 
-        <div className="flex gap-4 w-full md:w-auto">
-          <div>
+        {/* Row 2: Date pickers + Export */}
+        <div className="flex flex-wrap gap-3 items-end">
+          <div className="flex-1 min-w-[130px]">
             <label className="block text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wider">ตั้งแต่</label>
             <DatePicker
               value={startDate}
@@ -151,7 +153,7 @@ export default function HistoryClient() {
               placeholder="เลือกวันที่"
             />
           </div>
-          <div>
+          <div className="flex-1 min-w-[130px]">
             <label className="block text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wider">ถึงวันที่</label>
             <DatePicker
               value={endDate}
@@ -159,14 +161,13 @@ export default function HistoryClient() {
               placeholder="เลือกวันที่"
             />
           </div>
+          <button
+            onClick={handleExportCSV}
+            className="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors whitespace-nowrap font-medium h-[42px]"
+          >
+            <Download size={16} /> ส่งออก CSV
+          </button>
         </div>
-
-        <button
-          onClick={handleExportCSV}
-          className="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors whitespace-nowrap h-[42px] font-medium"
-        >
-          <Download size={16} /> ส่งออก CSV
-        </button>
       </div>
 
       {/* List */}
@@ -208,16 +209,25 @@ export default function HistoryClient() {
                 </div>
               </div>
 
-              {/* Body */}
-              <div className="px-6 py-4 grid grid-cols-2 md:grid-cols-12 gap-4 items-center">
+              {/* Body — mobile: stacked, md: 12-col grid */}
+              <div className="px-4 sm:px-6 py-4 grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 items-start">
                 
                 {/* House Info - takes 3 cols */}
-                <div className="md:col-span-3">
-                  <div className="flex items-center gap-1 text-xs text-slate-400 mb-0.5">
-                    <Home size={12} /> บ้านเลขที่
+                <div className="md:col-span-3 flex md:flex-col justify-between md:justify-start items-start gap-2 md:gap-0">
+                  <div>
+                    <div className="flex items-center gap-1 text-xs text-slate-400 mb-0.5">
+                      <Home size={12} /> บ้านเลขที่
+                    </div>
+                    <div className="font-mono font-bold text-slate-800 text-lg leading-tight">{item.houseNumber}</div>
+                    <div className="text-sm text-slate-600 font-medium line-clamp-1">{item.ownerName}</div>
                   </div>
-                  <div className="font-mono font-bold text-slate-800 text-lg">{item.houseNumber}</div>
-                  <div className="text-sm text-slate-600 font-medium line-clamp-1">{item.ownerName}</div>
+                  {/* Amount shown inline on mobile only */}
+                  <div className="md:hidden text-right">
+                    <div className="text-xs text-slate-400 mb-0.5">ยอดเงิน</div>
+                    <div className="text-lg font-bold font-mono text-emerald-600">
+                      ฿{parseFloat(item.amount).toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Months - takes 3 cols */}
@@ -242,8 +252,8 @@ export default function HistoryClient() {
                   <div className="text-sm font-medium text-slate-700 line-clamp-1">{item.senderName || "-"}</div>
                 </div>
 
-                {/* Amount & Date - takes 2 cols */}
-                <div className="md:col-span-2 text-right md:text-left">
+                {/* Amount & Date - takes 2 cols, hidden on mobile (shown above) */}
+                <div className="hidden md:block md:col-span-2">
                   <div className="text-xs text-slate-400 mb-0.5">ยอดเงินรวม</div>
                   <div className="text-xl font-bold font-mono text-emerald-600">
                     ฿{parseFloat(item.amount).toLocaleString("th-TH", { minimumFractionDigits: 2 })}
@@ -257,14 +267,14 @@ export default function HistoryClient() {
                 </div>
 
                 {/* Actions - takes 2 cols */}
-                <div className="col-span-2 md:col-span-2 flex flex-row md:flex-col justify-end gap-2 border-t md:border-t-0 border-slate-100 pt-3 md:pt-0">
+                <div className="md:col-span-2 flex flex-row md:flex-col justify-start md:justify-center gap-2 border-t md:border-t-0 border-slate-100 pt-3 md:pt-0">
                   {item.slipImageUrl && item.slipImageUrl !== "pending" && (
                     <SlipModalButton imageUrl={item.slipImageUrl} buttonStyle="history" />
                   )}
                   <Link 
                     href={`/dashboard/history/${item.id}/receipt`}
                     target="_blank"
-                    className="inline-flex items-center justify-center gap-1.5 text-xs bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 px-3 py-1.5 rounded-lg border border-slate-200 transition-colors font-medium w-full"
+                    className="inline-flex items-center justify-center gap-1.5 text-xs bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 px-3 py-1.5 rounded-lg border border-slate-200 transition-colors font-medium"
                   >
                     <Printer size={14} /> พิมพ์ใบเสร็จ
                   </Link>

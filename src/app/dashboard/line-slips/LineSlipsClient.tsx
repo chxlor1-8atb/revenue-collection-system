@@ -150,42 +150,63 @@ export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendi
           {verifiedSlips.length === 0 ? (
             <div className="p-8 text-center text-slate-500">ยังไม่มีสลิปที่ยืนยันสำเร็จอัตโนมัติ</div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[600px]">
-                <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200">
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">วัน-เวลา</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">รูปสลิป</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">ผู้โอน</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">ยอดเงิน</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">สถานะ</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {verifiedSlips.map((slip) => (
-                    <tr key={slip.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-4 font-mono text-sm text-slate-500">
-                        {slip.createdAt?.toLocaleString("th-TH")}
-                      </td>
-                      <td className="px-6 py-4">
-                        {slip.imageUrl ? (
-                          <SlipModalButton imageUrl={slip.imageUrl}>
-                            <img src={slip.imageUrl} alt="Slip" className="w-14 h-14 object-cover rounded-md border cursor-pointer hover:opacity-80" />
-                          </SlipModalButton>
-                        ) : <span className="text-slate-400 text-sm">-</span>}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-slate-700">{slip.senderName || "-"}</td>
-                      <td className="px-6 py-4 font-bold text-emerald-600">฿{slip.amount}</td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs px-2 py-1 rounded-full border border-emerald-100">
-                          <CheckCircle2 size={11} /> ยืนยันอัตโนมัติ
-                        </span>
-                      </td>
+            <>
+              {/* Mobile cards */}
+              <div className="sm:hidden divide-y divide-slate-100">
+                {verifiedSlips.map((slip) => (
+                  <div key={slip.id} className="p-4 flex gap-3 items-start">
+                    {slip.imageUrl ? (
+                      <SlipModalButton imageUrl={slip.imageUrl}>
+                        <img src={slip.imageUrl} alt="Slip" className="w-14 h-14 object-cover rounded-md border cursor-pointer hover:opacity-80 shrink-0" />
+                      </SlipModalButton>
+                    ) : <div className="w-14 h-14 bg-slate-100 rounded-md shrink-0" />}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-mono text-xs text-slate-400 mb-1">{slip.createdAt?.toLocaleString("th-TH")}</p>
+                      <p className="text-sm text-slate-700">{slip.senderName || "-"}</p>
+                      <p className="font-bold text-emerald-600">฿{slip.amount}</p>
+                      <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs px-2 py-0.5 rounded-full border border-emerald-100 mt-1">
+                        <CheckCircle2 size={10} /> ยืนยันอัตโนมัติ
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* Desktop table */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200">
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">วัน-เวลา</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">รูปสลิป</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">ผู้โอน</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">ยอดเงิน</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">สถานะ</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {verifiedSlips.map((slip) => (
+                      <tr key={slip.id} className="hover:bg-slate-50 transition-colors">
+                        <td className="px-6 py-4 font-mono text-sm text-slate-500">{slip.createdAt?.toLocaleString("th-TH")}</td>
+                        <td className="px-6 py-4">
+                          {slip.imageUrl ? (
+                            <SlipModalButton imageUrl={slip.imageUrl}>
+                              <img src={slip.imageUrl} alt="Slip" className="w-14 h-14 object-cover rounded-md border cursor-pointer hover:opacity-80" />
+                            </SlipModalButton>
+                          ) : <span className="text-slate-400 text-sm">-</span>}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-700">{slip.senderName || "-"}</td>
+                        <td className="px-6 py-4 font-bold text-emerald-600">฿{slip.amount}</td>
+                        <td className="px-6 py-4">
+                          <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs px-2 py-1 rounded-full border border-emerald-100">
+                            <CheckCircle2 size={11} /> ยืนยันอัตโนมัติ
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       )}
@@ -198,74 +219,114 @@ export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendi
             ไม่มีสลิปจาก LINE ที่รอดำเนินการ
           </div>
         ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[800px]">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans">วัน-เวลา</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans">รูปสลิป</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans">ข้อมูลจาก Slip2Go</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans">บ้านเลขที่ (ที่พิมพ์แจ้งมา)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans text-right">การจัดการ</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
+          <>
+            {/* Mobile: Card layout */}
+            <div className="sm:hidden divide-y divide-slate-100">
               {pendingSlips.map((slip) => (
-                <tr key={slip.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-4 font-mono text-sm text-slate-600">
-                    {slip.createdAt?.toLocaleString("th-TH")}
-                  </td>
-                  <td className="px-6 py-4">
+                <div key={slip.id} className="p-4">
+                  <div className="flex gap-3 items-start mb-3">
                     {slip.imageUrl ? (
                       <SlipModalButton imageUrl={slip.imageUrl}>
-                        <img src={slip.imageUrl} alt="Slip" className="w-16 h-16 object-cover rounded-md border border-slate-200 cursor-pointer hover:opacity-80 transition-opacity" />
+                        <img src={slip.imageUrl} alt="Slip" className="w-16 h-16 object-cover rounded-md border border-slate-200 cursor-pointer hover:opacity-80 shrink-0" />
                       </SlipModalButton>
-                    ) : (
-                      <span className="text-slate-400 text-sm font-sans">-</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 font-sans">
-                    {slip.isVerified ? (
-                      <div className="flex flex-col">
-                        <span className="text-emerald-600 font-bold text-sm bg-emerald-50 px-2 py-1 rounded-md inline-block w-fit mb-1 border border-emerald-100">
-                          สลิปแท้
-                        </span>
-                        <span className="text-xs text-slate-500 mt-1">ยอดเงิน: <strong className="text-slate-800">฿{slip.amount}</strong></span>
-                        <span className="text-xs text-slate-500">ผู้โอน: {slip.senderName}</span>
-                      </div>
-                    ) : (
-                      <span className="text-amber-500 font-bold text-sm bg-amber-50 px-2 py-1 rounded-md inline-block border border-amber-100">
-                        รอตรวจสอบ (ไม่ได้ผ่าน Slip2go)
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 font-sans">
-                    {slip.houseNumber ? (
-                      <span className="font-semibold text-slate-800 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">{slip.houseNumber}</span>
-                    ) : (
-                      <span className="text-amber-600 text-sm bg-amber-50 px-2 py-1 rounded-full border border-amber-100">ยังไม่พิมพ์บ้านเลขที่ตามมา</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button 
+                    ) : <div className="w-16 h-16 bg-slate-100 rounded-md shrink-0" />}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-mono text-xs text-slate-400 mb-1">{slip.createdAt?.toLocaleString("th-TH")}</p>
+                      {slip.isVerified ? (
+                        <div>
+                          <span className="text-emerald-600 font-bold text-xs bg-emerald-50 px-2 py-0.5 rounded-md inline-block mb-1 border border-emerald-100">สลิปแท้</span>
+                          <p className="text-xs text-slate-500">ยอด: <strong>฿{slip.amount}</strong></p>
+                          <p className="text-xs text-slate-500">ผู้โอน: {slip.senderName}</p>
+                        </div>
+                      ) : (
+                        <span className="text-amber-500 font-bold text-xs bg-amber-50 px-2 py-0.5 rounded-md inline-block border border-amber-100">รอตรวจสอบ</span>
+                      )}
+                      {slip.houseNumber ? (
+                        <span className="block mt-1 font-semibold text-slate-700 text-sm">บ้าน {slip.houseNumber}</span>
+                      ) : (
+                        <span className="block mt-1 text-amber-600 text-xs">ยังไม่แจ้งบ้านเลขที่</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
                       onClick={() => openMatchModal(slip)}
-                      className="bg-[#C9A227] hover:bg-[#B38E1E] text-white font-sans text-sm px-4 py-2 rounded-lg shadow-sm transition-colors mr-2 font-medium"
+                      className="flex-1 bg-[#C9A227] hover:bg-[#B38E1E] text-white font-sans text-sm px-3 py-2 rounded-lg shadow-sm transition-colors font-medium"
                     >
-                      จับคู่บ้าน / อนุมัติ
+                      จับคู่ / อนุมัติ
                     </button>
                     <button
                       onClick={() => handleRejectClick(slip.id)}
-                      className="px-4 py-2 font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors border border-red-200"
+                      className="flex-1 font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors border border-red-200 px-3 py-2 text-sm"
                     >
                       ปฏิเสธ
                     </button>
-                  </td>
-                </tr>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+            </div>
+            {/* Desktop: Table layout */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50 border-b border-slate-200">
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans">วัน-เวลา</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans">รูปสลิป</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans">ข้อมูลจาก Slip2Go</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans">บ้านเลขที่</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans text-right">การจัดการ</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {pendingSlips.map((slip) => (
+                    <tr key={slip.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-6 py-4 font-mono text-sm text-slate-600">{slip.createdAt?.toLocaleString("th-TH")}</td>
+                      <td className="px-6 py-4">
+                        {slip.imageUrl ? (
+                          <SlipModalButton imageUrl={slip.imageUrl}>
+                            <img src={slip.imageUrl} alt="Slip" className="w-16 h-16 object-cover rounded-md border border-slate-200 cursor-pointer hover:opacity-80 transition-opacity" />
+                          </SlipModalButton>
+                        ) : <span className="text-slate-400 text-sm font-sans">-</span>}
+                      </td>
+                      <td className="px-6 py-4 font-sans">
+                        {slip.isVerified ? (
+                          <div className="flex flex-col">
+                            <span className="text-emerald-600 font-bold text-sm bg-emerald-50 px-2 py-1 rounded-md inline-block w-fit mb-1 border border-emerald-100">สลิปแท้</span>
+                            <span className="text-xs text-slate-500 mt-1">ยอดเงิน: <strong className="text-slate-800">฿{slip.amount}</strong></span>
+                            <span className="text-xs text-slate-500">ผู้โอน: {slip.senderName}</span>
+                          </div>
+                        ) : (
+                          <span className="text-amber-500 font-bold text-sm bg-amber-50 px-2 py-1 rounded-md inline-block border border-amber-100">รอตรวจสอบ (ไม่ได้ผ่าน Slip2go)</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 font-sans">
+                        {slip.houseNumber ? (
+                          <span className="font-semibold text-slate-800 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">{slip.houseNumber}</span>
+                        ) : (
+                          <span className="text-amber-600 text-sm bg-amber-50 px-2 py-1 rounded-full border border-amber-100">ยังไม่พิมพ์บ้านเลขที่ตามมา</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <button
+                          onClick={() => openMatchModal(slip)}
+                          className="bg-[#C9A227] hover:bg-[#B38E1E] text-white font-sans text-sm px-4 py-2 rounded-lg shadow-sm transition-colors mr-2 font-medium"
+                        >
+                          จับคู่บ้าน / อนุมัติ
+                        </button>
+                        <button
+                          onClick={() => handleRejectClick(slip.id)}
+                          className="px-4 py-2 font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors border border-red-200"
+                        >
+                          ปฏิเสธ
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
       </div>
       )}
 
