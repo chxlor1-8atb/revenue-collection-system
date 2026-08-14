@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Clock, RefreshCw, CheckCircle2, AlertCircle } from "lucide-react";
 
-export default function CountdownTimer({ createdAt, transactionId }: { createdAt: Date, transactionId?: number }) {
-  const [timeLeft, setTimeLeft] = useState<number>(3 * 60);
+export default function CountdownTimer({ initialTimeLeft, transactionId }: { initialTimeLeft: number, transactionId?: number }) {
+  const [timeLeft, setTimeLeft] = useState<number>(initialTimeLeft);
   const [isExpired, setIsExpired] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const isRegeneratingRef = useRef(false);
@@ -41,24 +41,18 @@ export default function CountdownTimer({ createdAt, transactionId }: { createdAt
   }, [transactionId]);
 
   useEffect(() => {
-    const calculateTimeLeft = () => {
-      const expiryTime = new Date(createdAt.getTime() + 3 * 60000);
-      const now = new Date();
-      const difference = Math.floor((expiryTime.getTime() - now.getTime()) / 1000);
-      return difference > 0 ? difference : 0;
-    };
-
-    const initialTimeLeft = calculateTimeLeft();
-    setTimeLeft(initialTimeLeft);
-    
-    if (initialTimeLeft === 0) {
+    if (initialTimeLeft <= 0) {
       handleExpiry();
       return;
     }
 
+    const mountTime = performance.now();
+
     const timer = setInterval(() => {
-      const remaining = calculateTimeLeft();
-      setTimeLeft(remaining);
+      const elapsedSeconds = Math.floor((performance.now() - mountTime) / 1000);
+      const remaining = initialTimeLeft - elapsedSeconds;
+      
+      setTimeLeft(remaining > 0 ? remaining : 0);
       
       if (remaining <= 0) {
         clearInterval(timer);
@@ -67,7 +61,7 @@ export default function CountdownTimer({ createdAt, transactionId }: { createdAt
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [createdAt]);
+  }, [initialTimeLeft]);
 
   const handleExpiry = async () => {
     setIsExpired(true);
