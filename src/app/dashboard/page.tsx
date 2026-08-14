@@ -166,7 +166,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* 4 Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-5">
         {/* Stat 1: Total Verified Revenue */}
         <div className="bg-gradient-to-br from-[#1F2E22] to-[#2D4533] text-white rounded-2xl p-6 shadow-md border border-[#2d4732] flex flex-col justify-between relative overflow-hidden group">
           <div className="absolute -right-4 -bottom-4 opacity-10 text-emerald-300 group-hover:scale-110 transition-transform">
@@ -278,7 +278,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Quick Action Navigation Buttons */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Link
           href="/dashboard/review"
           className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-emerald-500 hover:shadow transition-all flex items-center justify-between group"

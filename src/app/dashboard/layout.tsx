@@ -12,12 +12,12 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   }
 
   return (
-    <div className="flex" style={{ height: "100vh", overflow: "hidden", backgroundColor: "var(--background)" }}>
+    <div className="flex h-screen overflow-hidden bg-[var(--background)]">
       {/* Sidebar */}
       <Sidebar userName={session.user?.name || "admin"} />
 
       {/* Main Content */}
-      <main style={{ flex: 1, padding: "2rem", overflowY: "auto" }}>
+      <main className="flex-1 w-full h-full overflow-y-auto p-4 md:p-8 lg:p-10 pt-16 md:pt-8">
         {children}
       </main>
     </div>
