@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CheckCircle2, Smartphone, Globe, Calendar, Home, User, Search, Download, Printer, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { CheckCircle2, Smartphone, Globe, Calendar, Home, User, Search, Download, Printer, ChevronLeft, ChevronRight, Loader2, AlertTriangle, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import SlipModalButton from "@/components/SlipModalButton";
 import DatePicker from "@/components/DatePicker";
 import Link from "next/link";
@@ -17,6 +18,10 @@ export default function HistoryClient() {
   const [totalCount, setTotalCount] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Modal State
+  const [voidConfirmId, setVoidConfirmId] = useState<number | null>(null);
+  const [isVoiding, setIsVoiding] = useState(false);
 
   // Filters
   const [page, setPage] = useState(1);
@@ -71,15 +76,17 @@ export default function HistoryClient() {
     window.location.href = `/api/history?${params.toString()}`;
   };
 
-  const handleVoid = async (id: number) => {
-    if (!confirm(`คุณแน่ใจหรือไม่ที่จะยกเลิกรายการรหัส ${id} ?\n\n⚠️ บิลทั้งหมดในรายการนี้จะกลับไปเป็นสถานะ "ค้างชำระ"\nรายการจะถูกย้ายออกจากประวัตินี้`)) {
-      return;
-    }
-    
+  const handleVoidClick = (id: number) => {
+    setVoidConfirmId(id);
+  };
+
+  const executeVoid = async () => {
+    if (!voidConfirmId) return;
+    setIsVoiding(true);
     try {
-      const res = await fetch(`/api/history/${id}/void`, { method: "POST" });
+      const res = await fetch(`/api/history/${voidConfirmId}/void`, { method: "POST" });
       if (res.ok) {
-        alert("ยกเลิกรายการสำเร็จ");
+        setVoidConfirmId(null);
         fetchData();
       } else {
         const err = await res.json();
@@ -87,6 +94,8 @@ export default function HistoryClient() {
       }
     } catch (e) {
       alert("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+    } finally {
+      setIsVoiding(false);
     }
   };
 
@@ -189,7 +198,7 @@ export default function HistoryClient() {
                     )}
                   </div>
                   <button 
-                    onClick={() => handleVoid(item.id)}
+                    onClick={() => handleVoidClick(item.id)}
                     title="ยกเลิกการชำระเงิน"
                     className="text-xs font-medium text-red-500 hover:text-red-700 hover:bg-red-50 px-2 py-1 rounded transition-colors"
                   >
@@ -313,6 +322,55 @@ export default function HistoryClient() {
           </div>
         </div>
       )}
+
+      {/* Void Confirmation Modal */}
+      <AnimatePresence>
+        {voidConfirmId && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-slate-900/40 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-slate-100"
+            >
+              <div className="p-6 pb-5">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4 text-red-600 shadow-inner">
+                  <AlertTriangle size={24} strokeWidth={2} />
+                </div>
+                <h3 className="text-xl font-bold text-slate-800 mb-2">
+                  ยืนยันการยกเลิกรายการชำระเงิน
+                </h3>
+                <p className="text-slate-600 mb-5 leading-relaxed text-sm">
+                  คุณแน่ใจหรือไม่ที่จะยกเลิกรายการ <span className="font-bold text-slate-800">รหัส {voidConfirmId}</span> ? <br/>
+                  บิลทั้งหมดที่ผูกกับรายการนี้จะกลับไปเป็นสถานะ <b>"ค้างชำระ"</b> ทันที และรายการจะถูกย้ายออกจากประวัตินี้
+                </p>
+                <div className="bg-amber-50 border border-amber-200/60 rounded-xl p-3 text-amber-800 text-xs flex gap-2.5 items-start">
+                  <AlertTriangle size={16} className="shrink-0 mt-0.5 text-amber-500" />
+                  <p className="leading-relaxed">การกระทำนี้ไม่สามารถย้อนกลับได้ และระบบจะบันทึกชื่อของคุณไว้เพื่อการตรวจสอบ</p>
+                </div>
+              </div>
+              <div className="bg-slate-50 px-6 py-4 border-t border-slate-100 flex justify-end gap-3">
+                <button
+                  disabled={isVoiding}
+                  onClick={() => setVoidConfirmId(null)}
+                  className="px-4 py-2 font-medium text-slate-600 hover:bg-slate-200 bg-slate-100 rounded-xl transition-colors disabled:opacity-50 text-sm"
+                >
+                  ปิดหน้าต่าง
+                </button>
+                <button
+                  disabled={isVoiding}
+                  onClick={executeVoid}
+                  className="px-4 py-2 font-medium text-white hover:bg-red-600 bg-red-500 rounded-xl transition-colors shadow-sm shadow-red-500/20 disabled:opacity-50 flex items-center gap-2 text-sm"
+                >
+                  {isVoiding && <Loader2 size={16} className="animate-spin" />}
+                  ยืนยันยกเลิกรายการ
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
