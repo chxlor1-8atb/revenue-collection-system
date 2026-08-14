@@ -29,7 +29,7 @@ export default function Sidebar({ userName }: { userName: string }) {
   ];
 
   return (
-    <aside style={{ width: "250px", backgroundColor: "#1F2E22", color: "#F6F4EC", borderRight: "1px solid #2d4732", display: "flex", flexDirection: "column" }}>
+    <aside style={{ width: "250px", height: "100%", overflowY: "auto", backgroundColor: "#1F2E22", color: "#F6F4EC", borderRight: "1px solid #2d4732", display: "flex", flexDirection: "column" }}>
       <div style={{ padding: "1.25rem", borderBottom: "1px solid #2d4732", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", position: "relative" }}>
         
 

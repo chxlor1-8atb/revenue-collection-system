@@ -12,7 +12,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   }
 
   return (
-    <div className="flex" style={{ minHeight: "100vh", backgroundColor: "var(--background)" }}>
+    <div className="flex" style={{ height: "100vh", overflow: "hidden", backgroundColor: "var(--background)" }}>
       {/* Sidebar */}
       <Sidebar userName={session.user?.name || "admin"} />
 
