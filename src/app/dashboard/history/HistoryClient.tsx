@@ -5,6 +5,7 @@ import { CheckCircle2, Smartphone, Globe, Calendar, Home, User, Search, Download
 import { motion, AnimatePresence } from "framer-motion";
 import SlipModalButton from "@/components/SlipModalButton";
 import DatePicker from "@/components/DatePicker";
+import ConfirmModal from "@/components/ConfirmModal";
 import Link from "next/link";
 
 function formatThaiMonth(monthYear: string) {
@@ -324,53 +325,18 @@ export default function HistoryClient() {
       )}
 
       {/* Void Confirmation Modal */}
-      <AnimatePresence>
-        {voidConfirmId && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-slate-900/40 backdrop-blur-sm">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              transition={{ duration: 0.2 }}
-              className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-slate-100"
-            >
-              <div className="p-6 pb-5">
-                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4 text-red-600 shadow-inner">
-                  <AlertTriangle size={24} strokeWidth={2} />
-                </div>
-                <h3 className="text-xl font-bold text-slate-800 mb-2">
-                  ยืนยันการยกเลิกรายการชำระเงิน
-                </h3>
-                <p className="text-slate-600 mb-5 leading-relaxed text-sm">
-                  คุณแน่ใจหรือไม่ที่จะยกเลิกรายการ <span className="font-bold text-slate-800">รหัส {voidConfirmId}</span> ? <br/>
-                  บิลทั้งหมดที่ผูกกับรายการนี้จะกลับไปเป็นสถานะ <b>"ค้างชำระ"</b> ทันที และรายการจะถูกย้ายออกจากประวัตินี้
-                </p>
-                <div className="bg-amber-50 border border-amber-200/60 rounded-xl p-3 text-amber-800 text-xs flex gap-2.5 items-start">
-                  <AlertTriangle size={16} className="shrink-0 mt-0.5 text-amber-500" />
-                  <p className="leading-relaxed">การกระทำนี้ไม่สามารถย้อนกลับได้ และระบบจะบันทึกชื่อของคุณไว้เพื่อการตรวจสอบ</p>
-                </div>
-              </div>
-              <div className="bg-slate-50 px-6 py-4 border-t border-slate-100 flex justify-end gap-3">
-                <button
-                  disabled={isVoiding}
-                  onClick={() => setVoidConfirmId(null)}
-                  className="px-4 py-2 font-medium text-slate-600 hover:bg-slate-200 bg-slate-100 rounded-xl transition-colors disabled:opacity-50 text-sm"
-                >
-                  ปิดหน้าต่าง
-                </button>
-                <button
-                  disabled={isVoiding}
-                  onClick={executeVoid}
-                  className="px-4 py-2 font-medium text-white hover:bg-red-600 bg-red-500 rounded-xl transition-colors shadow-sm shadow-red-500/20 disabled:opacity-50 flex items-center gap-2 text-sm"
-                >
-                  {isVoiding && <Loader2 size={16} className="animate-spin" />}
-                  ยืนยันยกเลิกรายการ
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <ConfirmModal
+        isOpen={!!voidConfirmId}
+        onClose={() => setVoidConfirmId(null)}
+        onConfirm={executeVoid}
+        isLoading={isVoiding}
+        title="ยกเลิกรายการชำระเงิน"
+        description={
+          <>คุณแน่ใจหรือไม่ที่จะยกเลิกรายการ <span className="font-bold text-slate-900">รหัส {voidConfirmId}</span> ?</>
+        }
+        warningText="บิลทั้งหมดที่ผูกกับรายการนี้จะกลับไปเป็นสถานะ ค้างชำระ ทันที และรายการจะถูกย้ายออกจากประวัตินี้"
+        confirmText="ยืนยันการยกเลิก"
+      />
     </div>
   );
 }

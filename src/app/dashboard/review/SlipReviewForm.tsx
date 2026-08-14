@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle, XCircle, ImageOff } from "lucide-react";
+import ConfirmModal from "@/components/ConfirmModal";
 
 export default function SlipReviewForm({ 
   transaction, 
@@ -12,12 +13,19 @@ export default function SlipReviewForm({
   onReviewed?: () => void;
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showRejectConfirm, setShowRejectConfirm] = useState(false);
   const router = useRouter();
 
   const handleReview = async (status: 'verified' | 'rejected') => {
     if (isSubmitting) return;
-    if (status === 'rejected' && !confirm("คุณแน่ใจหรือไม่ที่จะปฏิเสธสลิปนี้?")) return;
+    if (status === 'rejected') {
+      setShowRejectConfirm(true);
+      return;
+    }
+    await executeReview('verified');
+  };
 
+  const executeReview = async (status: 'verified' | 'rejected') => {
     setIsSubmitting(true);
     
     try {
@@ -31,6 +39,7 @@ export default function SlipReviewForm({
       });
 
       if (res.ok) {
+        setShowRejectConfirm(false);
         if (onReviewed) {
           onReviewed();
         } else {
@@ -39,8 +48,7 @@ export default function SlipReviewForm({
       } else {
         alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
       }
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
       alert("เกิดข้อผิดพลาดในการเชื่อมต่อ");
     } finally {
       setIsSubmitting(false);
@@ -112,6 +120,17 @@ export default function SlipReviewForm({
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={showRejectConfirm}
+        onClose={() => setShowRejectConfirm(false)}
+        onConfirm={() => executeReview('rejected')}
+        isLoading={isSubmitting}
+        title="ปฏิเสธสลิปการโอนเงิน"
+        description="คุณแน่ใจหรือไม่ที่จะปฏิเสธสลิปใบนี้ ?"
+        warningText="หากปฏิเสธ สถานะบิลทั้งหมดจะกลับไปเป็นค้างชำระ ผู้จ่ายจะต้องทำการแจ้งชำระเงินเข้ามาใหม่"
+        confirmText="ใช่, ปฏิเสธสลิป"
+      />
     </div>
   );
 }

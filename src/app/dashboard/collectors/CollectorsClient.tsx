@@ -1,13 +1,17 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { Plus, Edit2, CheckCircle2, XCircle } from "lucide-react";
 import CollectorForm, { CollectorData } from "./CollectorForm";
 import { toggleCollectorActive } from "./actions";
+import ConfirmModal from "@/components/ConfirmModal";
 
 export default function CollectorsClient({ initialCollectors }: { initialCollectors: CollectorData[] }) {
   const [showForm, setShowForm] = useState(false);
   const [editingCollector, setEditingCollector] = useState<CollectorData | undefined>(undefined);
+
+  const [confirmModalData, setConfirmModalData] = useState<{ isOpen: boolean; id: number; currentActive: boolean; name: string } | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const handleAdd = () => {
     setEditingCollector(undefined);
@@ -19,9 +23,18 @@ export default function CollectorsClient({ initialCollectors }: { initialCollect
     setShowForm(true);
   };
 
-  const handleToggleActive = async (id: number, currentActive: boolean) => {
-    if (confirm(`คุณต้องการ ${currentActive ? 'ปิด' : 'เปิด'} การใช้งานพนักงานคนนี้ใช่หรือไม่?`)) {
-      await toggleCollectorActive(id, !currentActive);
+  const handleToggleActive = (id: number, currentActive: boolean, name: string) => {
+    setConfirmModalData({ isOpen: true, id, currentActive, name });
+  };
+
+  const executeToggle = async () => {
+    if (!confirmModalData) return;
+    setIsUpdating(true);
+    try {
+      await toggleCollectorActive(confirmModalData.id, !confirmModalData.currentActive);
+      setConfirmModalData(null);
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -58,7 +71,7 @@ export default function CollectorsClient({ initialCollectors }: { initialCollect
                   <td className="p-4 font-mono text-sm text-slate-500">{collector.telegramChatId || '-'}</td>
                   <td className="p-4 text-center">
                     <button 
-                      onClick={() => handleToggleActive(collector.id!, !!collector.active)}
+                      onClick={() => handleToggleActive(collector.id!, !!collector.active, collector.name)}
                       className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all ${
                         collector.active 
                           ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' 
@@ -103,6 +116,19 @@ export default function CollectorsClient({ initialCollectors }: { initialCollect
           onSuccess={() => setShowForm(false)} 
         />
       )}
+
+      <ConfirmModal
+        isOpen={!!confirmModalData}
+        onClose={() => setConfirmModalData(null)}
+        onConfirm={executeToggle}
+        isLoading={isUpdating}
+        title={confirmModalData?.currentActive ? "ปิดใช้งานพนักงาน" : "เปิดใช้งานพนักงาน"}
+        description={
+          <>คุณต้องการ {confirmModalData?.currentActive ? 'ปิด' : 'เปิด'} การใช้งานพนักงาน <span className="font-bold text-slate-900">{confirmModalData?.name}</span> ใช่หรือไม่ ?</>
+        }
+        warningText={confirmModalData?.currentActive ? "พนักงานคนนี้จะไม่สามารถใช้งานระบบและไม่สามารถรับยอดโอนได้ชั่วคราว" : undefined}
+        confirmText={confirmModalData?.currentActive ? "ใช่, ปิดใช้งาน" : "ใช่, เปิดใช้งาน"}
+      />
     </div>
   );
 }

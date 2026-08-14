@@ -4,6 +4,7 @@ import { useState } from "react";
 import { searchHouseByNumber, getUnpaidInvoicesForHouse, approveLineSlip, rejectLineSlip } from "./actions";
 import { CheckCircle2, Clock } from "lucide-react";
 import SlipModalButton from "@/components/SlipModalButton";
+import ConfirmModal from "@/components/ConfirmModal";
 import { useRouter } from "next/navigation";
 
 export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendingSlips: any[], verifiedSlips: any[] }) {
@@ -16,6 +17,7 @@ export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendi
   const [selectedInvoices, setSelectedInvoices] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [rejectConfirmId, setRejectConfirmId] = useState<number | null>(null);
 
   const openMatchModal = async (slip: any) => {
     setSelectedSlip(slip);
@@ -87,14 +89,23 @@ export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendi
     }
   };
 
-  const handleReject = async (slipId: number) => {
-    if (confirm("คุณแน่ใจหรือไม่ว่าต้องการปฏิเสธสลิปใบนี้?")) {
-      const res = await rejectLineSlip(slipId);
+  const handleRejectClick = (slipId: number) => {
+    setRejectConfirmId(slipId);
+  };
+
+  const executeReject = async () => {
+    if (!rejectConfirmId) return;
+    setIsLoading(true);
+    try {
+      const res = await rejectLineSlip(rejectConfirmId);
       if (res.success) {
+        setRejectConfirmId(null);
         router.refresh();
       } else {
         alert(res.error || "เกิดข้อผิดพลาดในการปฏิเสธ");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -242,9 +253,9 @@ export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendi
                     >
                       จับคู่บ้าน / อนุมัติ
                     </button>
-                    <button 
-                      onClick={() => handleReject(slip.id)}
-                      className="bg-red-50 hover:bg-red-100 text-red-600 font-sans text-sm px-4 py-2 rounded-lg transition-colors font-medium border border-red-100"
+                    <button
+                      onClick={() => handleRejectClick(slip.id)}
+                      className="px-4 py-2 font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors border border-red-200"
                     >
                       ปฏิเสธ
                     </button>
@@ -407,6 +418,16 @@ export default function LineSlipsClient({ pendingSlips, verifiedSlips }: { pendi
         </div>
       )}
 
+      <ConfirmModal
+        isOpen={!!rejectConfirmId}
+        onClose={() => setRejectConfirmId(null)}
+        onConfirm={executeReject}
+        isLoading={isLoading}
+        title="ปฏิเสธสลิป LINE"
+        description="คุณแน่ใจหรือไม่ที่จะปฏิเสธสลิปใบนี้ ?"
+        warningText="สลิปนี้จะถูกลบออกจากระบบ และไม่สามารถนำกลับมาตรวจสอบได้อีก"
+        confirmText="ใช่, ปฏิเสธสลิป"
+      />
     </div>
   );
 }
