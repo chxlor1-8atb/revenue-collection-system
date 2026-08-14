@@ -71,6 +71,25 @@ export default function HistoryClient() {
     window.location.href = `/api/history?${params.toString()}`;
   };
 
+  const handleVoid = async (id: number) => {
+    if (!confirm(`คุณแน่ใจหรือไม่ที่จะยกเลิกรายการรหัส ${id} ?\n\n⚠️ บิลทั้งหมดในรายการนี้จะกลับไปเป็นสถานะ "ค้างชำระ"\nรายการจะถูกย้ายออกจากประวัตินี้`)) {
+      return;
+    }
+    
+    try {
+      const res = await fetch(`/api/history/${id}/void`, { method: "POST" });
+      if (res.ok) {
+        alert("ยกเลิกรายการสำเร็จ");
+        fetchData();
+      } else {
+        const err = await res.json();
+        alert(err.error || "เกิดข้อผิดพลาด");
+      }
+    } catch (e) {
+      alert("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+    }
+  };
+
   const totalPages = Math.ceil(totalCount / limit);
 
   return (
@@ -169,6 +188,13 @@ export default function HistoryClient() {
                       <><Globe size={12} className="text-blue-500" /> เว็บไซต์</>
                     )}
                   </div>
+                  <button 
+                    onClick={() => handleVoid(item.id)}
+                    title="ยกเลิกการชำระเงิน"
+                    className="text-xs font-medium text-red-500 hover:text-red-700 hover:bg-red-50 px-2 py-1 rounded transition-colors"
+                  >
+                    ยกเลิกรายการ
+                  </button>
                 </div>
               </div>
 
@@ -234,6 +260,30 @@ export default function HistoryClient() {
                   </Link>
                 </div>
               </div>
+              
+              {/* Additional Info Row (if any) */}
+              {(item.payerNote || item.slipRefId || item.verifiedBy) && (
+                <div className="px-6 py-3 bg-slate-50 border-t border-slate-100 flex flex-wrap gap-x-6 gap-y-2 text-xs">
+                  {item.verifiedBy && (
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-slate-400 font-medium">ผู้อนุมัติ:</span>
+                      <span className="text-slate-700">{item.verifiedBy === 'line_bot' ? 'LINE Bot (อัตโนมัติ)' : item.verifiedBy}</span>
+                    </div>
+                  )}
+                  {item.slipRefId && (
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-slate-400 font-medium">Ref:</span>
+                      <span className="text-slate-700 font-mono">{item.slipRefId}</span>
+                    </div>
+                  )}
+                  {item.payerNote && (
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-slate-400 font-medium">หมายเหตุ:</span>
+                      <span className="text-slate-700 italic">{item.payerNote}</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>
