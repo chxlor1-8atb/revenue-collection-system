@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { qrCodes, collectors, transactions } from "@/lib/schema";
+import { systemSettings, transactions } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
 import generatePayload from "promptpay-qr";
@@ -14,22 +14,15 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
   }
 
   // Find the pending transaction
-  const result = await db.select({
-    tx: transactions,
-    qrCode: qrCodes,
-    collector: collectors
-  })
-  .from(transactions)
-  .innerJoin(qrCodes, eq(transactions.qrCodeId, qrCodes.id))
-  .innerJoin(collectors, eq(transactions.collectorId, collectors.id))
-  .where(eq(transactions.id, transactionId))
-  .limit(1);
+  const result = await db.select().from(transactions).where(eq(transactions.id, transactionId)).limit(1);
 
   if (result.length === 0) {
     notFound();
   }
 
-  const { tx, collector, qrCode } = result[0];
+  const tx = result[0];
+  const settings = await db.select().from(systemSettings).limit(1);
+  const system = settings[0];
 
   // If transaction is already verified → redirect to success page
   if (tx.slipStatus === "verified") {
@@ -44,10 +37,10 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
   const totalAmount = parseFloat(tx.amount || "0");
 
   let qrDataUri = "";
-  if (collector.qrCodeImageUrl) {
-    qrDataUri = collector.qrCodeImageUrl;
-  } else {
-    const payload = generatePayload(collector.promptPayId, { amount: totalAmount });
+  if (system?.qrCodeImageUrl) {
+    qrDataUri = system.qrCodeImageUrl;
+  } else if (system?.promptPayId) {
+    const payload = generatePayload(system.promptPayId, { amount: totalAmount });
     qrDataUri = await qrcode.toDataURL(payload, {
       errorCorrectionLevel: 'H',
       type: 'image/png',
@@ -114,8 +107,8 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
 
             <div className="w-full text-center mb-8 mt-2 px-4 py-3 bg-slate-50 rounded-xl border border-slate-100">
               <p className="font-sans text-xs text-slate-500 uppercase tracking-widest mb-1">โอนเงินเข้าบัญชี</p>
-              <p className="font-sans font-semibold text-slate-900">{collector.name}</p>
-              <p className="font-mono text-sm text-emerald-600 font-medium">PromptPay: {collector.promptPayId}</p>
+              <h3 className="font-bold text-slate-800 text-lg mb-1">{system?.accountName || "เทศบาลเมืองนางรอง"}</h3>
+              <p className="text-slate-500 font-medium">พร้อมเพย์: {system?.promptPayId || "-"}</p>
             </div>
 
             <div className="w-full text-center">

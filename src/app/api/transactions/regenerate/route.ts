@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { transactions, invoices, qrCodes } from "@/lib/schema";
+import { transactions, invoices } from "@/lib/schema";
 import { eq, inArray, and, gte, or, isNull } from "drizzle-orm";
 
 export async function POST(request: Request) {
@@ -60,8 +60,6 @@ export async function POST(request: Request) {
         finalAmount = baseAmount + (selectedCents / 100);
         try {
           newTx = await db.insert(transactions).values({
-            qrCodeId: oldTx.qrCodeId,
-            collectorId: oldTx.collectorId,
             amount: finalAmount.toString(),
             slipImageUrl: "pending",
             slipStatus: "waiting_for_slip",

@@ -1,28 +1,31 @@
-﻿import { db } from "@/lib/db";
-import { collectors } from "@/lib/schema";
+import { db } from "@/lib/db";
+import { systemSettings } from "@/lib/schema";
 import SettingsForm from "./SettingsForm";
 
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
-  // Fetch the first collector (acts as the main municipality account)
-  const [collector] = await db.select().from(collectors).limit(1);
+  // Fetch the first settings row
+  const [settings] = await db.select().from(systemSettings).limit(1);
 
   return (
     <div>
       <h1 className="font-bold text-3xl mb-6 text-[#1F2E22]">ตั้งค่าระบบ</h1>
       
-      {collector ? (
+      {settings ? (
         <SettingsForm 
-          collectorId={collector.id} 
-          initialName={collector.name} 
-          initialPromptPay={collector.promptPayId}
-          initialQrCodeImageUrl={collector.qrCodeImageUrl} 
+          collectorId={settings.id} 
+          initialName={settings.accountName} 
+          initialPromptPay={settings.promptPayId}
+          initialQrCodeImageUrl={settings.qrCodeImageUrl} 
         />
       ) : (
-        <div className="bg-red-50 text-red-600 p-6 rounded-xl font-sans">
-          ไม่พบข้อมูลบัญชีในระบบ กรุณาติดต่อผู้ดูแลระบบ
-        </div>
+        <SettingsForm 
+          collectorId={1} 
+          initialName="ชื่อบัญชีรับเงิน" 
+          initialPromptPay="เบอร์พร้อมเพย์"
+          initialQrCodeImageUrl={null}
+        />
       )}
     </div>
   );

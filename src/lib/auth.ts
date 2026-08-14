@@ -24,7 +24,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const isValid = await bcrypt.compare(credentials.password as string, user.passwordHash);
         
         if (isValid) {
-          return { id: user.id.toString(), name: user.username, role: user.role, collectorId: user.collectorId };
+          return {
+            id: user.id.toString(),
+            name: user.username,
+            role: user.role,
+          };
         }
         
         return null;

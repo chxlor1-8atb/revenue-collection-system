@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import { db } from "@/lib/db";
-import { qrCodes, transactions, collectors, invoices } from "@/lib/schema";
+import { transactions, invoices, systemSettings } from "@/lib/schema";
 import { eq, inArray, and, isNull } from "drizzle-orm";
 import { sendSlipNotification } from "@/lib/telegram";
 
@@ -9,38 +9,22 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File;
-    const qrCodeIdStr = formData.get("qrCodeId") as string;
-
     const invoiceIdsStr = formData.get("invoiceIds") as string;
     
-    if (!file || !qrCodeIdStr || !invoiceIdsStr) {
+    if (!file || !invoiceIdsStr) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const qrCodeId = parseInt(qrCodeIdStr, 10);
+    const settings = await db.select().from(systemSettings).limit(1);
     const invoiceIds = invoiceIdsStr.split(",").map(id => parseInt(id, 10)).filter(id => !isNaN(id));
 
-    if (isNaN(qrCodeId) || invoiceIds.length === 0) {
+    if (invoiceIds.length === 0) {
       return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
-
-    const qrResult = await db
-      .select({
-        qrCode: qrCodes,
-        collector: {
-          telegramChatId: collectors.telegramChatId
-        }
-      })
-      .from(qrCodes)
-      .innerJoin(collectors, eq(qrCodes.collectorId, collectors.id))
-      .where(eq(qrCodes.id, qrCodeId))
-      .limit(1);
-
-    if (qrResult.length === 0 || !qrResult[0].qrCode.active) {
-      return NextResponse.json({ error: "QR Code not found or inactive" }, { status: 404 });
+    if (settings.length === 0) {
+      return NextResponse.json({ error: "System settings not found" }, { status: 404 });
     }
-
-    const { qrCode, collector } = qrResult[0];
+    const collector = { telegramChatId: settings[0].telegramChatId };
 
     // Fetch invoices and sum amount
     const { invoices } = await import("@/lib/schema");
@@ -56,8 +40,6 @@ export async function POST(request: Request) {
     // Insert transaction record, then link invoices atomically
     // If invoice linking fails, we rollback by deleting the transaction
     const [newTransaction] = await db.insert(transactions).values({
-      qrCodeId: qrCode.id,
-      collectorId: qrCode.collectorId,
       amount: totalAmount.toString(),
       slipImageUrl: blob.url,
       slipStatus: "pending",

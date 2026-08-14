@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { transactions, invoices, qrCodes } from "@/lib/schema";
+import { transactions, invoices, systemSettings } from "@/lib/schema";
 import { inArray, eq, and, gte, lt, isNull } from "drizzle-orm";
 
 export async function POST(request: Request) {
@@ -113,22 +113,11 @@ export async function POST(request: Request) {
     // Calculate base amount
     const baseAmount = targetInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
 
-    // Get QR Code info to find collectorId
-    let targetQrCodeId = qrCodeId;
-    if (!targetQrCodeId) {
-      const defaultQr = await db.select().from(qrCodes).where(eq(qrCodes.active, true)).limit(1);
-      if (defaultQr.length > 0) {
-        targetQrCodeId = defaultQr[0].id;
-      } else {
-        return NextResponse.json({ error: "No active QR Code found in system. Please configure it in Settings." }, { status: 400 });
-      }
+    // Get system settings to verify setup
+    const settings = await db.select().from(systemSettings).limit(1);
+    if (settings.length === 0 || !settings[0].promptPayId) {
+      return NextResponse.json({ error: "System PromptPay is not configured. Please contact admin." }, { status: 400 });
     }
-
-    const qrCode = await db.select().from(qrCodes).where(eq(qrCodes.id, targetQrCodeId)).limit(1);
-    if (qrCode.length === 0) {
-      return NextResponse.json({ error: "QR Code not found" }, { status: 404 });
-    }
-    const collectorId = qrCode[0].collectorId;
 
     // We use the strict 3-minute expiryTime for checking against pending transactions
     const strictExpiryTime = new Date();
@@ -160,17 +149,14 @@ export async function POST(request: Request) {
     while (selectedCents <= 99 && !newTx) {
       if (!usedCents.has(selectedCents)) {
         finalAmount = baseAmount + (selectedCents / 100);
+        const newLockKey = `waiting_${finalAmount}`;
         
         try {
-          // Attempt to insert with a unique lockKey
-          // If another request already inserted this amount, it will throw a unique constraint error
           newTx = await db.insert(transactions).values({
-            qrCodeId: qrCode[0].id,
-            collectorId: collectorId,
             amount: finalAmount.toString(),
-            slipImageUrl: "pending", 
-            slipStatus: "waiting_for_slip",
-            lockKey: `waiting_${finalAmount}`, // Unique constraint handles race conditions
+            slipImageUrl: '',
+            slipStatus: 'waiting_for_slip',
+            lockKey: newLockKey,
           }).returning();
         } catch (insertError: any) {
           // If unique constraint error (e.g., code 23505 in Postgres), try the next cent

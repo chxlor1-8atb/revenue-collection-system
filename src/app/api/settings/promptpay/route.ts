@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { collectors } from "@/lib/schema";
-import { eq } from "drizzle-orm";
+import { systemSettings } from "@/lib/schema";
 import { auth } from "@/lib/auth";
 import { put } from "@vercel/blob";
 
@@ -33,7 +32,7 @@ export async function POST(request: Request) {
     }
 
     // Only update qrCodeImageUrl if a new image was uploaded or if it's explicitly removed
-    const updateData: any = { name, promptPayId };
+    const updateData: any = { accountName: name, promptPayId };
     
     if (removeQrCode) {
       updateData.qrCodeImageUrl = null;
@@ -41,9 +40,14 @@ export async function POST(request: Request) {
       updateData.qrCodeImageUrl = qrCodeImageUrl;
     }
 
-    await db.update(collectors)
-      .set(updateData)
-      .where(eq(collectors.id, parseInt(id, 10)));
+    // Since there's only one row, we can update or insert. Assuming row ID 1 exists.
+    const existing = await db.select().from(systemSettings).limit(1);
+    if (existing.length > 0) {
+      await db.update(systemSettings)
+        .set(updateData);
+    } else {
+      await db.insert(systemSettings).values({ ...updateData, id: 1 });
+    }
 
     return NextResponse.json({ success: true, qrCodeImageUrl });
   } catch (error) {

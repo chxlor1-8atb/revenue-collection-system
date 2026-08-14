@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { lineMessages, houses, invoices, transactions, qrCodes } from "@/lib/schema";
+import { lineMessages, houses, invoices, transactions } from "@/lib/schema";
 import { eq, and, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -23,18 +23,7 @@ export async function approveLineSlip(
   imageUrl: string
 ) {
   try {
-    let defaultQr = await db.select().from(qrCodes).where(eq(qrCodes.active, true)).limit(1);
-    
-    if (defaultQr.length === 0) {
-      throw new Error("ระบบจำเป็นต้องมีการสร้าง QR Code พื้นฐานไว้อย่างน้อย 1 อันเพื่ออ้างอิงบัญชีรับเงิน กรุณาไปตั้งค่าระบบก่อนครับ");
-    }
-
-    const qrCodeId = defaultQr[0].id;
-    const collectorId = defaultQr[0].collectorId;
-
     const newTx = await db.insert(transactions).values({
-      qrCodeId,
-      collectorId,
       amount: amount.toString(),
       amountClaimedByPayer: amount.toString(),
       slipImageUrl: imageUrl,

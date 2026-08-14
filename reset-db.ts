@@ -30,10 +30,6 @@ async function resetDb() {
   await db.delete(schema.houses);
   console.log('Cleared houses');
 
-  // 6. QR Codes
-  await db.delete(schema.qrCodes);
-  console.log('Cleared QR codes');
-
   console.log('Database successfully reset for production use. Kept admin users and main settings intact.');
   process.exit(0);
 }
