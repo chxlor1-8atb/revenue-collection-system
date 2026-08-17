@@ -121,97 +121,97 @@ export default function HistoryClient() {
       {/* Header & Stats */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h1 className="font-bold text-2xl sm:text-3xl text-[#1F2E22] tracking-tight">ประวัติการรับชำระเงิน</h1>
-          <p className="text-slate-500 mt-1 text-sm">ประวัติการรับชำระเงินทั้งหมดที่ได้รับการยืนยันแล้ว</p>
+          <h1 className="font-bold text-2xl text-slate-800 tracking-tight">Payment History</h1>
+          <p className="text-slate-500 mt-1 text-[13px]">Verified payment transactions</p>
         </div>
         
-        <div className="flex gap-3 shrink-0">
-          <div className="bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm flex flex-col items-end">
-            <div className="text-xs text-slate-500 font-medium uppercase tracking-wider">รายการ</div>
-            <div className="text-lg font-bold text-slate-800">{totalCount.toLocaleString()}</div>
+        <div className="flex gap-2 shrink-0">
+          <div className="bg-white px-4 py-2.5 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-end">
+            <div className="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Total Tx</div>
+            <div className="text-lg font-bold text-slate-800 tracking-tight">{totalCount.toLocaleString()}</div>
           </div>
-          <div className="bg-emerald-50 px-3 py-2 rounded-xl border border-emerald-100 shadow-sm flex flex-col items-end">
-            <div className="text-xs text-emerald-600 font-medium uppercase tracking-wider">ยอดรวม</div>
-            <div className="text-lg font-bold font-mono text-emerald-700">฿{totalAmount.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+          <div className="bg-[#EEF0FF] px-4 py-2.5 rounded-2xl border border-transparent flex flex-col items-end">
+            <div className="text-[11px] text-[#5B58F2] font-semibold uppercase tracking-wider">Total Volume</div>
+            <div className="text-lg font-bold font-mono text-[#5B58F2] tracking-tight">฿{totalAmount.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
           </div>
         </div>
       </div>
 
       {/* Filters & Actions */}
-      <div className="flex flex-wrap sm:flex-nowrap gap-4 items-end w-full">
+      <div className="flex flex-wrap sm:flex-nowrap gap-3 items-end w-full">
         {/* Search */}
         <form onSubmit={handleSearch} className="flex-none sm:flex-1 max-w-2xl">
           <SearchAutocomplete
             value={searchInput}
             onChange={setSearchInput}
             onSubmit={() => { setPage(1); setSearch(searchInput); }}
-            placeholder="ค้นหาบ้านเลขที่, ชื่อเจ้าบ้าน..."
-            className="w-11 focus:w-[280px] sm:w-full h-[42px] pl-[38px] pr-4 bg-white border-0 shadow-[0_4px_14px_rgba(0,0,0,0.05)] text-slate-900 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300 placeholder:text-transparent sm:placeholder:text-slate-400 focus:placeholder:text-slate-400 cursor-pointer sm:cursor-text focus:cursor-text relative z-0"
+            placeholder="Search house or owner..."
+            className="w-full sm:w-full h-[42px] pl-[38px] pr-4 bg-white border border-slate-200 text-slate-900 rounded-[12px] text-sm focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none transition-all duration-300 sm:cursor-text focus:cursor-text relative z-0"
           />
         </form>
 
         {/* Filters Row */}
-        <div className="flex flex-wrap gap-3 items-end w-full sm:w-auto">
+        <div className="flex flex-wrap gap-2 items-end w-full sm:w-auto">
           <div className="flex-1 min-w-[110px]">
-            <label className="block text-[11px] font-medium text-slate-500 mb-1 uppercase tracking-wider">สถานะ</label>
+            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">Status</label>
             <select
               value={status}
               onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-              className="w-full h-[42px] px-3 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors cursor-pointer"
+              className="w-full h-[42px] px-3 bg-white border border-slate-200 text-slate-700 rounded-[12px] text-sm focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 transition-colors cursor-pointer"
             >
-              <option value="verified">ชำระแล้ว</option>
-              <option value="all">ทั้งหมด</option>
-              <option value="voided">ยกเลิกแล้ว</option>
+              <option value="verified">Verified</option>
+              <option value="all">All</option>
+              <option value="voided">Voided</option>
             </select>
           </div>
 
           <div className="flex-1 min-w-[110px]">
-            <label className="block text-[11px] font-medium text-slate-500 mb-1 uppercase tracking-wider">ช่องทาง</label>
+            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">Channel</label>
             <select
               value={channel}
               onChange={(e) => { setChannel(e.target.value); setPage(1); }}
-              className="w-full h-[42px] px-3 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors cursor-pointer"
+              className="w-full h-[42px] px-3 bg-white border border-slate-200 text-slate-700 rounded-[12px] text-sm focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 transition-colors cursor-pointer"
             >
-              <option value="all">ทั้งหมด</option>
-              <option value="line">LINE Bot</option>
-              <option value="web">เว็บไซต์ (แอดมิน)</option>
+              <option value="all">All</option>
+              <option value="line">LINE</option>
+              <option value="web">Web</option>
             </select>
           </div>
 
           <div className="flex-1 min-w-[130px]">
-            <label className="block text-[11px] font-medium text-slate-500 mb-1 uppercase tracking-wider">รอบบิล</label>
+            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">Month</label>
             <input
               type="month"
               value={monthYear}
               onChange={(e) => { setMonthYear(e.target.value); setPage(1); }}
-              className="w-full h-[42px] px-3 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors cursor-pointer"
+              className="w-full h-[42px] px-3 bg-white border border-slate-200 text-slate-700 rounded-[12px] text-[13px] focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 transition-colors cursor-pointer"
             />
           </div>
         </div>
         
         {/* Date Pickers & Export */}
-        <div className="flex flex-1 sm:flex-none flex-wrap sm:flex-nowrap gap-3 items-end sm:justify-end shrink-0">
-          <div className="flex-1 min-w-[130px] sm:w-[180px] md:w-[220px]">
-            <label className="block text-[11px] font-medium text-slate-500 mb-1 uppercase tracking-wider">ตั้งแต่</label>
+        <div className="flex flex-1 sm:flex-none flex-wrap sm:flex-nowrap gap-2 items-end sm:justify-end shrink-0">
+          <div className="flex-1 min-w-[130px] sm:w-[150px] md:w-[150px]">
+            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">From</label>
             <DatePicker
               value={startDate}
               onChange={(val) => { setStartDate(val); setPage(1); }}
-              placeholder="เลือกวันที่"
+              placeholder="Select date"
             />
           </div>
-          <div className="flex-1 min-w-[130px] sm:w-[180px] md:w-[220px]">
-            <label className="block text-[11px] font-medium text-slate-500 mb-1 uppercase tracking-wider">ถึงวันที่</label>
+          <div className="flex-1 min-w-[130px] sm:w-[150px] md:w-[150px]">
+            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">To</label>
             <DatePicker
               value={endDate}
               onChange={(val) => { setEndDate(val); setPage(1); }}
-              placeholder="เลือกวันที่"
+              placeholder="Select date"
             />
           </div>
           <button
             onClick={handleExportCSV}
-            className="bg-[#1F2E22] hover:bg-slate-800 text-white px-5 sm:px-6 h-[42px] rounded-lg flex items-center justify-center gap-2 transition-colors whitespace-nowrap font-medium shadow-sm shrink-0"
+            className="bg-[#5B58F2] hover:bg-[#4A47D1] text-white px-5 sm:px-6 h-[42px] rounded-[12px] flex items-center justify-center gap-2 transition-colors whitespace-nowrap font-semibold shadow-sm shrink-0"
           >
-            <Download size={16} /> ส่งออก CSV
+            <Download size={16} /> Export
           </button>
         </div>
       </div>
@@ -230,29 +230,29 @@ export default function HistoryClient() {
       ) : (
         <div className="space-y-4">
           {data.map((item) => (
-            <div key={item.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+            <div key={item.id} className="bg-white rounded-[24px] border border-slate-100 shadow-sm overflow-hidden hover:shadow-md transition-all">
               {/* Header strip */}
               <div className={`flex items-center justify-between px-6 py-3 border-b ${
                 item.slipStatus === 'voided' 
-                  ? 'bg-slate-50 border-slate-200' 
-                  : 'bg-emerald-50/50 border-slate-100'
+                  ? 'bg-slate-50 border-slate-100' 
+                  : 'bg-emerald-50/30 border-slate-100'
               }`}>
-                <div className={`flex items-center gap-2 ${item.slipStatus === 'voided' ? 'text-slate-500' : 'text-emerald-700'}`}>
+                <div className={`flex items-center gap-2 ${item.slipStatus === 'voided' ? 'text-slate-400' : 'text-emerald-700'}`}>
                   {item.slipStatus === 'voided' ? (
-                    <X size={16} className="text-slate-400" />
+                    <X size={16} className="opacity-50" />
                   ) : (
                     <CheckCircle2 size={16} className="fill-emerald-100" />
                   )}
-                  <span className="text-sm font-semibold">
-                    {item.slipStatus === 'voided' ? 'ยกเลิกแล้ว' : 'ชำระแล้ว'} • รหัส {item.id}
+                  <span className="text-[13px] font-semibold">
+                    {item.slipStatus === 'voided' ? 'Voided' : 'Verified'} • ID {item.id}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500 bg-white px-2 py-1 rounded-md border border-slate-200 shadow-sm">
+                  <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-semibold bg-white px-2.5 py-1 rounded-full border border-slate-100 shadow-sm">
                     {item.paidVia === "LINE Bot" ? (
-                      <><Smartphone size={12} className="text-emerald-500" /> LINE Bot</>
+                      <><Smartphone size={12} className="text-[#5B58F2]" /> LINE Bot</>
                     ) : (
-                      <><Globe size={12} className="text-blue-500" /> เว็บไซต์</>
+                      <><Globe size={12} className="text-slate-400" /> Web Admin</>
                     )}
                   </div>
                   {item.slipStatus !== 'voided' && (

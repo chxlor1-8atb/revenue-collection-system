@@ -70,68 +70,71 @@ export default function UsersClient({
   };
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="font-bold text-3xl text-[#1F2E22] font-sans">จัดการผู้ใช้งานระบบ</h1>
+    <div className="font-sans">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <div>
+          <h1 className="font-bold text-2xl text-slate-800 tracking-tight">Admin Users</h1>
+          <p className="text-slate-500 mt-1 text-[13px]">Manage system access and roles</p>
+        </div>
         <button
           onClick={handleAdd}
-          className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm font-sans"
+          className="flex items-center gap-1.5 bg-[#5B58F2] hover:bg-[#4A47D1] text-white px-4 py-2 rounded-xl text-xs font-semibold transition-colors shadow-sm"
         >
-          <Plus size={16} />
-          เพิ่มผู้ใช้งาน
+          <Plus size={14} />
+          Add User
         </button>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden font-sans">
-        <div className="overflow-x-auto">
+      <div className="bg-white rounded-[24px] shadow-sm border border-slate-100 overflow-hidden font-sans">
+        <div className="overflow-x-auto p-2 sm:p-6 pb-0">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-sm text-slate-500">
-                <th className="p-4 font-semibold w-12 text-center">#</th>
-                <th className="p-4 font-semibold">ชื่อผู้ใช้ (Username)</th>
-                <th className="p-4 font-semibold">สิทธิ์การใช้งาน (Role)</th>
-                <th className="p-4 font-semibold">วันที่เพิ่ม</th>
-                <th className="p-4 font-semibold text-right">จัดการ</th>
+              <tr className="border-b border-slate-100">
+                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider w-12 text-center">#</th>
+                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Username</th>
+                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Role</th>
+                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Created</th>
+                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider text-right">More</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-700">
+            <tbody className="divide-y divide-slate-50 text-slate-700">
               {initialUsers.map((user, idx) => (
-                <tr key={user.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="p-4 text-center text-slate-400 text-sm">{idx + 1}</td>
-                  <td className="p-4 font-medium flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
-                      <KeyRound size={14} />
+                <tr key={user.id} className="hover:bg-slate-50/50 transition-colors group">
+                  <td className="px-4 py-4 text-center text-slate-400 text-[13px]">{idx + 1}</td>
+                  <td className="px-4 py-4 font-semibold text-slate-800 text-[13px] flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-500">
+                      <KeyRound size={12} />
                     </div>
                     {user.username}
                   </td>
-                  <td className="p-4">
-                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                  <td className="px-4 py-4">
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${
                       user.role === 'admin' 
-                        ? 'bg-purple-50 text-purple-700 border border-purple-200' 
-                        : 'bg-blue-50 text-blue-700 border border-blue-200'
+                        ? 'bg-[#EEF0FF] text-[#5B58F2]' 
+                        : 'bg-emerald-50 text-emerald-700'
                     }`}>
-                      <Shield size={12} />
+                      <Shield size={10} />
                       {user.role.toUpperCase()}
                     </span>
                   </td>
-                  <td className="p-4 text-sm text-slate-500">
+                  <td className="px-4 py-4 text-[13px] text-slate-500">
                     {user.createdAt ? new Date(user.createdAt).toLocaleDateString('th-TH') : '-'}
                   </td>
-                  <td className="p-4 text-right">
-                    <div className="flex justify-end gap-2">
+                  <td className="px-4 py-4 text-right">
+                    <div className="flex items-center justify-end gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => handleEdit(user)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                        className="p-2 text-slate-400 hover:text-[#5B58F2] hover:bg-slate-50 rounded-lg transition-colors"
+                        title="Edit"
                       >
                         <Edit2 size={14} />
-                        แก้ไข
                       </button>
                       <button
                         onClick={() => handleDeleteClick(user.id, user.username)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-slate-50 rounded-lg transition-colors"
+                        title="Delete"
                       >
                         <Trash2 size={14} />
-                        ลบ
                       </button>
                     </div>
                   </td>
@@ -140,8 +143,8 @@ export default function UsersClient({
               
               {initialUsers.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-slate-500">
-                    ยังไม่มีข้อมูลผู้ใช้งานในระบบ
+                  <td colSpan={5} className="p-16 text-center text-slate-500 font-medium">
+                    No users found
                   </td>
                 </tr>
               )}

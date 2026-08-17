@@ -156,55 +156,68 @@ export default function LineSlipsClient({
 
   return (
     <div className="space-y-4">
-      {/* Tabs */}
-      <div className="flex gap-1 bg-slate-100 p-1 rounded-xl w-fit">
-        <button
-          onClick={() => handleTabChange("pending")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "pending" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
-        >
-          <Clock size={14} />
-          รอดำเนินการ
-          {pendingCount > 0 && (
-            <span className="bg-amber-500 text-white text-xs px-1.5 py-0.5 rounded-full">{pendingCount}</span>
-          )}
-        </button>
-        <button
-          onClick={() => handleTabChange("verified")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "verified" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
-        >
-          <CheckCircle2 size={14} />
-          ยืนยันแล้ว
-          {verifiedCount > 0 && (
-            <span className="bg-emerald-500 text-white text-xs px-1.5 py-0.5 rounded-full">{verifiedCount}</span>
-          )}
-        </button>
+      {/* Header and Tabs */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <h2 className="text-xl font-bold text-slate-800 tracking-tight">Manage Slips</h2>
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleTabChange("pending")}
+            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-semibold transition-all ${
+              activeTab === "pending" 
+                ? "border border-[#5B58F2] text-[#5B58F2] bg-white shadow-sm" 
+                : "border border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50"
+            }`}
+          >
+            Pending
+            <span className={`w-5 h-5 flex items-center justify-center rounded-full text-[10px] ${
+              activeTab === "pending" ? "bg-[#EEF0FF] text-[#5B58F2]" : "bg-slate-100 text-slate-500"
+            }`}>
+              {pendingCount}
+            </span>
+          </button>
+          <button
+            onClick={() => handleTabChange("verified")}
+            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-semibold transition-all ${
+              activeTab === "verified" 
+                ? "border border-[#5B58F2] text-[#5B58F2] bg-white shadow-sm" 
+                : "border border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50"
+            }`}
+          >
+            Completed
+            <span className={`w-5 h-5 flex items-center justify-center rounded-full text-[10px] ${
+              activeTab === "verified" ? "bg-[#EEF0FF] text-[#5B58F2]" : "bg-slate-100 text-slate-500"
+            }`}>
+              {verifiedCount}
+            </span>
+          </button>
+        </div>
       </div>
 
       {/* Slips Content */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-[24px] shadow-sm border border-slate-100 overflow-hidden p-2 sm:p-6">
         {slips.length === 0 ? (
-          <div className="p-8 text-center text-slate-500 font-sans">
+          <div className="p-8 text-center text-slate-400 font-sans">
             {activeTab === "pending" ? "ไม่มีสลิปจาก LINE ที่รอดำเนินการ" : "ยังไม่มีสลิปที่ยืนยันสำเร็จอัตโนมัติ"}
           </div>
         ) : (
           <>
             {/* Mobile: Card layout */}
-            <div className="sm:hidden divide-y divide-slate-100">
+            <div className="sm:hidden divide-y divide-slate-50">
               {slips.map((slip) => (
                 <div key={slip.id} className="p-4">
                   <div className="flex gap-3 items-start mb-3">
                     {slip.imageUrl ? (
                       <SlipModalButton imageUrl={slip.imageUrl}>
-                        <img src={slip.imageUrl} alt="Slip" className="w-16 h-16 object-cover rounded-md border border-slate-200 cursor-pointer hover:opacity-80 shrink-0" />
+                        <img src={slip.imageUrl} alt="Slip" className="w-16 h-16 object-cover rounded-[12px] border border-slate-100 cursor-pointer hover:opacity-80 shrink-0" />
                       </SlipModalButton>
-                    ) : <div className="w-16 h-16 bg-slate-100 rounded-md shrink-0" />}
+                    ) : <div className="w-16 h-16 bg-slate-50 rounded-[12px] shrink-0" />}
                     <div className="flex-1 min-w-0">
-                      <p className="font-mono text-xs text-slate-400 mb-1">{slip.createdAt?.toLocaleString("th-TH")}</p>
+                      <p className="font-mono text-[11px] text-slate-400 mb-1">{slip.createdAt?.toLocaleString("th-TH")}</p>
                       {activeTab === "verified" ? (
                         <div>
-                           <p className="text-sm text-slate-700">{slip.senderName || "-"}</p>
-                           <p className="font-bold text-emerald-600">฿{slip.amount}</p>
-                           <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs px-2 py-0.5 rounded-full border border-emerald-100 mt-1">
+                           <p className="text-sm font-semibold text-slate-800">{slip.senderName || "-"}</p>
+                           <p className="font-bold text-emerald-600 mt-0.5">฿{slip.amount}</p>
+                           <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full mt-1">
                              <CheckCircle2 size={10} /> ยืนยันอัตโนมัติ
                            </span>
                         </div>
@@ -212,17 +225,17 @@ export default function LineSlipsClient({
                         <>
                           {slip.isVerified ? (
                             <div>
-                              <span className="text-emerald-600 font-bold text-xs bg-emerald-50 px-2 py-0.5 rounded-md inline-block mb-1 border border-emerald-100">สลิปแท้</span>
-                              <p className="text-xs text-slate-500">ยอด: <strong>฿{slip.amount}</strong></p>
-                              <p className="text-xs text-slate-500">ผู้โอน: {slip.senderName}</p>
+                              <span className="text-emerald-600 font-bold text-[10px] bg-emerald-50 px-2 py-0.5 rounded-full inline-block mb-1">สลิปแท้</span>
+                              <p className="text-xs text-slate-600">ยอด: <strong className="text-slate-800">฿{slip.amount}</strong></p>
+                              <p className="text-xs text-slate-600">ผู้โอน: {slip.senderName}</p>
                             </div>
                           ) : (
-                            <span className="text-amber-500 font-bold text-xs bg-amber-50 px-2 py-0.5 rounded-md inline-block border border-amber-100">รอตรวจสอบ</span>
+                            <span className="text-amber-500 font-bold text-[10px] bg-amber-50 px-2 py-0.5 rounded-full inline-block">รอตรวจสอบ</span>
                           )}
                           {slip.houseNumber ? (
-                            <span className="block mt-1 font-semibold text-slate-700 text-sm">บ้าน {slip.houseNumber}</span>
+                            <span className="block mt-1.5 font-semibold text-slate-800 text-sm">บ้าน {slip.houseNumber}</span>
                           ) : (
-                            <span className="block mt-1 text-amber-600 text-xs">ยังไม่แจ้งบ้านเลขที่</span>
+                            <span className="block mt-1.5 text-amber-600 text-[11px] font-medium">ยังไม่แจ้งบ้านเลขที่</span>
                           )}
                         </>
                       )}
@@ -232,13 +245,13 @@ export default function LineSlipsClient({
                     <div className="flex gap-2">
                       <button
                         onClick={() => openMatchModal(slip)}
-                        className="flex-1 bg-[#C9A227] hover:bg-[#B38E1E] text-white font-sans text-sm px-3 py-2 rounded-lg shadow-sm transition-colors font-medium"
+                        className="flex-1 bg-[#5B58F2] hover:bg-[#4A47D1] text-white font-sans text-xs px-3 py-2 rounded-xl shadow-sm transition-colors font-semibold"
                       >
                         จับคู่ / อนุมัติ
                       </button>
                       <button
                         onClick={() => handleRejectClick(slip.id)}
-                        className="flex-1 font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors border border-red-200 px-3 py-2 text-sm"
+                        className="flex-1 font-semibold text-red-500 hover:bg-red-50 rounded-xl transition-colors px-3 py-2 text-xs"
                       >
                         ปฏิเสธ
                       </button>
@@ -252,78 +265,82 @@ export default function LineSlipsClient({
             <div className="hidden sm:block overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200">
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans">วัน-เวลา</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans">รูปสลิป</th>
+                  <tr className="border-b border-slate-100">
+                    <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">Time</th>
+                    <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">Image</th>
                     {activeTab === "pending" ? (
                       <>
-                        <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans">ข้อมูลจาก Slip2Go</th>
-                        <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans">บ้านเลขที่</th>
-                        <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans text-right">การจัดการ</th>
+                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">Info</th>
+                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">House</th>
+                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans text-right">More</th>
                       </>
                     ) : (
                       <>
-                        <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans">ผู้โอน</th>
-                        <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans">ยอดเงิน</th>
-                        <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase font-sans">สถานะ</th>
+                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">Sender</th>
+                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">Amount</th>
+                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">Status</th>
                       </>
                     )}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-50">
                   {slips.map((slip) => (
-                    <tr key={slip.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-4 font-mono text-sm text-slate-600">{slip.createdAt?.toLocaleString("th-TH")}</td>
-                      <td className="px-6 py-4">
+                    <tr key={slip.id} className="hover:bg-slate-50/50 transition-colors group">
+                      <td className="px-4 py-4">
+                        <span className="font-mono text-[13px] text-slate-500">{slip.createdAt?.toLocaleString("th-TH", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
+                      </td>
+                      <td className="px-4 py-4">
                         {slip.imageUrl ? (
                           <SlipModalButton imageUrl={slip.imageUrl}>
-                            <img src={slip.imageUrl} alt="Slip" className="w-16 h-16 object-cover rounded-md border border-slate-200 cursor-pointer hover:opacity-80 transition-opacity" />
+                            <img src={slip.imageUrl} alt="Slip" className="w-10 h-10 object-cover rounded-[10px] border border-slate-100 cursor-pointer hover:opacity-80 transition-opacity" />
                           </SlipModalButton>
-                        ) : <span className="text-slate-400 text-sm font-sans">-</span>}
+                        ) : <span className="text-slate-300 text-sm font-sans">-</span>}
                       </td>
                       
                       {activeTab === "pending" ? (
                         <>
-                          <td className="px-6 py-4 font-sans">
+                          <td className="px-4 py-4 font-sans">
                             {slip.isVerified ? (
-                              <div className="flex flex-col">
-                                <span className="text-emerald-600 font-bold text-sm bg-emerald-50 px-2 py-1 rounded-md inline-block w-fit mb-1 border border-emerald-100">สลิปแท้</span>
-                                <span className="text-xs text-slate-500 mt-1">ยอดเงิน: <strong className="text-slate-800">฿{slip.amount}</strong></span>
-                                <span className="text-xs text-slate-500">ผู้โอน: {slip.senderName}</span>
+                              <div className="flex flex-col gap-0.5">
+                                <span className="text-emerald-700 font-bold text-[10px] bg-emerald-50 px-2 py-0.5 rounded-full inline-block w-fit mb-0.5">Verified Slip</span>
+                                <span className="text-[13px] font-semibold text-slate-800">฿{slip.amount}</span>
+                                <span className="text-[11px] text-slate-500">{slip.senderName}</span>
                               </div>
                             ) : (
-                              <span className="text-amber-500 font-bold text-sm bg-amber-50 px-2 py-1 rounded-md inline-block border border-amber-100">รอตรวจสอบ (ไม่ได้ผ่าน Slip2go)</span>
+                              <span className="text-amber-600 font-bold text-[10px] bg-amber-50 px-2 py-0.5 rounded-full inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Unverified</span>
                             )}
                           </td>
-                          <td className="px-6 py-4 font-sans">
+                          <td className="px-4 py-4 font-sans">
                             {slip.houseNumber ? (
-                              <span className="font-semibold text-slate-800 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">{slip.houseNumber}</span>
+                              <span className="font-semibold text-slate-800 text-[13px]">{slip.houseNumber}</span>
                             ) : (
-                              <span className="text-amber-600 text-sm bg-amber-50 px-2 py-1 rounded-full border border-amber-100">ยังไม่พิมพ์บ้านเลขที่ตามมา</span>
+                              <span className="text-slate-400 text-[12px] italic">Not provided</span>
                             )}
                           </td>
-                          <td className="px-6 py-4 text-right">
-                            <button
-                              onClick={() => openMatchModal(slip)}
-                              className="bg-[#C9A227] hover:bg-[#B38E1E] text-white font-sans text-sm px-4 py-2 rounded-lg shadow-sm transition-colors mr-2 font-medium"
-                            >
-                              จับคู่บ้าน / อนุมัติ
-                            </button>
-                            <button
-                              onClick={() => handleRejectClick(slip.id)}
-                              className="px-4 py-2 font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors border border-red-200"
-                            >
-                              ปฏิเสธ
-                            </button>
+                          <td className="px-4 py-4 text-right">
+                            <div className="flex items-center justify-end gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                              <button
+                                onClick={() => openMatchModal(slip)}
+                                className="bg-[#EEF0FF] text-[#5B58F2] hover:bg-[#5B58F2] hover:text-white font-sans text-xs px-4 py-2 rounded-xl transition-colors font-semibold"
+                              >
+                                Match
+                              </button>
+                              <button
+                                onClick={() => handleRejectClick(slip.id)}
+                                className="px-3 py-2 font-semibold text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                              >
+                                Reject
+                              </button>
+                            </div>
                           </td>
                         </>
                       ) : (
                         <>
-                          <td className="px-6 py-4 text-sm text-slate-700">{slip.senderName || "-"}</td>
-                          <td className="px-6 py-4 font-bold text-emerald-600">฿{slip.amount}</td>
-                          <td className="px-6 py-4">
-                            <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs px-2 py-1 rounded-full border border-emerald-100">
-                              <CheckCircle2 size={11} /> ยืนยันอัตโนมัติ
+                          <td className="px-4 py-4 text-[13px] font-medium text-slate-800">{slip.senderName || "-"}</td>
+                          <td className="px-4 py-4 font-bold text-slate-800 text-[13px]">฿{slip.amount}</td>
+                          <td className="px-4 py-4">
+                            <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 text-[11px] font-bold px-2 py-1 rounded-full">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Done
                             </span>
                           </td>
                         </>

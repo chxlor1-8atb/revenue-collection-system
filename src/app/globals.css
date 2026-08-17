@@ -3,19 +3,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #F8FAFC;
+  --background: #F4F7FB;
   --foreground: #0F172A;
-  --primary: #059669;
-  --primary-hover: #047857;
-  --warning: #D97706;
-  --border: #E2E8F0;
-  --radius: 0.5rem;
+  --primary: #5B58F2;
+  --primary-hover: #4A47D1;
+  --warning: #F59E0B;
+  --success: #10B981;
+  --border: #F1F5F9;
+  --radius: 1rem;
   --font-sans: "IBM Plex Sans Thai", "Inter", sans-serif;
   --font-mono: "IBM Plex Mono", "JetBrains Mono", monospace;
 }
 
 @theme {
-  --color-primary: #059669;
+  --color-primary: #5B58F2;
   --font-sans: "IBM Plex Sans Thai", "Inter", sans-serif;
   --font-mono: "IBM Plex Mono", "JetBrains Mono", monospace;
 }

@@ -15,6 +15,7 @@ import {
   AlertCircle,
   FileCheck,
   ChevronRight,
+  ChevronDown,
   TrendingUp,
   User,
   ExternalLink
@@ -146,293 +147,180 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 pb-12">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-200/80 pb-6">
-        <div>
-          <h1 className="font-bold text-3xl text-[#1F2E22] tracking-tight">
-            ภาพรวมระบบบัญชีรายได้
-          </h1>
-          <p className="text-slate-500 text-sm mt-1">
-            สรุปข้อมูลการรับชำระเงินค่าจัดเก็บขยะและสถิติระบบ real-time
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            เชื่อมต่อ Neon Database แล้ว
-          </span>
-        </div>
-      </div>
-
-      {/* 4 Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-5">
-        {/* Stat 1: Total Verified Revenue */}
-        <div className="bg-gradient-to-br from-[#1F2E22] to-[#2D4533] text-white rounded-2xl p-6 shadow-md border border-[#2d4732] flex flex-col justify-between relative overflow-hidden group">
-          <div className="absolute -right-4 -bottom-4 opacity-10 text-emerald-300 group-hover:scale-110 transition-transform">
-            <TrendingUp size={120} strokeWidth={1} />
+    <div className="max-w-[1400px] mx-auto space-y-6 pb-12 font-sans">
+      
+      {/* 4 Stat Cards matching LoopAI style */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        
+        {/* Card 1: Verified Revenue */}
+        <div className="bg-white rounded-[32px] p-7 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+          <div className="flex items-center gap-4 mb-5">
+            <span className="text-slate-800 font-bold tracking-tight text-lg">Revenue</span>
+            <span className="bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full text-xs font-bold border border-emerald-100">
+              +{verifiedTxs.length}
+            </span>
           </div>
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-medium text-emerald-200/80 uppercase tracking-wider">
-                รายได้ที่ยืนยันแล้ว
-              </span>
-              <div className="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-300 backdrop-blur-sm border border-emerald-500/30">
-                <Banknote size={20} strokeWidth={2} />
-              </div>
+          <div className="mt-auto flex items-end justify-between">
+            <div className="text-[32px] font-bold text-slate-900 tracking-tight leading-none">
+              <span className="text-[20px] font-semibold text-slate-400 mr-1">฿</span>
+              {totalVerifiedRevenue.toLocaleString("th-TH", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </div>
-            <div className="text-3xl font-bold font-mono tracking-tight text-white">
-              ฿{totalVerifiedRevenue.toLocaleString("th-TH", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </div>
-          </div>
-          <div className="mt-4 pt-3 border-t border-emerald-800/60 flex items-center justify-between text-xs text-emerald-200/70">
-            <span>จากสลิปที่อนุมัติแล้ว</span>
-            <span className="font-semibold text-emerald-300">{verifiedTxs.length} รายการ</span>
+            <span className="text-[13px] text-slate-400 font-medium">Compare 0 (last month)</span>
           </div>
         </div>
 
-        {/* Stat 2: Houses with Unpaid Invoices */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                บ้านที่ค้างชำระ
-              </span>
-              <div className="p-2.5 rounded-xl bg-amber-100 text-amber-700">
-                <Home size={20} strokeWidth={2} />
-              </div>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold font-mono text-slate-800">
-                {housesWithUnpaidCount}
-              </span>
-              <span className="text-slate-500 text-sm font-medium">หลัง</span>
-            </div>
+        {/* Card 2: Houses with Unpaid Invoices */}
+        <div className="bg-white rounded-[32px] p-7 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+          <div className="flex items-center gap-4 mb-5">
+            <span className="text-slate-800 font-bold tracking-tight text-lg">Unpaid Houses</span>
+            <span className="bg-red-50 text-red-600 px-2 py-0.5 rounded-full text-xs font-bold border border-red-100">
+              Attention
+            </span>
           </div>
-          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span>จำนวนบ้านทั้งหมด</span>
-            <span className="font-semibold text-slate-700">{totalHousesCount} หลัง</span>
+          <div className="mt-auto flex items-end justify-between">
+            <div className="text-[32px] font-bold text-slate-900 tracking-tight leading-none">
+              {housesWithUnpaidCount}
+            </div>
+            <span className="text-[13px] text-slate-400 font-medium">From {totalHousesCount} total</span>
           </div>
         </div>
 
-        {/* Stat 3: Transactions Waiting for Review */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                สลิปรอตรวจสอบ
-              </span>
-              <div className="p-2.5 rounded-xl bg-blue-100 text-blue-700">
-                <Clock size={20} strokeWidth={2} />
-              </div>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold font-mono text-slate-800">
-                {waitingForReviewCount}
-              </span>
-              <span className="text-slate-500 text-sm font-medium">รายการ</span>
-            </div>
+        {/* Card 3: Pending Reviews */}
+        <div className="bg-white rounded-[32px] p-7 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+          <div className="flex items-center gap-4 mb-5">
+            <span className="text-slate-800 font-bold tracking-tight text-lg">Review Inbox</span>
+            <span className="bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full text-xs font-bold border border-amber-100">
+              Action
+            </span>
           </div>
-          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span>สถานะรอดำเนินการ</span>
-            <Link 
-              href="/dashboard/review" 
-              className="text-blue-600 font-semibold hover:underline flex items-center gap-0.5"
-            >
-              ตรวจสลิป <ChevronRight size={12} />
+          <div className="mt-auto flex items-end justify-between">
+            <div className="text-[32px] font-bold text-slate-900 tracking-tight leading-none">
+              {waitingForReviewCount}
+            </div>
+            <Link href="/dashboard/review" className="text-[13px] text-[#5B58F2] hover:underline font-semibold flex items-center gap-1">
+              Go to review <ChevronRight size={12} strokeWidth={3} />
             </Link>
           </div>
         </div>
 
-        {/* Stat 4: LINE Slips Pending */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                สลิปจาก LINE (รอตรวจ)
-              </span>
-              <div className="p-2.5 rounded-xl bg-emerald-100 text-emerald-700">
-                <Smartphone size={20} strokeWidth={2} />
-              </div>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold font-mono text-slate-800">
-                {pendingLineSlipsCount}
-              </span>
-              <span className="text-slate-500 text-sm font-medium">รายการ</span>
-            </div>
+        {/* Card 4: LINE Slips */}
+        <div className="bg-white rounded-[32px] p-7 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+          <div className="flex items-center gap-4 mb-5">
+            <span className="text-slate-800 font-bold tracking-tight text-lg">LINE Slips</span>
+            <span className="bg-[#EEF0FF] text-[#5B58F2] px-2 py-0.5 rounded-full text-xs font-bold border border-[#5B58F2]/20">
+              Bot
+            </span>
           </div>
-          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span>ข้อความบอท LINE</span>
-            <Link 
-              href="/dashboard/line-slips" 
-              className="text-emerald-600 font-semibold hover:underline flex items-center gap-0.5"
-            >
-              จัดการสลิป <ChevronRight size={12} />
+          <div className="mt-auto flex items-end justify-between">
+            <div className="text-[32px] font-bold text-slate-900 tracking-tight leading-none">
+              {pendingLineSlipsCount}
+            </div>
+            <Link href="/dashboard/line-slips" className="text-[13px] text-[#5B58F2] hover:underline font-semibold flex items-center gap-1">
+              Manage slips <ChevronRight size={12} strokeWidth={3} />
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Quick Action Navigation Buttons */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Link
-          href="/dashboard/review"
-          className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-emerald-500 hover:shadow transition-all flex items-center justify-between group"
-        >
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-              <FileCheck size={18} />
-            </div>
-            <div>
-              <div className="text-sm font-semibold text-slate-800">ตรวจสลิปโอนเงิน</div>
-              <div className="text-xs text-slate-400">รอตรวจ {waitingForReviewCount} รายการ</div>
-            </div>
-          </div>
-          <ArrowRight size={16} className="text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
-        </Link>
-
-        <Link
-          href="/dashboard/line-slips"
-          className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-emerald-500 hover:shadow transition-all flex items-center justify-between group"
-        >
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-              <Smartphone size={18} />
-            </div>
-            <div>
-              <div className="text-sm font-semibold text-slate-800">สลิปจาก LINE</div>
-              <div className="text-xs text-slate-400">รอดำเนินการ {pendingLineSlipsCount} รายการ</div>
+      {/* Main Grid: Graph (left) and Priority Tasks (right) */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-6">
+        
+        {/* Left Column (simulated graph area) */}
+        <div className="xl:col-span-2 bg-white rounded-[24px] p-6 md:p-8 border border-slate-100 shadow-sm flex flex-col">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="font-semibold text-lg text-slate-800">Revenue Analytics</h2>
+            <div className="flex items-center gap-4">
+              <button className="text-sm font-medium text-slate-600 flex items-center gap-1 hover:text-slate-900">
+                Earnings <ChevronDown size={14} />
+              </button>
+              <button className="text-sm font-medium text-slate-600 flex items-center gap-1 hover:text-slate-900">
+                Last 30 Days <ChevronDown size={14} />
+              </button>
             </div>
           </div>
-          <ArrowRight size={16} className="text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
-        </Link>
-
-        <Link
-          href="/dashboard/history"
-          className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-emerald-500 hover:shadow transition-all flex items-center justify-between group"
-        >
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-              <CheckCircle2 size={18} />
+          
+          <div className="flex-1 flex items-center justify-center min-h-[300px] border border-dashed border-slate-200 rounded-2xl bg-slate-50 relative">
+            {/* Placeholder for the chart since we don't have recharts set up here */}
+            <div className="text-center">
+              <TrendingUp size={48} className="mx-auto text-slate-300 mb-3" />
+              <p className="text-slate-500 font-medium">Revenue Chart Area</p>
+              <p className="text-xs text-slate-400 mt-1">Ready for Recharts integration</p>
             </div>
-            <div>
-              <div className="text-sm font-semibold text-slate-800">ประวัติชำระเงิน</div>
-              <div className="text-xs text-slate-400">ดูย้อนหลังทั้งหมด</div>
-            </div>
-          </div>
-          <ArrowRight size={16} className="text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
-        </Link>
-
-        <Link
-          href="/dashboard/houses"
-          className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-emerald-500 hover:shadow transition-all flex items-center justify-between group"
-        >
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-              <Home size={18} />
-            </div>
-            <div>
-              <div className="text-sm font-semibold text-slate-800">จัดการข้อมูลบ้าน</div>
-              <div className="text-xs text-slate-400">ทั้งหมด {totalHousesCount} หลัง</div>
+            
+            {/* LoopAI style floating analysis button */}
+            <div className="absolute left-6 bottom-6 w-64 bg-white p-4 rounded-2xl shadow-lg border border-slate-100">
+              <div className="flex items-start gap-2 mb-3">
+                <div className="bg-[#EEF0FF] p-1.5 rounded-lg text-[#5B58F2]">
+                  <ArrowRight size={14} />
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Fast responses build trust and boost client satisfaction.
+                </p>
+              </div>
+              <button className="w-full py-2 bg-gradient-to-r from-[#5B58F2] to-[#7B79F2] text-white rounded-xl text-xs font-semibold shadow-md hover:opacity-90 transition-opacity">
+                Run Analysis
+              </button>
             </div>
           </div>
-          <ArrowRight size={16} className="text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
-        </Link>
-      </div>
-
-      {/* Recent 5 Verified Transactions Section */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 size={18} className="text-emerald-600" />
-            <h2 className="font-bold text-lg text-slate-800">
-              รายการชำระเงินสำเร็จล่าสุด (5 รายการ)
-            </h2>
-          </div>
-          <Link
-            href="/dashboard/history"
-            className="text-xs font-semibold text-emerald-700 hover:text-emerald-800 hover:underline flex items-center gap-1"
-          >
-            ดูประวัติทั้งหมด <ExternalLink size={12} />
-          </Link>
         </div>
 
-        {recentTransactions.length === 0 ? (
-          <div className="text-center py-16 px-4">
-            <FileCheck size={48} strokeWidth={1.2} className="mx-auto text-slate-300 mb-3" />
-            <p className="text-slate-500 font-medium">ยังไม่มีรายการชำระเงินที่อนุมัติแล้ว</p>
-            <p className="text-slate-400 text-xs mt-1">
-              เมื่อมีการตรวจสอบและอนุมัติสลิป รายการจะแสดงในหน้านี้ทันที
-            </p>
+        {/* Right Column (Priority Tasks -> Recent Transactions) */}
+        <div className="xl:col-span-1 bg-white rounded-[24px] p-6 md:p-8 border border-slate-100 shadow-sm flex flex-col">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="font-semibold text-lg text-slate-800">Recent Payments</h2>
+            <Link href="/dashboard/history" className="text-sm font-semibold text-[#5B58F2] hover:underline">
+              See all
+            </Link>
           </div>
-        ) : (
-          <div className="divide-y divide-slate-100">
-            {recentTransactions.map((tx) => (
-              <div 
-                key={tx.id} 
-                className="px-6 py-4 hover:bg-slate-50/80 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4"
-              >
-                {/* House Info & Owner */}
-                <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100 font-mono font-bold text-sm shrink-0">
-                    {tx.houseNumber}
+
+          <div className="flex flex-col gap-5 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+            {recentTransactions.length === 0 ? (
+              <div className="text-center py-10">
+                <p className="text-slate-500 text-sm">No recent payments found.</p>
+              </div>
+            ) : (
+              recentTransactions.map((tx) => (
+                <div key={tx.id} className="group relative flex items-start gap-4">
+                  <div className="w-8 h-8 rounded-full border-2 border-slate-100 flex items-center justify-center shrink-0 group-hover:border-[#5B58F2] transition-colors">
+                    {tx.paidVia === "LINE Bot" ? (
+                      <Smartphone size={12} className="text-[#5B58F2]" />
+                    ) : (
+                      <CheckCircle2 size={12} className="text-emerald-500" />
+                    )}
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-slate-800 text-sm">{tx.ownerName}</span>
-                      <span className="text-[11px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-medium">
-                        {tx.paidVia}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <h3 className="text-sm font-semibold text-slate-800 truncate">
+                        {tx.houseNumber} - {tx.ownerName}
+                      </h3>
+                      <span className="text-xs font-semibold text-slate-400">
+                        ฿{parseFloat(tx.amount || "0").toLocaleString("th-TH")}
                       </span>
                     </div>
-                    
-                    {/* Months badge list */}
-                    <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                      {tx.months.length > 0 ? (
-                        tx.months.map((m) => (
-                          <span
-                            key={m}
-                            className="inline-flex items-center gap-1 text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md border border-slate-200/60"
-                          >
-                            <Calendar size={10} className="text-slate-400" />
-                            {formatThaiMonth(m)}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="text-xs text-slate-400 italic">ไม่ได้ระบุงวด</span>
-                      )}
+                    <div className="flex items-center gap-3 text-[11px] font-medium text-slate-400">
+                      <span className="flex items-center gap-1">
+                        <Calendar size={10} /> 
+                        {tx.paidAt ? new Date(tx.paidAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "-"}
+                      </span>
+                      <span className="flex items-center gap-1 text-emerald-600">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        Verified
+                      </span>
                     </div>
+                    <p className="text-[11px] text-slate-500 mt-1 truncate">
+                      Paid for: {tx.months.length > 0 ? tx.months.map(m => formatThaiMonth(m)).join(", ") : "Unknown"}
+                    </p>
+                  </div>
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center w-6 h-6 rounded-md hover:bg-slate-50 cursor-pointer shrink-0 mt-1 text-slate-400">
+                    <ChevronRight size={14} />
                   </div>
                 </div>
-
-                {/* Amount & Time */}
-                <div className="flex items-center justify-between md:flex-col md:items-end gap-1 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-100">
-                  <div className="text-lg font-bold font-mono text-emerald-700">
-                    ฿{parseFloat(tx.amount || "0").toLocaleString("th-TH", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </div>
-                  <div className="text-xs text-slate-400">
-                    {tx.paidAt
-                      ? new Date(tx.paidAt).toLocaleDateString("th-TH", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : "-"}
-                  </div>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
-        )}
+        </div>
       </div>
+
     </div>
   );
 }

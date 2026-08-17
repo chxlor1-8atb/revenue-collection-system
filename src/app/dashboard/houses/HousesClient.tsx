@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Plus, Edit2, Trash2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Download, Upload, QrCode, X, Settings } from "lucide-react";
+import { Plus, Edit2, Trash2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Download, Upload, QrCode, X, Settings, Home } from "lucide-react";
 import QRCode from "qrcode";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -205,10 +205,11 @@ export default function HousesClient({
   };
 
   return (
-    <div>
+  return (
+    <div className="font-sans">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <h1 className="font-bold text-3xl text-[#1F2E22]">จัดการข้อมูลบ้าน</h1>
-        <div className="flex flex-wrap gap-3">
+        <h1 className="font-bold text-2xl text-slate-800 tracking-tight">Manage Houses</h1>
+        <div className="flex flex-wrap gap-2">
           <input 
             type="file" 
             accept=".csv" 
@@ -219,91 +220,94 @@ export default function HousesClient({
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isImporting}
-            className="flex items-center gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm disabled:opacity-50"
+            className="flex items-center gap-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 rounded-xl text-xs font-semibold transition-colors shadow-sm disabled:opacity-50"
           >
-            <Upload size={16} />
-            {isImporting ? 'กำลังนำเข้า...' : 'Import CSV'}
+            <Upload size={14} />
+            {isImporting ? 'กำลังนำเข้า...' : 'Import'}
           </button>
           
           <a
             href="/api/houses/export"
-            className="flex items-center gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm"
+            className="flex items-center gap-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 rounded-xl text-xs font-semibold transition-colors shadow-sm"
           >
-            <Download size={16} />
-            Export CSV
+            <Download size={14} />
+            Export
           </a>
 
           <button
             onClick={() => setShowSettings(true)}
-            className="flex items-center gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-3 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm"
+            className="flex items-center gap-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-3 py-2 rounded-xl text-xs font-semibold transition-colors shadow-sm"
             title="ตั้งค่าหัวตาราง"
           >
-            <Settings size={16} />
+            <Settings size={14} />
           </button>
 
           <button
             onClick={handleAdd}
-            className="flex items-center gap-2 bg-[#1F2E22] hover:bg-[#2c4030] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm"
+            className="flex items-center gap-1.5 bg-[#5B58F2] hover:bg-[#4A47D1] text-white px-4 py-2 rounded-xl text-xs font-semibold transition-colors shadow-sm"
           >
-            <Plus size={16} />
-            เพิ่มบ้านใหม่
+            <Plus size={14} />
+            Add new house
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-xl text-sm border border-red-200 shadow-sm flex items-start gap-3">
+        <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-xl text-sm border border-red-100 shadow-sm flex items-start gap-3">
           <div className="mt-0.5">⚠️</div>
           <div>{error}</div>
         </div>
       )}
 
       {successMsg && (
-        <div className="mb-6 p-4 bg-emerald-50 text-emerald-700 rounded-xl text-sm border border-emerald-200 shadow-sm flex items-start gap-3">
+        <div className="mb-6 p-4 bg-emerald-50 text-emerald-700 rounded-xl text-sm border border-emerald-100 shadow-sm flex items-start gap-3">
           <div className="mt-0.5">✅</div>
           <div>{successMsg}</div>
         </div>
       )}
 
-      {/* Toolbar: Search */}
-      <div className="bg-white p-4 rounded-t-2xl border border-slate-200 border-b-0 flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div className="relative w-full sm:w-80 z-20">
-          <SearchAutocomplete 
-            value={searchQuery}
-            onChange={setSearchQuery}
-            placeholder="ค้นหาบ้านเลขที่ หรือ ชื่อเจ้าบ้าน..."
-            className="w-full sm:w-80 focus:w-full sm:focus:w-80 !bg-slate-50 border border-slate-200 focus:border-[#1F2E22] focus:ring-2 focus:ring-[#1F2E22]/20 shadow-none"
-          />
+      {/* Main Card Container */}
+      <div className="bg-white rounded-[24px] shadow-sm border border-slate-100 overflow-hidden flex flex-col">
+        {/* Toolbar: Search */}
+        <div className="p-4 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="relative w-full sm:w-80 z-20">
+            <SearchAutocomplete 
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search house or owner..."
+              className="w-full sm:w-80 focus:w-full sm:focus:w-80 !bg-slate-50 border-transparent focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none text-sm rounded-xl"
+            />
+          </div>
+          <div className="text-[13px] text-slate-400 font-medium z-10 flex gap-4">
+            <span className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Total {totalHouses}
+            </span>
+          </div>
         </div>
-        <div className="text-sm text-slate-500 font-medium z-10">
-          พบข้อมูลทั้งหมด {totalHouses} หลัง
-        </div>
-      </div>
 
-      <div className="bg-white rounded-b-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-sm font-medium text-slate-500 uppercase tracking-wider">
+              <tr className="border-b border-slate-100">
                 {customFieldsSchema.filter(f => !f.isHidden).map(field => (
-                  <th key={field.id} className={`p-4 ${field.isSystem && (field.id === 'houseNumber' || field.id === 'ownerName') ? 'cursor-pointer hover:bg-slate-100 transition-colors' : 'text-slate-500'}`} onClick={() => {
+                  <th key={field.id} className={`px-4 py-3 text-[11px] font-semibold uppercase tracking-wider ${field.isSystem && (field.id === 'houseNumber' || field.id === 'ownerName') ? 'cursor-pointer text-slate-500 hover:text-slate-800 transition-colors' : 'text-slate-400'}`} onClick={() => {
                     if (field.id === 'houseNumber' || field.id === 'ownerName') handleSort(field.id);
                   }}>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       {field.name}
                       {(field.id === 'houseNumber' || field.id === 'ownerName') && (
-                        <ArrowUpDown size={14} className={sortConfig.key === field.id ? 'text-[#1F2E22]' : 'opacity-50'} />
+                        <ArrowUpDown size={12} className={sortConfig.key === field.id ? 'text-[#5B58F2]' : 'opacity-30'} />
                       )}
                     </div>
                   </th>
                 ))}
-                <th className="p-4">สมุดบัญชีบ้าน</th>
-                <th className="p-4 text-right">จัดการ</th>
+                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Ledger</th>
+                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider text-right">More</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-700">
+            <tbody className="divide-y divide-slate-50 text-slate-700">
               {initialHouses.map((house) => (
-                <tr key={house.id} className="hover:bg-slate-50 transition-colors">
+                <tr key={house.id} className="hover:bg-slate-50/50 transition-colors group">
                   {customFieldsSchema.filter(f => !f.isHidden).map(field => {
                     let val = "-";
                     if (field.isSystem) {
@@ -313,44 +317,43 @@ export default function HousesClient({
                     }
                     
                     if (field.id === 'houseNumber') {
-                      return <td key={field.id} className="p-4 font-mono font-bold text-slate-900">{val}</td>;
+                      return <td key={field.id} className="px-4 py-4 font-mono font-bold text-slate-800 text-[13px]">{val}</td>;
                     }
                     if (field.id === 'ownerName') {
-                      return <td key={field.id} className="p-4 font-medium">{val}</td>;
+                      return <td key={field.id} className="px-4 py-4 font-semibold text-[13px]">{val}</td>;
                     }
-                    return <td key={field.id} className="p-4 text-slate-500 whitespace-nowrap">{val}</td>;
+                    return <td key={field.id} className="px-4 py-4 text-slate-500 text-[13px]">{val}</td>;
                   })}
-                  <td className="p-4">
+                  <td className="px-4 py-4">
                     <Link 
                       href={`/dashboard/houses/${house.id}`} 
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200"
+                      className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-bold text-[#5B58F2] bg-[#EEF0FF] hover:bg-[#E0E4FF] rounded-full transition-colors"
                     >
-                      ดูข้อมูลบิล
+                      View Bills
                     </Link>
                   </td>
-                  <td className="p-4 text-right">
-                    <div className="flex items-center justify-end gap-2 flex-wrap">
+                  <td className="px-4 py-4 text-right">
+                    <div className="flex items-center justify-end gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => openQrModal(house)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                        title="สร้าง QR Code หน้าบ้าน"
+                        className="p-2 text-slate-400 hover:text-[#5B58F2] hover:bg-slate-100 rounded-lg transition-colors"
+                        title="QR Code"
                       >
                         <QrCode size={14} />
-                        QR
                       </button>
                       <button
                         onClick={() => handleEdit(house)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-slate-100 rounded-lg transition-colors"
+                        title="Edit"
                       >
                         <Edit2 size={14} />
-                        แก้ไข
                       </button>
                       <button
                         onClick={() => confirmDelete(house.id!, house.houseNumber)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-slate-100 rounded-lg transition-colors"
+                        title="Delete"
                       >
                         <Trash2 size={14} />
-                        ลบ
                       </button>
                     </div>
                   </td>
@@ -359,14 +362,12 @@ export default function HousesClient({
               
               {initialHouses.length === 0 && (
                 <tr>
-                  <td colSpan={2 + customFieldsSchema.filter(f => !f.isHidden).length} className="p-12 text-center">
-                    <div className="text-slate-400 mb-2">🏠</div>
-                    <div className="text-slate-500 font-medium">ไม่พบข้อมูลบ้าน</div>
-                    {searchQuery ? (
-                      <div className="text-sm text-slate-400 mt-1">ลองค้นหาด้วยคำอื่นดูอีกครั้ง</div>
-                    ) : (
-                      <div className="text-sm text-slate-400 mt-1">กดปุ่ม "เพิ่มบ้านใหม่" ด้านบนเพื่อเริ่มต้น</div>
-                    )}
+                  <td colSpan={2 + customFieldsSchema.filter(f => !f.isHidden).length} className="p-16 text-center">
+                    <div className="text-slate-300 mb-3 flex justify-center"><Home size={40} /></div>
+                    <div className="text-slate-500 font-semibold">No houses found</div>
+                    <div className="text-[13px] text-slate-400 mt-1">
+                      {searchQuery ? "Try a different search term" : "Click 'Add new house' to get started"}
+                    </div>
                   </td>
                 </tr>
               )}
