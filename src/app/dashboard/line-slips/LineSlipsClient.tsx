@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { searchHouseByNumber, getUnpaidInvoicesForHouse, approveLineSlip, rejectLineSlip } from "./actions";
 import { CheckCircle2, Clock, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import SlipModalButton from "@/components/SlipModalButton";
@@ -38,12 +38,15 @@ export default function LineSlipsClient({
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [rejectConfirmId, setRejectConfirmId] = useState<number | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const handleTabChange = (tab: "pending" | "verified") => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', tab);
     params.delete('page'); // Reset to page 1 when changing tabs
-    router.push(`${pathname}?${params.toString()}`);
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`);
+    });
   };
 
   const handlePageChange = (page: number) => {
@@ -53,7 +56,9 @@ export default function LineSlipsClient({
     } else {
       params.delete('page');
     }
-    router.push(`${pathname}?${params.toString()}`);
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`);
+    });
   };
 
   const openMatchModal = async (slip: any) => {
@@ -203,8 +208,20 @@ export default function LineSlipsClient({
           <>
             {/* Mobile: Card layout */}
             <div className="sm:hidden divide-y divide-slate-50">
-              {slips.map((slip) => (
-                <div key={slip.id} className="p-4">
+              {isPending ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="p-4 animate-pulse flex gap-3">
+                    <div className="w-16 h-16 bg-slate-200 rounded-[12px] shrink-0"></div>
+                    <div className="flex-1 space-y-2 py-1">
+                      <div className="h-3 w-20 bg-slate-200 rounded"></div>
+                      <div className="h-4 w-32 bg-slate-200 rounded"></div>
+                      <div className="h-3 w-24 bg-slate-200 rounded"></div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                slips.map((slip, idx) => (
+                  <div key={slip.id} className="p-4 animate-in slide-in-from-bottom-4 fade-in duration-500" style={{ animationDelay: `${idx * 50}ms`, animationFillMode: 'backwards' }}>
                   <div className="flex gap-3 items-start mb-3">
                     {slip.imageUrl ? (
                       <SlipModalButton imageUrl={slip.imageUrl}>
@@ -258,7 +275,7 @@ export default function LineSlipsClient({
                     </div>
                   )}
                 </div>
-              ))}
+              )))}
             </div>
             
             {/* Desktop: Table layout */}
@@ -284,8 +301,24 @@ export default function LineSlipsClient({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
-                  {slips.map((slip) => (
-                    <tr key={slip.id} className="hover:bg-slate-50/50 transition-colors group">
+                  {isPending ? (
+                    Array.from({ length: 5 }).map((_, i) => (
+                      <tr key={i} className="animate-pulse">
+                        <td className="px-4 py-4"><div className="h-4 w-20 bg-slate-200 rounded"></div></td>
+                        <td className="px-4 py-4"><div className="h-10 w-10 bg-slate-200 rounded-[10px]"></div></td>
+                        <td className="px-4 py-4">
+                          <div className="space-y-2">
+                            <div className="h-3 w-12 bg-slate-200 rounded-full"></div>
+                            <div className="h-4 w-16 bg-slate-200 rounded"></div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4"><div className="h-4 w-16 bg-slate-200 rounded"></div></td>
+                        <td className="px-4 py-4"><div className="h-8 w-24 bg-slate-200 rounded ml-auto"></div></td>
+                      </tr>
+                    ))
+                  ) : (
+                    slips.map((slip, idx) => (
+                    <tr key={slip.id} className="hover:bg-slate-50/50 transition-colors group animate-in slide-in-from-bottom-4 fade-in duration-500" style={{ animationDelay: `${idx * 50}ms`, animationFillMode: 'backwards' }}>
                       <td className="px-4 py-4">
                         <span className="font-mono text-[length:13px] text-slate-500">{slip.createdAt?.toLocaleString("th-TH", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
                       </td>
@@ -346,7 +379,7 @@ export default function LineSlipsClient({
                         </>
                       )}
                     </tr>
-                  ))}
+                  )))}
                 </tbody>
               </table>
             </div>

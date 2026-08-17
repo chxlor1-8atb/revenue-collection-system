@@ -66,16 +66,26 @@ export default function ReviewClient() {
           </div>
           
           <div className="max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-          {waiting.length === 0 ? (
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-xl p-4 border border-amber-100 shadow-sm animate-pulse">
+                  <div className="h-3 bg-slate-200 rounded w-1/3 mb-2"></div>
+                  <div className="h-5 bg-slate-200 rounded w-2/3 mb-4"></div>
+                  <div className="h-6 bg-slate-200 rounded w-1/4 ml-auto"></div>
+                </div>
+              ))}
+            </div>
+          ) : waiting.length === 0 ? (
             <div className="bg-white/50 rounded-xl p-8 border border-amber-100 text-center text-amber-700">
               ไม่มีผู้ใช้งานกำลังทำรายการในขณะนี้
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
-              {waiting.map((tx: any) => {
+              {waiting.map((tx: any, index: number) => {
                 const houses = [...new Set(tx.invoices.map((i: any) => i.houseNumber))];
                 return (
-                  <div key={tx.id} className="bg-white rounded-xl p-4 border border-amber-100 shadow-sm flex items-center justify-between">
+                  <div key={tx.id} className="bg-white rounded-xl p-4 border border-amber-100 shadow-sm flex items-center justify-between animate-in slide-in-from-bottom-4 fade-in duration-500" style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'backwards' }}>
                      <div>
                         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">รหัสรายการ #{tx.id}</span>
                         <span className="font-bold text-slate-700">บ้านเลขที่ {houses.join(", ")}</span>
@@ -98,24 +108,36 @@ export default function ReviewClient() {
       {/* 2. รอดำเนินการ (Pending Review) */}
       {activeTab === "pending" && (
         <div>
-          {isLoading && !data ? (
-            <div className="ledger-card text-center py-16 flex flex-col items-center justify-center">
-              <Loader2 size={48} className="animate-spin mb-4 text-emerald-500 opacity-70" />
-              <p className="text-lg text-gray-500">กำลังโหลดข้อมูล...</p>
+          {isLoading ? (
+            <div className="space-y-6 mt-2">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-[24px] p-6 lg:p-8 border border-slate-100 shadow-sm animate-pulse flex flex-col md:flex-row gap-6">
+                  <div className="w-full md:w-1/3 bg-slate-200 rounded-2xl h-64"></div>
+                  <div className="w-full md:w-2/3 space-y-4">
+                    <div className="h-6 bg-slate-200 rounded w-1/2"></div>
+                    <div className="h-4 bg-slate-200 rounded w-1/4"></div>
+                    <div className="h-10 bg-slate-200 rounded w-full mt-8"></div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : pending.length === 0 ? (
-            <div className="ledger-card text-center py-16 flex flex-col items-center justify-center mt-2">
-              <FileSignature size={48} strokeWidth={1} color="#C9A227" className="mb-4 opacity-70" />
-              <p className="text-lg text-gray-500">ไม่มีรายการรอตรวจสอบในขณะนี้</p>
+            <div className="bg-white rounded-[24px] border border-slate-200 text-center py-20 flex flex-col items-center justify-center">
+              <div className="w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mb-6">
+                <FileSignature size={32} />
+              </div>
+              <h2 className="text-xl font-bold text-slate-800 mb-2">ไม่มีรายการรอตรวจสอบ</h2>
+              <p className="text-slate-500 max-w-md">เยี่ยมมาก! คุณได้ตรวจสอบสลิปการโอนเงินที่ค้างอยู่ทั้งหมดเรียบร้อยแล้ว</p>
             </div>
           ) : (
             <div className="space-y-6 mt-2">
-              {pending.map((tx: any) => (
-                <SlipReviewForm 
-                  key={tx.id} 
-                  transaction={tx} 
-                  onReviewed={() => mutate()} 
-                />
+              {pending.map((tx: any, index: number) => (
+                <div key={tx.id} className="animate-in slide-in-from-bottom-4 fade-in duration-500" style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'backwards' }}>
+                  <SlipReviewForm 
+                    transaction={tx} 
+                    onReviewed={() => mutate()} 
+                  />
+                </div>
               ))}
             </div>
           )}

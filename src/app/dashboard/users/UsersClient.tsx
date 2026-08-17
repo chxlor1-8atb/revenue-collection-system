@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Plus, Edit2, CheckCircle2, Shield, Trash2, KeyRound } from "lucide-react";
 import UserForm, { AdminUserData } from "./UserForm";
 import ConfirmModal from "@/components/ConfirmModal";
@@ -23,6 +23,7 @@ export default function UsersClient({
   const [editingUser, setEditingUser] = useState<AdminUserData | undefined>(undefined);
   const [deleteConfirmId, setDeleteConfirmId] = useState<{ id: number; username: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -34,7 +35,9 @@ export default function UsersClient({
     } else {
       params.delete('page');
     }
-    router.push(`${pathname}?${params.toString()}`);
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`);
+    });
   };
 
   const handleAdd = () => {
@@ -98,8 +101,19 @@ export default function UsersClient({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 text-slate-700">
-              {initialUsers.map((user, idx) => (
-                <tr key={user.id} className="hover:bg-slate-50/50 transition-colors group">
+              {isPending ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td className="px-4 py-4"><div className="h-4 w-4 bg-slate-200 rounded mx-auto"></div></td>
+                    <td className="px-4 py-4"><div className="h-4 w-24 bg-slate-200 rounded"></div></td>
+                    <td className="px-4 py-4"><div className="h-5 w-16 bg-slate-200 rounded-full"></div></td>
+                    <td className="px-4 py-4"><div className="h-4 w-20 bg-slate-200 rounded"></div></td>
+                    <td className="px-4 py-4"><div className="h-6 w-16 bg-slate-200 rounded ml-auto"></div></td>
+                  </tr>
+                ))
+              ) : (
+                initialUsers.map((user, idx) => (
+                  <tr key={user.id} className="hover:bg-slate-50/50 transition-colors group animate-in slide-in-from-bottom-4 fade-in duration-500" style={{ animationDelay: `${idx * 50}ms`, animationFillMode: 'backwards' }}>
                   <td className="px-4 py-4 text-center text-slate-400 text-[length:13px]">{idx + 1}</td>
                   <td className="px-4 py-4 font-semibold text-slate-800 text-[length:13px] flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-500">
@@ -139,7 +153,8 @@ export default function UsersClient({
                     </div>
                   </td>
                 </tr>
-              ))}
+                ))
+              )}
               
               {initialUsers.length === 0 && (
                 <tr>

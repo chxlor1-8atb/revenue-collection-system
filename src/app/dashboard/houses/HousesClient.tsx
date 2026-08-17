@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useTransition } from "react";
 import { Plus, Edit2, Trash2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Download, Upload, QrCode, X, Settings, Home } from "lucide-react";
 import QRCode from "qrcode";
 import Link from "next/link";
@@ -42,6 +42,7 @@ export default function HousesClient({
   const [isDeleting, setIsDeleting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [isPending, startTransition] = useTransition();
   
   // QR Code Modal State
   const [qrModal, setQrModal] = useState<{ isOpen: boolean; houseNumber: string; url: string; qrDataUrl: string } | null>(null);
@@ -74,7 +75,9 @@ export default function HousesClient({
     if (sortDir !== 'desc') params.set('dir', sortDir);
     else params.delete('dir');
 
-    router.push(`${pathname}?${params.toString()}`);
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`);
+    });
   };
 
   const handleSort = (key: string) => {
@@ -310,8 +313,19 @@ export default function HousesClient({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 text-slate-700">
-              {initialHouses.map((house) => (
-                <tr key={house.id} className="hover:bg-slate-50/50 transition-colors group">
+              {isPending ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    {customFieldsSchema.filter(f => !f.isHidden).map((f, j) => (
+                      <td key={j} className="px-4 py-4"><div className="h-4 bg-slate-200 rounded w-full"></div></td>
+                    ))}
+                    <td className="px-4 py-4"><div className="h-6 w-20 bg-slate-200 rounded-full"></div></td>
+                    <td className="px-4 py-4"><div className="h-6 w-16 bg-slate-200 rounded ml-auto"></div></td>
+                  </tr>
+                ))
+              ) : (
+                initialHouses.map((house, index) => (
+                  <tr key={house.id} className="hover:bg-slate-50/50 transition-colors group animate-in slide-in-from-bottom-4 fade-in duration-500" style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'backwards' }}>
                   {customFieldsSchema.filter(f => !f.isHidden).map(field => {
                     let val = "-";
                     if (field.isSystem) {
@@ -362,7 +376,8 @@ export default function HousesClient({
                     </div>
                   </td>
                 </tr>
-              ))}
+                ))
+              )}
               
               {initialHouses.length === 0 && (
                 <tr>

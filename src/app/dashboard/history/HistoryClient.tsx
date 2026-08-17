@@ -220,9 +220,33 @@ export default function HistoryClient() {
 
       {/* List */}
       {isLoading ? (
-        <div className="py-20 flex flex-col items-center justify-center text-slate-400">
-          <Loader2 size={40} className="animate-spin mb-4 text-emerald-500" />
-          <p>กำลังโหลดข้อมูล...</p>
+        <div className="space-y-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-[24px] border border-slate-100 overflow-hidden shadow-sm animate-pulse">
+              <div className="h-12 bg-slate-50 border-b border-slate-100 px-6 py-3"></div>
+              <div className="p-6 grid grid-cols-1 md:grid-cols-12 gap-4">
+                <div className="md:col-span-3 space-y-2">
+                  <div className="h-3 w-16 bg-slate-200 rounded"></div>
+                  <div className="h-6 w-24 bg-slate-200 rounded"></div>
+                </div>
+                <div className="md:col-span-3 space-y-2">
+                  <div className="h-3 w-20 bg-slate-200 rounded"></div>
+                  <div className="h-5 w-32 bg-slate-200 rounded-full"></div>
+                </div>
+                <div className="md:col-span-2 space-y-2">
+                  <div className="h-3 w-16 bg-slate-200 rounded"></div>
+                  <div className="h-4 w-24 bg-slate-200 rounded"></div>
+                </div>
+                <div className="hidden md:block md:col-span-2 space-y-2">
+                  <div className="h-3 w-16 bg-slate-200 rounded"></div>
+                  <div className="h-6 w-20 bg-slate-200 rounded"></div>
+                </div>
+                <div className="md:col-span-2 flex justify-end">
+                  <div className="h-8 w-24 bg-slate-200 rounded-lg"></div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : data.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-200 text-center py-20 flex flex-col items-center justify-center">
@@ -231,8 +255,8 @@ export default function HistoryClient() {
         </div>
       ) : (
         <div className="space-y-4">
-          {data.map((item) => (
-            <div key={item.id} className="bg-white rounded-[24px] border border-slate-100 shadow-sm overflow-hidden hover:shadow-md transition-all">
+          {data.map((item, index) => (
+            <div key={item.id} className="bg-white rounded-[24px] border border-slate-100 shadow-sm overflow-hidden hover:shadow-md transition-all animate-in slide-in-from-bottom-4 fade-in duration-500" style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'backwards' }}>
               {/* Header strip */}
               <div className={`flex items-center justify-between px-6 py-3 border-b ${
                 item.slipStatus === 'voided' 
