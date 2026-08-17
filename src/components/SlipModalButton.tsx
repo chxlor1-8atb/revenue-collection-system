@@ -1,11 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import { ReceiptText, Receipt, X } from "lucide-react";
+import { ReceiptText, Receipt, X, Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function SlipModalButton({ imageUrl, buttonStyle = "history", children }: { imageUrl: string, buttonStyle?: "history" | "house", children?: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const response = await fetch(imageUrl);
+      if (!response.ok) throw new Error("Network response was not ok");
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `slip-${new Date().getTime()}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Error downloading image:", error);
+      // Fallback
+      window.open(imageUrl, '_blank');
+    }
+  };
 
   return (
     <>
@@ -40,12 +61,22 @@ export default function SlipModalButton({ imageUrl, buttonStyle = "history", chi
                onClick={e => e.stopPropagation()}
              >
                 <div className="relative inline-block">
-                  <button 
-                    className="absolute -top-4 -right-4 z-10 text-white/90 hover:text-white transition-all bg-black/60 hover:bg-black/80 shadow-lg p-2 rounded-full ring-1 ring-white/20 backdrop-blur-md hover:scale-110" 
-                    onClick={() => setIsOpen(false)}
-                  >
-                     <X size={20} />
-                  </button>
+                  <div className="absolute -top-4 -right-4 z-10 flex flex-col gap-2">
+                    <button 
+                      className="text-white/90 hover:text-white transition-all bg-black/60 hover:bg-black/80 shadow-lg p-2 rounded-full ring-1 ring-white/20 backdrop-blur-md hover:scale-110 flex items-center justify-center" 
+                      onClick={() => setIsOpen(false)}
+                      title="ปิด"
+                    >
+                       <X size={20} />
+                    </button>
+                    <button 
+                      className="text-white/90 hover:text-white transition-all bg-black/60 hover:bg-black/80 shadow-lg p-2 rounded-full ring-1 ring-white/20 backdrop-blur-md hover:scale-110 flex items-center justify-center" 
+                      onClick={handleDownload}
+                      title="ดาวน์โหลดภาพ"
+                    >
+                       <Download size={20} />
+                    </button>
+                  </div>
                   <img 
                     src={imageUrl} 
                     alt="Slip" 

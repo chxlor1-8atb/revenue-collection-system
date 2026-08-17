@@ -228,10 +228,10 @@ export default async function DashboardPage() {
         {/* Left Column (simulated graph area) */}
         <div className="xl:col-span-2 bg-white rounded-[32px] p-8 lg:p-10 border border-slate-100 shadow-sm flex flex-col">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="font-semibold text-lg text-slate-800">กราฟรายได้ (Revenue Analytics)</h2>
+            <h2 className="font-semibold text-lg text-slate-800">สถิติผู้เข้าชมเว็บไซต์ (Website Visitors)</h2>
             <div className="flex items-center gap-4">
               <button className="text-sm font-medium text-slate-600 flex items-center gap-1 hover:text-slate-900">
-                รายได้ <ChevronDown size={14} />
+                หน้าทั่วไป <ChevronDown size={14} />
               </button>
               <button className="text-sm font-medium text-slate-600 flex items-center gap-1 hover:text-slate-900">
                 30 วันล่าสุด <ChevronDown size={14} />
@@ -241,9 +241,9 @@ export default async function DashboardPage() {
           
           <div className="flex-1 flex items-center justify-center min-h-[300px] border border-dashed border-slate-200 rounded-2xl bg-slate-50 relative">
             <div className="text-center">
-              <TrendingUp size={48} className="mx-auto text-slate-300 mb-3" />
-              <p className="text-slate-500 font-medium">พื้นที่แสดงกราฟรายได้</p>
-              <p className="text-xs text-slate-400 mt-1">อยู่ระหว่างการพัฒนาระบบรายงาน</p>
+              <User size={48} className="mx-auto text-slate-300 mb-3" />
+              <p className="text-slate-500 font-medium">พื้นที่แสดงกราฟผู้เข้าชมเว็บไซต์</p>
+              <p className="text-xs text-slate-400 mt-1">อยู่ระหว่างการเชื่อมต่อข้อมูลผู้เข้าชมหน้าทั่วไป</p>
             </div>
           </div>
         </div>

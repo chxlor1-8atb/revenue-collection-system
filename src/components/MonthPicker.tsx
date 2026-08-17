@@ -9,11 +9,15 @@ export default function MonthPicker({
   onChange,
   disabled = false,
   placement = "bottom",
+  colorTheme = "emerald",
+  buttonClassName,
 }: {
   value: string;
   onChange: (val: string) => void;
   disabled?: boolean;
   placement?: "top" | "bottom";
+  colorTheme?: "emerald" | "blue";
+  buttonClassName?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -57,9 +61,9 @@ export default function MonthPicker({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`w-full flex items-center justify-between px-4 py-3 bg-white border border-slate-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-50' : 'hover:border-slate-400'}`}
+        className={buttonClassName || `w-full flex items-center justify-between px-4 py-3 bg-white border border-slate-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 ${colorTheme === 'blue' ? 'focus:ring-[#5B58F2] focus:border-[#5B58F2]' : 'focus:ring-emerald-500 focus:border-emerald-500'} ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-50' : 'hover:border-slate-400'}`}
       >
-        <span className="text-sm font-medium text-slate-700">{displayValue}</span>
+        <span className="text-[13px] text-slate-700">{displayValue}</span>
         <CalendarIcon size={16} className="text-slate-400" />
       </button>
 
@@ -99,15 +103,18 @@ export default function MonthPicker({
             <div className="grid grid-cols-3 gap-2 p-4">
               {thaiMonths.map((m, idx) => {
                 const isSelected = viewYear === currentYear && (idx + 1) === currentMonth;
+                const selectedBg = colorTheme === 'blue' ? 'bg-[#5B58F2]' : 'bg-emerald-600';
+                const hoverTextBg = colorTheme === 'blue' ? 'hover:bg-[#EEF0FF] hover:text-[#5B58F2]' : 'hover:bg-emerald-50 hover:text-emerald-700';
+                
                 return (
                   <button
                     key={m}
                     type="button"
                     onClick={() => handleSelect(idx)}
-                    className={`py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`py-2 rounded-lg text-sm transition-colors ${
                       isSelected 
-                        ? 'bg-emerald-600 text-white shadow-sm' 
-                        : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-700'
+                        ? `${selectedBg} text-white shadow-sm font-medium` 
+                        : `text-slate-700 ${hoverTextBg}`
                     }`}
                   >
                     {m}
