@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Trash2, HardDrive, FolderOpen, Image as ImageIcon, RefreshCw, AlertTriangle, Clock, XCircle, Search, ArrowUpDown, ChevronDown } from "lucide-react";
 import SlipModalButton from "@/components/SlipModalButton";
+import TablePagination from "@/components/TablePagination";
 
 interface BlobFile {
   pathname: string;
@@ -92,6 +93,20 @@ export default function BlobManagementPage() {
     
     return result;
   }, [files, searchQuery, sortConfig]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
+  const totalPages = Math.ceil(filteredAndSortedFiles.length / itemsPerPage);
+
+  const paginatedFiles = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredAndSortedFiles.slice(start, start + itemsPerPage);
+  }, [filteredAndSortedFiles, currentPage, itemsPerPage]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, sortConfig, activeTab]);
 
   const toggleSelect = (url: string) => {
     setSelectedUrls(prev => {
@@ -421,7 +436,7 @@ export default function BlobManagementPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredAndSortedFiles.map((file) => (
+                {paginatedFiles.map((file) => (
                   <tr
                     key={file.url}
                     className={`border-b border-slate-100 transition-colors ${
@@ -469,19 +484,30 @@ export default function BlobManagementPage() {
           </div>
         )}
 
-        {/* Load More Pagination */}
+        {/* Load More Banner */}
         {hasMore && (
-          <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-center">
+          <div className="p-3 bg-amber-50 border-t border-slate-200 flex justify-center items-center gap-4">
+            <span className="text-sm text-amber-700 font-medium">มีไฟล์ในระบบมากกว่านี้ที่ยังไม่ได้ดึงมาแสดง</span>
             <button
               onClick={() => fetchFiles(true)}
               disabled={loading}
-              className="flex items-center gap-2 px-6 py-2 bg-white border border-slate-300 text-slate-700 text-sm font-medium rounded-full shadow-sm hover:bg-slate-50 transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-1.5 bg-white border border-amber-300 text-amber-700 text-sm font-bold rounded-lg shadow-sm hover:bg-amber-100 transition-colors disabled:opacity-50"
             >
-              {loading && cursor ? <RefreshCw size={16} className="animate-spin" /> : <ChevronDown size={16} />}
-              โหลดข้อมูลเพิ่มเติม (มีไฟล์เหลืออยู่)
+              {loading && cursor ? <RefreshCw size={14} className="animate-spin" /> : <ChevronDown size={14} />}
+              โหลดไฟล์เพิ่ม
             </button>
           </div>
         )}
+
+        {/* Standard Pagination */}
+        <TablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredAndSortedFiles.length}
+          itemsPerPage={itemsPerPage}
+          onPageChange={setCurrentPage}
+          isInfinite={hasMore}
+        />
       </div>
     </div>
   );

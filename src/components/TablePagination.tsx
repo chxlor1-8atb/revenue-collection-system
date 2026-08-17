@@ -10,6 +10,7 @@ interface TablePaginationProps {
   itemsPerPage: number;
   onPageChange: (page: number) => void;
   onLimitChange?: (limit: number) => void;
+  isInfinite?: boolean; // For cursor-based pagination where total is unknown
 }
 
 export default function TablePagination({
@@ -18,7 +19,8 @@ export default function TablePagination({
   totalItems,
   itemsPerPage,
   onPageChange,
-  onLimitChange
+  onLimitChange,
+  isInfinite = false
 }: TablePaginationProps) {
   const [jumpPage, setJumpPage] = useState(currentPage.toString());
 
@@ -86,9 +88,11 @@ export default function TablePagination({
       {/* Left: Item Range */}
       <div className="flex items-center gap-2 text-sm text-slate-500 whitespace-nowrap">
         <div className="bg-emerald-50 text-emerald-700 font-medium px-3 py-1 rounded-lg border border-emerald-100/50">
-          {startItem}-{endItem}
+          {startItem}-{isInfinite ? Math.max(startItem, startItem + totalItems - 1) : endItem}
         </div>
-        <span>จาก <strong className="text-slate-800 bg-slate-100 px-2 py-0.5 rounded">{totalItems}</strong> รายการ</span>
+        {!isInfinite && (
+          <span>จาก <strong className="text-slate-800 bg-slate-100 px-2 py-0.5 rounded">{totalItems}</strong> รายการ</span>
+        )}
       </div>
 
       {/* Center: Pagination Buttons */}
@@ -108,7 +112,14 @@ export default function TablePagination({
           <ChevronLeft size={16} />
         </button>
         
-        {renderPageNumbers()}
+        {!isInfinite && (
+          <>
+            {renderPageNumbers()}
+          </>
+        )}
+        {isInfinite && (
+          <span className="px-3 text-sm font-medium text-slate-700">หน้า {currentPage}</span>
+        )}
 
         <button
           onClick={() => onPageChange(currentPage + 1)}
@@ -117,34 +128,38 @@ export default function TablePagination({
         >
           <ChevronRight size={16} />
         </button>
-        <button
-          onClick={() => onPageChange(safeTotalPages)}
-          disabled={currentPage >= safeTotalPages}
-          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
-        >
-          <ChevronsRight size={16} />
-        </button>
+        {!isInfinite && (
+          <button
+            onClick={() => onPageChange(safeTotalPages)}
+            disabled={currentPage >= safeTotalPages}
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+          >
+            <ChevronsRight size={16} />
+          </button>
+        )}
       </div>
 
       {/* Right: Jump & Limit */}
       <div className="flex items-center gap-4 text-sm text-slate-500 whitespace-nowrap">
         
-        <div className="flex items-center gap-2 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200">
-          <span>ไป</span>
-          <input
-            type="text"
-            value={jumpPage}
-            onChange={(e) => setJumpPage(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleJump()}
-            className="w-10 h-7 text-center border border-slate-300 rounded text-slate-700 focus:outline-none focus:border-emerald-500"
-          />
-          <button 
-            onClick={handleJump}
-            className="w-7 h-7 flex items-center justify-center bg-[#1F2E22]/10 hover:bg-[#1F2E22]/20 text-[#1F2E22] rounded transition-colors"
-          >
-            <ArrowRight size={14} />
-          </button>
-        </div>
+        {!isInfinite && (
+          <div className="flex items-center gap-2 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200">
+            <span>ไป</span>
+            <input
+              type="text"
+              value={jumpPage}
+              onChange={(e) => setJumpPage(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleJump()}
+              className="w-10 h-7 text-center border border-slate-300 rounded text-slate-700 focus:outline-none focus:border-emerald-500"
+            />
+            <button 
+              onClick={handleJump}
+              className="w-7 h-7 flex items-center justify-center bg-[#1F2E22]/10 hover:bg-[#1F2E22]/20 text-[#1F2E22] rounded transition-colors"
+            >
+              <ArrowRight size={14} />
+            </button>
+          </div>
+        )}
 
         {onLimitChange && (
           <div className="flex items-center gap-2 bg-slate-50 px-3 py-1 rounded-lg border border-slate-200">
@@ -163,7 +178,6 @@ export default function TablePagination({
           </div>
         )}
       </div>
-
     </div>
   );
 }
