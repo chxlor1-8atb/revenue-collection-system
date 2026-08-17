@@ -3,13 +3,20 @@ import { db } from "@/lib/db";
 import { systemSettings } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 
+const defaultSchema = [
+  { id: "houseNumber", name: "บ้านเลขที่", placeholder: "เช่น 123/45", type: "text", required: true, isSystem: true, isHidden: false },
+  { id: "ownerName", name: "ชื่อเจ้าบ้าน / ผู้รับผิดชอบ", placeholder: "เช่น สมศรี ใจดี", type: "text", required: true, isSystem: true, isHidden: false },
+  { id: "zone", name: "ชุมชน / หมู่ (ตัวเลือก)", placeholder: "เช่น หมู่ 1 ซอย 5", type: "text", required: false, isSystem: true, isHidden: false },
+  { id: "road", name: "ถนน (ตัวเลือก)", placeholder: "เช่น ถนนสุขุมวิท", type: "text", required: false, isSystem: true, isHidden: false },
+];
+
 export async function GET() {
   try {
     const settings = await db.select({ houseCustomFieldsSchema: systemSettings.houseCustomFieldsSchema }).from(systemSettings).limit(1);
     
-    // If settings not found, return empty array
-    if (settings.length === 0 || !settings[0].houseCustomFieldsSchema) {
-      return NextResponse.json([]);
+    // If settings not found, return default schema
+    if (settings.length === 0 || !settings[0].houseCustomFieldsSchema || (settings[0].houseCustomFieldsSchema as any[]).length === 0) {
+      return NextResponse.json(defaultSchema);
     }
 
     return NextResponse.json(settings[0].houseCustomFieldsSchema);

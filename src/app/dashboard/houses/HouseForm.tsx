@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import { addHouse, updateHouse } from "./actions";
-import { X, Save, Home, User, MapPin } from "lucide-react";
-
-import { AlignLeft } from "lucide-react";
+import { X, Save, Home, User, MapPin, AlignLeft } from "lucide-react";
 import { CustomField } from "./CustomFieldsManager";
 
 export type HouseData = {
@@ -40,11 +38,13 @@ export default function HouseForm({
     // Extract custom fields from formData
     const customFieldsObj: Record<string, any> = {};
     customFieldsSchema.forEach(field => {
-      const val = formData.get(`custom_${field.id}`);
-      if (val) {
-        customFieldsObj[field.id] = val.toString().trim();
+      if (!field.isSystem) {
+        const val = formData.get(`custom_${field.id}`);
+        if (val) {
+          customFieldsObj[field.id] = val.toString().trim();
+        }
+        formData.delete(`custom_${field.id}`);
       }
-      formData.delete(`custom_${field.id}`);
     });
     // Append the JSON string of custom fields back to formData
     formData.append('customFields', JSON.stringify(customFieldsObj));
@@ -69,12 +69,24 @@ export default function HouseForm({
     }
   };
 
+  const getIconForField = (id: string) => {
+    switch (id) {
+      case 'houseNumber': return <Home size={16} className="text-slate-400" />;
+      case 'ownerName': return <User size={16} className="text-slate-400" />;
+      case 'zone': 
+      case 'road': return <MapPin size={16} className="text-slate-400" />;
+      default: return <AlignLeft size={16} className="text-slate-400" />;
+    }
+  };
+
+  const visibleFields = customFieldsSchema.filter(f => !f.isHidden);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
         
         {/* Header */}
-        <div className="bg-slate-50 px-6 py-4 border-b flex justify-between items-center">
+        <div className="bg-slate-50 px-6 py-4 border-b flex justify-between items-center shrink-0">
           <h3 className="font-semibold text-slate-800 text-lg flex items-center gap-2">
             <Home className="text-blue-600" size={20} />
             {initialData ? 'แก้ไขข้อมูลบ้าน' : 'เพิ่มข้อมูลบ้านใหม่'}
@@ -88,110 +100,49 @@ export default function HouseForm({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6">
+        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto flex-1">
           {error && (
-            <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm border border-red-100">
+            <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm border border-red-100 shrink-0">
               {error}
             </div>
           )}
           
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                บ้านเลขที่ <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Home size={16} className="text-slate-400" />
-                </div>
-                <input
-                  type="text"
-                  name="houseNumber"
-                  required
-                  defaultValue={initialData?.houseNumber}
-                  className="pl-10 block w-full rounded-xl border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 border"
-                  placeholder="เช่น 123/45"
-                />
-              </div>
-            </div>
+            {visibleFields.map(field => {
+              // Determine initial value based on whether it's a system field or custom field
+              let defaultValue = "";
+              if (initialData) {
+                if (field.isSystem) {
+                  defaultValue = (initialData as any)[field.id] || "";
+                } else {
+                  defaultValue = initialData.customFields?.[field.id] || "";
+                }
+              }
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                ชื่อเจ้าบ้าน / ผู้รับผิดชอบ <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User size={16} className="text-slate-400" />
-                </div>
-                <input
-                  type="text"
-                  name="ownerName"
-                  required
-                  defaultValue={initialData?.ownerName}
-                  className="pl-10 block w-full rounded-xl border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 border"
-                  placeholder="เช่น สมศรี ใจดี"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                ชุมชน / หมู่ (ตัวเลือก)
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <MapPin size={16} className="text-slate-400" />
-                </div>
-                <input
-                  type="text"
-                  name="zone"
-                  defaultValue={initialData?.zone || ""}
-                  className="pl-10 block w-full rounded-xl border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 border"
-                  placeholder="เช่น หมู่ 1 ซอย 5"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                ถนน (ตัวเลือก)
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <MapPin size={16} className="text-slate-400" />
-                </div>
-                <input
-                  type="text"
-                  name="road"
-                  defaultValue={initialData?.road || ""}
-                  className="pl-10 block w-full rounded-xl border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 border"
-                  placeholder="เช่น ถนนสุขุมวิท"
-                />
-              </div>
-            </div>
-
-            {customFieldsSchema.map(field => (
-              <div key={field.id}>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  {field.name}
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <AlignLeft size={16} className="text-slate-400" />
+              return (
+                <div key={field.id}>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    {field.name} {field.required && <span className="text-red-500">*</span>}
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      {getIconForField(field.id)}
+                    </div>
+                    <input
+                      type={field.type || "text"}
+                      name={field.isSystem ? field.id : `custom_${field.id}`}
+                      required={field.required}
+                      defaultValue={defaultValue}
+                      className="pl-10 block w-full rounded-xl border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 border"
+                      placeholder={field.placeholder || ""}
+                    />
                   </div>
-                  <input
-                    type="text"
-                    name={`custom_${field.id}`}
-                    defaultValue={initialData?.customFields?.[field.id] || ""}
-                    className="pl-10 block w-full rounded-xl border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 border"
-                    placeholder={`กรอก${field.name}`}
-                  />
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
-          <div className="mt-8 flex justify-end gap-3">
+          <div className="mt-8 flex justify-end gap-3 shrink-0">
             <button
               type="button"
               onClick={onClose}

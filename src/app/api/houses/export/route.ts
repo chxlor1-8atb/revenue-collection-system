@@ -11,30 +11,31 @@ export async function GET() {
     ]);
     
     const customFieldsSchema = (settingsData[0]?.houseCustomFieldsSchema as any[]) || [];
+    const visibleFields = customFieldsSchema.filter(f => !f.isHidden);
     
     // Create CSV content
     // BOM for Excel to recognize UTF-8 Thai characters
     const BOM = "\uFEFF";
     
     // Header
-    let customHeaders = customFieldsSchema.map(f => f.name).join(',');
-    let csvContent = `บ้านเลขที่,ชื่อเจ้าบ้าน,ชุมชน/หมู่,ถนน${customHeaders ? ',' + customHeaders : ''},วันที่สร้างระบบ\n`;
+    let customHeaders = visibleFields.map(f => f.name).join(',');
+    let csvContent = `${customHeaders ? customHeaders : ''},วันที่สร้างระบบ\n`;
     
     // Rows
     allHouses.forEach(h => {
-      const houseNumber = `"${(h.houseNumber || "").replace(/"/g, '""')}"`;
-      const ownerName = `"${(h.ownerName || "").replace(/"/g, '""')}"`;
-      const zone = `"${(h.zone || "").replace(/"/g, '""')}"`;
-      const road = `"${(h.road || "").replace(/"/g, '""')}"`;
-      
-      let customValues = customFieldsSchema.map(f => {
-        const val = (h.customFields as Record<string, any>)?.[f.id] || "";
-        return `"${val.replace(/"/g, '""')}"`;
+      let rowValues = visibleFields.map(f => {
+        let val = "";
+        if (f.isSystem) {
+          val = (h as any)[f.id] || "";
+        } else {
+          val = (h.customFields as Record<string, any>)?.[f.id] || "";
+        }
+        return `"${String(val).replace(/"/g, '""')}"`;
       }).join(',');
 
       const date = `"${h.createdAt ? h.createdAt.toLocaleString('th-TH') : ""}"`;
       
-      csvContent += `${houseNumber},${ownerName},${zone},${road}${customValues ? ',' + customValues : ''},${date}\n`;
+      csvContent += `${rowValues ? rowValues : ''},${date}\n`;
     });
 
     const response = new NextResponse(BOM + csvContent);

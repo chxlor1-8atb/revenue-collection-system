@@ -1,18 +1,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Plus, Trash2, Edit2, GripVertical, Check, Settings2 } from "lucide-react";
+import { X, Plus, Trash2, Edit2, GripVertical, Check, Settings2, Eye, EyeOff, Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export interface CustomField {
   id: string;
   name: string;
-  type: string; // "text"
+  type: string;
+  placeholder?: string;
+  required?: boolean;
+  isSystem?: boolean;
+  isHidden?: boolean;
 }
 
 interface CustomFieldsManagerProps {
   onClose: () => void;
-  onUpdate: () => void; // callback after saving
+  onUpdate: () => void;
 }
 
 export default function CustomFieldsManager({ onClose, onUpdate }: CustomFieldsManagerProps) {
@@ -21,7 +25,9 @@ export default function CustomFieldsManager({ onClose, onUpdate }: CustomFieldsM
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editName, setEditName] = useState("");
+  
+  // Temporary edit state
+  const [editForm, setEditForm] = useState<Partial<CustomField>>({});
 
   useEffect(() => {
     fetch('/api/settings/house-fields')
@@ -40,30 +46,57 @@ export default function CustomFieldsManager({ onClose, onUpdate }: CustomFieldsM
 
   const addField = () => {
     const newField: CustomField = {
-      id: `field_${generateId()}`,
+      id: `custom_${generateId()}`,
       name: `คอลัมน์ใหม่ ${fields.length + 1}`,
-      type: 'text'
+      type: 'text',
+      placeholder: 'กรอกข้อมูล...',
+      required: false,
+      isSystem: false,
+      isHidden: false
     };
     setFields([...fields, newField]);
-    startEditing(newField.id, newField.name);
+    startEditing(newField);
   };
 
-  const startEditing = (id: string, name: string) => {
-    setEditingId(id);
-    setEditName(name);
+  const startEditing = (field: CustomField) => {
+    setEditingId(field.id);
+    setEditForm({ ...field });
   };
 
   const saveEdit = () => {
     if (editingId) {
-      setFields(fields.map(f => f.id === editingId ? { ...f, name: editName.trim() || f.name } : f));
+      setFields(fields.map(f => f.id === editingId ? { ...f, ...editForm, name: editForm.name?.trim() || f.name } : f));
       setEditingId(null);
     }
   };
 
+  const cancelEdit = () => {
+    setEditingId(null);
+  };
+
   const removeField = (id: string) => {
-    if (confirm("การลบคอลัมน์นี้ จะทำให้ไม่สามารถดูข้อมูลของคอลัมน์นี้ในบ้านทุกหลังได้ คุณแน่ใจหรือไม่?")) {
+    const field = fields.find(f => f.id === id);
+    if (field?.isSystem) {
+      alert("ไม่สามารถลบฟิลด์ระบบได้ (แต่สามารถซ่อนได้)");
+      return;
+    }
+    if (confirm(`คุณต้องการลบฟิลด์ "${field?.name}" ใช่หรือไม่? ข้อมูลในฟิลด์นี้ของบ้านทุกหลังจะหายไป`)) {
       setFields(fields.filter(f => f.id !== id));
     }
+  };
+
+  const toggleHidden = (id: string) => {
+    setFields(fields.map(f => {
+      if (f.id === id) {
+        // Some system fields might be required to stay visible, but we allow hiding anything for now except maybe houseNumber/ownerName
+        if (f.id === 'houseNumber' || f.id === 'ownerName') {
+           alert('ฟิลด์นี้จำเป็นต้องแสดงผลเสมอ');
+           return f;
+        }
+        return { ...f, isHidden: !f.isHidden };
+      }
+      return f;
+    }));
   };
 
   const handleSave = async () => {
@@ -89,17 +122,17 @@ export default function CustomFieldsManager({ onClose, onUpdate }: CustomFieldsM
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
         
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-100">
+        <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-white sticky top-0 z-10">
           <div className="flex items-center gap-3">
             <div className="bg-emerald-100 text-emerald-600 p-2 rounded-xl">
               <Settings2 size={20} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-800">จัดการหัวตารางข้อมูล</h2>
-              <p className="text-sm text-slate-500">เพิ่มหรือแก้ไขคอลัมน์พิเศษสำหรับบ้านแต่ละหลัง</p>
+              <h2 className="text-xl font-bold text-slate-800">เครื่องมือสร้างฟอร์มบ้าน (Form Builder)</h2>
+              <p className="text-sm text-slate-500">จัดการข้อมูลที่ต้องการจัดเก็บ เพิ่ม/ลด หรือแก้ไขคำอธิบายได้อิสระ</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
@@ -113,73 +146,121 @@ export default function CustomFieldsManager({ onClose, onUpdate }: CustomFieldsM
             <div className="text-center py-8 text-slate-400">กำลังโหลด...</div>
           ) : (
             <div className="space-y-3">
-              {fields.length === 0 ? (
-                <div className="text-center py-12 px-4 border-2 border-dashed border-slate-200 rounded-2xl">
-                  <div className="text-slate-400 mb-2">📑</div>
-                  <p className="text-slate-500 font-medium">ยังไม่มีคอลัมน์พิเศษ</p>
-                  <p className="text-sm text-slate-400 mt-1">กดปุ่ม "+ เพิ่มคอลัมน์ใหม่" ด้านล่างเพื่อเริ่มต้น</p>
-                </div>
-              ) : (
-                fields.map((field, index) => (
-                  <div key={field.id} className="flex items-center gap-3 bg-white border border-slate-200 p-3 rounded-xl shadow-sm group">
-                    <div className="text-slate-300 cursor-grab active:cursor-grabbing">
-                      <GripVertical size={16} />
-                    </div>
-                    <div className="flex-1">
-                      {editingId === field.id ? (
-                        <div className="flex items-center gap-2">
+              {fields.map((field) => (
+                <div key={field.id} className={`bg-white border rounded-xl shadow-sm overflow-hidden transition-all ${field.isHidden ? 'border-slate-200 opacity-60' : 'border-slate-300'}`}>
+                  {editingId === field.id ? (
+                    <div className="p-4 bg-blue-50/50">
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-xs font-medium text-slate-500 mb-1">ชื่อหัวข้อ (Label)</label>
                           <input 
                             type="text" 
-                            value={editName}
-                            onChange={e => setEditName(e.target.value)}
-                            onKeyDown={e => e.key === 'Enter' && saveEdit()}
-                            autoFocus
-                            className="w-full px-2 py-1 text-sm border-b-2 border-emerald-500 outline-none font-medium"
+                            value={editForm.name || ""}
+                            onChange={e => setEditForm({ ...editForm, name: e.target.value })}
+                            className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                           />
-                          <button onClick={saveEdit} className="text-emerald-600 p-1 hover:bg-emerald-50 rounded">
-                            <Check size={16} />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-500 mb-1">คำอธิบายในกล่อง (Placeholder)</label>
+                          <input 
+                            type="text" 
+                            value={editForm.placeholder || ""}
+                            onChange={e => setEditForm({ ...editForm, placeholder: e.target.value })}
+                            className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                          />
+                        </div>
+                        <div className="flex items-center gap-6">
+                          <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+                            <input 
+                              type="checkbox" 
+                              checked={editForm.required || false}
+                              onChange={e => setEditForm({ ...editForm, required: e.target.checked })}
+                              disabled={field.id === 'houseNumber' || field.id === 'ownerName'}
+                              className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                            />
+                            บังคับต้องกรอก (Required)
+                          </label>
+                        </div>
+                        
+                        <div className="flex justify-end gap-2 pt-2">
+                          <button onClick={cancelEdit} className="px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+                            ยกเลิก
+                          </button>
+                          <button onClick={saveEdit} className="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors flex items-center gap-1">
+                            <Check size={14} /> ตกลง
                           </button>
                         </div>
-                      ) : (
-                        <div className="font-medium text-slate-700">{field.name}</div>
-                      )}
-                    </div>
-                    
-                    {editingId !== field.id && (
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button 
-                          onClick={() => startEditing(field.id, field.name)}
-                          className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="แก้ไขชื่อ"
-                        >
-                          <Edit2 size={14} />
-                        </button>
-                        <button 
-                          onClick={() => removeField(field.id)}
-                          className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="ลบคอลัมน์"
-                        >
-                          <Trash2 size={14} />
-                        </button>
                       </div>
-                    )}
-                  </div>
-                ))
-              )}
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3 p-3 group">
+                      <div className="text-slate-300 cursor-grab active:cursor-grabbing">
+                        <GripVertical size={16} />
+                      </div>
+                      <div className="flex-1 min-w-0 flex flex-col">
+                        <div className="flex items-center gap-2">
+                          <span className={`font-medium truncate ${field.isHidden ? 'text-slate-400 line-through' : 'text-slate-700'}`}>{field.name}</span>
+                          {field.isSystem && (
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-500">
+                              <Lock size={10} /> ระบบ
+                            </span>
+                          )}
+                          {field.required && (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-50 text-red-600">
+                              จำเป็น
+                            </span>
+                          )}
+                        </div>
+                        {field.placeholder && (
+                          <span className="text-xs text-slate-400 truncate mt-0.5">{field.placeholder}</span>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center gap-1">
+                        <button 
+                          onClick={() => toggleHidden(field.id)}
+                          className={`p-1.5 rounded-lg transition-colors ${field.isHidden ? 'text-slate-400 hover:text-slate-600 hover:bg-slate-100' : 'text-blue-500 hover:text-blue-700 hover:bg-blue-50'}`}
+                          title={field.isHidden ? "คลิกเพื่อแสดงผล" : "คลิกเพื่อซ่อน"}
+                        >
+                          {field.isHidden ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                        
+                        <button 
+                          onClick={() => startEditing(field)}
+                          className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="แก้ไขการตั้งค่า"
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                        
+                        {!field.isSystem && (
+                          <button 
+                            onClick={() => removeField(field.id)}
+                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="ลบทิ้ง"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
 
               <button 
                 onClick={addField}
-                className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-300 text-slate-500 hover:text-[#1F2E22] hover:border-[#1F2E22] hover:bg-slate-50 font-medium rounded-xl transition-all"
+                className="w-full flex items-center justify-center gap-2 py-4 mt-4 border-2 border-dashed border-slate-300 text-slate-500 hover:text-[#1F2E22] hover:border-[#1F2E22] hover:bg-slate-50 font-medium rounded-xl transition-all"
               >
                 <Plus size={16} />
-                เพิ่มคอลัมน์ใหม่
+                เพิ่มช่องข้อมูลใหม่
               </button>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-slate-100 flex gap-3">
+        <div className="p-6 border-t border-slate-100 bg-white flex gap-3">
           <button 
             onClick={onClose}
             className="flex-1 py-2.5 px-4 font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
@@ -191,7 +272,7 @@ export default function CustomFieldsManager({ onClose, onUpdate }: CustomFieldsM
             disabled={isSaving || isLoading}
             className="flex-1 py-2.5 px-4 font-medium text-white bg-[#1F2E22] hover:bg-slate-800 rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center"
           >
-            {isSaving ? "กำลังบันทึก..." : "บันทึกการตั้งค่า"}
+            {isSaving ? "กำลังบันทึก..." : "บันทึกและนำไปใช้งาน"}
           </button>
         </div>
 

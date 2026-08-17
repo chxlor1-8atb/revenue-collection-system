@@ -136,24 +136,35 @@ export default function HousesClient({
         const text = event.target?.result as string;
         const lines = text.split('\n');
         
-        // Skip header and parse rows
+        // Filter out hidden fields for import mapping
+        const visibleFields = customFieldsSchema.filter(f => !f.isHidden);
+
         const parsedData = lines.slice(1).map(line => {
-          // simple split by comma, works for basic cases without commas inside fields
           const cols = line.split(',');
-          const [houseNumber, ownerName, zone, road] = cols;
           
+          let houseNumber = "";
+          let ownerName = "";
+          let zone = "";
+          let road = "";
           const customFieldsObj: Record<string, any> = {};
-          customFieldsSchema.forEach((field, i) => {
-            if (cols[4 + i]) {
-               customFieldsObj[field.id] = cols[4 + i].trim();
+          
+          visibleFields.forEach((field, i) => {
+            const val = cols[i] ? cols[i].trim() : "";
+            if (field.isSystem) {
+              if (field.id === 'houseNumber') houseNumber = val;
+              if (field.id === 'ownerName') ownerName = val;
+              if (field.id === 'zone') zone = val;
+              if (field.id === 'road') road = val;
+            } else {
+              customFieldsObj[field.id] = val;
             }
           });
 
           return {
-            houseNumber: houseNumber?.trim(),
-            ownerName: ownerName?.trim(),
-            zone: zone?.trim(),
-            road: road?.trim(),
+            houseNumber,
+            ownerName,
+            zone,
+            road,
             customFields: customFieldsObj,
           };
         }).filter(item => item.houseNumber && item.ownerName);
@@ -273,22 +284,17 @@ export default function HousesClient({
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-sm font-medium text-slate-500 uppercase tracking-wider">
-                <th className="p-4 cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleSort('houseNumber')}>
-                  <div className="flex items-center gap-2">
-                    บ้านเลขที่
-                    <ArrowUpDown size={14} className={sortConfig.key === 'houseNumber' ? 'text-[#1F2E22]' : 'opacity-50'} />
-                  </div>
-                </th>
-                <th className="p-4 cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleSort('ownerName')}>
-                  <div className="flex items-center gap-2">
-                    ชื่อเจ้าบ้าน
-                    <ArrowUpDown size={14} className={sortConfig.key === 'ownerName' ? 'text-[#1F2E22]' : 'opacity-50'} />
-                  </div>
-                </th>
-                <th className="p-4">ชุมชน/หมู่</th>
-                <th className="p-4">ถนน</th>
-                {customFieldsSchema.map(field => (
-                  <th key={field.id} className="p-4 text-slate-500">{field.name}</th>
+                {customFieldsSchema.filter(f => !f.isHidden).map(field => (
+                  <th key={field.id} className={`p-4 ${field.isSystem && (field.id === 'houseNumber' || field.id === 'ownerName') ? 'cursor-pointer hover:bg-slate-100 transition-colors' : 'text-slate-500'}`} onClick={() => {
+                    if (field.id === 'houseNumber' || field.id === 'ownerName') handleSort(field.id);
+                  }}>
+                    <div className="flex items-center gap-2">
+                      {field.name}
+                      {(field.id === 'houseNumber' || field.id === 'ownerName') && (
+                        <ArrowUpDown size={14} className={sortConfig.key === field.id ? 'text-[#1F2E22]' : 'opacity-50'} />
+                      )}
+                    </div>
+                  </th>
                 ))}
                 <th className="p-4">สมุดบัญชีบ้าน</th>
                 <th className="p-4 text-right">จัดการ</th>
@@ -297,15 +303,22 @@ export default function HousesClient({
             <tbody className="divide-y divide-slate-100 text-slate-700">
               {initialHouses.map((house) => (
                 <tr key={house.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="p-4 font-mono font-bold text-slate-900">{house.houseNumber}</td>
-                  <td className="p-4 font-medium">{house.ownerName}</td>
-                  <td className="p-4 text-slate-500">{house.zone || "-"}</td>
-                  <td className="p-4 text-slate-500">{house.road || "-"}</td>
-                  {customFieldsSchema.map(field => (
-                    <td key={field.id} className="p-4 text-slate-500 whitespace-nowrap">
-                      {(house.customFields as Record<string, any>)?.[field.id] || "-"}
-                    </td>
-                  ))}
+                  {customFieldsSchema.filter(f => !f.isHidden).map(field => {
+                    let val = "-";
+                    if (field.isSystem) {
+                      val = (house as any)[field.id] || "-";
+                    } else {
+                      val = (house.customFields as Record<string, any>)?.[field.id] || "-";
+                    }
+                    
+                    if (field.id === 'houseNumber') {
+                      return <td key={field.id} className="p-4 font-mono font-bold text-slate-900">{val}</td>;
+                    }
+                    if (field.id === 'ownerName') {
+                      return <td key={field.id} className="p-4 font-medium">{val}</td>;
+                    }
+                    return <td key={field.id} className="p-4 text-slate-500 whitespace-nowrap">{val}</td>;
+                  })}
                   <td className="p-4">
                     <Link 
                       href={`/dashboard/houses/${house.id}`} 
@@ -345,7 +358,7 @@ export default function HousesClient({
               
               {initialHouses.length === 0 && (
                 <tr>
-                  <td colSpan={6 + customFieldsSchema.length} className="p-12 text-center">
+                  <td colSpan={2 + customFieldsSchema.filter(f => !f.isHidden).length} className="p-12 text-center">
                     <div className="text-slate-400 mb-2">🏠</div>
                     <div className="text-slate-500 font-medium">ไม่พบข้อมูลบ้าน</div>
                     {searchQuery ? (
