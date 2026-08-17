@@ -96,7 +96,7 @@ export default function TablePagination({
   const safeTotalPages = Math.max(1, totalPages);
 
   return (
-    <div className="flex flex-col lg:flex-row items-center justify-between px-6 py-4 bg-white border-t border-slate-200 gap-4 overflow-x-auto">
+    <div className="flex flex-col lg:flex-row items-center justify-between px-6 py-4 bg-white border-t border-slate-200 gap-4 relative z-[100]">
       
       {/* Left: Item Range */}
       <div className="flex items-center gap-2 text-sm text-slate-500 whitespace-nowrap">
@@ -195,7 +195,7 @@ export default function TablePagination({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -5 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-white border border-slate-200 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] overflow-hidden w-20 z-50 origin-bottom"
+                    className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-white border border-slate-200 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] overflow-hidden w-20 z-[100] origin-bottom"
                   >
                     <div className="flex flex-col p-1">
                       {[10, 20, 50, 100].map((val) => (
