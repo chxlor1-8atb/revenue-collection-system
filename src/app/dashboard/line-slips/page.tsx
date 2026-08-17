@@ -1,32 +1,66 @@
-﻿import { db } from "@/lib/db";
+import { db } from "@/lib/db";
 import { lineMessages } from "@/lib/schema";
-import { desc, or, eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import LineSlipsClient from "./LineSlipsClient";
 
 export const dynamic = "force-dynamic";
 
-export default async function LineSlipsPage() {
-  // Pending: needs manual review
-  const pendingSlips = await db
-    .select()
-    .from(lineMessages)
-    .where(eq(lineMessages.status, "pending"))
-    .orderBy(desc(lineMessages.createdAt));
+export default async function LineSlipsPage(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const searchParams = await props.searchParams;
+  
+  const tab = (typeof searchParams.tab === 'string' ? searchParams.tab : 'pending') as 'pending' | 'verified';
+  const page = Number(searchParams.page) || 1;
+  const limit = 20;
+  const offset = (page - 1) * limit;
 
-  // Verified auto: already processed automatically  
-  const verifiedSlips = await db
-    .select()
-    .from(lineMessages)
-    .where(eq(lineMessages.status, "verified_auto"))
-    .orderBy(desc(lineMessages.createdAt))
-    .limit(50);
+  // Get total counts for badges
+  const [pendingCountRes, verifiedCountRes] = await Promise.all([
+    db.select({ count: sql<number>`count(*)` }).from(lineMessages).where(eq(lineMessages.status, "pending")),
+    db.select({ count: sql<number>`count(*)` }).from(lineMessages).where(eq(lineMessages.status, "verified_auto")),
+  ]);
+
+  const pendingCount = Number(pendingCountRes[0]?.count || 0);
+  const verifiedCount = Number(verifiedCountRes[0]?.count || 0);
+
+  // Fetch only the data for the active tab
+  let slips = [];
+  let totalForTab = 0;
+
+  if (tab === 'pending') {
+    slips = await db
+      .select()
+      .from(lineMessages)
+      .where(eq(lineMessages.status, "pending"))
+      .orderBy(desc(lineMessages.createdAt))
+      .limit(limit)
+      .offset(offset);
+    totalForTab = pendingCount;
+  } else {
+    slips = await db
+      .select()
+      .from(lineMessages)
+      .where(eq(lineMessages.status, "verified_auto"))
+      .orderBy(desc(lineMessages.createdAt))
+      .limit(limit)
+      .offset(offset);
+    totalForTab = verifiedCount;
+  }
+
+  const totalPages = Math.ceil(totalForTab / limit);
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6 text-slate-800">
         สลิปจาก LINE
       </h1>
-      <LineSlipsClient pendingSlips={pendingSlips} verifiedSlips={verifiedSlips} />
+      <LineSlipsClient 
+        slips={slips} 
+        activeTab={tab}
+        currentPage={page}
+        totalPages={totalPages}
+        pendingCount={pendingCount}
+        verifiedCount={verifiedCount}
+      />
     </div>
   );
 }
