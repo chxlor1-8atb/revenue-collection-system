@@ -32,6 +32,11 @@ export default function HistoryClient() {
   const [searchInput, setSearchInput] = useState(""); // For the input field before hitting enter
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  
+  // New Filters
+  const [status, setStatus] = useState("verified");
+  const [channel, setChannel] = useState("all");
+  const [monthYear, setMonthYear] = useState("");
 
   const limit = 20;
 
@@ -43,7 +48,10 @@ export default function HistoryClient() {
         limit: limit.toString(),
         search,
         startDate,
-        endDate
+        endDate,
+        status,
+        channel,
+        monthYear
       });
       const res = await fetch(`/api/history?${params.toString()}`);
       if (res.ok) {
@@ -61,7 +69,7 @@ export default function HistoryClient() {
 
   useEffect(() => {
     fetchData();
-  }, [page, search, startDate, endDate]);
+  }, [page, search, startDate, endDate, status, channel, monthYear]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,7 +82,10 @@ export default function HistoryClient() {
       export: "csv",
       search,
       startDate,
-      endDate
+      endDate,
+      status,
+      channel,
+      monthYear
     });
     window.location.href = `/api/history?${params.toString()}`;
   };
@@ -139,6 +150,45 @@ export default function HistoryClient() {
           />
         </form>
 
+        {/* Filters Row */}
+        <div className="flex flex-wrap gap-3 items-end w-full sm:w-auto">
+          <div className="flex-1 min-w-[110px]">
+            <label className="block text-[11px] font-medium text-slate-500 mb-1 uppercase tracking-wider">สถานะ</label>
+            <select
+              value={status}
+              onChange={(e) => { setStatus(e.target.value); setPage(1); }}
+              className="w-full h-[42px] px-3 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors cursor-pointer"
+            >
+              <option value="verified">ชำระแล้ว</option>
+              <option value="all">ทั้งหมด</option>
+              <option value="voided">ยกเลิกแล้ว</option>
+            </select>
+          </div>
+
+          <div className="flex-1 min-w-[110px]">
+            <label className="block text-[11px] font-medium text-slate-500 mb-1 uppercase tracking-wider">ช่องทาง</label>
+            <select
+              value={channel}
+              onChange={(e) => { setChannel(e.target.value); setPage(1); }}
+              className="w-full h-[42px] px-3 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors cursor-pointer"
+            >
+              <option value="all">ทั้งหมด</option>
+              <option value="line">LINE Bot</option>
+              <option value="web">เว็บไซต์ (แอดมิน)</option>
+            </select>
+          </div>
+
+          <div className="flex-1 min-w-[130px]">
+            <label className="block text-[11px] font-medium text-slate-500 mb-1 uppercase tracking-wider">รอบบิล</label>
+            <input
+              type="month"
+              value={monthYear}
+              onChange={(e) => { setMonthYear(e.target.value); setPage(1); }}
+              className="w-full h-[42px] px-3 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors cursor-pointer"
+            />
+          </div>
+        </div>
+        
         {/* Date Pickers & Export */}
         <div className="flex flex-1 sm:flex-none flex-wrap sm:flex-nowrap gap-3 items-end sm:justify-end shrink-0">
           <div className="flex-1 min-w-[130px] sm:w-[180px] md:w-[220px]">
@@ -182,26 +232,38 @@ export default function HistoryClient() {
           {data.map((item) => (
             <div key={item.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
               {/* Header strip */}
-              <div className="flex items-center justify-between px-6 py-3 bg-emerald-50/50 border-b border-slate-100">
-                <div className="flex items-center gap-2 text-emerald-700">
-                  <CheckCircle2 size={16} className="fill-emerald-100" />
-                  <span className="text-sm font-semibold">ชำระแล้ว • รหัส {item.id}</span>
+              <div className={`flex items-center justify-between px-6 py-3 border-b ${
+                item.slipStatus === 'voided' 
+                  ? 'bg-slate-50 border-slate-200' 
+                  : 'bg-emerald-50/50 border-slate-100'
+              }`}>
+                <div className={`flex items-center gap-2 ${item.slipStatus === 'voided' ? 'text-slate-500' : 'text-emerald-700'}`}>
+                  {item.slipStatus === 'voided' ? (
+                    <X size={16} className="text-slate-400" />
+                  ) : (
+                    <CheckCircle2 size={16} className="fill-emerald-100" />
+                  )}
+                  <span className="text-sm font-semibold">
+                    {item.slipStatus === 'voided' ? 'ยกเลิกแล้ว' : 'ชำระแล้ว'} • รหัส {item.id}
+                  </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500 bg-white px-2 py-1 rounded-md border border-slate-200">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500 bg-white px-2 py-1 rounded-md border border-slate-200 shadow-sm">
                     {item.paidVia === "LINE Bot" ? (
                       <><Smartphone size={12} className="text-emerald-500" /> LINE Bot</>
                     ) : (
                       <><Globe size={12} className="text-blue-500" /> เว็บไซต์</>
                     )}
                   </div>
-                  <button 
-                    onClick={() => handleVoidClick(item.id)}
-                    title="ยกเลิกการชำระเงิน"
-                    className="text-xs font-medium text-red-500 hover:text-red-700 hover:bg-red-50 px-2 py-1 rounded transition-colors"
-                  >
-                    ยกเลิกรายการ
-                  </button>
+                  {item.slipStatus !== 'voided' && (
+                    <button 
+                      onClick={() => handleVoidClick(item.id)}
+                      title="ยกเลิกการชำระเงิน"
+                      className="text-xs font-medium text-red-500 hover:text-red-700 hover:bg-red-50 px-2 py-1 rounded transition-colors"
+                    >
+                      ยกเลิกรายการ
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -267,13 +329,15 @@ export default function HistoryClient() {
                   {item.slipImageUrl && item.slipImageUrl !== "pending" && (
                     <SlipModalButton imageUrl={item.slipImageUrl} buttonStyle="history" />
                   )}
-                  <Link 
-                    href={`/dashboard/history/${item.id}/receipt`}
-                    target="_blank"
-                    className="inline-flex items-center justify-center gap-1.5 text-xs bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 px-3 py-1.5 rounded-lg border border-slate-200 transition-colors font-medium"
-                  >
-                    <Printer size={14} /> พิมพ์ใบเสร็จ
-                  </Link>
+                  {item.slipStatus !== 'voided' && (
+                    <Link 
+                      href={`/dashboard/history/${item.id}/receipt`}
+                      target="_blank"
+                      className="inline-flex items-center justify-center gap-1.5 text-xs bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 px-3 py-1.5 rounded-lg border border-slate-200 transition-colors font-medium shadow-sm"
+                    >
+                      <Printer size={14} /> พิมพ์ใบเสร็จ
+                    </Link>
+                  )}
                 </div>
               </div>
               

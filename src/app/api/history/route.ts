@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { transactions, invoices, houses, lineMessages } from "@/lib/schema";
-import { eq, desc, inArray, and, or, ilike, sql, gte, lte } from "drizzle-orm";
+import { eq, desc, inArray, and, or, ilike, sql, gte, lte, notInArray } from "drizzle-orm";
 
 function formatThaiMonth(monthYear: string) {
   const thaiMonths = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
@@ -24,9 +24,47 @@ export async function GET(req: NextRequest) {
     const startDate = url.searchParams.get("startDate") || "";
     const endDate = url.searchParams.get("endDate") || "";
     const isExport = url.searchParams.get("export") === "csv";
+    const status = url.searchParams.get("status") || "verified";
+    const channel = url.searchParams.get("channel") || "all";
+    const monthYear = url.searchParams.get("monthYear") || "";
 
     // Build conditions
-    const conditions = [eq(transactions.slipStatus, "verified")];
+    const conditions = [];
+    
+    if (status === "all") {
+      conditions.push(inArray(transactions.slipStatus, ["verified", "voided"]));
+    } else {
+      conditions.push(eq(transactions.slipStatus, status));
+    }
+
+    if (channel === "line") {
+      const lineMsgTxIds = await db.select({ txId: lineMessages.transactionId }).from(lineMessages).where(sql`${lineMessages.transactionId} IS NOT NULL`);
+      const lineTxIds = lineMsgTxIds.map(m => m.txId as number);
+      conditions.push(or(
+        eq(transactions.verifiedBy, "line_bot"),
+        lineTxIds.length > 0 ? inArray(transactions.id, lineTxIds) : sql`false`
+      ));
+    } else if (channel === "web") {
+      const lineMsgTxIds = await db.select({ txId: lineMessages.transactionId }).from(lineMessages).where(sql`${lineMessages.transactionId} IS NOT NULL`);
+      const lineTxIds = lineMsgTxIds.map(m => m.txId as number);
+      conditions.push(and(
+        or(sql`${transactions.verifiedBy} IS NULL`, sql`${transactions.verifiedBy} != 'line_bot'`),
+        lineTxIds.length > 0 ? notInArray(transactions.id, lineTxIds) : undefined
+      ));
+    }
+
+    if (monthYear) {
+      const matchedInvoices = await db.select({ transactionId: invoices.transactionId })
+        .from(invoices)
+        .where(and(eq(invoices.monthYear, monthYear), sql`${invoices.transactionId} IS NOT NULL`));
+      
+      const monthTxIds = Array.from(new Set(matchedInvoices.map(i => i.transactionId as number)));
+      if (monthTxIds.length === 0) {
+        return isExport ? new NextResponse("\uFEFF", { headers: { "Content-Type": "text/csv; charset=utf-8" } }) 
+                        : NextResponse.json({ data: [], totalCount: 0, totalAmount: 0 });
+      }
+      conditions.push(inArray(transactions.id, monthTxIds));
+    }
 
     if (startDate) {
       conditions.push(gte(transactions.paidAt, new Date(`${startDate}T00:00:00.000Z`)));
@@ -130,10 +168,11 @@ export async function GET(req: NextRequest) {
 
     if (isExport) {
       // Create CSV
-      const header = ["รหัสทำรายการ", "วันที่ชำระ", "บ้านเลขที่", "ชื่อเจ้าบ้าน", "รอบเดือน", "ช่องทาง", "ผู้โอน", "ยอดเงิน"];
+      const header = ["รหัสทำรายการ", "วันที่ชำระ", "สถานะ", "บ้านเลขที่", "ชื่อเจ้าบ้าน", "รอบเดือน", "ช่องทาง", "ผู้โอน", "ยอดเงิน"];
       const rows = historyItems.map(item => [
         item.id,
         item.paidAt ? new Date(item.paidAt).toLocaleString("th-TH") : "",
+        item.slipStatus === "voided" ? "ยกเลิกแล้ว" : "ชำระแล้ว",
         item.houseNumber,
         item.ownerName,
         item.months.map((m: string) => formatThaiMonth(m)).join(", "),
