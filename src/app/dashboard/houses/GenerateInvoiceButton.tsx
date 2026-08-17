@@ -76,9 +76,9 @@ export default function GenerateInvoiceButton() {
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 relative">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md animate-in zoom-in-95 duration-200 relative">
             
-            <div className="bg-slate-50 px-6 py-4 border-b flex justify-between items-center">
+            <div className="bg-slate-50 px-6 py-4 border-b flex justify-between items-center rounded-t-2xl">
               <h3 className="font-semibold text-slate-800 text-lg flex items-center gap-2">
                 🧾 สร้างบิลประจำเดือนใหม่
               </h3>
