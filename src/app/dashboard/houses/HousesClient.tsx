@@ -266,9 +266,9 @@ export default function HousesClient({
       )}
 
       {/* Main Card Container */}
-      <div className="bg-white rounded-[24px] shadow-sm border border-slate-100 overflow-hidden flex flex-col">
+      <div className="bg-white rounded-[32px] shadow-sm border border-slate-100 overflow-hidden flex flex-col">
         {/* Toolbar: Search */}
-        <div className="p-4 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="p-8 lg:p-10 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="relative w-full sm:w-80 z-20">
             <SearchAutocomplete 
               value={searchQuery}

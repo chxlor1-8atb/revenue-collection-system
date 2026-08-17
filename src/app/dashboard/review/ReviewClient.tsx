@@ -23,13 +23,13 @@ export default function ReviewClient() {
   // We don't force switch to avoid annoying the user if they are reviewing something.
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
+    <div className="pb-12 space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h1 className="font-bold text-3xl text-[#1F2E22]">ตรวจสลิปโอนเงิน</h1>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-slate-100 p-1 rounded-xl w-fit mb-6">
+      <div className="flex gap-1 bg-slate-100 p-1 rounded-xl w-fit">
         <button
           onClick={() => setActiveTab("pending")}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "pending" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}

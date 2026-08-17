@@ -71,7 +71,7 @@ export default function UsersClient({
 
   return (
     <div className="font-sans">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
           <h1 className="font-bold text-2xl text-slate-800 tracking-tight">ผู้ดูแลระบบ</h1>
           <p className="text-slate-500 mt-1 text-[length:13px]">จัดการสิทธิ์การเข้าใช้งานระบบ</p>
@@ -85,8 +85,8 @@ export default function UsersClient({
         </button>
       </div>
 
-      <div className="bg-white rounded-[24px] shadow-sm border border-slate-100 overflow-hidden font-sans">
-        <div className="overflow-x-auto p-2 sm:p-6 pb-0">
+      <div className="bg-white rounded-[32px] shadow-sm border border-slate-100 overflow-hidden font-sans">
+        <div className="overflow-x-auto p-4 sm:p-8 lg:p-10 pb-0">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-slate-100">

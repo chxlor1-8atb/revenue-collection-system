@@ -51,8 +51,8 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
   }
 
   return (
-    <div className="max-w-6xl mx-auto pb-12">
-      <div className="mb-6 flex justify-end">
+    <div className="pb-12 space-y-6">
+      <div className="flex justify-end">
         <GenerateInvoiceButton />
       </div>
       <HousesClient 

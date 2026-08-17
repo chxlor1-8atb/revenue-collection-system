@@ -28,7 +28,7 @@ export default async function UsersPage(props: { searchParams: Promise<{ [key: s
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="max-w-6xl mx-auto pb-12">
+    <div className="pb-12">
       <UsersClient 
         initialUsers={data} 
         currentPage={page}

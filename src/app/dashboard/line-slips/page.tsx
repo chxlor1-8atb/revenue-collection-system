@@ -49,10 +49,11 @@ export default async function LineSlipsPage(props: { searchParams: Promise<{ [ke
   const totalPages = Math.ceil(totalForTab / limit);
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6 text-slate-800">
-        สลิปจาก LINE
-      </h1>
+    <div className="pb-12 space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-800">สลิปจาก LINE</h1>
+        <p className="text-slate-500 mt-1 text-[length:13px]">จัดการสลิปการโอนเงินที่แจ้งผ่าน LINE Bot</p>
+      </div>
       <LineSlipsClient 
         slips={slips} 
         activeTab={tab}

@@ -147,13 +147,13 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="max-w-[1400px] mx-auto space-y-6 pb-12 font-sans">
+    <div className="space-y-10 pb-12 font-sans">
       
       {/* 4 Stat Cards matching LoopAI style */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8">
         
         {/* Card 1: Verified Revenue */}
-        <div className="bg-white rounded-[32px] p-7 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+        <div className="bg-white rounded-[32px] p-8 lg:p-10 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
           <div className="flex items-center gap-4 mb-5">
             <span className="text-slate-800 font-bold tracking-tight text-lg">ยอดรับชำระแล้ว</span>
             <span className="bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full text-xs font-bold border border-emerald-100">
@@ -170,7 +170,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Card 2: Houses with Unpaid Invoices */}
-        <div className="bg-white rounded-[32px] p-7 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+        <div className="bg-white rounded-[32px] p-8 lg:p-10 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
           <div className="flex items-center gap-4 mb-5">
             <span className="text-slate-800 font-bold tracking-tight text-lg">บ้านที่ค้างชำระ</span>
             <span className="bg-red-50 text-red-600 px-2 py-0.5 rounded-full text-xs font-bold border border-red-100">
@@ -186,7 +186,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Card 3: Pending Reviews */}
-        <div className="bg-white rounded-[32px] p-7 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+        <div className="bg-white rounded-[32px] p-8 lg:p-10 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
           <div className="flex items-center gap-4 mb-5">
             <span className="text-slate-800 font-bold tracking-tight text-lg">รอยืนยันสลิป</span>
             <span className="bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full text-xs font-bold border border-amber-100">
@@ -204,7 +204,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Card 4: LINE Slips */}
-        <div className="bg-white rounded-[32px] p-7 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+        <div className="bg-white rounded-[32px] p-8 lg:p-10 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
           <div className="flex items-center gap-4 mb-5">
             <span className="text-slate-800 font-bold tracking-tight text-lg">แจ้งผ่าน LINE</span>
             <span className="bg-[#EEF0FF] text-[#5B58F2] px-2 py-0.5 rounded-full text-xs font-bold border border-[#5B58F2]/20">
@@ -223,10 +223,10 @@ export default async function DashboardPage() {
       </div>
 
       {/* Main Grid: Graph (left) and Priority Tasks (right) */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
         
         {/* Left Column (simulated graph area) */}
-        <div className="xl:col-span-2 bg-white rounded-[24px] p-6 md:p-8 border border-slate-100 shadow-sm flex flex-col">
+        <div className="xl:col-span-2 bg-white rounded-[32px] p-8 lg:p-10 border border-slate-100 shadow-sm flex flex-col">
           <div className="flex items-center justify-between mb-8">
             <h2 className="font-semibold text-lg text-slate-800">กราฟรายได้ (Revenue Analytics)</h2>
             <div className="flex items-center gap-4">
@@ -249,7 +249,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Right Column (Priority Tasks -> Recent Transactions) */}
-        <div className="xl:col-span-1 bg-white rounded-[24px] p-6 md:p-8 border border-slate-100 shadow-sm flex flex-col">
+        <div className="xl:col-span-1 bg-white rounded-[32px] p-8 lg:p-10 border border-slate-100 shadow-sm flex flex-col">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-semibold text-lg text-slate-800">รายการรับชำระล่าสุด</h2>
             <Link href="/dashboard/history" className="text-sm font-semibold text-[#5B58F2] hover:underline">

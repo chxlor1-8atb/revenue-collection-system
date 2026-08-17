@@ -116,7 +116,7 @@ export default function HistoryClient() {
   const totalPages = Math.ceil(totalCount / limit);
 
   return (
-    <div className="max-w-6xl mx-auto pb-12 space-y-6">
+    <div className="pb-12 space-y-8">
       
       {/* Header & Stats */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">

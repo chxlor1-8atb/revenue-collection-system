@@ -22,8 +22,10 @@ export default async function DashboardLayout({ children }: { children: ReactNod
       {/* App Frame (The White Card Container) */}
       <div className="w-full h-full max-w-[1600px] bg-white md:rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border-none md:border border-slate-100/80 overflow-hidden flex flex-col relative z-10">
         <TopNav userName={session.user?.name || "admin"} />
-        <main className="flex-1 w-full h-full overflow-y-auto bg-white">
-          {children}
+        <main className="flex-1 w-full h-full overflow-y-auto bg-white p-6 md:p-8 lg:p-12">
+          <div className="max-w-[1400px] mx-auto w-full h-full relative">
+            {children}
+          </div>
         </main>
       </div>
     </div>

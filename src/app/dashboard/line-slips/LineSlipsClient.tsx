@@ -157,7 +157,7 @@ export default function LineSlipsClient({
   return (
     <div className="space-y-4">
       {/* Header and Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <h2 className="text-xl font-bold text-slate-800 tracking-tight">จัดการสลิป LINE</h2>
         <div className="flex gap-2">
           <button
@@ -194,7 +194,7 @@ export default function LineSlipsClient({
       </div>
 
       {/* Slips Content */}
-      <div className="bg-white rounded-[24px] shadow-sm border border-slate-100 overflow-hidden p-2 sm:p-6">
+      <div className="bg-white rounded-[32px] shadow-sm border border-slate-100 overflow-hidden p-4 sm:p-8 lg:p-10">
         {slips.length === 0 ? (
           <div className="p-8 text-center text-slate-400 font-sans">
             {activeTab === "pending" ? "ไม่มีสลิปจาก LINE ที่รอดำเนินการ" : "ยังไม่มีสลิปที่ยืนยันสำเร็จอัตโนมัติ"}
