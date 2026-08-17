@@ -124,9 +124,9 @@ export default function BlobManagementPage() {
 
     try {
       if (mode === 'selected') {
-        const body = { mode: 'selected', urls: Array.from(selectedUrls) };
+        const payload: Record<string, any> = { mode: 'selected', urls: Array.from(selectedUrls) };
         const res = await fetch('/api/blob', {
-           method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+           method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
         });
         const data = await res.json();
         totalDeleted = data.deletedCount || 0;
@@ -138,9 +138,9 @@ export default function BlobManagementPage() {
             let more = true;
             while (more) {
                setActionProgress(`กำลังลบไฟล์เก่าโฟลเดอร์ ${prefix} (ลบไปแล้ว ${totalDeleted} ไฟล์)`);
-               const body = { mode: 'old', days: extraData?.days || 30, prefix, cursor: currentCursor };
+               const payload: Record<string, any> = { mode: 'old', days: extraData?.days || 30, prefix, cursor: currentCursor };
                const res = await fetch('/api/blob', {
-                  method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+                  method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
                });
                const data = await res.json();
                if (!data.success) break;
@@ -155,9 +155,9 @@ export default function BlobManagementPage() {
          let more = true;
          while (more) {
             setActionProgress(`กำลังลบสลิปที่ไม่ผ่าน (ลบไปแล้ว ${totalDeleted} ไฟล์)`);
-            const body = { mode: 'rejected', offset };
+            const payload: Record<string, any> = { mode: 'rejected', offset };
             const res = await fetch('/api/blob', {
-               method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+               method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
             });
             const data = await res.json();
             if (!data.success) break;
