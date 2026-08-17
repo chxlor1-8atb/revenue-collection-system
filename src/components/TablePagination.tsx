@@ -96,7 +96,7 @@ export default function TablePagination({
   const safeTotalPages = Math.max(1, totalPages);
 
   return (
-    <div className="flex flex-col lg:flex-row items-center justify-between px-6 py-4 bg-white border-t border-slate-200 gap-4 relative z-[100]">
+    <div className="flex flex-col lg:flex-row items-center justify-between px-6 py-4 bg-white border-t border-slate-200 gap-4 relative z-10">
       
       {/* Left: Item Range */}
       <div className="flex items-center gap-2 text-sm text-slate-500 whitespace-nowrap">
