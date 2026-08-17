@@ -34,13 +34,41 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 flex flex-col items-center relative">
+    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row lg:items-center lg:justify-center gap-12 lg:gap-24 relative overflow-hidden">
       {/* Background abstract grid */}
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
            style={{ backgroundImage: 'radial-gradient(#0F172A 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
       </div>
 
-      <div className="w-full max-w-lg relative z-10 flex flex-col drop-shadow-2xl">
+      {/* Decorative gradient blur for desktop */}
+      <div className="hidden lg:block absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px] pointer-events-none -z-0"></div>
+
+      {/* Desktop Branding Left Column */}
+      <div className="hidden lg:flex flex-col max-w-md relative z-10">
+        <div className="bg-white/80 p-4 rounded-3xl shadow-sm border border-slate-100 w-fit mb-8 backdrop-blur-sm">
+          <img src="/nangrong-logo.png" alt="Municipal Logo" className="w-16 h-16 object-contain" />
+        </div>
+        <h1 className="text-5xl font-sans font-bold text-slate-900 tracking-tight leading-[1.15] mb-6">
+          ตรวจสอบและ<br/><span className="text-[#5B58F2]">ชำระค่าธรรมเนียมขยะ</span>
+        </h1>
+        <p className="text-lg text-slate-500 mb-10 leading-relaxed">
+          เทศบาลเมืองนางรองอำนวยความสะดวกในการตรวจสอบยอดค้างชำระและชำระเงินผ่าน QR Code ได้ทันที ปลอดภัยและรวดเร็ว
+        </p>
+        <div className="flex items-center gap-4 text-sm font-medium text-slate-700 bg-white/60 px-6 py-4 rounded-2xl border border-slate-200/60 shadow-sm backdrop-blur-sm w-fit">
+          <div className="relative flex h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+          </div>
+          อัปเดตข้อมูลแบบเรียลไทม์
+        </div>
+        
+        <Link href="/" className="mt-12 text-sm font-medium text-slate-400 hover:text-slate-700 transition-colors underline-offset-4 hover:underline flex items-center gap-2 w-fit">
+          ← กลับไปหน้าค้นหา
+        </Link>
+      </div>
+
+      {/* The Ticket (Right side on desktop, centered on mobile) */}
+      <div className="w-full max-w-lg relative z-10 flex flex-col drop-shadow-2xl lg:hover:-translate-y-2 transition-transform duration-500">
         {/* TOP SECTION: Identity Stub (Deep Navy) */}
         <div className="bg-slate-900 rounded-t-3xl p-8 sm:p-10 text-white relative overflow-hidden">
           
@@ -51,13 +79,13 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
              </span>
           </div>
 
-          {/* Small Logo in Top Right */}
-          <div className="absolute top-8 right-8 z-10 opacity-90 drop-shadow-md">
+          {/* Small Logo in Top Right (Mobile only, hidden on Desktop since it's in left col) */}
+          <div className="lg:hidden absolute top-8 right-8 z-10 opacity-90 drop-shadow-md">
              <img src="/nangrong-logo.png" alt="Municipal Logo" className="w-10 h-10 object-contain" />
           </div>
           
           <div className="flex justify-between items-start relative z-10">
-            <div className="pr-12"> {/* Padding to avoid logo overlap */}
+            <div className="pr-12 lg:pr-0"> {/* Padding to avoid logo overlap on mobile */}
               <p className="text-[length:10px] font-sans text-slate-400 uppercase tracking-widest mb-1 font-semibold">
                 กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองนางรอง
               </p>
@@ -120,7 +148,8 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
         </div>
       </div>
       
-      <Link href="/" className="mt-8 text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors underline-offset-4 hover:underline relative z-10">
+      {/* Mobile return link */}
+      <Link href="/" className="lg:hidden mt-8 text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors underline-offset-4 hover:underline relative z-10">
         ← กลับไปหน้าค้นหา
       </Link>
     </div>
