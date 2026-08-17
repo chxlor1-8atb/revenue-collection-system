@@ -293,13 +293,26 @@ export default function HousesClient({
       <div className="bg-white rounded-[32px] shadow-sm border border-slate-100 overflow-hidden flex flex-col">
         {/* Toolbar: Search */}
         <div className="p-8 lg:p-10 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="relative w-full sm:w-80 z-20">
-            <SearchAutocomplete 
-              value={searchQuery}
-              onChange={setSearchQuery}
-              placeholder="ค้นหาบ้านหรือชื่อเจ้าของ..."
-              className="w-full sm:w-80 focus:w-full sm:focus:w-80 !bg-slate-50 border-transparent focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none text-sm rounded-xl"
-            />
+          <div className="flex flex-col sm:flex-row w-full gap-4 z-20">
+            <div className="relative w-full sm:w-80">
+              <SearchAutocomplete 
+                value={searchQuery}
+                onChange={setSearchQuery}
+                placeholder="ค้นหาบ้านหรือชื่อเจ้าของ..."
+                className="w-full sm:w-80 focus:w-full sm:focus:w-80 !bg-slate-50 border-transparent focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none text-sm rounded-xl"
+              />
+            </div>
+            <div className="w-full sm:w-56 z-10">
+              <CustomSelect
+                value={selectedZone || ""}
+                onChange={setSelectedZone}
+                placeholder="ทุกชุมชน"
+                options={[
+                  { value: "", label: "ทุกชุมชน" },
+                  ...["หนองรี", "หนองกราด", "หนองเสม็ด", "บ้านเก่า", "วัดขุนก้อง", "วัดกลาง", "ป่าเรไร", "วัดร่องมันเทศ", "บ้านถนนหัก", "วัดถนนหัก", "ถนนหักพัฒนา", "ทุ่งแหลม", "หนองโพรง", "วัดใหม่เรไรทอง", "จะบวก", "หัวสะพาน", "ป่าตาเส็ง", "ป่ารักน้ำ", "ดอนแสลงพันธ์", "โคกหลวงพ่อ"].map(z => ({ value: z, label: z }))
+                ]}
+              />
+            </div>
           </div>
           <div className="text-[length:13px] text-slate-400 font-medium z-10 flex gap-4">
             <span className="flex items-center gap-1.5">
