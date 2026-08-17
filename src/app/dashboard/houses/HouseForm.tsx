@@ -4,20 +4,26 @@ import { useState } from "react";
 import { addHouse, updateHouse } from "./actions";
 import { X, Save, Home, User, MapPin } from "lucide-react";
 
+import { AlignLeft } from "lucide-react";
+import { CustomField } from "./CustomFieldsManager";
+
 export type HouseData = {
   id?: number;
   houseNumber: string;
   ownerName: string;
   zone: string | null;
   road: string | null;
+  customFields?: Record<string, any>;
 };
 
 export default function HouseForm({ 
   initialData, 
+  customFieldsSchema = [],
   onClose,
   onSuccess 
 }: { 
   initialData?: HouseData, 
+  customFieldsSchema?: CustomField[],
   onClose: () => void,
   onSuccess: () => void
 }) {
@@ -30,6 +36,18 @@ export default function HouseForm({
     setError(null);
 
     const formData = new FormData(e.currentTarget);
+    
+    // Extract custom fields from formData
+    const customFieldsObj: Record<string, any> = {};
+    customFieldsSchema.forEach(field => {
+      const val = formData.get(`custom_${field.id}`);
+      if (val) {
+        customFieldsObj[field.id] = val.toString().trim();
+      }
+      formData.delete(`custom_${field.id}`);
+    });
+    // Append the JSON string of custom fields back to formData
+    formData.append('customFields', JSON.stringify(customFieldsObj));
     
     try {
       let res;
@@ -151,6 +169,26 @@ export default function HouseForm({
                 />
               </div>
             </div>
+
+            {customFieldsSchema.map(field => (
+              <div key={field.id}>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  {field.name}
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <AlignLeft size={16} className="text-slate-400" />
+                  </div>
+                  <input
+                    type="text"
+                    name={`custom_${field.id}`}
+                    defaultValue={initialData?.customFields?.[field.id] || ""}
+                    className="pl-10 block w-full rounded-xl border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 border"
+                    placeholder={`กรอก${field.name}`}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
 
           <div className="mt-8 flex justify-end gap-3">

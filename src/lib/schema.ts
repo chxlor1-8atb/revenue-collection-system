@@ -1,4 +1,4 @@
-import { pgTable, serial, text, boolean, timestamp, integer, numeric, date, uniqueIndex } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, boolean, timestamp, integer, numeric, date, uniqueIndex, jsonb } from 'drizzle-orm/pg-core';
 
 export const systemSettings = pgTable('system_settings', {
   id: serial('id').primaryKey(),
@@ -6,6 +6,7 @@ export const systemSettings = pgTable('system_settings', {
   promptPayId: text('prompt_pay_id').notNull(),
   qrCodeImageUrl: text('qr_code_image_url'),
   telegramChatId: text('telegram_chat_id'),
+  houseCustomFieldsSchema: jsonb('house_custom_fields_schema').default('[]'),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
@@ -15,6 +16,7 @@ export const houses = pgTable('houses', {
   ownerName: text('owner_name').notNull(), // ชื่อเจ้าบ้าน
   zone: text('zone'), // ชุมชน/หมู่
   road: text('road'), // ถนน
+  customFields: jsonb('custom_fields').default('{}'), // เก็บข้อมูล custom fields ในรูปแบบ JSON (key-value)
   createdAt: timestamp('created_at').defaultNow(),
 });
 

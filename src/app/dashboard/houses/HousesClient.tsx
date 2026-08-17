@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Plus, Edit2, Trash2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Download, Upload, QrCode, X } from "lucide-react";
-import Link from "next/link";
+import { Plus, Edit2, Trash2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Download, Upload, QrCode, X, Settings } from "lucide-react";
 import QRCode from "qrcode";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import HouseForm, { HouseData } from "./HouseForm";
 import { deleteHouse } from "./actions";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
+import CustomFieldsManager, { CustomField } from "./CustomFieldsManager";
 
 export default function HousesClient({ 
   initialHouses,
@@ -15,7 +15,8 @@ export default function HousesClient({
   totalPages = 1,
   totalHouses = 0,
   initialSearch = "",
-  initialSort = { key: "createdAt", dir: "desc" }
+  initialSort = { key: "createdAt", dir: "desc" },
+  customFieldsSchema = []
 }: { 
   initialHouses: HouseData[];
   currentPage?: number;
@@ -23,6 +24,7 @@ export default function HousesClient({
   totalHouses?: number;
   initialSearch?: string;
   initialSort?: { key: string; dir: string };
+  customFieldsSchema?: CustomField[];
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -36,6 +38,7 @@ export default function HousesClient({
   const [deletingHouse, setDeletingHouse] = useState<{ id: number; houseNumber: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   
   // QR Code Modal State
   const [qrModal, setQrModal] = useState<{ isOpen: boolean; houseNumber: string; url: string; qrDataUrl: string } | null>(null);
@@ -135,12 +138,22 @@ export default function HousesClient({
         // Skip header and parse rows
         const parsedData = lines.slice(1).map(line => {
           // simple split by comma, works for basic cases without commas inside fields
-          const [houseNumber, ownerName, zone, road] = line.split(',');
+          const cols = line.split(',');
+          const [houseNumber, ownerName, zone, road] = cols;
+          
+          const customFieldsObj: Record<string, any> = {};
+          customFieldsSchema.forEach((field, i) => {
+            if (cols[4 + i]) {
+               customFieldsObj[field.id] = cols[4 + i].trim();
+            }
+          });
+
           return {
             houseNumber: houseNumber?.trim(),
             ownerName: ownerName?.trim(),
             zone: zone?.trim(),
             road: road?.trim(),
+            customFields: customFieldsObj,
           };
         }).filter(item => item.houseNumber && item.ownerName);
 
@@ -208,6 +221,14 @@ export default function HousesClient({
           </a>
 
           <button
+            onClick={() => setShowSettings(true)}
+            className="flex items-center gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-3 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm"
+            title="ตั้งค่าหัวตาราง"
+          >
+            <Settings size={16} />
+          </button>
+
+          <button
             onClick={handleAdd}
             className="flex items-center gap-2 bg-[#1F2E22] hover:bg-[#2c4030] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm"
           >
@@ -265,6 +286,9 @@ export default function HousesClient({
                 </th>
                 <th className="p-4">ชุมชน/หมู่</th>
                 <th className="p-4">ถนน</th>
+                {customFieldsSchema.map(field => (
+                  <th key={field.id} className="p-4 text-slate-500">{field.name}</th>
+                ))}
                 <th className="p-4">สมุดบัญชีบ้าน</th>
                 <th className="p-4 text-right">จัดการ</th>
               </tr>
@@ -276,6 +300,11 @@ export default function HousesClient({
                   <td className="p-4 font-medium">{house.ownerName}</td>
                   <td className="p-4 text-slate-500">{house.zone || "-"}</td>
                   <td className="p-4 text-slate-500">{house.road || "-"}</td>
+                  {customFieldsSchema.map(field => (
+                    <td key={field.id} className="p-4 text-slate-500 whitespace-nowrap">
+                      {(house.customFields as Record<string, any>)?.[field.id] || "-"}
+                    </td>
+                  ))}
                   <td className="p-4">
                     <Link 
                       href={`/dashboard/houses/${house.id}`} 
@@ -315,7 +344,7 @@ export default function HousesClient({
               
               {initialHouses.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="p-12 text-center">
+                  <td colSpan={6 + customFieldsSchema.length} className="p-12 text-center">
                     <div className="text-slate-400 mb-2">🏠</div>
                     <div className="text-slate-500 font-medium">ไม่พบข้อมูลบ้าน</div>
                     {searchQuery ? (
@@ -359,11 +388,22 @@ export default function HousesClient({
       {showForm && (
         <HouseForm 
           initialData={editingHouse} 
+          customFieldsSchema={customFieldsSchema}
           onClose={() => setShowForm(false)}
           onSuccess={() => {
             setShowForm(false);
             router.refresh();
           }} 
+        />
+      )}
+
+      {showSettings && (
+        <CustomFieldsManager 
+          onClose={() => setShowSettings(false)}
+          onUpdate={() => {
+            setShowSettings(false);
+            router.refresh();
+          }}
         />
       )}
 

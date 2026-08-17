@@ -10,11 +10,12 @@ export async function POST(req: Request) {
     }
 
     // validate format
-    const validData = data.filter(item => item.houseNumber && item.ownerName).map(item => ({
+    const validData = data.filter((item: any) => item.houseNumber && item.ownerName).map((item: any) => ({
       houseNumber: String(item.houseNumber).trim(),
       ownerName: String(item.ownerName).trim(),
       zone: item.zone ? String(item.zone).trim() : null,
       road: item.road ? String(item.road).trim() : null,
+      customFields: item.customFields || {},
     }));
 
     if (validData.length === 0) {

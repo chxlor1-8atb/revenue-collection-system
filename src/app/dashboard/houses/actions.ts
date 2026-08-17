@@ -10,6 +10,16 @@ export async function addHouse(formData: FormData) {
   const ownerName = formData.get("ownerName")?.toString();
   const zone = formData.get("zone")?.toString() || null;
   const road = formData.get("road")?.toString() || null;
+  const customFieldsRaw = formData.get("customFields")?.toString();
+
+  let customFields = {};
+  if (customFieldsRaw) {
+    try {
+      customFields = JSON.parse(customFieldsRaw);
+    } catch (e) {
+      console.error("Failed to parse customFields", e);
+    }
+  }
 
   if (!houseNumber || !ownerName) {
     return { success: false, error: "กรุณากรอกบ้านเลขที่และชื่อเจ้าบ้านให้ครบถ้วน" };
@@ -21,6 +31,7 @@ export async function addHouse(formData: FormData) {
       ownerName,
       zone,
       road,
+      customFields,
     });
 
     revalidatePath("/dashboard/houses");
@@ -36,6 +47,16 @@ export async function updateHouse(id: number, formData: FormData) {
   const ownerName = formData.get("ownerName")?.toString();
   const zone = formData.get("zone")?.toString() || null;
   const road = formData.get("road")?.toString() || null;
+  const customFieldsRaw = formData.get("customFields")?.toString();
+
+  let customFields = {};
+  if (customFieldsRaw) {
+    try {
+      customFields = JSON.parse(customFieldsRaw);
+    } catch (e) {
+      console.error("Failed to parse customFields", e);
+    }
+  }
 
   if (!houseNumber || !ownerName) {
     return { success: false, error: "กรุณากรอกบ้านเลขที่และชื่อเจ้าบ้านให้ครบถ้วน" };
@@ -47,6 +68,7 @@ export async function updateHouse(id: number, formData: FormData) {
       ownerName,
       zone,
       road,
+      customFields,
     }).where(eq(houses.id, id));
 
     revalidatePath("/dashboard/houses");
