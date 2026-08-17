@@ -4,6 +4,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { transactions, invoices, houses, lineMessages } from "@/lib/schema";
 import { eq, desc, inArray, or } from "drizzle-orm";
+import RevenueChart from "./RevenueChart";
 import { 
   Banknote, 
   Home, 
@@ -259,53 +260,15 @@ export default async function DashboardPage() {
       {/* Main Grid: Graph (left) and Priority Tasks (right) */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
         
-        {/* Left Column (simulated graph area) */}
-        <div className="xl:col-span-2 bg-white rounded-[32px] p-8 lg:p-10 border border-slate-100 shadow-sm flex flex-col">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="font-semibold text-lg text-slate-800">สถิติผู้เข้าชมเว็บไซต์ (Website Visitors)</h2>
-            <div className="flex items-center gap-4">
-              <button className="text-sm font-medium text-slate-600 flex items-center gap-1 hover:text-slate-900">
-                หน้าทั่วไป <ChevronDown size={14} />
-              </button>
-              <button className="text-sm font-medium text-slate-600 flex items-center gap-1 hover:text-slate-900">
-                30 วันล่าสุด <ChevronDown size={14} />
-              </button>
-            </div>
-          </div>
+        {/* Left Column (Real Graph Area) */}
+        <RevenueChart 
+          transactions={verifiedTxs.map(tx => ({
+            amount: tx.amount,
+            date: (tx.paidAt || tx.createdAt)?.toISOString() || null
+          }))} 
+        />
           
-          <div className="flex-1 min-h-[300px] border border-slate-100 rounded-2xl bg-slate-50/50 relative overflow-hidden flex flex-col justify-end p-6">
-            {/* Background Grid Lines */}
-            <div className="absolute inset-0 flex flex-col justify-between p-6 pb-12 pointer-events-none">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="w-full border-b border-slate-200/60 h-0"></div>
-              ))}
-            </div>
-            
-            {/* Mock Bars */}
-            <div className="relative flex items-end justify-between gap-3 h-48 w-full z-10 px-4">
-              {[40, 70, 45, 90, 65, 85, 100].map((height, i) => (
-                <div key={i} className="w-full bg-[#5B58F2]/10 hover:bg-[#5B58F2]/20 transition-colors rounded-t-lg relative group flex items-end justify-center" style={{ height: `${height}%` }}>
-                   <div className="w-full bg-[#5B58F2]/40 rounded-t-lg transition-all group-hover:bg-[#5B58F2]/60" style={{ height: `${height - 20}%` }}></div>
-                </div>
-              ))}
-            </div>
 
-            {/* Labels */}
-            <div className="relative flex justify-between gap-3 w-full mt-4 px-4 text-[10px] text-slate-400 font-semibold z-10">
-              {['จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.', 'อา.'].map((day, i) => (
-                <div key={i} className="w-full text-center">{day}</div>
-              ))}
-            </div>
-
-            <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px] flex items-center justify-center z-20 rounded-2xl">
-              <div className="bg-white px-8 py-5 rounded-2xl shadow-xl border border-slate-100/50 text-center animate-in zoom-in duration-500">
-                 <TrendingUp size={28} className="mx-auto text-[#5B58F2] mb-3" />
-                 <p className="text-slate-800 font-bold text-base">กำลังเชื่อมต่อข้อมูลผู้เข้าชม</p>
-                 <p className="text-sm text-slate-500 mt-1">ระบบกราฟจะแสดงผลในเร็วๆ นี้</p>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Right Column (Priority Tasks -> Recent Transactions) */}
         <div className="xl:col-span-1 bg-white rounded-[32px] p-8 lg:p-10 border border-slate-100 shadow-sm flex flex-col">
