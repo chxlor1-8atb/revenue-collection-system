@@ -3,6 +3,8 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import TopNav from "./TopNav";
+import { db } from "@/lib/db";
+import { systemSettings } from "@/lib/schema";
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
   const session = await auth();
@@ -10,6 +12,8 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   if (!session) {
     redirect("/login");
   }
+
+  const [settings] = await db.select().from(systemSettings).limit(1);
 
   return (
     <div className="flex justify-center items-center h-screen w-full overflow-hidden bg-gradient-to-br from-[#EAE9F5] to-[#F5F4FA] p-0 md:p-6 lg:p-10 relative">
@@ -21,7 +25,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
       
       {/* App Frame (The White Card Container) */}
       <div className="w-full h-full max-w-[1600px] bg-white md:rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border-none md:border border-slate-100/80 overflow-hidden flex flex-col relative z-10">
-        <TopNav userName={session.user?.name || "admin"} />
+        <TopNav userName={session.user?.name || "admin"} settings={settings} />
         <main className="flex-1 w-full h-full overflow-y-auto bg-slate-50 p-6 md:p-8 lg:p-12 custom-scrollbar">
           <div className="max-w-[1400px] mx-auto w-full h-full relative">
             {children}
