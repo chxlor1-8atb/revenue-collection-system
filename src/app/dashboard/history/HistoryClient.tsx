@@ -9,6 +9,8 @@ import SearchAutocomplete from "@/components/SearchAutocomplete";
 import ConfirmModal from "@/components/ConfirmModal";
 import Link from "next/link";
 import TablePagination from "@/components/TablePagination";
+import CustomSelect from "@/components/CustomSelect";
+import MonthPicker from "@/components/MonthPicker";
 
 function formatThaiMonth(monthYear: string) {
   const thaiMonths = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
@@ -154,37 +156,37 @@ export default function HistoryClient() {
         <div className="flex flex-wrap gap-2 items-end w-full sm:w-auto">
           <div className="flex-1 min-w-[110px]">
             <label className="block text-[length:10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">สถานะ</label>
-            <select
+            <CustomSelect
               value={status}
-              onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-              className="w-full h-[42px] px-3 bg-white border border-slate-200 text-slate-700 rounded-[12px] text-sm focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 transition-colors cursor-pointer"
-            >
-              <option value="verified">สำเร็จ</option>
-              <option value="all">ทั้งหมด</option>
-              <option value="voided">ยกเลิกแล้ว</option>
-            </select>
+              onChange={(val) => { setStatus(val); setPage(1); }}
+              options={[
+                { value: "verified", label: "สำเร็จ" },
+                { value: "all", label: "ทั้งหมด" },
+                { value: "voided", label: "ยกเลิกแล้ว" },
+              ]}
+            />
           </div>
 
           <div className="flex-1 min-w-[110px]">
             <label className="block text-[length:10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">ช่องทาง</label>
-            <select
+            <CustomSelect
               value={channel}
-              onChange={(e) => { setChannel(e.target.value); setPage(1); }}
-              className="w-full h-[42px] px-3 bg-white border border-slate-200 text-slate-700 rounded-[12px] text-sm focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 transition-colors cursor-pointer"
-            >
-              <option value="all">ทั้งหมด</option>
-              <option value="line">LINE</option>
-              <option value="web">เว็บไซต์</option>
-            </select>
+              onChange={(val) => { setChannel(val); setPage(1); }}
+              options={[
+                { value: "all", label: "ทั้งหมด" },
+                { value: "line", label: "LINE" },
+                { value: "web", label: "เว็บไซต์" },
+              ]}
+            />
           </div>
 
           <div className="flex-1 min-w-[130px]">
             <label className="block text-[length:10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">เดือนที่ชำระ</label>
-            <input
-              type="month"
+            <MonthPicker
               value={monthYear}
-              onChange={(e) => { setMonthYear(e.target.value); setPage(1); }}
-              className="w-full h-[42px] px-3 bg-white border border-slate-200 text-slate-700 rounded-[12px] text-[length:13px] focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 transition-colors cursor-pointer"
+              onChange={(val) => { setMonthYear(val); setPage(1); }}
+              colorTheme="blue"
+              buttonClassName="w-full flex items-center justify-between px-3 h-[42px] bg-white border border-slate-200 hover:border-slate-300 rounded-[12px] shadow-none focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 transition-all cursor-pointer"
             />
           </div>
         </div>
