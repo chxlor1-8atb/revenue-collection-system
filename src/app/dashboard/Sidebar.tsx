@@ -14,7 +14,8 @@ import {
   User,
   LogOut,
   Menu,
-  X
+  X,
+  HardDrive
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -29,6 +30,7 @@ export default function Sidebar({ userName }: { userName: string }) {
     { name: "จัดการข้อมูลบ้าน", href: "/dashboard/houses", icon: <Home size={18} strokeWidth={1.5} /> },
     { name: "จัดการผู้ใช้งาน (แอดมิน)", href: "/dashboard/users", icon: <Users size={18} strokeWidth={1.5} /> },
     { name: "สลิปจาก LINE", href: "/dashboard/line-slips", icon: <CheckSquare size={18} strokeWidth={1.5} /> },
+    { name: "จัดการ Blob Storage", href: "/dashboard/blob", icon: <HardDrive size={18} strokeWidth={1.5} /> },
     { name: "ตั้งค่าระบบ", href: "/dashboard/settings", icon: <Settings size={18} strokeWidth={1.5} /> },
   ];
 

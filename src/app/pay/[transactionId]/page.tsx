@@ -75,10 +75,10 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
             <div className="mb-8 text-center">
               <p className="font-sans text-sm font-semibold text-slate-400 tracking-widest uppercase mb-2">ยอดชำระสุทธิ</p>
               <h1 className="font-mono text-5xl font-bold text-slate-900 tracking-tighter flex items-end justify-center gap-1">
-                ฿{Math.floor(totalAmount)}.<span className="text-emerald-600">{(totalAmount % 1).toFixed(2).substring(2)}</span>
+                ฿{Math.floor(totalAmount)}
               </h1>
-              <p className="text-xs text-amber-600 bg-amber-50 px-3 py-1 rounded-full mt-3 font-medium">
-                *กรุณาโอนเงินให้ตรงตามเศษสตางค์ เพื่อการยืนยันอัตโนมัติ
+              <p className="text-xs text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full mt-3 font-medium">
+                กรุณาโอนเงินตามยอดที่แสดง
               </p>
             </div>
 
@@ -121,7 +121,7 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
                 <span>คลิกเพื่อส่งสลิปผ่านทาง LINE</span>
               </a>
               <p className="mt-4 text-xs font-sans text-slate-500 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                โอนเสร็จแล้วกดปุ่มสีเขียวเพื่อส่งสลิปเข้าไปในแชท LINE<br/>ระบบจะจับคู่ยอดเงิน <b>{totalAmount.toFixed(2)} บาท</b> และตัดหนี้ให้อัตโนมัติ!
+                โอนเสร็จแล้วกดปุ่มสีเขียวเพื่อส่งสลิปเข้าไปในแชท LINE<br/>ระบบจะตรวจสอบสลิปและตัดหนี้ <b>{Math.floor(totalAmount)} บาท</b> ให้อัตโนมัติ!
               </p>
             </div>
 

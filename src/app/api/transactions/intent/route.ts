@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { transactions, invoices, systemSettings } from "@/lib/schema";
-import { inArray, eq, and, gte, lt, isNull } from "drizzle-orm";
+import { inArray, eq, and, lt, isNull } from "drizzle-orm";
 
 export async function POST(request: Request) {
   try {
@@ -119,65 +119,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "System PromptPay is not configured. Please contact admin." }, { status: 400 });
     }
 
-    // We use the strict 3-minute expiryTime for checking against pending transactions
-    const strictExpiryTime = new Date();
-    strictExpiryTime.setMinutes(strictExpiryTime.getMinutes() - 3);
-    
-    let finalAmount = baseAmount;
+    const finalAmount = baseAmount;
 
-    // To assign sequential decimals (e.g. .01, .02) starting from the lowest available
-    // First, find all currently active waiting transactions to see which decimals are taken
-    const activeTransactions = await db.select({ amount: transactions.amount }).from(transactions).where(
-      and(
-        eq(transactions.slipStatus, 'waiting_for_slip'),
-        gte(transactions.createdAt, strictExpiryTime)
-      )
-    );
+    // Create transaction with the exact base amount (no decimal differentiation)
+    const [newTx] = await db.insert(transactions).values({
+      amount: finalAmount.toString(),
+      slipImageUrl: '',
+      slipStatus: 'waiting_for_slip',
+    }).returning();
 
-    // Extract the decimals (cents) that are currently in use for this exact baseAmount
-    const usedCents = new Set(
-      activeTransactions
-        .map(tx => parseFloat(tx.amount || "0"))
-        .filter(amt => Math.floor(amt) === baseAmount)
-        .map(amt => Math.round((amt - baseAmount) * 100))
-    );
-
-    // Find the lowest available decimal from 1 to 99 with a retry loop
-    let selectedCents = 1;
-    let newTx: any[] | null = null;
-    
-    while (selectedCents <= 99 && !newTx) {
-      if (!usedCents.has(selectedCents)) {
-        finalAmount = baseAmount + (selectedCents / 100);
-        const newLockKey = `waiting_${finalAmount}`;
-        
-        try {
-          newTx = await db.insert(transactions).values({
-            amount: finalAmount.toString(),
-            slipImageUrl: '',
-            slipStatus: 'waiting_for_slip',
-            lockKey: newLockKey,
-          }).returning();
-        } catch (insertError: any) {
-          // If unique constraint error (e.g., code 23505 in Postgres), try the next cent
-          if (insertError.code === '23505' || insertError.message?.includes('unique constraint')) {
-            console.log(`Amount ${finalAmount} was just taken by another transaction. Retrying...`);
-            newTx = null; // Will loop again
-          } else {
-            throw insertError; // Unexpected error
-          }
-        }
-      }
-      if (!newTx) {
-        selectedCents++;
-      }
-    }
-
-    if (!newTx) {
-      return NextResponse.json({ error: "System busy. Too many transactions with this amount. Please try again in 3 minutes." }, { status: 429 });
-    }
-
-    const transactionId = newTx[0].id;
+    const transactionId = newTx.id;
 
     // Link invoices to this transaction with concurrency protection
     const updatedInvoices = await db.update(invoices)

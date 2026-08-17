@@ -129,7 +129,7 @@ export default function InvoiceSelectionForm({ invoices, houseId }: { invoices: 
                   
                   <div className="z-10 text-right">
                     <p className={`font-mono text-lg font-bold transition-colors ${isSelected ? 'text-emerald-700' : 'text-slate-900'}`}>
-                      {parseFloat(inv.amount).toFixed(2)} <span className="text-sm font-sans font-medium">บาท</span>
+                      {Math.floor(parseFloat(inv.amount))} <span className="text-sm font-sans font-medium">บาท</span>
                     </p>
                   </div>
                 </motion.div>
@@ -145,7 +145,7 @@ export default function InvoiceSelectionForm({ invoices, houseId }: { invoices: 
           <p className="font-sans text-sm font-medium text-slate-500 uppercase tracking-widest">ยอดรวมที่ต้องชำระ</p>
           <div className="text-right">
             <p className="font-mono text-4xl font-bold text-slate-900 tracking-tighter">
-              {calculateTotal().toFixed(2)} <span className="text-lg font-sans font-medium text-slate-500">บาท</span>
+              {Math.floor(calculateTotal())} <span className="text-lg font-sans font-medium text-slate-500">บาท</span>
             </p>
           </div>
         </div>

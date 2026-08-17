@@ -96,20 +96,36 @@ export async function POST(request: Request) {
 
           const slipAmount = verification.data?.amount.toString();
 
-          // 3.5 Check if this exact amount matches any waiting_for_slip transaction within the last 3 minutes
+          const transRef = verification.data?.transRef;
+          
+          // Dedup: Check if this transfer reference has already been processed
+          if (transRef) {
+            const existingRefTx = await db.select({ id: transactions.id })
+              .from(transactions)
+              .where(eq(transactions.slipRefId, transRef))
+              .limit(1);
+            
+            if (existingRefTx.length > 0) {
+              await replyMessage(replyToken, `สลิปนี้เคยถูกใช้ยืนยันการชำระเงินไปแล้วค่ะ ❌\nกรุณาส่งสลิปใหม่ที่ยังไม่เคยใช้นะคะ 🙏`);
+              continue;
+            }
+          }
+          
+          // 3.5 Match waiting_for_slip transaction by amount (FIFO — oldest first)
           // Important: Only match if we have a valid non-zero amount to prevent matching null or "0"
           if (slipAmount && slipAmount !== "0" && slipAmount !== "0.00") {
             const expiryTime = new Date();
-            expiryTime.setMinutes(expiryTime.getMinutes() - 3);
+            expiryTime.setMinutes(expiryTime.getMinutes() - 5);
 
+            // Match waiting transactions by whole amount (FIFO — oldest first)
             const waitingTx = await db.select()
               .from(transactions)
               .where(and(
-                eq(transactions.amount, slipAmount), 
+                eq(transactions.amount, Math.floor(parseFloat(slipAmount)).toString()), 
                 eq(transactions.slipStatus, 'waiting_for_slip'),
                 gte(transactions.createdAt, expiryTime)
               ))
-              .orderBy(desc(transactions.createdAt))
+              .orderBy(transactions.createdAt)  // ASC: oldest first for FIFO matching
               .limit(1);
 
             if (waitingTx.length > 0) {
@@ -122,7 +138,8 @@ export async function POST(request: Request) {
               await db.update(transactions)
                 .set({ 
                   slipImageUrl: blobUrl, 
-                  slipStatus: 'manual_review', // Needs manual admin intervention
+                  slipStatus: 'manual_review',
+                  slipRefId: transRef || null,
                   payerNote: 'ยอดเงินเข้าจริง แต่ระบบหาบิลไม่พบ (Orphaned)'
                 })
                 .where(eq(transactions.id, tx.id));
@@ -143,14 +160,15 @@ export async function POST(request: Request) {
               continue;
             }
 
-            // Perfect decimal match with invoices!
+            // Amount matched — verify and link invoices
             const updateResult = await db.update(transactions)
               .set({ 
                 slipImageUrl: blobUrl, 
                 slipStatus: 'verified', 
+                slipRefId: transRef || null,
                 paidAt: new Date(), 
                 verifiedBy: 'line_bot',
-                lockKey: null // Free up the lockKey so others can use this amount
+                lockKey: null,
               })
               .where(and(eq(transactions.id, tx.id), eq(transactions.slipStatus, 'waiting_for_slip')))
               .returning();
