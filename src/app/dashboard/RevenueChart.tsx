@@ -91,7 +91,7 @@ export default function RevenueChart({ transactions }: { transactions: Transacti
         
         {/* Selectors */}
         <div className="flex items-center gap-3">
-          <div className="w-[120px] sm:w-[140px] z-50">
+          <div className="w-[120px] sm:w-[140px] relative z-20">
             <CustomSelect
               options={[
                 { value: "all", label: "ดูทั้งปี" },
@@ -102,7 +102,7 @@ export default function RevenueChart({ transactions }: { transactions: Transacti
             />
           </div>
 
-          <div className="w-[100px] sm:w-[110px] z-40">
+          <div className="w-[100px] sm:w-[110px] relative z-10">
             <CustomSelect
               options={availableYears.map(y => ({ value: String(y), label: `ปี ${y + 543}` }))}
               value={String(selectedYear)}
