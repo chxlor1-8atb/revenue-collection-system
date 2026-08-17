@@ -8,6 +8,7 @@ import DatePicker from "@/components/DatePicker";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
 import ConfirmModal from "@/components/ConfirmModal";
 import Link from "next/link";
+import TablePagination from "@/components/TablePagination";
 
 function formatThaiMonth(monthYear: string) {
   const thaiMonths = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
@@ -305,28 +306,14 @@ export default function HistoryClient() {
       )}
 
       {/* Pagination */}
-      {!isLoading && totalPages > 1 && (
-        <div className="flex items-center justify-between bg-white px-4 py-3 border border-slate-200 rounded-xl shadow-sm">
-          <div className="text-sm text-slate-500">
-            แสดงหน้า <span className="font-medium text-slate-800">{page}</span> จาก <span className="font-medium text-slate-800">{totalPages}</span>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
-        </div>
+      {!isLoading && (
+        <TablePagination
+          currentPage={page}
+          totalPages={totalPages}
+          totalItems={totalCount}
+          itemsPerPage={limit}
+          onPageChange={setPage}
+        />
       )}
 
       {/* Void Confirmation Modal */}

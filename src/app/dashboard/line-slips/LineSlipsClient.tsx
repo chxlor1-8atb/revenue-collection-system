@@ -7,6 +7,7 @@ import SlipModalButton from "@/components/SlipModalButton";
 import ConfirmModal from "@/components/ConfirmModal";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import TablePagination from "@/components/TablePagination";
 
 interface LineSlipsClientProps {
   slips: any[];
@@ -336,29 +337,13 @@ export default function LineSlipsClient({
         )}
         
         {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
-            <span className="text-sm text-slate-500">
-              หน้า <span className="font-bold text-slate-700">{currentPage}</span> จาก <span className="font-bold text-slate-700">{totalPages}</span>
-            </span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage <= 1}
-                className="p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage >= totalPages}
-                className="p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
-              >
-                <ChevronRight size={16} />
-              </button>
-            </div>
-          </div>
-        )}
+        <TablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={activeTab === "pending" ? pendingCount : verifiedCount}
+          itemsPerPage={20} // Assuming limit=20 in page.tsx
+          onPageChange={handlePageChange}
+        />
       </div>
 
       {/* Modal */}

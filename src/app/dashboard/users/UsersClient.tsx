@@ -5,14 +5,37 @@ import { Plus, Edit2, CheckCircle2, Shield, Trash2, KeyRound } from "lucide-reac
 import UserForm, { AdminUserData } from "./UserForm";
 import ConfirmModal from "@/components/ConfirmModal";
 import { deleteAdminUser } from "./actions";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import TablePagination from "@/components/TablePagination";
 
-export default function UsersClient({ initialUsers }: { initialUsers: any[] }) {
+export default function UsersClient({ 
+  initialUsers,
+  currentPage = 1,
+  totalPages = 1,
+  totalUsers = 0
+}: { 
+  initialUsers: any[];
+  currentPage?: number;
+  totalPages?: number;
+  totalUsers?: number;
+}) {
   const [showForm, setShowForm] = useState(false);
   const [editingUser, setEditingUser] = useState<AdminUserData | undefined>(undefined);
   const [deleteConfirmId, setDeleteConfirmId] = useState<{ id: number; username: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (page > 1) {
+      params.set('page', page.toString());
+    } else {
+      params.delete('page');
+    }
+    router.push(`${pathname}?${params.toString()}`);
+  };
 
   const handleAdd = () => {
     setEditingUser(undefined);
@@ -125,6 +148,14 @@ export default function UsersClient({ initialUsers }: { initialUsers: any[] }) {
             </tbody>
           </table>
         </div>
+        
+        <TablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalUsers}
+          itemsPerPage={20}
+          onPageChange={handlePageChange}
+        />
       </div>
 
       {showForm && (

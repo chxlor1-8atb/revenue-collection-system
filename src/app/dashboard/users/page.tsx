@@ -1,19 +1,40 @@
 import { db } from "@/lib/db";
 import { adminUsers } from "@/lib/schema";
-import { desc } from "drizzle-orm";
+import { desc, sql } from "drizzle-orm";
 import UsersClient from "./UsersClient";
 
-export default async function UsersPage() {
-  const data = await db.select({
-    id: adminUsers.id,
-    username: adminUsers.username,
-    role: adminUsers.role,
-    createdAt: adminUsers.createdAt,
-  }).from(adminUsers).orderBy(desc(adminUsers.createdAt));
+export default async function UsersPage(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const searchParams = await props.searchParams;
+  const page = Number(searchParams.page) || 1;
+  const limit = 20;
+  const offset = (page - 1) * limit;
+
+  const [data, countResult] = await Promise.all([
+    db.select({
+      id: adminUsers.id,
+      username: adminUsers.username,
+      role: adminUsers.role,
+      createdAt: adminUsers.createdAt,
+    })
+    .from(adminUsers)
+    .orderBy(desc(adminUsers.createdAt))
+    .limit(limit)
+    .offset(offset),
+    
+    db.select({ count: sql<number>`count(*)` }).from(adminUsers)
+  ]);
+
+  const total = Number(countResult[0]?.count || 0);
+  const totalPages = Math.ceil(total / limit);
 
   return (
     <div className="max-w-6xl mx-auto pb-12">
-      <UsersClient initialUsers={data} />
+      <UsersClient 
+        initialUsers={data} 
+        currentPage={page}
+        totalPages={totalPages}
+        totalUsers={total}
+      />
     </div>
   );
 }
