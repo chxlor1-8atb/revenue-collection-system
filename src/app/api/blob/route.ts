@@ -11,16 +11,17 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const prefix = searchParams.get('prefix') || undefined;
+  const cursor = searchParams.get('cursor') || undefined;
 
   try {
-    const result = await list({ prefix });
+    const result = await list({ prefix, cursor, limit: 100 });
     const blobs = result.blobs.map(blob => ({
       pathname: blob.pathname,
       url: blob.url,
       size: blob.size,
       uploadedAt: blob.uploadedAt,
     }));
-    return NextResponse.json({ blobs, hasMore: result.hasMore });
+    return NextResponse.json({ blobs, hasMore: result.hasMore, cursor: result.cursor });
   } catch (error) {
     console.error('Blob list error:', error);
     return NextResponse.json({ error: 'Failed to list blobs' }, { status: 500 });
@@ -49,37 +50,36 @@ export async function DELETE(request: Request) {
         }
       }
     } else if (mode === 'old') {
-      // Delete files older than N days
+      // Delete files older than N days (Batched per prefix & cursor)
+      const { days, prefix, cursor } = await request.json();
       const threshold = days || 30;
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - threshold);
 
-      // List all blobs across all prefixes
-      const prefixes = ['line-slips/', 'slips/', 'qr-codes/'];
-      for (const prefix of prefixes) {
-        let cursor: string | undefined;
-        do {
-          const result = await list({ prefix, cursor });
-          for (const blob of result.blobs) {
-            if (new Date(blob.uploadedAt) < cutoffDate) {
-              try {
-                await del(blob.url);
-                deletedCount++;
-              } catch (e) {
-                console.error(`Failed to delete old blob ${blob.pathname}:`, e);
-              }
-            }
+      const result = await list({ prefix, cursor, limit: 300 }); // Process 300 files per batch
+      for (const blob of result.blobs) {
+        if (new Date(blob.uploadedAt) < cutoffDate) {
+          try {
+            await del(blob.url);
+            deletedCount++;
+          } catch (e) {
+            console.error(`Failed to delete old blob ${blob.pathname}:`, e);
           }
-          cursor = result.hasMore ? result.cursor : undefined;
-        } while (cursor);
+        }
       }
+      return NextResponse.json({ success: true, deletedCount, hasMore: result.hasMore, cursor: result.cursor });
+
     } else if (mode === 'rejected') {
-      // Find rejected/failed slip URLs from database
+      const { offset = 0 } = await request.json();
+
+      // Find rejected/failed slip URLs from database (Batched)
       const rejectedMessages = await db.select({ imageUrl: lineMessages.imageUrl })
         .from(lineMessages)
         .where(
           eq(lineMessages.isVerified, false)
-        );
+        )
+        .limit(100)
+        .offset(offset);
       
       const rejectedUrls = rejectedMessages
         .map(m => m.imageUrl)
@@ -93,6 +93,9 @@ export async function DELETE(request: Request) {
           console.error(`Failed to delete rejected blob ${url}:`, e);
         }
       }
+      
+      const hasMore = rejectedMessages.length === 100;
+      return NextResponse.json({ success: true, deletedCount, hasMore, nextOffset: offset + 100 });
     } else {
       return NextResponse.json({ error: 'Invalid mode' }, { status: 400 });
     }
