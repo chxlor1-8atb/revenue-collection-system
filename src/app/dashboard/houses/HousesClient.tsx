@@ -205,7 +205,6 @@ export default function HousesClient({
   };
 
   return (
-  return (
     <div className="font-sans">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h1 className="font-bold text-2xl text-slate-800 tracking-tight">Manage Houses</h1>
