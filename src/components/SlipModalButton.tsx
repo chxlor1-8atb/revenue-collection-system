@@ -36,20 +36,22 @@ export default function SlipModalButton({ imageUrl, buttonStyle = "history", chi
                animate={{ scale: 1, opacity: 1 }}
                exit={{ scale: 0.9, opacity: 0 }}
                transition={{ type: "spring", bounce: 0.3, duration: 0.4 }}
-               className="relative max-w-2xl w-full max-h-[90vh] flex flex-col items-center justify-center" 
+               className="relative max-h-[90vh] flex flex-col items-center justify-center px-4" 
                onClick={e => e.stopPropagation()}
              >
-                <button 
-                  className="absolute -top-12 right-0 text-white/80 hover:text-white transition-colors bg-white/10 hover:bg-white/20 p-2 rounded-full" 
-                  onClick={() => setIsOpen(false)}
-                >
-                   <X size={24} />
-                </button>
-                <img 
-                  src={imageUrl} 
-                  alt="Slip" 
-                  className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl ring-1 ring-white/10" 
-                />
+                <div className="relative inline-block">
+                  <button 
+                    className="absolute -top-4 -right-4 z-10 text-white/90 hover:text-white transition-all bg-black/60 hover:bg-black/80 shadow-lg p-2 rounded-full ring-1 ring-white/20 backdrop-blur-md hover:scale-110" 
+                    onClick={() => setIsOpen(false)}
+                  >
+                     <X size={20} />
+                  </button>
+                  <img 
+                    src={imageUrl} 
+                    alt="Slip" 
+                    className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl ring-1 ring-white/10" 
+                  />
+                </div>
              </motion.div>
           </motion.div>
         )}
