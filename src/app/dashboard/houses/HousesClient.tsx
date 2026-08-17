@@ -6,6 +6,7 @@ import QRCode from "qrcode";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import HouseForm, { HouseData } from "./HouseForm";
+import GenerateInvoiceButton from "./GenerateInvoiceButton";
 import { deleteHouse } from "./actions";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
 import CustomFieldsManager, { CustomField } from "./CustomFieldsManager";
@@ -248,6 +249,10 @@ export default function HousesClient({
             <Plus size={14} />
             เพิ่มบ้านใหม่
           </button>
+          
+          <div className="w-[1px] bg-slate-200 h-8 mx-1 self-center hidden sm:block"></div>
+
+          <GenerateInvoiceButton />
         </div>
       </div>
 

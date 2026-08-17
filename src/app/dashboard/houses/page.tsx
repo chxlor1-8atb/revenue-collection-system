@@ -2,7 +2,6 @@ import { db } from "@/lib/db";
 import { houses, systemSettings } from "@/lib/schema";
 import { desc, asc, ilike, or, sql } from "drizzle-orm";
 import HousesClient from "./HousesClient";
-import GenerateInvoiceButton from "./GenerateInvoiceButton";
 
 export default async function HousesPage(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const searchParams = await props.searchParams;
@@ -52,9 +51,6 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
 
   return (
     <div className="pb-12 space-y-6">
-      <div className="flex justify-end">
-        <GenerateInvoiceButton />
-      </div>
       <HousesClient 
         initialHouses={data as any} 
         currentPage={page} 

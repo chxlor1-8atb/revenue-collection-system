@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { X, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
+import { X, CheckCircle2, Loader2, AlertCircle, FileText } from "lucide-react";
 import MonthPicker from "@/components/MonthPicker";
 
 export default function GenerateInvoiceButton() {
@@ -68,10 +68,10 @@ export default function GenerateInvoiceButton() {
     <>
       <button 
         onClick={handleOpenModal} 
-        className="btn" 
-        style={{ backgroundColor: "#C9A227", color: "#1F2E22" }}
+        className="flex items-center gap-1.5 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-colors shadow-sm"
       >
-        🧾 สร้างบิลประจำเดือน (ทุกบ้าน)
+        <FileText size={14} />
+        สร้างบิลประจำเดือน (ทุกบ้าน)
       </button>
 
       {showModal && (
