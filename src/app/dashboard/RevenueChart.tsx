@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { ChevronDown, BarChart3 } from "lucide-react";
+import CustomSelect from "@/components/CustomSelect";
 
 type Transaction = {
   amount: string | null;
@@ -90,31 +91,23 @@ export default function RevenueChart({ transactions }: { transactions: Transacti
         
         {/* Selectors */}
         <div className="flex items-center gap-3">
-          <div className="relative">
-            <select
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value === "all" ? "all" : parseInt(e.target.value))}
-              className="appearance-none bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-4 py-2 pr-9 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-[#5B58F2]/20 font-medium cursor-pointer transition-colors"
-            >
-              <option value="all">ดูทั้งปี</option>
-              {thaiMonths.map((m, i) => (
-                <option key={i} value={i}>{m}</option>
-              ))}
-            </select>
-            <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          <div className="w-[120px] sm:w-[140px] z-50">
+            <CustomSelect
+              options={[
+                { value: "all", label: "ดูทั้งปี" },
+                ...thaiMonths.map((m, i) => ({ value: String(i), label: m }))
+              ]}
+              value={String(selectedMonth)}
+              onChange={(val) => setSelectedMonth(val === "all" ? "all" : parseInt(val))}
+            />
           </div>
 
-          <div className="relative">
-            <select
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-              className="appearance-none bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-4 py-2 pr-9 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-[#5B58F2]/20 font-medium cursor-pointer transition-colors"
-            >
-              {availableYears.map(y => (
-                <option key={y} value={y}>ปี {y + 543}</option>
-              ))}
-            </select>
-            <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          <div className="w-[100px] sm:w-[110px] z-40">
+            <CustomSelect
+              options={availableYears.map(y => ({ value: String(y), label: `ปี ${y + 543}` }))}
+              value={String(selectedYear)}
+              onChange={(val) => setSelectedYear(parseInt(val))}
+            />
           </div>
         </div>
       </div>
