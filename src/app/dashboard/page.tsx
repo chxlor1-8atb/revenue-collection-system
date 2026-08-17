@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { transactions, invoices, houses, lineMessages } from "@/lib/schema";
 import { eq, desc, inArray, or } from "drizzle-orm";
 import RevenueChart from "./RevenueChart";
+import { StaggerContainer, StaggerItem } from "@/components/animations/Stagger";
 import { 
   Banknote, 
   Home, 
@@ -165,10 +166,10 @@ export default async function DashboardPage() {
     <div className="space-y-10 pb-12 font-sans">
       
       {/* 4 Stat Cards matching LoopAI style */}
-      <div className="flex flex-wrap lg:flex-nowrap gap-3 xl:gap-5">
+      <StaggerContainer className="flex flex-wrap lg:flex-nowrap gap-3 xl:gap-5">
         
         {/* Card 1: Verified Revenue */}
-        <div className="animate-in slide-in-from-bottom-8 fade-in duration-700 bg-white rounded-[24px] xl:rounded-[32px] p-5 xl:p-7 border border-slate-100/80 flex flex-col min-h-[140px] xl:min-h-[160px] w-full sm:w-fit lg:flex-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]" style={{ animationDelay: '0ms', animationFillMode: 'backwards' }}>
+        <StaggerItem className="bg-white rounded-[24px] xl:rounded-[32px] p-5 xl:p-7 border border-slate-100/80 flex flex-col min-h-[140px] xl:min-h-[160px] w-full sm:w-fit lg:flex-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
           <div className="flex items-start justify-between gap-3 xl:gap-6 mb-4 xl:mb-6">
             <div className="flex items-center gap-2.5 xl:gap-3 shrink-0">
               <div className="w-10 h-10 xl:w-12 xl:h-12 rounded-xl xl:rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100/50">
@@ -187,10 +188,10 @@ export default async function DashboardPage() {
             </div>
             <span className="text-[11px] xl:text-[13px] text-slate-400 font-medium whitespace-nowrap">จากยอดชำระสำเร็จทั้งหมด</span>
           </div>
-        </div>
+        </StaggerItem>
 
         {/* Card 2: Houses with Unpaid Invoices */}
-        <div className="animate-in slide-in-from-bottom-8 fade-in duration-700 bg-white rounded-[24px] xl:rounded-[32px] p-5 xl:p-7 border border-slate-100/80 flex flex-col min-h-[140px] xl:min-h-[160px] w-full sm:w-fit lg:flex-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]" style={{ animationDelay: '100ms', animationFillMode: 'backwards' }}>
+        <StaggerItem className="bg-white rounded-[24px] xl:rounded-[32px] p-5 xl:p-7 border border-slate-100/80 flex flex-col min-h-[140px] xl:min-h-[160px] w-full sm:w-fit lg:flex-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
           <div className="flex items-start justify-between gap-3 xl:gap-6 mb-4 xl:mb-6">
             <div className="flex items-center gap-2.5 xl:gap-3 shrink-0">
               <div className="w-10 h-10 xl:w-12 xl:h-12 rounded-xl xl:rounded-2xl bg-red-50 text-red-600 flex items-center justify-center shrink-0 border border-red-100/50">
@@ -208,9 +209,9 @@ export default async function DashboardPage() {
             </div>
             <span className="text-[11px] xl:text-[13px] text-slate-400 font-medium whitespace-nowrap">จากทั้งหมด {totalHousesCount} หลัง</span>
           </div>
-        </div>
+        </StaggerItem>
 
-        <div className="animate-in slide-in-from-bottom-8 fade-in duration-700 bg-white rounded-[24px] xl:rounded-[32px] p-5 xl:p-7 border border-slate-100/80 flex flex-col min-h-[140px] xl:min-h-[160px] w-full sm:w-fit lg:flex-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]" style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}>
+        <StaggerItem className="bg-white rounded-[24px] xl:rounded-[32px] p-5 xl:p-7 border border-slate-100/80 flex flex-col min-h-[140px] xl:min-h-[160px] w-full sm:w-fit lg:flex-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
           <div className="flex items-start justify-between gap-3 xl:gap-6 mb-4 xl:mb-6">
             <div className="flex items-center gap-2.5 xl:gap-3 shrink-0">
               <div className="w-10 h-10 xl:w-12 xl:h-12 rounded-xl xl:rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100/50">
@@ -230,9 +231,9 @@ export default async function DashboardPage() {
               ไปที่รายการตรวจสอบ <ChevronRight size={12} strokeWidth={3} />
             </Link>
           </div>
-        </div>
+        </StaggerItem>
 
-        <div className="animate-in slide-in-from-bottom-8 fade-in duration-700 bg-white rounded-[24px] xl:rounded-[32px] p-5 xl:p-7 border border-slate-100/80 flex flex-col min-h-[140px] xl:min-h-[160px] w-full sm:w-fit lg:flex-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]" style={{ animationDelay: '300ms', animationFillMode: 'backwards' }}>
+        <StaggerItem className="bg-white rounded-[24px] xl:rounded-[32px] p-5 xl:p-7 border border-slate-100/80 flex flex-col min-h-[140px] xl:min-h-[160px] w-full sm:w-fit lg:flex-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
           <div className="flex items-start justify-between gap-3 xl:gap-6 mb-4 xl:mb-6">
             <div className="flex items-center gap-2.5 xl:gap-3 shrink-0">
               <div className="w-10 h-10 xl:w-12 xl:h-12 rounded-xl xl:rounded-2xl bg-[#EEF0FF] text-[#5B58F2] flex items-center justify-center shrink-0 border border-[#5B58F2]/20">
@@ -252,26 +253,26 @@ export default async function DashboardPage() {
               จัดการข้อความ <ChevronRight size={12} strokeWidth={3} />
             </Link>
           </div>
-        </div>
-      </div>
+        </StaggerItem>
+      </StaggerContainer>
 
       {/* Main Grid: Graph (left) and Priority Tasks (right) */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
+      <StaggerContainer delayChildren={0.3} staggerChildren={0.15} className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
         
         {/* Left Column (Real Graph Area) */}
-        <div className="xl:col-span-2 animate-in slide-in-from-bottom-8 fade-in duration-700" style={{ animationDelay: '400ms', animationFillMode: 'backwards' }}>
+        <StaggerItem className="xl:col-span-2">
           <RevenueChart 
             transactions={verifiedTxs.map(tx => ({
               amount: tx.amount,
               date: (tx.paidAt || tx.createdAt)?.toISOString() || null
             }))} 
           />
-        </div>
+        </StaggerItem>
           
 
 
         {/* Right Column (Priority Tasks -> Recent Transactions) */}
-        <div className="xl:col-span-1 bg-white rounded-[32px] p-8 lg:p-10 border border-slate-100 shadow-sm flex flex-col animate-in slide-in-from-bottom-8 fade-in duration-700" style={{ animationDelay: '500ms', animationFillMode: 'backwards' }}>
+        <StaggerItem className="xl:col-span-1 bg-white rounded-[32px] p-8 lg:p-10 border border-slate-100 shadow-sm flex flex-col">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-semibold text-lg text-slate-800">รายการรับชำระล่าสุด</h2>
             <Link href="/dashboard/history" className="text-sm font-semibold text-[#5B58F2] hover:underline">
@@ -324,10 +325,9 @@ export default async function DashboardPage() {
               ))
             )}
           </div>
-        </div>
-      </div>
+        </StaggerItem>
+      </StaggerContainer>
 
     </div>
   );
 }
-

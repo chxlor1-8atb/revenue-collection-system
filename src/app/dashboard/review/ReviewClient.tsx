@@ -85,7 +85,7 @@ export default function ReviewClient() {
               {waiting.map((tx: any, index: number) => {
                 const houses = [...new Set(tx.invoices.map((i: any) => i.houseNumber))];
                 return (
-                  <div key={tx.id} className="bg-white rounded-xl p-4 border border-amber-100 shadow-sm flex items-center justify-between animate-in slide-in-from-bottom-4 fade-in duration-500" style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'backwards' }}>
+                  <div key={tx.id} className="bg-white rounded-xl p-4 border border-amber-100 shadow-sm flex items-center justify-between animate-in slide-in-from-bottom-6 fade-in duration-700" style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'both' }}>
                      <div>
                         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">รหัสรายการ #{tx.id}</span>
                         <span className="font-bold text-slate-700">บ้านเลขที่ {houses.join(", ")}</span>
@@ -132,7 +132,7 @@ export default function ReviewClient() {
           ) : (
             <div className="space-y-6 mt-2">
               {pending.map((tx: any, index: number) => (
-                <div key={tx.id} className="animate-in slide-in-from-bottom-4 fade-in duration-500" style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'backwards' }}>
+                <div key={tx.id} className="animate-in slide-in-from-bottom-6 fade-in duration-700" style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'both' }}>
                   <SlipReviewForm 
                     transaction={tx} 
                     onReviewed={() => mutate()} 

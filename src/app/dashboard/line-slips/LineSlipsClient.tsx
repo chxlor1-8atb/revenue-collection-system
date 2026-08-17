@@ -221,7 +221,7 @@ export default function LineSlipsClient({
                 ))
               ) : (
                 slips.map((slip, idx) => (
-                  <div key={slip.id} className="p-4 animate-in slide-in-from-bottom-4 fade-in duration-500" style={{ animationDelay: `${idx * 50}ms`, animationFillMode: 'backwards' }}>
+                  <div key={slip.id} className="p-4 animate-in slide-in-from-bottom-6 fade-in duration-700" style={{ animationDelay: `${idx * 50}ms`, animationFillMode: 'both' }}>
                   <div className="flex gap-3 items-start mb-3">
                     {slip.imageUrl ? (
                       <SlipModalButton imageUrl={slip.imageUrl}>
@@ -318,7 +318,7 @@ export default function LineSlipsClient({
                     ))
                   ) : (
                     slips.map((slip, idx) => (
-                    <tr key={slip.id} className="hover:bg-slate-50/50 transition-colors group animate-in slide-in-from-bottom-4 fade-in duration-500" style={{ animationDelay: `${idx * 50}ms`, animationFillMode: 'backwards' }}>
+                    <tr key={slip.id} className="hover:bg-slate-50/50 transition-colors group animate-in slide-in-from-bottom-6 fade-in duration-700" style={{ animationDelay: `${idx * 50}ms`, animationFillMode: 'both' }}>
                       <td className="px-4 py-4">
                         <span className="font-mono text-[length:13px] text-slate-500">{slip.createdAt?.toLocaleString("th-TH", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
                       </td>

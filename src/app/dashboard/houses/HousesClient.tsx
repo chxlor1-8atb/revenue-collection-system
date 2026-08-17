@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, useTransition } from "react";
+import { useState, useEffect, useCallback, useRef, useTransition, useMemo } from "react";
 import { Plus, Edit2, Trash2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Download, Upload, QrCode, X, Settings, Home } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import QRCode from "qrcode";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -312,20 +313,17 @@ export default function HousesClient({
                 <th className="px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider text-right">จัดการ</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50 text-slate-700">
-              {isPending ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <tr key={i} className="animate-pulse">
-                    {customFieldsSchema.filter(f => !f.isHidden).map((f, j) => (
-                      <td key={j} className="px-4 py-4"><div className="h-4 bg-slate-200 rounded w-full"></div></td>
-                    ))}
-                    <td className="px-4 py-4"><div className="h-6 w-20 bg-slate-200 rounded-full"></div></td>
-                    <td className="px-4 py-4"><div className="h-6 w-16 bg-slate-200 rounded ml-auto"></div></td>
-                  </tr>
-                ))
-              ) : (
-                initialHouses.map((house, index) => (
-                  <tr key={house.id} className="hover:bg-slate-50/50 transition-colors group animate-in slide-in-from-bottom-4 fade-in duration-500" style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'backwards' }}>
+            <tbody className={`divide-y divide-slate-50 text-slate-700 transition-opacity duration-200 ${isPending ? 'opacity-50' : 'opacity-100'}`}>
+              <AnimatePresence mode="wait">
+                {initialHouses.map((house, index) => (
+                  <motion.tr 
+                    key={house.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="hover:bg-slate-50/50 transition-colors group"
+                  >
                   {customFieldsSchema.filter(f => !f.isHidden).map(field => {
                     let val = "-";
                     if (field.isSystem) {
@@ -375,11 +373,11 @@ export default function HousesClient({
                       </button>
                     </div>
                   </td>
-                </tr>
-                ))
-              )}
+                </motion.tr>
+                ))}
+              </AnimatePresence>
               
-              {initialHouses.length === 0 && (
+              {initialHouses.length === 0 && !isPending && (
                 <tr>
                   <td colSpan={2 + customFieldsSchema.filter(f => !f.isHidden).length} className="p-16 text-center">
                     <div className="text-slate-300 mb-3 flex justify-center"><Home size={40} /></div>

@@ -101,7 +101,7 @@ export default function UsersClient({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 text-slate-700">
-              {isPending ? (
+              {isPending && initialUsers.length === 0 ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <tr key={i} className="animate-pulse">
                     <td className="px-4 py-4"><div className="h-4 w-4 bg-slate-200 rounded mx-auto"></div></td>
@@ -113,7 +113,7 @@ export default function UsersClient({
                 ))
               ) : (
                 initialUsers.map((user, idx) => (
-                  <tr key={user.id} className="hover:bg-slate-50/50 transition-colors group animate-in slide-in-from-bottom-4 fade-in duration-500" style={{ animationDelay: `${idx * 50}ms`, animationFillMode: 'backwards' }}>
+                  <tr key={user.id} className="hover:bg-slate-50/50 transition-colors group animate-in slide-in-from-bottom-6 fade-in duration-700" style={{ animationDelay: `${idx * 50}ms`, animationFillMode: 'both' }}>
                   <td className="px-4 py-4 text-center text-slate-400 text-[length:13px]">{idx + 1}</td>
                   <td className="px-4 py-4 font-semibold text-slate-800 text-[length:13px] flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-500">

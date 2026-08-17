@@ -256,7 +256,7 @@ export default function HistoryClient() {
       ) : (
         <div className="space-y-4">
           {data.map((item, index) => (
-            <div key={item.id} className="bg-white rounded-[24px] border border-slate-100 shadow-sm overflow-hidden hover:shadow-md transition-all animate-in slide-in-from-bottom-4 fade-in duration-500" style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'backwards' }}>
+            <div key={item.id} className="bg-white rounded-[24px] border border-slate-100 shadow-sm overflow-hidden hover:shadow-md transition-all animate-in slide-in-from-bottom-6 fade-in duration-700" style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'both' }}>
               {/* Header strip */}
               <div className={`flex items-center justify-between px-6 py-3 border-b ${
                 item.slipStatus === 'voided' 
