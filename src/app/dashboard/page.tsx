@@ -38,13 +38,27 @@ function formatThaiMonth(monthYear: string) {
 export default async function DashboardPage() {
   // 1. Total verified revenue (sum of amount from transactions where slipStatus='verified')
   const verifiedTxs = await db
-    .select({ amount: transactions.amount })
+    .select({ 
+      amount: transactions.amount,
+      paidAt: transactions.paidAt,
+      createdAt: transactions.createdAt
+    })
     .from(transactions)
     .where(eq(transactions.slipStatus, "verified"));
 
+  const currentYear = new Date().getFullYear();
+  let currentYearRevenue = 0;
+
   const totalVerifiedRevenue = verifiedTxs.reduce((sum, tx) => {
     const val = parseFloat(tx.amount || "0");
-    return sum + (isNaN(val) ? 0 : val);
+    const amount = isNaN(val) ? 0 : val;
+    
+    const txDate = tx.paidAt || tx.createdAt;
+    if (txDate && new Date(txDate).getFullYear() === currentYear) {
+      currentYearRevenue += amount;
+    }
+    
+    return sum + amount;
   }, 0);
 
   // 2. Number of houses with unpaid invoices
@@ -162,7 +176,7 @@ export default async function DashboardPage() {
               <span className="text-slate-800 font-bold tracking-tight text-lg">ยอดรับชำระแล้ว</span>
             </div>
             <span className="bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full text-[11px] font-bold border border-emerald-100">
-              +{verifiedTxs.length} รายการ
+              ปี {currentYear + 543}: ฿{currentYearRevenue.toLocaleString("th-TH", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </span>
           </div>
           <div className="mt-auto flex items-end justify-between">
