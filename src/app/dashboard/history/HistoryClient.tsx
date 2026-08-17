@@ -40,7 +40,7 @@ export default function HistoryClient() {
   const [channel, setChannel] = useState("all");
   const [monthYear, setMonthYear] = useState("");
 
-  const limit = 20;
+  const [limit, setLimit] = useState(10);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -71,7 +71,7 @@ export default function HistoryClient() {
 
   useEffect(() => {
     fetchData();
-  }, [page, search, startDate, endDate, status, channel, monthYear]);
+  }, [page, search, startDate, endDate, status, channel, monthYear, limit]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

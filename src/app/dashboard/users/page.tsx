@@ -6,7 +6,7 @@ import UsersClient from "./UsersClient";
 export default async function UsersPage(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const searchParams = await props.searchParams;
   const page = Number(searchParams.page) || 1;
-  const limit = 20;
+  const limit = Number(searchParams.limit) || 10;
   const offset = (page - 1) * limit;
 
   const [data, countResult] = await Promise.all([
@@ -34,6 +34,8 @@ export default async function UsersPage(props: { searchParams: Promise<{ [key: s
         currentPage={page}
         totalPages={totalPages}
         totalUsers={total}
+
+        limit={limit}
       />
     </div>
   );

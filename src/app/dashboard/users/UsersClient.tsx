@@ -12,12 +12,14 @@ export default function UsersClient({
   initialUsers,
   currentPage = 1,
   totalPages = 1,
-  totalUsers = 0
+  totalUsers = 0,
+  limit = 10
 }: { 
   initialUsers: any[];
   currentPage?: number;
   totalPages?: number;
   totalUsers?: number;
+  limit?: number;
 }) {
   const [showForm, setShowForm] = useState(false);
   const [editingUser, setEditingUser] = useState<AdminUserData | undefined>(undefined);
@@ -28,16 +30,21 @@ export default function UsersClient({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const handlePageChange = (page: number) => {
+  const updateUrlParams = (page: number, newLimit: number) => {
     const params = new URLSearchParams(searchParams.toString());
-    if (page > 1) {
-      params.set('page', page.toString());
-    } else {
-      params.delete('page');
-    }
+    if (page > 1) params.set('page', page.toString());
+    else params.delete('page');
+
+    if (newLimit !== 10) params.set('limit', newLimit.toString());
+    else params.delete('limit');
+
     startTransition(() => {
       router.push(`${pathname}?${params.toString()}`);
     });
+  };
+
+  const handlePageChange = (page: number) => {
+    updateUrlParams(page, limit);
   };
 
   const handleAdd = () => {
@@ -171,8 +178,9 @@ export default function UsersClient({
           currentPage={currentPage}
           totalPages={totalPages}
           totalItems={totalUsers}
-          itemsPerPage={20}
+          itemsPerPage={limit}
           onPageChange={handlePageChange}
+          onLimitChange={(newLimit) => updateUrlParams(1, newLimit)}
         />
       </div>
 

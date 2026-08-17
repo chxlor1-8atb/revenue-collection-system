@@ -16,6 +16,7 @@ interface LineSlipsClientProps {
   totalPages: number;
   pendingCount: number;
   verifiedCount: number;
+  limit?: number;
 }
 
 export default function LineSlipsClient({ 
@@ -24,7 +25,8 @@ export default function LineSlipsClient({
   currentPage, 
   totalPages, 
   pendingCount, 
-  verifiedCount 
+  verifiedCount,
+  limit = 10
 }: LineSlipsClientProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -49,16 +51,21 @@ export default function LineSlipsClient({
     });
   };
 
-  const handlePageChange = (page: number) => {
+  const updateUrlParams = (page: number, newLimit: number) => {
     const params = new URLSearchParams(searchParams.toString());
-    if (page > 1) {
-      params.set('page', page.toString());
-    } else {
-      params.delete('page');
-    }
+    if (page > 1) params.set('page', page.toString());
+    else params.delete('page');
+
+    if (newLimit !== 10) params.set('limit', newLimit.toString());
+    else params.delete('limit');
+
     startTransition(() => {
       router.push(`${pathname}?${params.toString()}`);
     });
+  };
+
+  const handlePageChange = (page: number) => {
+    updateUrlParams(page, limit);
   };
 
   const openMatchModal = async (slip: any) => {
@@ -390,9 +397,10 @@ export default function LineSlipsClient({
         <TablePagination
           currentPage={currentPage}
           totalPages={totalPages}
-          totalItems={activeTab === "pending" ? pendingCount : verifiedCount}
-          itemsPerPage={20} // Assuming limit=20 in page.tsx
+          totalItems={activeTab === 'pending' ? pendingCount : verifiedCount}
+          itemsPerPage={limit}
           onPageChange={handlePageChange}
+          onLimitChange={(newLimit) => updateUrlParams(1, newLimit)}
         />
       </div>
 

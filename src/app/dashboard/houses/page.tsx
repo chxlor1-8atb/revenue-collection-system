@@ -6,7 +6,7 @@ import HousesClient from "./HousesClient";
 export default async function HousesPage(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const searchParams = await props.searchParams;
   const page = Number(searchParams.page) || 1;
-  const limit = 20;
+  const limit = Number(searchParams.limit) || 10;
   const offset = (page - 1) * limit;
   const q = typeof searchParams.q === 'string' ? searchParams.q : '';
   const sort = typeof searchParams.sort === 'string' ? searchParams.sort : 'createdAt';
@@ -58,6 +58,7 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
         totalHouses={total} 
         initialSearch={q}
         initialSort={{ key: sort, dir }}
+        limit={limit}
         customFieldsSchema={customFieldsSchema}
       />
     </div>

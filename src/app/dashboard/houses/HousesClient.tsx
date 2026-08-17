@@ -20,6 +20,7 @@ export default function HousesClient({
   totalHouses = 0,
   initialSearch = "",
   initialSort = { key: "createdAt", dir: "desc" },
+  limit = 10,
   customFieldsSchema = []
 }: { 
   initialHouses: HouseData[];
@@ -28,6 +29,7 @@ export default function HousesClient({
   totalHouses?: number;
   initialSearch?: string;
   initialSort?: { key: string; dir: string };
+  limit?: number;
   customFieldsSchema?: CustomField[];
 }) {
   const router = useRouter();
@@ -56,43 +58,43 @@ export default function HousesClient({
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchQuery !== initialSearch) {
-        updateUrlParams(1, searchQuery, sortConfig.key, sortConfig.dir);
+        updateUrlParams(1, searchQuery, sortConfig.key, sortConfig.dir, limit);
       }
     }, 500);
     return () => clearTimeout(timer);
   }, [searchQuery, initialSearch, sortConfig]);
 
-  const updateUrlParams = (page: number, q: string, sortKey: string, sortDir: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (page > 1) params.set('page', page.toString());
-    else params.delete('page');
-
-    if (q) params.set('q', q);
-    else params.delete('q');
-
-    if (sortKey !== 'createdAt') params.set('sort', sortKey);
-    else params.delete('sort');
-
-    if (sortDir !== 'desc') params.set('dir', sortDir);
-    else params.delete('dir');
-
+  const updateUrlParams = (page: number, q: string, sortKey: string, sortDir: string, newLimit: number) => {
     startTransition(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (page > 1) params.set('page', page.toString());
+      else params.delete('page');
+
+      if (q) params.set('q', q);
+      else params.delete('q');
+
+      if (sortKey !== 'createdAt') params.set('sort', sortKey);
+      else params.delete('sort');
+
+      if (sortDir !== 'desc') params.set('dir', sortDir);
+      else params.delete('dir');
+
+      if (newLimit !== 10) params.set('limit', newLimit.toString());
+      else params.delete('limit');
+
       router.push(`${pathname}?${params.toString()}`);
     });
   };
 
   const handleSort = (key: string) => {
-    let newDir = 'desc';
-    if (sortConfig.key === key && sortConfig.dir === 'desc') {
-      newDir = 'asc';
-    }
+    const newDir = sortConfig.key === key && sortConfig.dir === 'asc' ? 'desc' : 'asc';
     setSortConfig({ key, dir: newDir });
-    updateUrlParams(currentPage, searchQuery, key, newDir);
+    updateUrlParams(currentPage, searchQuery, key, newDir, limit);
   };
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
-      updateUrlParams(newPage, searchQuery, sortConfig.key, sortConfig.dir);
+      updateUrlParams(newPage, searchQuery, sortConfig.key, sortConfig.dir, limit);
     }
   };
 
@@ -397,8 +399,9 @@ export default function HousesClient({
           currentPage={currentPage}
           totalPages={totalPages}
           totalItems={totalHouses}
-          itemsPerPage={20} // Assuming limit=20 in page.tsx
+          itemsPerPage={limit}
           onPageChange={handlePageChange}
+          onLimitChange={(newLimit) => updateUrlParams(1, searchQuery, sortConfig.key, sortConfig.dir, newLimit)}
         />
       </div>
 
@@ -504,3 +507,4 @@ export default function HousesClient({
     </div>
   );
 }
+

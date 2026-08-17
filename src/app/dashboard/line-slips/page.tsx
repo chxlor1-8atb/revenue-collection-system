@@ -10,7 +10,7 @@ export default async function LineSlipsPage(props: { searchParams: Promise<{ [ke
   
   const tab = (typeof searchParams.tab === 'string' ? searchParams.tab : 'pending') as 'pending' | 'verified';
   const page = Number(searchParams.page) || 1;
-  const limit = 20;
+  const limit = Number(searchParams.limit) || 10;
   const offset = (page - 1) * limit;
 
   // Get total counts for badges
@@ -59,6 +59,7 @@ export default async function LineSlipsPage(props: { searchParams: Promise<{ [ke
         activeTab={tab}
         currentPage={page}
         totalPages={totalPages}
+        limit={limit}
         pendingCount={pendingCount}
         verifiedCount={verifiedCount}
       />
