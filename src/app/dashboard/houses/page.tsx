@@ -46,7 +46,7 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
         <GenerateInvoiceButton />
       </div>
       <HousesClient 
-        initialHouses={data} 
+        initialHouses={data as any} 
         currentPage={page} 
         totalPages={totalPages} 
         totalHouses={total} 

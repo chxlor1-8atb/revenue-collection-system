@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { systemSettings } from "@/lib/schema";
+import { eq } from "drizzle-orm";
 
 export async function GET() {
   try {
@@ -39,7 +40,7 @@ export async function POST(req: Request) {
       // Update existing
       await db.update(systemSettings)
         .set({ houseCustomFieldsSchema: schema, updatedAt: new Date() })
-        .where({ id: settings[0].id });
+        .where(eq(systemSettings.id, settings[0].id));
     }
 
     return NextResponse.json({ success: true });
