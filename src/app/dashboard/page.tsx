@@ -165,7 +165,7 @@ export default async function DashboardPage() {
               <span className="text-[20px] font-semibold text-slate-400 mr-1">฿</span>
               {totalVerifiedRevenue.toLocaleString("th-TH", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </div>
-            <span className="text-[13px] text-slate-400 font-medium">เทียบกับ 0 (เดือนก่อน)</span>
+            <span className="text-[13px] text-slate-400 font-medium">จากยอดชำระสำเร็จทั้งหมด</span>
           </div>
         </div>
 
@@ -243,21 +243,7 @@ export default async function DashboardPage() {
             <div className="text-center">
               <TrendingUp size={48} className="mx-auto text-slate-300 mb-3" />
               <p className="text-slate-500 font-medium">พื้นที่แสดงกราฟรายได้</p>
-              <p className="text-xs text-slate-400 mt-1">พร้อมสำหรับการเชื่อมต่อ Recharts</p>
-            </div>
-            
-            <div className="absolute left-6 bottom-6 w-64 bg-white p-4 rounded-2xl shadow-lg border border-slate-100">
-              <div className="flex items-start gap-2 mb-3">
-                <div className="bg-[#EEF0FF] p-1.5 rounded-lg text-[#5B58F2]">
-                  <ArrowRight size={14} />
-                </div>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  การตอบกลับที่รวดเร็วช่วยสร้างความไว้วางใจให้กับลูกบ้าน
-                </p>
-              </div>
-              <button className="w-full py-2 bg-gradient-to-r from-[#5B58F2] to-[#7B79F2] text-white rounded-xl text-xs font-semibold shadow-md hover:opacity-90 transition-opacity">
-                เรียกดูการวิเคราะห์
-              </button>
+              <p className="text-xs text-slate-400 mt-1">อยู่ระหว่างการพัฒนาระบบรายงาน</p>
             </div>
           </div>
         </div>

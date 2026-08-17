@@ -23,18 +23,9 @@ export default function TopNav({ userName }: { userName: string }) {
     <header className="flex flex-col md:flex-row items-center justify-between px-8 py-5 border-b border-slate-100 bg-white gap-4 rounded-t-[32px]">
       <div className="flex items-center gap-3 w-full md:w-auto">
         <div className="flex items-center justify-center w-8 h-8 bg-[#5B58F2] rounded-full text-white font-bold text-lg shadow-sm">
-          ∞
+          ฿
         </div>
-        <span className="font-sans font-bold text-[#0F172A] tracking-tight text-xl mr-6">LoopRev</span>
-
-        {/* Quick icons */}
-        <div className="hidden lg:flex items-center gap-2 opacity-90">
-          <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-xs shadow-sm">Li</div>
-          <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-xs shadow-sm">Wb</div>
-          <button className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 transition-colors">
-            <Plus size={14} />
-          </button>
-        </div>
+        <span className="font-sans font-bold text-[#0F172A] tracking-tight text-xl mr-6">ระบบจัดเก็บรายได้</span>
       </div>
 
       <nav className="flex-1 overflow-x-auto w-full md:w-auto flex justify-start md:justify-center no-scrollbar pb-2 sm:pb-0">
