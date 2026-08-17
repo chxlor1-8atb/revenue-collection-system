@@ -199,16 +199,21 @@ export default function Home() {
 
       <footer className="mt-8 relative z-10">
         <button 
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault();
             const width = Math.min(1400, window.screen.width * 0.9);
             const height = Math.min(900, window.screen.height * 0.9);
             const left = (window.screen.width - width) / 2;
             const top = (window.screen.height - height) / 2;
-            window.open(
+            const popup = window.open(
               '/login', 
               'AdminDashboard', 
               `width=${width},height=${height},left=${left},top=${top},popup=1,menubar=0,toolbar=0,location=0,status=0,scrollbars=1`
             );
+            if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+              // Popup blocked, fallback to normal navigation
+              window.location.href = '/login';
+            }
           }}
           className="text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors decoration-slate-300 underline-offset-4 hover:underline"
         >
