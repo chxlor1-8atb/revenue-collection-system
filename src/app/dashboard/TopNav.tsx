@@ -61,7 +61,14 @@ export default function TopNav({ userName }: { userName: string }) {
             <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
           </button>
           
-          <div className="flex items-center gap-2 cursor-pointer ml-1 relative group" onClick={() => signOut({ callbackUrl: '/login' })}>
+          <div className="flex items-center gap-2 cursor-pointer ml-1 relative group" onClick={async () => {
+            await signOut({ redirect: false });
+            if (window.opener) {
+              window.close();
+            } else {
+              window.location.href = '/';
+            }
+          }}>
             <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden border-2 border-white shadow-sm flex items-center justify-center font-bold text-slate-500 uppercase text-xs">
               {userName.substring(0,2)}
             </div>
