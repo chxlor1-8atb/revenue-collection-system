@@ -38,7 +38,7 @@ export default function TopNav({ userName, settings }: { userName: string, setti
             <div className="flex items-center justify-center w-8 h-8 bg-[#5B58F2] rounded-full text-white shadow-sm">
               <Trash2 size={16} strokeWidth={2.5} />
             </div>
-            <span className="font-sans font-bold text-[#0F172A] tracking-tight text-xl mr-6">จัดเก็บค่าขยะ</span>
+            <span className="font-sans font-bold text-[#0F172A] tracking-tight text-xl mr-6">ระบบจัดเก็บค่าขยะ</span>
           </div>
 
           <nav className="flex-1 overflow-x-auto w-full md:w-auto flex justify-start md:justify-center no-scrollbar pb-2 sm:pb-0">
