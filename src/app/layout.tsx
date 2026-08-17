@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0F172A",
+  themeColor: "#F8FAFC",
 };
 
 import { Analytics } from "@vercel/analytics/react";
@@ -28,7 +28,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="th"
       className="h-full antialiased font-sans bg-slate-50 text-slate-900"
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col" style={{ paddingTop: 'env(titlebar-area-height, 0px)' }}>
+        <div className="fixed top-0 left-0 right-0 h-[env(titlebar-area-height,0px)] z-50 titlebar-drag" />
         <PwaRegister />
         {children}
         <Analytics />
