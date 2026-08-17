@@ -7,6 +7,7 @@ import QRCode from "qrcode";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import HouseForm, { HouseData } from "./HouseForm";
 import { deleteHouse } from "./actions";
+import SearchAutocomplete from "@/components/SearchAutocomplete";
 
 export default function HousesClient({ 
   initialHouses,
@@ -232,17 +233,15 @@ export default function HousesClient({
 
       {/* Toolbar: Search */}
       <div className="bg-white p-4 rounded-t-2xl border border-slate-200 border-b-0 flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div className="relative w-full sm:w-80">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            placeholder="ค้นหาบ้านเลขที่ หรือ ชื่อเจ้าบ้าน..."
+        <div className="relative w-full sm:w-80 z-20">
+          <SearchAutocomplete 
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1F2E22]/20 focus:border-[#1F2E22] transition-all"
+            onChange={setSearchQuery}
+            placeholder="ค้นหาบ้านเลขที่ หรือ ชื่อเจ้าบ้าน..."
+            className="w-full sm:w-80 focus:w-full sm:focus:w-80 !bg-slate-50 border border-slate-200 focus:border-[#1F2E22] focus:ring-2 focus:ring-[#1F2E22]/20 shadow-none"
           />
         </div>
-        <div className="text-sm text-slate-500 font-medium">
+        <div className="text-sm text-slate-500 font-medium z-10">
           พบข้อมูลทั้งหมด {totalHouses} หลัง
         </div>
       </div>
