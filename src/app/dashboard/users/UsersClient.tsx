@@ -74,7 +74,7 @@ export default function UsersClient({
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div>
           <h1 className="font-bold text-2xl text-slate-800 tracking-tight">ผู้ดูแลระบบ</h1>
-          <p className="text-slate-500 mt-1 text-[13px]">จัดการสิทธิ์การเข้าใช้งานระบบ</p>
+          <p className="text-slate-500 mt-1 text-[length:13px]">จัดการสิทธิ์การเข้าใช้งานระบบ</p>
         </div>
         <button
           onClick={handleAdd}
@@ -90,25 +90,25 @@ export default function UsersClient({
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-slate-100">
-                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider w-12 text-center">ลำดับ</th>
-                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">ชื่อผู้ใช้</th>
-                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">สิทธิ์การใช้งาน</th>
-                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">วันที่สร้าง</th>
-                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider text-right">จัดการ</th>
+                <th className="px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider w-12 text-center">ลำดับ</th>
+                <th className="px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider">ชื่อผู้ใช้</th>
+                <th className="px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider">สิทธิ์การใช้งาน</th>
+                <th className="px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider">วันที่สร้าง</th>
+                <th className="px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider text-right">จัดการ</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 text-slate-700">
               {initialUsers.map((user, idx) => (
                 <tr key={user.id} className="hover:bg-slate-50/50 transition-colors group">
-                  <td className="px-4 py-4 text-center text-slate-400 text-[13px]">{idx + 1}</td>
-                  <td className="px-4 py-4 font-semibold text-slate-800 text-[13px] flex items-center gap-2">
+                  <td className="px-4 py-4 text-center text-slate-400 text-[length:13px]">{idx + 1}</td>
+                  <td className="px-4 py-4 font-semibold text-slate-800 text-[length:13px] flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-500">
                       <KeyRound size={12} />
                     </div>
                     {user.username}
                   </td>
                   <td className="px-4 py-4">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[length:10px] font-bold ${
                       user.role === 'admin' 
                         ? 'bg-[#EEF0FF] text-[#5B58F2]' 
                         : 'bg-emerald-50 text-emerald-700'
@@ -117,7 +117,7 @@ export default function UsersClient({
                       {user.role.toUpperCase()}
                     </span>
                   </td>
-                  <td className="px-4 py-4 text-[13px] text-slate-500">
+                  <td className="px-4 py-4 text-[length:13px] text-slate-500">
                     {user.createdAt ? new Date(user.createdAt).toLocaleDateString('th-TH') : '-'}
                   </td>
                   <td className="px-4 py-4 text-right">

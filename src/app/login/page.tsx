@@ -97,7 +97,7 @@ export default function LoginPage() {
               </AnimatePresence>
               
               <div className="space-y-1.5 group">
-                <label className="block text-[10px] font-sans font-bold text-slate-500 uppercase tracking-wider group-focus-within:text-emerald-600 transition-colors">
+                <label className="block text-[length:10px] font-sans font-bold text-slate-500 uppercase tracking-wider group-focus-within:text-emerald-600 transition-colors">
                   รหัสเจ้าหน้าที่ (Username)
                 </label>
                 <div className="relative">
@@ -116,7 +116,7 @@ export default function LoginPage() {
               </div>
               
               <div className="space-y-1.5 group">
-                <label className="block text-[10px] font-sans font-bold text-slate-500 uppercase tracking-wider group-focus-within:text-emerald-600 transition-colors">
+                <label className="block text-[length:10px] font-sans font-bold text-slate-500 uppercase tracking-wider group-focus-within:text-emerald-600 transition-colors">
                   รหัสผ่าน (Password)
                 </label>
                 <div className="relative">

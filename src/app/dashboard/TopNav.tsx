@@ -36,7 +36,7 @@ export default function TopNav({ userName }: { userName: string }) {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className={`relative flex items-center justify-center px-5 py-2 rounded-full text-[14px] font-medium transition-all whitespace-nowrap ${
+                  className={`relative flex items-center justify-center px-5 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
                     isActive 
                       ? "text-white bg-[#1A1A1A] shadow-md" 
                       : "text-slate-500 hover:text-slate-900 hover:bg-slate-50 border border-transparent"

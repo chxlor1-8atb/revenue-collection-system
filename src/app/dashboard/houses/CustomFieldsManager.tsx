@@ -201,12 +201,12 @@ export default function CustomFieldsManager({ onClose, onUpdate }: CustomFieldsM
                         <div className="flex items-center gap-2">
                           <span className={`font-medium truncate ${field.isHidden ? 'text-slate-400 line-through' : 'text-slate-700'}`}>{field.name}</span>
                           {field.isSystem && (
-                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-500">
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[length:10px] font-medium bg-slate-100 text-slate-500">
                               <Lock size={10} /> ระบบ
                             </span>
                           )}
                           {field.required && (
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-50 text-red-600">
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[length:10px] font-medium bg-red-50 text-red-600">
                               จำเป็น
                             </span>
                           )}

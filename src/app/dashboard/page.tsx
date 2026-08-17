@@ -161,11 +161,11 @@ export default async function DashboardPage() {
             </span>
           </div>
           <div className="mt-auto flex items-end justify-between">
-            <div className="text-[32px] font-bold text-slate-900 tracking-tight leading-none">
-              <span className="text-[20px] font-semibold text-slate-400 mr-1">฿</span>
+            <div className="text-[length:32px] font-bold text-slate-900 tracking-tight leading-none">
+              <span className="text-[length:20px] font-semibold text-slate-400 mr-1">฿</span>
               {totalVerifiedRevenue.toLocaleString("th-TH", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </div>
-            <span className="text-[13px] text-slate-400 font-medium">จากยอดชำระสำเร็จทั้งหมด</span>
+            <span className="text-[length:13px] text-slate-400 font-medium">จากยอดชำระสำเร็จทั้งหมด</span>
           </div>
         </div>
 
@@ -178,10 +178,10 @@ export default async function DashboardPage() {
             </span>
           </div>
           <div className="mt-auto flex items-end justify-between">
-            <div className="text-[32px] font-bold text-slate-900 tracking-tight leading-none">
+            <div className="text-[length:32px] font-bold text-slate-900 tracking-tight leading-none">
               {housesWithUnpaidCount}
             </div>
-            <span className="text-[13px] text-slate-400 font-medium">จากทั้งหมด {totalHousesCount} หลัง</span>
+            <span className="text-[length:13px] text-slate-400 font-medium">จากทั้งหมด {totalHousesCount} หลัง</span>
           </div>
         </div>
 
@@ -194,10 +194,10 @@ export default async function DashboardPage() {
             </span>
           </div>
           <div className="mt-auto flex items-end justify-between">
-            <div className="text-[32px] font-bold text-slate-900 tracking-tight leading-none">
+            <div className="text-[length:32px] font-bold text-slate-900 tracking-tight leading-none">
               {waitingForReviewCount}
             </div>
-            <Link href="/dashboard/review" className="text-[13px] text-[#5B58F2] hover:underline font-semibold flex items-center gap-1">
+            <Link href="/dashboard/review" className="text-[length:13px] text-[#5B58F2] hover:underline font-semibold flex items-center gap-1">
               ไปที่รายการตรวจสอบ <ChevronRight size={12} strokeWidth={3} />
             </Link>
           </div>
@@ -212,10 +212,10 @@ export default async function DashboardPage() {
             </span>
           </div>
           <div className="mt-auto flex items-end justify-between">
-            <div className="text-[32px] font-bold text-slate-900 tracking-tight leading-none">
+            <div className="text-[length:32px] font-bold text-slate-900 tracking-tight leading-none">
               {pendingLineSlipsCount}
             </div>
-            <Link href="/dashboard/line-slips" className="text-[13px] text-[#5B58F2] hover:underline font-semibold flex items-center gap-1">
+            <Link href="/dashboard/line-slips" className="text-[length:13px] text-[#5B58F2] hover:underline font-semibold flex items-center gap-1">
               จัดการข้อความ <ChevronRight size={12} strokeWidth={3} />
             </Link>
           </div>
@@ -281,7 +281,7 @@ export default async function DashboardPage() {
                         ฿{parseFloat(tx.amount || "0").toLocaleString("th-TH")}
                       </span>
                     </div>
-                    <div className="flex items-center gap-3 text-[11px] font-medium text-slate-400">
+                    <div className="flex items-center gap-3 text-[length:11px] font-medium text-slate-400">
                       <span className="flex items-center gap-1">
                         <Calendar size={10} /> 
                         {tx.paidAt ? new Date(tx.paidAt).toLocaleDateString("th-TH", { month: "short", day: "numeric" }) : "-"}
@@ -291,7 +291,7 @@ export default async function DashboardPage() {
                         ยืนยันแล้ว
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-500 mt-1 truncate">
+                    <p className="text-[length:11px] text-slate-500 mt-1 truncate">
                       ชำระบิล: {tx.months.length > 0 ? tx.months.map(m => formatThaiMonth(m)).join(", ") : "ไม่ระบุ"}
                     </p>
                   </div>

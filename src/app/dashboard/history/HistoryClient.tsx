@@ -122,16 +122,16 @@ export default function HistoryClient() {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <h1 className="font-bold text-2xl text-slate-800 tracking-tight">ประวัติการรับชำระเงิน</h1>
-          <p className="text-slate-500 mt-1 text-[13px]">รายการรับชำระเงินที่ตรวจสอบแล้ว</p>
+          <p className="text-slate-500 mt-1 text-[length:13px]">รายการรับชำระเงินที่ตรวจสอบแล้ว</p>
         </div>
         
         <div className="flex gap-2 shrink-0">
           <div className="bg-white px-4 py-2.5 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-end">
-            <div className="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">จำนวนรายการ</div>
+            <div className="text-[length:11px] text-slate-400 font-semibold uppercase tracking-wider">จำนวนรายการ</div>
             <div className="text-lg font-bold text-slate-800 tracking-tight">{totalCount.toLocaleString()}</div>
           </div>
           <div className="bg-[#EEF0FF] px-4 py-2.5 rounded-2xl border border-transparent flex flex-col items-end">
-            <div className="text-[11px] text-[#5B58F2] font-semibold uppercase tracking-wider">ยอดเงินรวม</div>
+            <div className="text-[length:11px] text-[#5B58F2] font-semibold uppercase tracking-wider">ยอดเงินรวม</div>
             <div className="text-lg font-bold font-mono text-[#5B58F2] tracking-tight">฿{totalAmount.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
           </div>
         </div>
@@ -153,7 +153,7 @@ export default function HistoryClient() {
         {/* Filters Row */}
         <div className="flex flex-wrap gap-2 items-end w-full sm:w-auto">
           <div className="flex-1 min-w-[110px]">
-            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">สถานะ</label>
+            <label className="block text-[length:10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">สถานะ</label>
             <select
               value={status}
               onChange={(e) => { setStatus(e.target.value); setPage(1); }}
@@ -166,7 +166,7 @@ export default function HistoryClient() {
           </div>
 
           <div className="flex-1 min-w-[110px]">
-            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">ช่องทาง</label>
+            <label className="block text-[length:10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">ช่องทาง</label>
             <select
               value={channel}
               onChange={(e) => { setChannel(e.target.value); setPage(1); }}
@@ -179,12 +179,12 @@ export default function HistoryClient() {
           </div>
 
           <div className="flex-1 min-w-[130px]">
-            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">เดือนที่ชำระ</label>
+            <label className="block text-[length:10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">เดือนที่ชำระ</label>
             <input
               type="month"
               value={monthYear}
               onChange={(e) => { setMonthYear(e.target.value); setPage(1); }}
-              className="w-full h-[42px] px-3 bg-white border border-slate-200 text-slate-700 rounded-[12px] text-[13px] focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 transition-colors cursor-pointer"
+              className="w-full h-[42px] px-3 bg-white border border-slate-200 text-slate-700 rounded-[12px] text-[length:13px] focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 transition-colors cursor-pointer"
             />
           </div>
         </div>
@@ -192,7 +192,7 @@ export default function HistoryClient() {
         {/* Date Pickers & Export */}
         <div className="flex flex-1 sm:flex-none flex-wrap sm:flex-nowrap gap-2 items-end sm:justify-end shrink-0">
           <div className="flex-1 min-w-[130px] sm:w-[150px] md:w-[150px]">
-            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">จากวันที่</label>
+            <label className="block text-[length:10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">จากวันที่</label>
             <DatePicker
               value={startDate}
               onChange={(val) => { setStartDate(val); setPage(1); }}
@@ -200,7 +200,7 @@ export default function HistoryClient() {
             />
           </div>
           <div className="flex-1 min-w-[130px] sm:w-[150px] md:w-[150px]">
-            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">ถึงวันที่</label>
+            <label className="block text-[length:10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">ถึงวันที่</label>
             <DatePicker
               value={endDate}
               onChange={(val) => { setEndDate(val); setPage(1); }}
@@ -243,12 +243,12 @@ export default function HistoryClient() {
                   ) : (
                     <CheckCircle2 size={16} className="fill-emerald-100" />
                   )}
-                  <span className="text-[13px] font-semibold">
+                  <span className="text-[length:13px] font-semibold">
                     {item.slipStatus === 'voided' ? 'ยกเลิกรายการ' : 'ตรวจสอบสำเร็จ'} • รหัส {item.id}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-semibold bg-white px-2.5 py-1 rounded-full border border-slate-100 shadow-sm">
+                  <div className="flex items-center gap-1.5 text-[length:11px] text-slate-500 font-semibold bg-white px-2.5 py-1 rounded-full border border-slate-100 shadow-sm">
                     {item.paidVia === "LINE Bot" ? (
                       <><Smartphone size={12} className="text-[#5B58F2]" /> LINE Bot</>
                     ) : (
@@ -295,7 +295,7 @@ export default function HistoryClient() {
                   </div>
                   <div className="flex flex-wrap gap-1">
                     {item.months.length > 0 ? item.months.map((m: string) => (
-                      <span key={m} className="text-[11px] font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full border border-slate-200/60">
+                      <span key={m} className="text-[length:11px] font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full border border-slate-200/60">
                         {formatThaiMonth(m)}
                       </span>
                     )) : <span className="text-xs text-slate-400">-</span>}
@@ -316,7 +316,7 @@ export default function HistoryClient() {
                   <div className="text-xl font-bold font-mono text-emerald-600">
                     ฿{parseFloat(item.amount).toLocaleString("th-TH", { minimumFractionDigits: 2 })}
                   </div>
-                  <div className="text-[11px] text-slate-400 mt-0.5 font-medium">
+                  <div className="text-[length:11px] text-slate-400 mt-0.5 font-medium">
                     {item.paidAt ? new Date(item.paidAt).toLocaleDateString("th-TH", {
                       day: "numeric", month: "short", year: "numeric",
                       hour: "2-digit", minute: "2-digit"

@@ -162,14 +162,14 @@ export default function LineSlipsClient({
         <div className="flex gap-2">
           <button
             onClick={() => handleTabChange("pending")}
-            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[length:13px] font-semibold transition-all ${
               activeTab === "pending" 
                 ? "border border-[#5B58F2] text-[#5B58F2] bg-white shadow-sm" 
                 : "border border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50"
             }`}
           >
             รอดำเนินการ
-            <span className={`w-5 h-5 flex items-center justify-center rounded-full text-[10px] ${
+            <span className={`w-5 h-5 flex items-center justify-center rounded-full text-[length:10px] ${
               activeTab === "pending" ? "bg-[#EEF0FF] text-[#5B58F2]" : "bg-slate-100 text-slate-500"
             }`}>
               {pendingCount}
@@ -177,14 +177,14 @@ export default function LineSlipsClient({
           </button>
           <button
             onClick={() => handleTabChange("verified")}
-            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[length:13px] font-semibold transition-all ${
               activeTab === "verified" 
                 ? "border border-[#5B58F2] text-[#5B58F2] bg-white shadow-sm" 
                 : "border border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50"
             }`}
           >
             สำเร็จแล้ว
-            <span className={`w-5 h-5 flex items-center justify-center rounded-full text-[10px] ${
+            <span className={`w-5 h-5 flex items-center justify-center rounded-full text-[length:10px] ${
               activeTab === "verified" ? "bg-[#EEF0FF] text-[#5B58F2]" : "bg-slate-100 text-slate-500"
             }`}>
               {verifiedCount}
@@ -212,12 +212,12 @@ export default function LineSlipsClient({
                       </SlipModalButton>
                     ) : <div className="w-16 h-16 bg-slate-50 rounded-[12px] shrink-0" />}
                     <div className="flex-1 min-w-0">
-                      <p className="font-mono text-[11px] text-slate-400 mb-1">{slip.createdAt?.toLocaleString("th-TH")}</p>
+                      <p className="font-mono text-[length:11px] text-slate-400 mb-1">{slip.createdAt?.toLocaleString("th-TH")}</p>
                       {activeTab === "verified" ? (
                         <div>
                            <p className="text-sm font-semibold text-slate-800">{slip.senderName || "-"}</p>
                            <p className="font-bold text-emerald-600 mt-0.5">฿{slip.amount}</p>
-                           <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full mt-1">
+                           <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-[length:10px] font-bold px-2 py-0.5 rounded-full mt-1">
                              <CheckCircle2 size={10} /> ยืนยันอัตโนมัติ
                            </span>
                         </div>
@@ -225,17 +225,17 @@ export default function LineSlipsClient({
                         <>
                           {slip.isVerified ? (
                             <div>
-                              <span className="text-emerald-600 font-bold text-[10px] bg-emerald-50 px-2 py-0.5 rounded-full inline-block mb-1">สลิปแท้</span>
+                              <span className="text-emerald-600 font-bold text-[length:10px] bg-emerald-50 px-2 py-0.5 rounded-full inline-block mb-1">สลิปแท้</span>
                               <p className="text-xs text-slate-600">ยอด: <strong className="text-slate-800">฿{slip.amount}</strong></p>
                               <p className="text-xs text-slate-600">ผู้โอน: {slip.senderName}</p>
                             </div>
                           ) : (
-                            <span className="text-amber-500 font-bold text-[10px] bg-amber-50 px-2 py-0.5 rounded-full inline-block">รอตรวจสอบ</span>
+                            <span className="text-amber-500 font-bold text-[length:10px] bg-amber-50 px-2 py-0.5 rounded-full inline-block">รอตรวจสอบ</span>
                           )}
                           {slip.houseNumber ? (
                             <span className="block mt-1.5 font-semibold text-slate-800 text-sm">บ้าน {slip.houseNumber}</span>
                           ) : (
-                            <span className="block mt-1.5 text-amber-600 text-[11px] font-medium">ยังไม่แจ้งบ้านเลขที่</span>
+                            <span className="block mt-1.5 text-amber-600 text-[length:11px] font-medium">ยังไม่แจ้งบ้านเลขที่</span>
                           )}
                         </>
                       )}
@@ -266,19 +266,19 @@ export default function LineSlipsClient({
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-slate-100">
-                    <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">เวลา</th>
-                    <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">รูปภาพ</th>
+                    <th className="px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">เวลา</th>
+                    <th className="px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">รูปภาพ</th>
                     {activeTab === "pending" ? (
                       <>
-                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">ข้อมูล</th>
-                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">บ้านเลขที่</th>
-                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans text-right">จัดการ</th>
+                        <th className="px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">ข้อมูล</th>
+                        <th className="px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">บ้านเลขที่</th>
+                        <th className="px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider font-sans text-right">จัดการ</th>
                       </>
                     ) : (
                       <>
-                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">ผู้โอน</th>
-                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">ยอดเงิน</th>
-                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">สถานะ</th>
+                        <th className="px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">ผู้โอน</th>
+                        <th className="px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">ยอดเงิน</th>
+                        <th className="px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">สถานะ</th>
                       </>
                     )}
                   </tr>
@@ -287,7 +287,7 @@ export default function LineSlipsClient({
                   {slips.map((slip) => (
                     <tr key={slip.id} className="hover:bg-slate-50/50 transition-colors group">
                       <td className="px-4 py-4">
-                        <span className="font-mono text-[13px] text-slate-500">{slip.createdAt?.toLocaleString("th-TH", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
+                        <span className="font-mono text-[length:13px] text-slate-500">{slip.createdAt?.toLocaleString("th-TH", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
                       </td>
                       <td className="px-4 py-4">
                         {slip.imageUrl ? (
@@ -302,19 +302,19 @@ export default function LineSlipsClient({
                           <td className="px-4 py-4 font-sans">
                             {slip.isVerified ? (
                               <div className="flex flex-col gap-0.5">
-                                <span className="text-emerald-700 font-bold text-[10px] bg-emerald-50 px-2 py-0.5 rounded-full inline-block w-fit mb-0.5">สลิปแท้</span>
-                                <span className="text-[13px] font-semibold text-slate-800">฿{slip.amount}</span>
-                                <span className="text-[11px] text-slate-500">{slip.senderName}</span>
+                                <span className="text-emerald-700 font-bold text-[length:10px] bg-emerald-50 px-2 py-0.5 rounded-full inline-block w-fit mb-0.5">สลิปแท้</span>
+                                <span className="text-[length:13px] font-semibold text-slate-800">฿{slip.amount}</span>
+                                <span className="text-[length:11px] text-slate-500">{slip.senderName}</span>
                               </div>
                             ) : (
-                              <span className="text-amber-600 font-bold text-[10px] bg-amber-50 px-2 py-0.5 rounded-full inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span> รอตรวจสอบ</span>
+                              <span className="text-amber-600 font-bold text-[length:10px] bg-amber-50 px-2 py-0.5 rounded-full inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span> รอตรวจสอบ</span>
                             )}
                           </td>
                           <td className="px-4 py-4 font-sans">
                             {slip.houseNumber ? (
-                              <span className="font-semibold text-slate-800 text-[13px]">{slip.houseNumber}</span>
+                              <span className="font-semibold text-slate-800 text-[length:13px]">{slip.houseNumber}</span>
                             ) : (
-                              <span className="text-slate-400 text-[12px] italic">Not provided</span>
+                              <span className="text-slate-400 text-xs italic">Not provided</span>
                             )}
                           </td>
                           <td className="px-4 py-4 text-right">
@@ -336,10 +336,10 @@ export default function LineSlipsClient({
                         </>
                       ) : (
                         <>
-                          <td className="px-4 py-4 text-[13px] font-medium text-slate-800">{slip.senderName || "-"}</td>
-                          <td className="px-4 py-4 font-bold text-slate-800 text-[13px]">฿{slip.amount}</td>
+                          <td className="px-4 py-4 text-[length:13px] font-medium text-slate-800">{slip.senderName || "-"}</td>
+                          <td className="px-4 py-4 font-bold text-slate-800 text-[length:13px]">฿{slip.amount}</td>
                           <td className="px-4 py-4">
-                            <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 text-[11px] font-bold px-2 py-1 rounded-full">
+                            <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 text-[length:11px] font-bold px-2 py-1 rounded-full">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Done
                             </span>
                           </td>

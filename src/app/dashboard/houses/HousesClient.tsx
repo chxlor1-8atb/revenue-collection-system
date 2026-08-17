@@ -277,7 +277,7 @@ export default function HousesClient({
               className="w-full sm:w-80 focus:w-full sm:focus:w-80 !bg-slate-50 border-transparent focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none text-sm rounded-xl"
             />
           </div>
-          <div className="text-[13px] text-slate-400 font-medium z-10 flex gap-4">
+          <div className="text-[length:13px] text-slate-400 font-medium z-10 flex gap-4">
             <span className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ทั้งหมด {totalHouses}
             </span>
@@ -289,7 +289,7 @@ export default function HousesClient({
             <thead>
               <tr className="border-b border-slate-100">
                 {customFieldsSchema.filter(f => !f.isHidden).map(field => (
-                  <th key={field.id} className={`px-4 py-3 text-[11px] font-semibold uppercase tracking-wider ${field.isSystem && (field.id === 'houseNumber' || field.id === 'ownerName') ? 'cursor-pointer text-slate-500 hover:text-slate-800 transition-colors' : 'text-slate-400'}`} onClick={() => {
+                  <th key={field.id} className={`px-4 py-3 text-[length:11px] font-semibold uppercase tracking-wider ${field.isSystem && (field.id === 'houseNumber' || field.id === 'ownerName') ? 'cursor-pointer text-slate-500 hover:text-slate-800 transition-colors' : 'text-slate-400'}`} onClick={() => {
                     if (field.id === 'houseNumber' || field.id === 'ownerName') handleSort(field.id);
                   }}>
                     <div className="flex items-center gap-1.5">
@@ -300,8 +300,8 @@ export default function HousesClient({
                     </div>
                   </th>
                 ))}
-                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">บัญชี</th>
-                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider text-right">จัดการ</th>
+                <th className="px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider">บัญชี</th>
+                <th className="px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider text-right">จัดการ</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 text-slate-700">
@@ -316,17 +316,17 @@ export default function HousesClient({
                     }
                     
                     if (field.id === 'houseNumber') {
-                      return <td key={field.id} className="px-4 py-4 font-mono font-bold text-slate-800 text-[13px]">{val}</td>;
+                      return <td key={field.id} className="px-4 py-4 font-mono font-bold text-slate-800 text-[length:13px]">{val}</td>;
                     }
                     if (field.id === 'ownerName') {
-                      return <td key={field.id} className="px-4 py-4 font-semibold text-[13px]">{val}</td>;
+                      return <td key={field.id} className="px-4 py-4 font-semibold text-[length:13px]">{val}</td>;
                     }
-                    return <td key={field.id} className="px-4 py-4 text-slate-500 text-[13px]">{val}</td>;
+                    return <td key={field.id} className="px-4 py-4 text-slate-500 text-[length:13px]">{val}</td>;
                   })}
                   <td className="px-4 py-4">
                     <Link 
                       href={`/dashboard/houses/${house.id}`} 
-                      className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-bold text-[#5B58F2] bg-[#EEF0FF] hover:bg-[#E0E4FF] rounded-full transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1 text-[length:11px] font-bold text-[#5B58F2] bg-[#EEF0FF] hover:bg-[#E0E4FF] rounded-full transition-colors"
                     >
                       ดูบิลชำระ
                     </Link>
@@ -364,7 +364,7 @@ export default function HousesClient({
                   <td colSpan={2 + customFieldsSchema.filter(f => !f.isHidden).length} className="p-16 text-center">
                     <div className="text-slate-300 mb-3 flex justify-center"><Home size={40} /></div>
                     <div className="text-slate-500 font-semibold">ไม่พบข้อมูลบ้าน</div>
-                    <div className="text-[13px] text-slate-400 mt-1">
+                    <div className="text-[length:13px] text-slate-400 mt-1">
                       {searchQuery ? "ลองค้นหาด้วยคำอื่น" : "คลิก 'เพิ่มบ้านใหม่' เพื่อเริ่มต้น"}
                     </div>
                   </td>

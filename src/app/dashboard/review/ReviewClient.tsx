@@ -82,7 +82,7 @@ export default function ReviewClient() {
                      </div>
                      <div className="text-right">
                         <span className="block font-mono font-bold text-lg text-amber-600">{parseFloat(tx.amount).toFixed(2)} ฿</span>
-                        <span className="text-[10px] text-amber-500 flex items-center gap-1 justify-end mt-1">
+                        <span className="text-[length:10px] text-amber-500 flex items-center gap-1 justify-end mt-1">
                           <Loader2 size={10} className="animate-spin" /> รอสลิป...
                         </span>
                      </div>

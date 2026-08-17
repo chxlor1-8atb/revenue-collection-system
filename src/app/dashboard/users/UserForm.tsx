@@ -107,7 +107,7 @@ export default function UserForm({
               `}>
                 <input type="radio" name="role" value="staff" checked={role === 'staff'} onChange={() => setRole('staff')} className="sr-only" />
                 <span className="font-bold text-sm">Staff</span>
-                <span className="text-[10px] text-center opacity-80">พนักงานทั่วไป / ตรวจสลิป</span>
+                <span className="text-[length:10px] text-center opacity-80">พนักงานทั่วไป / ตรวจสลิป</span>
               </label>
               
               <label className={`
@@ -116,7 +116,7 @@ export default function UserForm({
               `}>
                 <input type="radio" name="role" value="admin" checked={role === 'admin'} onChange={() => setRole('admin')} className="sr-only" />
                 <span className="font-bold text-sm">Admin</span>
-                <span className="text-[10px] text-center opacity-80">ผู้ดูแลระบบ / จัดการตั้งค่า</span>
+                <span className="text-[length:10px] text-center opacity-80">ผู้ดูแลระบบ / จัดการตั้งค่า</span>
               </label>
             </div>
           </div>

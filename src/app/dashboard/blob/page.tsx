@@ -233,7 +233,7 @@ export default function BlobManagementPage() {
             <HardDrive size={24} className="text-[#5B58F2]" />
             พื้นที่จัดเก็บไฟล์ (Blob)
           </h1>
-          <p className="text-[13px] text-slate-500 mt-1">จัดการไฟล์ สลิป และคิวอาร์โค้ดที่เก็บใน Vercel Blob</p>
+          <p className="text-[length:13px] text-slate-500 mt-1">จัดการไฟล์ สลิป และคิวอาร์โค้ดที่เก็บใน Vercel Blob</p>
         </div>
         <button
           onClick={() => fetchFiles(false)}
@@ -290,15 +290,15 @@ export default function BlobManagementPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-[20px] border border-slate-100 p-5 shadow-sm">
-          <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">จำนวนไฟล์ที่โหลด</p>
+          <p className="text-[length:11px] text-slate-400 font-semibold uppercase tracking-wider">จำนวนไฟล์ที่โหลด</p>
           <p className="text-2xl font-bold text-slate-800 mt-1 tracking-tight">{files.length}</p>
         </div>
         <div className="bg-white rounded-[20px] border border-slate-100 p-5 shadow-sm">
-          <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">ขนาดที่โหลด</p>
+          <p className="text-[length:11px] text-slate-400 font-semibold uppercase tracking-wider">ขนาดที่โหลด</p>
           <p className="text-2xl font-bold text-slate-800 mt-1 tracking-tight">{formatSize(totalSize)}</p>
         </div>
         <div className="bg-[#EEF0FF] rounded-[20px] border border-transparent p-5 col-span-2 sm:col-span-1 shadow-sm">
-          <p className="text-[11px] text-[#5B58F2] font-semibold uppercase tracking-wider">เลือกไว้</p>
+          <p className="text-[length:11px] text-[#5B58F2] font-semibold uppercase tracking-wider">เลือกไว้</p>
           <p className="text-2xl font-bold text-[#5B58F2] mt-1 tracking-tight">{selectedUrls.size}</p>
         </div>
       </div>
@@ -330,7 +330,7 @@ export default function BlobManagementPage() {
             <button
               key={tab.prefix}
               onClick={() => setActiveTab(tab.prefix)}
-              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-semibold transition-all whitespace-nowrap ${
+              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[length:13px] font-semibold transition-all whitespace-nowrap ${
                 activeTab === tab.prefix
                   ? 'bg-[#EEF0FF] text-[#5B58F2] shadow-sm'
                   : 'bg-white text-slate-500 hover:text-slate-800 hover:bg-slate-50 border border-slate-200'
@@ -423,14 +423,14 @@ export default function BlobManagementPage() {
                       className="rounded border-slate-300 cursor-pointer text-[#5B58F2] focus:ring-[#5B58F2]"
                     />
                   </th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider w-16">ดูรูป</th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider hover:text-slate-800 cursor-pointer transition-colors select-none" onClick={() => handleSort('pathname')}>
+                  <th className="text-left px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider w-16">ดูรูป</th>
+                  <th className="text-left px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider hover:text-slate-800 cursor-pointer transition-colors select-none" onClick={() => handleSort('pathname')}>
                     <div className="flex items-center gap-1">ชื่อไฟล์ <ArrowUpDown size={10} className={sortConfig.key==='pathname' ? 'text-[#5B58F2]' : 'text-slate-300'}/></div>
                   </th>
-                  <th className="text-right px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider hover:text-slate-800 cursor-pointer transition-colors select-none" onClick={() => handleSort('size')}>
+                  <th className="text-right px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider hover:text-slate-800 cursor-pointer transition-colors select-none" onClick={() => handleSort('size')}>
                     <div className="flex items-center justify-end gap-1">ขนาด <ArrowUpDown size={10} className={sortConfig.key==='size' ? 'text-[#5B58F2]' : 'text-slate-300'}/></div>
                   </th>
-                  <th className="text-right px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider hover:text-slate-800 cursor-pointer transition-colors select-none" onClick={() => handleSort('uploadedAt')}>
+                  <th className="text-right px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider hover:text-slate-800 cursor-pointer transition-colors select-none" onClick={() => handleSort('uploadedAt')}>
                     <div className="flex items-center justify-end gap-1">อัปโหลดเมื่อ <ArrowUpDown size={10} className={sortConfig.key==='uploadedAt' ? 'text-[#5B58F2]' : 'text-slate-300'}/></div>
                   </th>
                 </tr>
@@ -467,14 +467,14 @@ export default function BlobManagementPage() {
                       </SlipModalButton>
                     </td>
                     <td className="px-4 py-4 align-middle">
-                      <p className="font-mono text-[13px] font-medium text-slate-700 truncate max-w-[200px] md:max-w-[400px]" title={file.pathname}>
+                      <p className="font-mono text-[length:13px] font-medium text-slate-700 truncate max-w-[200px] md:max-w-[400px]" title={file.pathname}>
                         {file.pathname}
                       </p>
                     </td>
-                    <td className="px-4 py-4 text-right font-mono font-semibold text-[13px] text-slate-600 align-middle">
+                    <td className="px-4 py-4 text-right font-mono font-semibold text-[length:13px] text-slate-600 align-middle">
                       {formatSize(file.size)}
                     </td>
-                    <td className="px-4 py-4 text-right text-[13px] text-slate-500 whitespace-nowrap align-middle">
+                    <td className="px-4 py-4 text-right text-[length:13px] text-slate-500 whitespace-nowrap align-middle">
                       {formatDate(file.uploadedAt)}
                     </td>
                   </tr>

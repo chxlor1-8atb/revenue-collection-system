@@ -58,7 +58,7 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
           
           <div className="flex justify-between items-start relative z-10">
             <div className="pr-12"> {/* Padding to avoid logo overlap */}
-              <p className="text-[10px] font-sans text-slate-400 uppercase tracking-widest mb-1 font-semibold">
+              <p className="text-[length:10px] font-sans text-slate-400 uppercase tracking-widest mb-1 font-semibold">
                 กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองนางรอง
               </p>
               <h1 className="font-mono text-4xl sm:text-5xl font-bold tracking-tight mb-6">
@@ -67,11 +67,11 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
               
               <div className="space-y-4">
                 <div>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">ชื่อเจ้าบ้าน / Owner</p>
+                  <p className="text-[length:10px] text-slate-500 uppercase tracking-widest font-semibold">ชื่อเจ้าบ้าน / Owner</p>
                   <p className="font-sans text-lg font-medium text-slate-100">{house.ownerName}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">ชุมชน / Zone</p>
+                  <p className="text-[length:10px] text-slate-500 uppercase tracking-widest font-semibold">ชุมชน / Zone</p>
                   <p className="font-sans text-sm font-medium text-slate-200">{house.zone || "-"}</p>
                 </div>
               </div>
