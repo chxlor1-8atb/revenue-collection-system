@@ -231,9 +231,9 @@ export default function BlobManagementPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2 tracking-tight">
             <HardDrive size={24} className="text-[#5B58F2]" />
-            Blob Storage
+            พื้นที่จัดเก็บไฟล์ (Blob)
           </h1>
-          <p className="text-[13px] text-slate-500 mt-1">Manage files, slips, and QR codes stored in Vercel Blob.</p>
+          <p className="text-[13px] text-slate-500 mt-1">จัดการไฟล์ สลิป และคิวอาร์โค้ดที่เก็บใน Vercel Blob</p>
         </div>
         <button
           onClick={() => fetchFiles(false)}
@@ -241,7 +241,7 @@ export default function BlobManagementPage() {
           className="flex items-center gap-1.5 px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-50 shadow-sm"
         >
           <RefreshCw size={14} className={loading && !cursor ? 'animate-spin' : ''} />
-          Reload
+          รีโหลด
         </button>
       </div>
 
@@ -249,7 +249,7 @@ export default function BlobManagementPage() {
       <div className="bg-white rounded-[24px] border border-slate-100 p-6 mb-4 shadow-sm">
         <div className="flex justify-between items-end mb-3">
           <div>
-            <h3 className="text-sm font-bold text-slate-800">Storage Usage (1 GB Quota)</h3>
+            <h3 className="text-sm font-bold text-slate-800">การใช้พื้นที่ (โควต้า 1 GB)</h3>
             <p className="text-xs text-slate-500 mt-1">
               พื้นที่ว่างเหลือ {loading && files.length===0 ? '—' : formatSize(remainingBytes)}
             </p>
@@ -290,15 +290,15 @@ export default function BlobManagementPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-[20px] border border-slate-100 p-5 shadow-sm">
-          <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Loaded Files</p>
+          <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">จำนวนไฟล์ที่โหลด</p>
           <p className="text-2xl font-bold text-slate-800 mt-1 tracking-tight">{files.length}</p>
         </div>
         <div className="bg-white rounded-[20px] border border-slate-100 p-5 shadow-sm">
-          <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Loaded Size</p>
+          <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">ขนาดที่โหลด</p>
           <p className="text-2xl font-bold text-slate-800 mt-1 tracking-tight">{formatSize(totalSize)}</p>
         </div>
         <div className="bg-[#EEF0FF] rounded-[20px] border border-transparent p-5 col-span-2 sm:col-span-1 shadow-sm">
-          <p className="text-[11px] text-[#5B58F2] font-semibold uppercase tracking-wider">Selected</p>
+          <p className="text-[11px] text-[#5B58F2] font-semibold uppercase tracking-wider">เลือกไว้</p>
           <p className="text-2xl font-bold text-[#5B58F2] mt-1 tracking-tight">{selectedUrls.size}</p>
         </div>
       </div>
@@ -423,15 +423,15 @@ export default function BlobManagementPage() {
                       className="rounded border-slate-300 cursor-pointer text-[#5B58F2] focus:ring-[#5B58F2]"
                     />
                   </th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider w-16">Preview</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider w-16">ดูรูป</th>
                   <th className="text-left px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider hover:text-slate-800 cursor-pointer transition-colors select-none" onClick={() => handleSort('pathname')}>
-                    <div className="flex items-center gap-1">Pathname <ArrowUpDown size={10} className={sortConfig.key==='pathname' ? 'text-[#5B58F2]' : 'text-slate-300'}/></div>
+                    <div className="flex items-center gap-1">ชื่อไฟล์ <ArrowUpDown size={10} className={sortConfig.key==='pathname' ? 'text-[#5B58F2]' : 'text-slate-300'}/></div>
                   </th>
                   <th className="text-right px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider hover:text-slate-800 cursor-pointer transition-colors select-none" onClick={() => handleSort('size')}>
-                    <div className="flex items-center justify-end gap-1">Size <ArrowUpDown size={10} className={sortConfig.key==='size' ? 'text-[#5B58F2]' : 'text-slate-300'}/></div>
+                    <div className="flex items-center justify-end gap-1">ขนาด <ArrowUpDown size={10} className={sortConfig.key==='size' ? 'text-[#5B58F2]' : 'text-slate-300'}/></div>
                   </th>
                   <th className="text-right px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider hover:text-slate-800 cursor-pointer transition-colors select-none" onClick={() => handleSort('uploadedAt')}>
-                    <div className="flex items-center justify-end gap-1">Uploaded <ArrowUpDown size={10} className={sortConfig.key==='uploadedAt' ? 'text-[#5B58F2]' : 'text-slate-300'}/></div>
+                    <div className="flex items-center justify-end gap-1">อัปโหลดเมื่อ <ArrowUpDown size={10} className={sortConfig.key==='uploadedAt' ? 'text-[#5B58F2]' : 'text-slate-300'}/></div>
                   </th>
                 </tr>
               </thead>

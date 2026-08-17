@@ -73,15 +73,15 @@ export default function UsersClient({
     <div className="font-sans">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div>
-          <h1 className="font-bold text-2xl text-slate-800 tracking-tight">Admin Users</h1>
-          <p className="text-slate-500 mt-1 text-[13px]">Manage system access and roles</p>
+          <h1 className="font-bold text-2xl text-slate-800 tracking-tight">ผู้ดูแลระบบ</h1>
+          <p className="text-slate-500 mt-1 text-[13px]">จัดการสิทธิ์การเข้าใช้งานระบบ</p>
         </div>
         <button
           onClick={handleAdd}
           className="flex items-center gap-1.5 bg-[#5B58F2] hover:bg-[#4A47D1] text-white px-4 py-2 rounded-xl text-xs font-semibold transition-colors shadow-sm"
         >
           <Plus size={14} />
-          Add User
+          เพิ่มผู้ใช้งาน
         </button>
       </div>
 
@@ -90,11 +90,11 @@ export default function UsersClient({
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-slate-100">
-                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider w-12 text-center">#</th>
-                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Username</th>
-                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Role</th>
-                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Created</th>
-                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider text-right">More</th>
+                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider w-12 text-center">ลำดับ</th>
+                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">ชื่อผู้ใช้</th>
+                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">สิทธิ์การใช้งาน</th>
+                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">วันที่สร้าง</th>
+                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider text-right">จัดการ</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 text-slate-700">
@@ -125,14 +125,14 @@ export default function UsersClient({
                       <button
                         onClick={() => handleEdit(user)}
                         className="p-2 text-slate-400 hover:text-[#5B58F2] hover:bg-slate-50 rounded-lg transition-colors"
-                        title="Edit"
+                        title="แก้ไข"
                       >
                         <Edit2 size={14} />
                       </button>
                       <button
                         onClick={() => handleDeleteClick(user.id, user.username)}
                         className="p-2 text-slate-400 hover:text-red-500 hover:bg-slate-50 rounded-lg transition-colors"
-                        title="Delete"
+                        title="ลบ"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -144,7 +144,7 @@ export default function UsersClient({
               {initialUsers.length === 0 && (
                 <tr>
                   <td colSpan={5} className="p-16 text-center text-slate-500 font-medium">
-                    No users found
+                    ไม่พบผู้ใช้งาน
                   </td>
                 </tr>
               )}

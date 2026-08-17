@@ -207,7 +207,7 @@ export default function HousesClient({
   return (
     <div className="font-sans">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <h1 className="font-bold text-2xl text-slate-800 tracking-tight">Manage Houses</h1>
+        <h1 className="font-bold text-2xl text-slate-800 tracking-tight">จัดการข้อมูลบ้าน</h1>
         <div className="flex flex-wrap gap-2">
           <input 
             type="file" 
@@ -222,7 +222,7 @@ export default function HousesClient({
             className="flex items-center gap-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 rounded-xl text-xs font-semibold transition-colors shadow-sm disabled:opacity-50"
           >
             <Upload size={14} />
-            {isImporting ? 'กำลังนำเข้า...' : 'Import'}
+            {isImporting ? 'กำลังนำเข้า...' : 'นำเข้า CSV'}
           </button>
           
           <a
@@ -230,13 +230,13 @@ export default function HousesClient({
             className="flex items-center gap-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 rounded-xl text-xs font-semibold transition-colors shadow-sm"
           >
             <Download size={14} />
-            Export
+            ส่งออก CSV
           </a>
 
           <button
             onClick={() => setShowSettings(true)}
             className="flex items-center gap-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-3 py-2 rounded-xl text-xs font-semibold transition-colors shadow-sm"
-            title="ตั้งค่าหัวตาราง"
+            title="ตั้งค่าฟิลด์เพิ่มเติม"
           >
             <Settings size={14} />
           </button>
@@ -246,7 +246,7 @@ export default function HousesClient({
             className="flex items-center gap-1.5 bg-[#5B58F2] hover:bg-[#4A47D1] text-white px-4 py-2 rounded-xl text-xs font-semibold transition-colors shadow-sm"
           >
             <Plus size={14} />
-            Add new house
+            เพิ่มบ้านใหม่
           </button>
         </div>
       </div>
@@ -273,13 +273,13 @@ export default function HousesClient({
             <SearchAutocomplete 
               value={searchQuery}
               onChange={setSearchQuery}
-              placeholder="Search house or owner..."
+              placeholder="ค้นหาบ้านหรือชื่อเจ้าของ..."
               className="w-full sm:w-80 focus:w-full sm:focus:w-80 !bg-slate-50 border-transparent focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none text-sm rounded-xl"
             />
           </div>
           <div className="text-[13px] text-slate-400 font-medium z-10 flex gap-4">
             <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Total {totalHouses}
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ทั้งหมด {totalHouses}
             </span>
           </div>
         </div>
@@ -300,8 +300,8 @@ export default function HousesClient({
                     </div>
                   </th>
                 ))}
-                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Ledger</th>
-                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider text-right">More</th>
+                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">บัญชี</th>
+                <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider text-right">จัดการ</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 text-slate-700">
@@ -328,7 +328,7 @@ export default function HousesClient({
                       href={`/dashboard/houses/${house.id}`} 
                       className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-bold text-[#5B58F2] bg-[#EEF0FF] hover:bg-[#E0E4FF] rounded-full transition-colors"
                     >
-                      View Bills
+                      ดูบิลชำระ
                     </Link>
                   </td>
                   <td className="px-4 py-4 text-right">
@@ -363,9 +363,9 @@ export default function HousesClient({
                 <tr>
                   <td colSpan={2 + customFieldsSchema.filter(f => !f.isHidden).length} className="p-16 text-center">
                     <div className="text-slate-300 mb-3 flex justify-center"><Home size={40} /></div>
-                    <div className="text-slate-500 font-semibold">No houses found</div>
+                    <div className="text-slate-500 font-semibold">ไม่พบข้อมูลบ้าน</div>
                     <div className="text-[13px] text-slate-400 mt-1">
-                      {searchQuery ? "Try a different search term" : "Click 'Add new house' to get started"}
+                      {searchQuery ? "ลองค้นหาด้วยคำอื่น" : "คลิก 'เพิ่มบ้านใหม่' เพื่อเริ่มต้น"}
                     </div>
                   </td>
                 </tr>

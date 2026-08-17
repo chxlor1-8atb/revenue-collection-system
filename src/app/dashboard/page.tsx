@@ -155,7 +155,7 @@ export default async function DashboardPage() {
         {/* Card 1: Verified Revenue */}
         <div className="bg-white rounded-[32px] p-7 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
           <div className="flex items-center gap-4 mb-5">
-            <span className="text-slate-800 font-bold tracking-tight text-lg">Revenue</span>
+            <span className="text-slate-800 font-bold tracking-tight text-lg">ยอดรับชำระแล้ว</span>
             <span className="bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full text-xs font-bold border border-emerald-100">
               +{verifiedTxs.length}
             </span>
@@ -165,32 +165,32 @@ export default async function DashboardPage() {
               <span className="text-[20px] font-semibold text-slate-400 mr-1">฿</span>
               {totalVerifiedRevenue.toLocaleString("th-TH", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </div>
-            <span className="text-[13px] text-slate-400 font-medium">Compare 0 (last month)</span>
+            <span className="text-[13px] text-slate-400 font-medium">เทียบกับ 0 (เดือนก่อน)</span>
           </div>
         </div>
 
         {/* Card 2: Houses with Unpaid Invoices */}
         <div className="bg-white rounded-[32px] p-7 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
           <div className="flex items-center gap-4 mb-5">
-            <span className="text-slate-800 font-bold tracking-tight text-lg">Unpaid Houses</span>
+            <span className="text-slate-800 font-bold tracking-tight text-lg">บ้านที่ค้างชำระ</span>
             <span className="bg-red-50 text-red-600 px-2 py-0.5 rounded-full text-xs font-bold border border-red-100">
-              Attention
+              รอจัดการ
             </span>
           </div>
           <div className="mt-auto flex items-end justify-between">
             <div className="text-[32px] font-bold text-slate-900 tracking-tight leading-none">
               {housesWithUnpaidCount}
             </div>
-            <span className="text-[13px] text-slate-400 font-medium">From {totalHousesCount} total</span>
+            <span className="text-[13px] text-slate-400 font-medium">จากทั้งหมด {totalHousesCount} หลัง</span>
           </div>
         </div>
 
         {/* Card 3: Pending Reviews */}
         <div className="bg-white rounded-[32px] p-7 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
           <div className="flex items-center gap-4 mb-5">
-            <span className="text-slate-800 font-bold tracking-tight text-lg">Review Inbox</span>
+            <span className="text-slate-800 font-bold tracking-tight text-lg">รอยืนยันสลิป</span>
             <span className="bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full text-xs font-bold border border-amber-100">
-              Action
+              รอดำเนินการ
             </span>
           </div>
           <div className="mt-auto flex items-end justify-between">
@@ -198,7 +198,7 @@ export default async function DashboardPage() {
               {waitingForReviewCount}
             </div>
             <Link href="/dashboard/review" className="text-[13px] text-[#5B58F2] hover:underline font-semibold flex items-center gap-1">
-              Go to review <ChevronRight size={12} strokeWidth={3} />
+              ไปที่รายการตรวจสอบ <ChevronRight size={12} strokeWidth={3} />
             </Link>
           </div>
         </div>
@@ -206,9 +206,9 @@ export default async function DashboardPage() {
         {/* Card 4: LINE Slips */}
         <div className="bg-white rounded-[32px] p-7 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
           <div className="flex items-center gap-4 mb-5">
-            <span className="text-slate-800 font-bold tracking-tight text-lg">LINE Slips</span>
+            <span className="text-slate-800 font-bold tracking-tight text-lg">แจ้งผ่าน LINE</span>
             <span className="bg-[#EEF0FF] text-[#5B58F2] px-2 py-0.5 rounded-full text-xs font-bold border border-[#5B58F2]/20">
-              Bot
+              บอท
             </span>
           </div>
           <div className="mt-auto flex items-end justify-between">
@@ -216,7 +216,7 @@ export default async function DashboardPage() {
               {pendingLineSlipsCount}
             </div>
             <Link href="/dashboard/line-slips" className="text-[13px] text-[#5B58F2] hover:underline font-semibold flex items-center gap-1">
-              Manage slips <ChevronRight size={12} strokeWidth={3} />
+              จัดการข้อความ <ChevronRight size={12} strokeWidth={3} />
             </Link>
           </div>
         </div>
@@ -228,37 +228,35 @@ export default async function DashboardPage() {
         {/* Left Column (simulated graph area) */}
         <div className="xl:col-span-2 bg-white rounded-[24px] p-6 md:p-8 border border-slate-100 shadow-sm flex flex-col">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="font-semibold text-lg text-slate-800">Revenue Analytics</h2>
+            <h2 className="font-semibold text-lg text-slate-800">กราฟรายได้ (Revenue Analytics)</h2>
             <div className="flex items-center gap-4">
               <button className="text-sm font-medium text-slate-600 flex items-center gap-1 hover:text-slate-900">
-                Earnings <ChevronDown size={14} />
+                รายได้ <ChevronDown size={14} />
               </button>
               <button className="text-sm font-medium text-slate-600 flex items-center gap-1 hover:text-slate-900">
-                Last 30 Days <ChevronDown size={14} />
+                30 วันล่าสุด <ChevronDown size={14} />
               </button>
             </div>
           </div>
           
           <div className="flex-1 flex items-center justify-center min-h-[300px] border border-dashed border-slate-200 rounded-2xl bg-slate-50 relative">
-            {/* Placeholder for the chart since we don't have recharts set up here */}
             <div className="text-center">
               <TrendingUp size={48} className="mx-auto text-slate-300 mb-3" />
-              <p className="text-slate-500 font-medium">Revenue Chart Area</p>
-              <p className="text-xs text-slate-400 mt-1">Ready for Recharts integration</p>
+              <p className="text-slate-500 font-medium">พื้นที่แสดงกราฟรายได้</p>
+              <p className="text-xs text-slate-400 mt-1">พร้อมสำหรับการเชื่อมต่อ Recharts</p>
             </div>
             
-            {/* LoopAI style floating analysis button */}
             <div className="absolute left-6 bottom-6 w-64 bg-white p-4 rounded-2xl shadow-lg border border-slate-100">
               <div className="flex items-start gap-2 mb-3">
                 <div className="bg-[#EEF0FF] p-1.5 rounded-lg text-[#5B58F2]">
                   <ArrowRight size={14} />
                 </div>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Fast responses build trust and boost client satisfaction.
+                  การตอบกลับที่รวดเร็วช่วยสร้างความไว้วางใจให้กับลูกบ้าน
                 </p>
               </div>
               <button className="w-full py-2 bg-gradient-to-r from-[#5B58F2] to-[#7B79F2] text-white rounded-xl text-xs font-semibold shadow-md hover:opacity-90 transition-opacity">
-                Run Analysis
+                เรียกดูการวิเคราะห์
               </button>
             </div>
           </div>
@@ -267,16 +265,16 @@ export default async function DashboardPage() {
         {/* Right Column (Priority Tasks -> Recent Transactions) */}
         <div className="xl:col-span-1 bg-white rounded-[24px] p-6 md:p-8 border border-slate-100 shadow-sm flex flex-col">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="font-semibold text-lg text-slate-800">Recent Payments</h2>
+            <h2 className="font-semibold text-lg text-slate-800">รายการรับชำระล่าสุด</h2>
             <Link href="/dashboard/history" className="text-sm font-semibold text-[#5B58F2] hover:underline">
-              See all
+              ดูทั้งหมด
             </Link>
           </div>
 
           <div className="flex flex-col gap-5 flex-1 overflow-y-auto pr-2 custom-scrollbar">
             {recentTransactions.length === 0 ? (
               <div className="text-center py-10">
-                <p className="text-slate-500 text-sm">No recent payments found.</p>
+                <p className="text-slate-500 text-sm">ยังไม่มีรายการรับชำระ</p>
               </div>
             ) : (
               recentTransactions.map((tx) => (
@@ -300,15 +298,15 @@ export default async function DashboardPage() {
                     <div className="flex items-center gap-3 text-[11px] font-medium text-slate-400">
                       <span className="flex items-center gap-1">
                         <Calendar size={10} /> 
-                        {tx.paidAt ? new Date(tx.paidAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "-"}
+                        {tx.paidAt ? new Date(tx.paidAt).toLocaleDateString("th-TH", { month: "short", day: "numeric" }) : "-"}
                       </span>
                       <span className="flex items-center gap-1 text-emerald-600">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                        Verified
+                        ยืนยันแล้ว
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-500 mt-1 truncate">
-                      Paid for: {tx.months.length > 0 ? tx.months.map(m => formatThaiMonth(m)).join(", ") : "Unknown"}
+                      ชำระบิล: {tx.months.length > 0 ? tx.months.map(m => formatThaiMonth(m)).join(", ") : "ไม่ระบุ"}
                     </p>
                   </div>
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center w-6 h-6 rounded-md hover:bg-slate-50 cursor-pointer shrink-0 mt-1 text-slate-400">

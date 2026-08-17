@@ -158,7 +158,7 @@ export default function LineSlipsClient({
     <div className="space-y-4">
       {/* Header and Tabs */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <h2 className="text-xl font-bold text-slate-800 tracking-tight">Manage Slips</h2>
+        <h2 className="text-xl font-bold text-slate-800 tracking-tight">จัดการสลิป LINE</h2>
         <div className="flex gap-2">
           <button
             onClick={() => handleTabChange("pending")}
@@ -168,7 +168,7 @@ export default function LineSlipsClient({
                 : "border border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50"
             }`}
           >
-            Pending
+            รอดำเนินการ
             <span className={`w-5 h-5 flex items-center justify-center rounded-full text-[10px] ${
               activeTab === "pending" ? "bg-[#EEF0FF] text-[#5B58F2]" : "bg-slate-100 text-slate-500"
             }`}>
@@ -183,7 +183,7 @@ export default function LineSlipsClient({
                 : "border border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50"
             }`}
           >
-            Completed
+            สำเร็จแล้ว
             <span className={`w-5 h-5 flex items-center justify-center rounded-full text-[10px] ${
               activeTab === "verified" ? "bg-[#EEF0FF] text-[#5B58F2]" : "bg-slate-100 text-slate-500"
             }`}>
@@ -266,19 +266,19 @@ export default function LineSlipsClient({
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-slate-100">
-                    <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">Time</th>
-                    <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">Image</th>
+                    <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">เวลา</th>
+                    <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">รูปภาพ</th>
                     {activeTab === "pending" ? (
                       <>
-                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">Info</th>
-                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">House</th>
-                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans text-right">More</th>
+                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">ข้อมูล</th>
+                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">บ้านเลขที่</th>
+                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans text-right">จัดการ</th>
                       </>
                     ) : (
                       <>
-                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">Sender</th>
-                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">Amount</th>
-                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">Status</th>
+                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">ผู้โอน</th>
+                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">ยอดเงิน</th>
+                        <th className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-sans">สถานะ</th>
                       </>
                     )}
                   </tr>
@@ -302,12 +302,12 @@ export default function LineSlipsClient({
                           <td className="px-4 py-4 font-sans">
                             {slip.isVerified ? (
                               <div className="flex flex-col gap-0.5">
-                                <span className="text-emerald-700 font-bold text-[10px] bg-emerald-50 px-2 py-0.5 rounded-full inline-block w-fit mb-0.5">Verified Slip</span>
+                                <span className="text-emerald-700 font-bold text-[10px] bg-emerald-50 px-2 py-0.5 rounded-full inline-block w-fit mb-0.5">สลิปแท้</span>
                                 <span className="text-[13px] font-semibold text-slate-800">฿{slip.amount}</span>
                                 <span className="text-[11px] text-slate-500">{slip.senderName}</span>
                               </div>
                             ) : (
-                              <span className="text-amber-600 font-bold text-[10px] bg-amber-50 px-2 py-0.5 rounded-full inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Unverified</span>
+                              <span className="text-amber-600 font-bold text-[10px] bg-amber-50 px-2 py-0.5 rounded-full inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span> รอตรวจสอบ</span>
                             )}
                           </td>
                           <td className="px-4 py-4 font-sans">
@@ -323,13 +323,13 @@ export default function LineSlipsClient({
                                 onClick={() => openMatchModal(slip)}
                                 className="bg-[#EEF0FF] text-[#5B58F2] hover:bg-[#5B58F2] hover:text-white font-sans text-xs px-4 py-2 rounded-xl transition-colors font-semibold"
                               >
-                                Match
+                                จับคู่
                               </button>
                               <button
                                 onClick={() => handleRejectClick(slip.id)}
                                 className="px-3 py-2 font-semibold text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors"
                               >
-                                Reject
+                                ปฏิเสธ
                               </button>
                             </div>
                           </td>

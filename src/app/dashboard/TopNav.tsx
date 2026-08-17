@@ -10,13 +10,13 @@ export default function TopNav({ userName }: { userName: string }) {
   const pathname = usePathname();
 
   const navItems = [
-    { name: "Overview", href: "/dashboard" },
-    { name: "Houses", href: "/dashboard/houses" },
-    { name: "Inbox", href: "/dashboard/review" },
-    { name: "History", href: "/dashboard/history" },
-    { name: "Users", href: "/dashboard/users" },
-    { name: "Line Slips", href: "/dashboard/line-slips" },
-    { name: "Files", href: "/dashboard/blob" },
+    { name: "ภาพรวม", href: "/dashboard" },
+    { name: "จัดการบ้าน", href: "/dashboard/houses" },
+    { name: "รายการตรวจสอบ", href: "/dashboard/review" },
+    { name: "ประวัติชำระ", href: "/dashboard/history" },
+    { name: "ผู้ใช้งาน", href: "/dashboard/users" },
+    { name: "สลิป LINE", href: "/dashboard/line-slips" },
+    { name: "คลังไฟล์", href: "/dashboard/blob" },
   ];
 
   return (
@@ -75,7 +75,7 @@ export default function TopNav({ userName }: { userName: string }) {
           </div>
           {/* Tooltip for logout */}
           <div className="absolute top-full right-0 mt-2 bg-[#0F172A] text-white text-xs px-3 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">
-            Logout ({userName})
+            ออกจากระบบ ({userName})
           </div>
         </div>
       </div>

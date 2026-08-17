@@ -121,17 +121,17 @@ export default function HistoryClient() {
       {/* Header & Stats */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h1 className="font-bold text-2xl text-slate-800 tracking-tight">Payment History</h1>
-          <p className="text-slate-500 mt-1 text-[13px]">Verified payment transactions</p>
+          <h1 className="font-bold text-2xl text-slate-800 tracking-tight">ประวัติการรับชำระเงิน</h1>
+          <p className="text-slate-500 mt-1 text-[13px]">รายการรับชำระเงินที่ตรวจสอบแล้ว</p>
         </div>
         
         <div className="flex gap-2 shrink-0">
           <div className="bg-white px-4 py-2.5 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-end">
-            <div className="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Total Tx</div>
+            <div className="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">จำนวนรายการ</div>
             <div className="text-lg font-bold text-slate-800 tracking-tight">{totalCount.toLocaleString()}</div>
           </div>
           <div className="bg-[#EEF0FF] px-4 py-2.5 rounded-2xl border border-transparent flex flex-col items-end">
-            <div className="text-[11px] text-[#5B58F2] font-semibold uppercase tracking-wider">Total Volume</div>
+            <div className="text-[11px] text-[#5B58F2] font-semibold uppercase tracking-wider">ยอดเงินรวม</div>
             <div className="text-lg font-bold font-mono text-[#5B58F2] tracking-tight">฿{totalAmount.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
           </div>
         </div>
@@ -145,7 +145,7 @@ export default function HistoryClient() {
             value={searchInput}
             onChange={setSearchInput}
             onSubmit={() => { setPage(1); setSearch(searchInput); }}
-            placeholder="Search house or owner..."
+            placeholder="ค้นหาบ้านหรือชื่อเจ้าของ..."
             className="w-full sm:w-full h-[42px] pl-[38px] pr-4 bg-white border border-slate-200 text-slate-900 rounded-[12px] text-sm focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none transition-all duration-300 sm:cursor-text focus:cursor-text relative z-0"
           />
         </form>
@@ -153,33 +153,33 @@ export default function HistoryClient() {
         {/* Filters Row */}
         <div className="flex flex-wrap gap-2 items-end w-full sm:w-auto">
           <div className="flex-1 min-w-[110px]">
-            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">Status</label>
+            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">สถานะ</label>
             <select
               value={status}
               onChange={(e) => { setStatus(e.target.value); setPage(1); }}
               className="w-full h-[42px] px-3 bg-white border border-slate-200 text-slate-700 rounded-[12px] text-sm focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 transition-colors cursor-pointer"
             >
-              <option value="verified">Verified</option>
-              <option value="all">All</option>
-              <option value="voided">Voided</option>
+              <option value="verified">สำเร็จ</option>
+              <option value="all">ทั้งหมด</option>
+              <option value="voided">ยกเลิกแล้ว</option>
             </select>
           </div>
 
           <div className="flex-1 min-w-[110px]">
-            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">Channel</label>
+            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">ช่องทาง</label>
             <select
               value={channel}
               onChange={(e) => { setChannel(e.target.value); setPage(1); }}
               className="w-full h-[42px] px-3 bg-white border border-slate-200 text-slate-700 rounded-[12px] text-sm focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 transition-colors cursor-pointer"
             >
-              <option value="all">All</option>
+              <option value="all">ทั้งหมด</option>
               <option value="line">LINE</option>
-              <option value="web">Web</option>
+              <option value="web">เว็บไซต์</option>
             </select>
           </div>
 
           <div className="flex-1 min-w-[130px]">
-            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">Month</label>
+            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">เดือนที่ชำระ</label>
             <input
               type="month"
               value={monthYear}
@@ -192,26 +192,26 @@ export default function HistoryClient() {
         {/* Date Pickers & Export */}
         <div className="flex flex-1 sm:flex-none flex-wrap sm:flex-nowrap gap-2 items-end sm:justify-end shrink-0">
           <div className="flex-1 min-w-[130px] sm:w-[150px] md:w-[150px]">
-            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">From</label>
+            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">จากวันที่</label>
             <DatePicker
               value={startDate}
               onChange={(val) => { setStartDate(val); setPage(1); }}
-              placeholder="Select date"
+              placeholder="เลือกวันที่"
             />
           </div>
           <div className="flex-1 min-w-[130px] sm:w-[150px] md:w-[150px]">
-            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">To</label>
+            <label className="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">ถึงวันที่</label>
             <DatePicker
               value={endDate}
               onChange={(val) => { setEndDate(val); setPage(1); }}
-              placeholder="Select date"
+              placeholder="เลือกวันที่"
             />
           </div>
           <button
             onClick={handleExportCSV}
             className="bg-[#5B58F2] hover:bg-[#4A47D1] text-white px-5 sm:px-6 h-[42px] rounded-[12px] flex items-center justify-center gap-2 transition-colors whitespace-nowrap font-semibold shadow-sm shrink-0"
           >
-            <Download size={16} /> Export
+            <Download size={16} /> ส่งออก CSV
           </button>
         </div>
       </div>
@@ -244,7 +244,7 @@ export default function HistoryClient() {
                     <CheckCircle2 size={16} className="fill-emerald-100" />
                   )}
                   <span className="text-[13px] font-semibold">
-                    {item.slipStatus === 'voided' ? 'Voided' : 'Verified'} • ID {item.id}
+                    {item.slipStatus === 'voided' ? 'ยกเลิกรายการ' : 'ตรวจสอบสำเร็จ'} • รหัส {item.id}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
