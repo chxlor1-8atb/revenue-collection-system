@@ -37,16 +37,14 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
   const totalAmount = parseFloat(tx.amount || "0");
 
   let qrDataUri = "";
-  if (system?.qrCodeImageUrl) {
-    qrDataUri = system.qrCodeImageUrl;
-  } else if (system?.promptPayId) {
+  if (system?.promptPayId) {
     const payload = generatePayload(system.promptPayId, { amount: totalAmount });
     qrDataUri = await qrcode.toDataURL(payload, {
       errorCorrectionLevel: 'H',
       type: 'image/png',
       margin: 1,
       color: {
-        dark: '#0F172A', // Deep Navy for the QR code
+        dark: '#0F172A',
         light: '#ffffff'
       }
     });
@@ -83,17 +81,19 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
             </div>
 
             {/* QR Code Frame */}
-            <div className="relative p-1 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 mb-6">
-              <div className="bg-white p-4 rounded-xl shadow-sm border border-emerald-100">
-                <img src={qrDataUri} alt="PromptPay QR Code" className="w-56 h-56 object-contain" />
+            {qrDataUri && (
+              <div className="relative p-1 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 mb-6">
+                <div className="bg-white p-4 rounded-xl shadow-sm border border-emerald-100">
+                  <img src={qrDataUri} alt="PromptPay QR Code" className="w-56 h-56 object-contain" />
+                </div>
+                
+                {/* Corner brackets */}
+                <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-emerald-500 rounded-tl-2xl"></div>
+                <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-emerald-500 rounded-tr-2xl"></div>
+                <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-emerald-500 rounded-bl-2xl"></div>
+                <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-emerald-500 rounded-br-2xl"></div>
               </div>
-              
-              {/* Corner brackets */}
-              <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-emerald-500 rounded-tl-2xl"></div>
-              <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-emerald-500 rounded-tr-2xl"></div>
-              <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-emerald-500 rounded-bl-2xl"></div>
-              <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-emerald-500 rounded-br-2xl"></div>
-            </div>
+            )}
 
             {tx.createdAt && (
               (() => {

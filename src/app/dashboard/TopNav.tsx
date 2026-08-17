@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { Settings, Bell } from "lucide-react";
+import { Settings, Bell, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import SettingsForm from "./settings/SettingsForm";
 
@@ -35,10 +35,10 @@ export default function TopNav({ userName, settings }: { userName: string, setti
       <header className="border-b border-slate-100 bg-white rounded-t-[32px] px-6 md:px-8 lg:px-12 py-5 relative z-40">
         <div className="max-w-[1400px] mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 w-full md:w-auto">
-            <div className="flex items-center justify-center w-8 h-8 bg-[#5B58F2] rounded-full text-white font-bold text-lg shadow-sm">
-              ฿
+            <div className="flex items-center justify-center w-8 h-8 bg-[#5B58F2] rounded-full text-white shadow-sm">
+              <Trash2 size={16} strokeWidth={2.5} />
             </div>
-            <span className="font-sans font-bold text-[#0F172A] tracking-tight text-xl mr-6">ระบบจัดเก็บรายได้</span>
+            <span className="font-sans font-bold text-[#0F172A] tracking-tight text-xl mr-6">จัดเก็บค่าขยะ</span>
           </div>
 
           <nav className="flex-1 overflow-x-auto w-full md:w-auto flex justify-start md:justify-center no-scrollbar pb-2 sm:pb-0">
@@ -120,7 +120,6 @@ export default function TopNav({ userName, settings }: { userName: string, setti
                   collectorId={settings?.id || 1} 
                   initialName={settings?.accountName || "ชื่อบัญชีรับเงิน"} 
                   initialPromptPay={settings?.promptPayId || "เบอร์พร้อมเพย์"}
-                  initialQrCodeImageUrl={settings?.qrCodeImageUrl} 
                 />
              </div>
           </div>

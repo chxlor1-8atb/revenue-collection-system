@@ -7,12 +7,10 @@ export default function SettingsForm({
   collectorId,
   initialName,
   initialPromptPay,
-  initialQrCodeImageUrl,
 }: {
   collectorId: number;
   initialName: string;
   initialPromptPay: string;
-  initialQrCodeImageUrl?: string | null;
 }) {
   const [name, setName] = useState(initialName);
   const [promptPayId, setPromptPayId] = useState(initialPromptPay);
@@ -49,7 +47,7 @@ export default function SettingsForm({
 
   return (
     <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
-      <h2 className="text-xl font-bold font-sans text-slate-800 mb-6">ตั้งค่าบัญชีรับเงิน (QR Code)</h2>
+      <h2 className="text-xl font-bold font-sans text-slate-800 mb-6">ตั้งค่าบัญชีรับเงิน</h2>
       <form onSubmit={handleSubmit} className="space-y-6 max-w-md">
         
         <div>
@@ -68,7 +66,7 @@ export default function SettingsForm({
 
         <div>
           <label className="block text-sm font-semibold text-slate-700 mb-2 font-sans">
-            เบอร์พร้อมเพย์ (สำหรับสร้างอัตโนมัติหากไม่อัปโหลดรูป)
+            เบอร์พร้อมเพย์
           </label>
           <input
             type="text"

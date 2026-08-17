@@ -12,7 +12,7 @@ interface BlobFile {
   uploadedAt: string;
 }
 
-type TabPrefix = '' | 'line-slips/' | 'slips/' | 'qr-codes/';
+type TabPrefix = '' | 'line-slips/';
 type SortKey = 'pathname' | 'size' | 'uploadedAt';
 type SortDirection = 'asc' | 'desc';
 
@@ -147,7 +147,7 @@ export default function BlobManagementPage() {
         totalDeleted = data.deletedCount || 0;
       } 
       else if (mode === 'old') {
-         const prefixes = ['line-slips/', 'slips/', 'qr-codes/'];
+         const prefixes = ['line-slips/'];
          for (const prefix of prefixes) {
             let currentCursor = null;
             let more = true;
@@ -218,8 +218,6 @@ export default function BlobManagementPage() {
   const tabs: { label: string; prefix: TabPrefix; icon: any }[] = [
     { label: 'ทั้งหมด', prefix: '', icon: <FolderOpen size={16} /> },
     { label: 'line-slips/', prefix: 'line-slips/', icon: <ImageIcon size={16} /> },
-    { label: 'slips/', prefix: 'slips/', icon: <ImageIcon size={16} /> },
-    { label: 'qr-codes/', prefix: 'qr-codes/', icon: <ImageIcon size={16} /> },
   ];
 
   const [oldDays, setOldDays] = useState(30);

@@ -64,7 +64,7 @@ export default function CustomSelect({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
             transition={{ duration: 0.15 }}
-            className="absolute z-50 w-full mt-1.5 bg-white border border-slate-200 rounded-[12px] shadow-lg overflow-hidden py-1"
+            className="absolute z-50 w-full mt-1.5 bg-white border border-slate-200 rounded-[12px] shadow-lg overflow-hidden p-1"
           >
             {options.map((option) => (
               <button
@@ -74,7 +74,7 @@ export default function CustomSelect({
                   onChange(option.value);
                   setIsOpen(false);
                 }}
-                className={`w-full text-left px-3 py-2.5 text-[13px] transition-colors ${
+                className={`w-full text-left px-3 py-2.5 text-[13px] rounded-[8px] transition-colors ${
                   value === option.value
                     ? 'bg-[#5B58F2] text-white font-medium'
                     : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'

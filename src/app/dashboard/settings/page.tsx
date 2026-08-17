@@ -17,14 +17,12 @@ export default async function SettingsPage() {
           collectorId={settings.id} 
           initialName={settings.accountName} 
           initialPromptPay={settings.promptPayId}
-          initialQrCodeImageUrl={settings.qrCodeImageUrl} 
         />
       ) : (
         <SettingsForm 
           collectorId={1} 
           initialName="ชื่อบัญชีรับเงิน" 
           initialPromptPay="เบอร์พร้อมเพย์"
-          initialQrCodeImageUrl={null}
         />
       )}
     </div>
