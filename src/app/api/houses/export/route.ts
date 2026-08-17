@@ -10,7 +10,15 @@ export async function GET() {
       db.select({ houseCustomFieldsSchema: systemSettings.houseCustomFieldsSchema }).from(systemSettings).limit(1)
     ]);
     
-    const customFieldsSchema = (settingsData[0]?.houseCustomFieldsSchema as any[]) || [];
+    let customFieldsSchema = (settingsData[0]?.houseCustomFieldsSchema as any[]) || [];
+    if (customFieldsSchema.length === 0) {
+      customFieldsSchema = [
+        { id: "houseNumber", name: "บ้านเลขที่", placeholder: "เช่น 123/45", type: "text", required: true, isSystem: true, isHidden: false },
+        { id: "ownerName", name: "ชื่อเจ้าบ้าน / ผู้รับผิดชอบ", placeholder: "เช่น สมศรี ใจดี", type: "text", required: true, isSystem: true, isHidden: false },
+        { id: "zone", name: "ชุมชน / หมู่ (ตัวเลือก)", placeholder: "เช่น หมู่ 1 ซอย 5", type: "text", required: false, isSystem: true, isHidden: false },
+        { id: "road", name: "ถนน (ตัวเลือก)", placeholder: "เช่น ถนนสุขุมวิท", type: "text", required: false, isSystem: true, isHidden: false },
+      ];
+    }
     const visibleFields = customFieldsSchema.filter(f => !f.isHidden);
     
     // Create CSV content

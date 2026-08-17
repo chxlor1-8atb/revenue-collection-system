@@ -38,7 +38,17 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
 
   const total = Number(countResult[0]?.count || 0);
   const totalPages = Math.ceil(total / limit);
-  const customFieldsSchema = (settingsData[0]?.houseCustomFieldsSchema as any[]) || [];
+  let customFieldsSchema = (settingsData[0]?.houseCustomFieldsSchema as any[]) || [];
+  
+  // Fallback to default schema if empty or not set in DB
+  if (customFieldsSchema.length === 0) {
+    customFieldsSchema = [
+      { id: "houseNumber", name: "บ้านเลขที่", placeholder: "เช่น 123/45", type: "text", required: true, isSystem: true, isHidden: false },
+      { id: "ownerName", name: "ชื่อเจ้าบ้าน / ผู้รับผิดชอบ", placeholder: "เช่น สมศรี ใจดี", type: "text", required: true, isSystem: true, isHidden: false },
+      { id: "zone", name: "ชุมชน / หมู่ (ตัวเลือก)", placeholder: "เช่น หมู่ 1 ซอย 5", type: "text", required: false, isSystem: true, isHidden: false },
+      { id: "road", name: "ถนน (ตัวเลือก)", placeholder: "เช่น ถนนสุขุมวิท", type: "text", required: false, isSystem: true, isHidden: false },
+    ];
+  }
 
   return (
     <div className="max-w-6xl mx-auto pb-12">
