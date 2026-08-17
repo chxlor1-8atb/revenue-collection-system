@@ -100,7 +100,7 @@ export default function DatePicker({
   return (
     <div className="relative" ref={containerRef}>
       <div 
-        className={`w-full flex items-center justify-between px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-emerald-500 transition-colors ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-50' : 'hover:border-slate-400 cursor-pointer'}`}
+        className={`w-full flex items-center justify-between px-3 h-[42px] bg-white border border-slate-200 rounded-[12px] focus-within:ring-2 focus-within:ring-[#5B58F2]/20 focus-within:border-[#5B58F2] transition-all ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-50' : 'hover:border-slate-300 cursor-pointer'}`}
         onClick={() => !disabled && setIsOpen(!isOpen)}
       >
         <span className={`text-sm truncate mr-2 ${parsedDate ? 'text-slate-800 font-medium' : 'text-slate-400'}`}>

@@ -148,7 +148,7 @@ export default function HistoryClient() {
             onChange={setSearchInput}
             onSubmit={() => { setPage(1); setSearch(searchInput); }}
             placeholder="ค้นหาบ้านหรือชื่อเจ้าของ..."
-            className="w-full sm:w-full h-[42px] pl-[38px] pr-4 bg-white border border-slate-200 text-slate-900 rounded-[12px] text-sm focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none transition-all duration-300 sm:cursor-text focus:cursor-text relative z-0"
+            className="w-full bg-white border border-slate-200 text-slate-900 rounded-[12px] focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none cursor-text"
           />
         </form>
 

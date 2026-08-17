@@ -87,7 +87,13 @@ export default function SearchAutocomplete({ value, onChange, onSelect, onSubmit
         onChange={(e) => { onChange(e.target.value); setIsOpen(true); }}
         onKeyDown={handleKeyDown}
         onFocus={() => { if (predictions.length > 0) setIsOpen(true); }}
-        className={`h-[42px] pl-[38px] pr-4 bg-white border-0 shadow-[0_4px_14px_rgba(0,0,0,0.05)] text-slate-900 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300 placeholder:text-transparent sm:placeholder:text-slate-400 focus:placeholder:text-slate-400 cursor-pointer sm:cursor-text focus:cursor-text relative z-0 ${className || 'w-11 focus:w-[280px] sm:w-72 sm:focus:w-[420px]'}`}
+        className={
+          className
+            // When custom className is provided, use it for all visual styling
+            ? `h-[42px] pl-[38px] pr-4 text-slate-900 text-sm focus:outline-none transition-all duration-200 placeholder:text-transparent sm:placeholder:text-slate-400 focus:placeholder:text-slate-400 relative z-0 ${className}`
+            // Default pill style for other pages (e.g. top nav search)
+            : `h-[42px] pl-[38px] pr-4 bg-white border-0 shadow-[0_4px_14px_rgba(0,0,0,0.05)] text-slate-900 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300 placeholder:text-transparent sm:placeholder:text-slate-400 focus:placeholder:text-slate-400 cursor-pointer sm:cursor-text focus:cursor-text relative z-0 w-11 focus:w-[280px] sm:w-72 sm:focus:w-[420px]`
+        }
       />
       
       {isOpen && predictions.length > 0 && (
