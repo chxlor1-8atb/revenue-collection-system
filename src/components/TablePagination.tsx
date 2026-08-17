@@ -1,7 +1,8 @@
 "use client";
 
-import { ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, ArrowRight } from "lucide-react";
-import { useState, useEffect } from "react";
+import { ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, ArrowRight, ChevronDown } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface TablePaginationProps {
   currentPage: number;
@@ -23,6 +24,18 @@ export default function TablePagination({
   isInfinite = false
 }: TablePaginationProps) {
   const [jumpPage, setJumpPage] = useState(currentPage.toString());
+  const [isLimitOpen, setIsLimitOpen] = useState(false);
+  const limitRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (limitRef.current && !limitRef.current.contains(event.target as Node)) {
+        setIsLimitOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     setJumpPage(currentPage.toString());
@@ -162,18 +175,52 @@ export default function TablePagination({
         )}
 
         {onLimitChange && (
-          <div className="flex items-center gap-2 bg-slate-50 px-3 py-1 rounded-lg border border-slate-200">
+          <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
             <span>แสดง</span>
-            <select
-              value={itemsPerPage}
-              onChange={(e) => onLimitChange(Number(e.target.value))}
-              className="bg-transparent border-none text-slate-700 font-medium focus:outline-none cursor-pointer"
-            >
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-            </select>
+            
+            <div className="relative" ref={limitRef}>
+              <button
+                type="button"
+                onClick={() => setIsLimitOpen(!isLimitOpen)}
+                className="flex items-center gap-1 font-semibold text-[#1F2E22] hover:text-[#2A3E2E] transition-colors focus:outline-none"
+              >
+                {itemsPerPage}
+                <ChevronDown size={14} className={`transition-transform duration-200 ${isLimitOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              <AnimatePresence>
+                {isLimitOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-white border border-slate-200 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] overflow-hidden w-20 z-50 origin-bottom"
+                  >
+                    <div className="flex flex-col p-1">
+                      {[10, 20, 50, 100].map((val) => (
+                        <button
+                          key={val}
+                          type="button"
+                          onClick={() => {
+                            onLimitChange(val);
+                            setIsLimitOpen(false);
+                          }}
+                          className={`px-3 py-2 text-sm text-center rounded-lg transition-colors ${
+                            itemsPerPage === val 
+                              ? 'bg-[#1F2E22] text-white font-medium' 
+                              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                          }`}
+                        >
+                          {val}
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             <span>รายการ</span>
           </div>
         )}
