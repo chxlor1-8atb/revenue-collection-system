@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Trash2, HardDrive, FolderOpen, Image as ImageIcon, RefreshCw, AlertTriangle, Clock, XCircle, Search, ArrowUpDown, X, ChevronDown } from "lucide-react";
+import { Trash2, HardDrive, FolderOpen, Image as ImageIcon, RefreshCw, AlertTriangle, Clock, XCircle, Search, ArrowUpDown, ChevronDown } from "lucide-react";
+import SlipModalButton from "@/components/SlipModalButton";
 
 interface BlobFile {
   pathname: string;
@@ -25,7 +26,6 @@ export default function BlobManagementPage() {
   const [hasMore, setHasMore] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDirection }>({ key: 'uploadedAt', direction: 'desc' });
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [actionProgress, setActionProgress] = useState<string | null>(null);
   const [deleteResult, setDeleteResult] = useState<{ count: number; mode: string } | null>(null);
 
@@ -211,27 +211,6 @@ export default function BlobManagementPage() {
 
   return (
     <div className="max-w-6xl mx-auto pb-12 relative">
-      {/* Lightbox Modal */}
-      {previewImage && (
-        <div 
-          className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4 cursor-zoom-out"
-          onClick={() => setPreviewImage(null)}
-        >
-          <button 
-            className="absolute top-6 right-6 text-white hover:text-red-400 transition-colors bg-black/50 p-2 rounded-full"
-            onClick={(e) => { e.stopPropagation(); setPreviewImage(null); }}
-          >
-            <X size={28} />
-          </button>
-          <img 
-            src={previewImage} 
-            alt="Preview" 
-            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl border border-white/10"
-            onClick={(e) => e.stopPropagation()} // prevent closing when clicking the image itself
-          />
-        </div>
-      )}
-
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
         <div>
@@ -458,20 +437,19 @@ export default function BlobManagementPage() {
                       />
                     </td>
                     <td className="p-3 align-middle">
-                      <div 
-                        className="w-12 h-12 rounded border border-slate-200 overflow-hidden cursor-zoom-in group relative bg-slate-100"
-                        onClick={() => setPreviewImage(file.url)}
-                      >
-                        <img
-                          src={file.url}
-                          alt=""
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                        />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                           <Search size={14} className="text-white opacity-0 group-hover:opacity-100 drop-shadow-md" />
+                      <SlipModalButton imageUrl={file.url}>
+                        <div className="w-12 h-12 rounded border border-slate-200 overflow-hidden cursor-zoom-in group relative bg-slate-100 inline-block">
+                          <img
+                            src={file.url}
+                            alt=""
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                          />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                             <Search size={14} className="text-white opacity-0 group-hover:opacity-100 drop-shadow-md" />
+                          </div>
                         </div>
-                      </div>
+                      </SlipModalButton>
                     </td>
                     <td className="p-3 align-middle">
                       <p className="font-mono text-xs text-slate-700 truncate max-w-[200px] md:max-w-[400px]" title={file.pathname}>
