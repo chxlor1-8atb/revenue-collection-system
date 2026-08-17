@@ -153,11 +153,16 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8">
         
         {/* Card 1: Verified Revenue */}
-        <div className="bg-white rounded-[32px] p-8 lg:p-10 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-          <div className="flex items-center gap-4 mb-5">
-            <span className="text-slate-800 font-bold tracking-tight text-lg">ยอดรับชำระแล้ว</span>
-            <span className="bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full text-xs font-bold border border-emerald-100">
-              +{verifiedTxs.length}
+        <div className="bg-white rounded-[32px] p-6 lg:p-8 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <div className="flex items-start justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100/50">
+                <Banknote size={24} strokeWidth={2} />
+              </div>
+              <span className="text-slate-800 font-bold tracking-tight text-lg">ยอดรับชำระแล้ว</span>
+            </div>
+            <span className="bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full text-[11px] font-bold border border-emerald-100">
+              +{verifiedTxs.length} รายการ
             </span>
           </div>
           <div className="mt-auto flex items-end justify-between">
@@ -170,11 +175,16 @@ export default async function DashboardPage() {
         </div>
 
         {/* Card 2: Houses with Unpaid Invoices */}
-        <div className="bg-white rounded-[32px] p-8 lg:p-10 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-          <div className="flex items-center gap-4 mb-5">
-            <span className="text-slate-800 font-bold tracking-tight text-lg">บ้านที่ค้างชำระ</span>
-            <span className="bg-red-50 text-red-600 px-2 py-0.5 rounded-full text-xs font-bold border border-red-100">
-              รอจัดการ
+        <div className="bg-white rounded-[32px] p-6 lg:p-8 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <div className="flex items-start justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center shrink-0 border border-red-100/50">
+                <Home size={24} strokeWidth={2} />
+              </div>
+              <span className="text-slate-800 font-bold tracking-tight text-lg">บ้านที่ค้างชำระ</span>
+            </div>
+            <span className="bg-red-50 text-red-600 px-2.5 py-1 rounded-full text-[11px] font-bold border border-red-100">
+              ต้องติดตาม
             </span>
           </div>
           <div className="mt-auto flex items-end justify-between">
@@ -186,10 +196,15 @@ export default async function DashboardPage() {
         </div>
 
         {/* Card 3: Pending Reviews */}
-        <div className="bg-white rounded-[32px] p-8 lg:p-10 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-          <div className="flex items-center gap-4 mb-5">
-            <span className="text-slate-800 font-bold tracking-tight text-lg">รอยืนยันสลิป</span>
-            <span className="bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full text-xs font-bold border border-amber-100">
+        <div className="bg-white rounded-[32px] p-6 lg:p-8 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <div className="flex items-start justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100/50">
+                <Clock size={24} strokeWidth={2} />
+              </div>
+              <span className="text-slate-800 font-bold tracking-tight text-lg">รอยืนยันสลิป</span>
+            </div>
+            <span className="bg-amber-50 text-amber-600 px-2.5 py-1 rounded-full text-[11px] font-bold border border-amber-100">
               รอดำเนินการ
             </span>
           </div>
@@ -204,11 +219,16 @@ export default async function DashboardPage() {
         </div>
 
         {/* Card 4: LINE Slips */}
-        <div className="bg-white rounded-[32px] p-8 lg:p-10 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-          <div className="flex items-center gap-4 mb-5">
-            <span className="text-slate-800 font-bold tracking-tight text-lg">แจ้งผ่าน LINE</span>
-            <span className="bg-[#EEF0FF] text-[#5B58F2] px-2 py-0.5 rounded-full text-xs font-bold border border-[#5B58F2]/20">
-              บอท
+        <div className="bg-white rounded-[32px] p-6 lg:p-8 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <div className="flex items-start justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-[#EEF0FF] text-[#5B58F2] flex items-center justify-center shrink-0 border border-[#5B58F2]/20">
+                <Smartphone size={24} strokeWidth={2} />
+              </div>
+              <span className="text-slate-800 font-bold tracking-tight text-lg">แจ้งผ่าน LINE</span>
+            </div>
+            <span className="bg-[#EEF0FF] text-[#5B58F2] px-2.5 py-1 rounded-full text-[11px] font-bold border border-[#5B58F2]/20">
+              รายการใหม่
             </span>
           </div>
           <div className="mt-auto flex items-end justify-between">
@@ -239,11 +259,36 @@ export default async function DashboardPage() {
             </div>
           </div>
           
-          <div className="flex-1 flex items-center justify-center min-h-[300px] border border-dashed border-slate-200 rounded-2xl bg-slate-50 relative">
-            <div className="text-center">
-              <User size={48} className="mx-auto text-slate-300 mb-3" />
-              <p className="text-slate-500 font-medium">พื้นที่แสดงกราฟผู้เข้าชมเว็บไซต์</p>
-              <p className="text-xs text-slate-400 mt-1">อยู่ระหว่างการเชื่อมต่อข้อมูลผู้เข้าชมหน้าทั่วไป</p>
+          <div className="flex-1 min-h-[300px] border border-slate-100 rounded-2xl bg-slate-50/50 relative overflow-hidden flex flex-col justify-end p-6">
+            {/* Background Grid Lines */}
+            <div className="absolute inset-0 flex flex-col justify-between p-6 pb-12 pointer-events-none">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="w-full border-b border-slate-200/60 h-0"></div>
+              ))}
+            </div>
+            
+            {/* Mock Bars */}
+            <div className="relative flex items-end justify-between gap-3 h-48 w-full z-10 px-4">
+              {[40, 70, 45, 90, 65, 85, 100].map((height, i) => (
+                <div key={i} className="w-full bg-[#5B58F2]/10 hover:bg-[#5B58F2]/20 transition-colors rounded-t-lg relative group flex items-end justify-center" style={{ height: `${height}%` }}>
+                   <div className="w-full bg-[#5B58F2]/40 rounded-t-lg transition-all group-hover:bg-[#5B58F2]/60" style={{ height: `${height - 20}%` }}></div>
+                </div>
+              ))}
+            </div>
+
+            {/* Labels */}
+            <div className="relative flex justify-between gap-3 w-full mt-4 px-4 text-[10px] text-slate-400 font-semibold z-10">
+              {['จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.', 'อา.'].map((day, i) => (
+                <div key={i} className="w-full text-center">{day}</div>
+              ))}
+            </div>
+
+            <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px] flex items-center justify-center z-20 rounded-2xl">
+              <div className="bg-white px-8 py-5 rounded-2xl shadow-xl border border-slate-100/50 text-center animate-in zoom-in duration-500">
+                 <TrendingUp size={28} className="mx-auto text-[#5B58F2] mb-3" />
+                 <p className="text-slate-800 font-bold text-base">กำลังเชื่อมต่อข้อมูลผู้เข้าชม</p>
+                 <p className="text-sm text-slate-500 mt-1">ระบบกราฟจะแสดงผลในเร็วๆ นี้</p>
+              </div>
             </div>
           </div>
         </div>
@@ -264,39 +309,39 @@ export default async function DashboardPage() {
               </div>
             ) : (
               recentTransactions.map((tx) => (
-                <div key={tx.id} className="group relative flex items-start gap-4">
-                  <div className="w-8 h-8 rounded-full border-2 border-slate-100 flex items-center justify-center shrink-0 group-hover:border-[#5B58F2] transition-colors">
+                <div key={tx.id} className="group relative flex items-center gap-4 p-3 -mx-3 rounded-2xl hover:bg-slate-50 transition-colors cursor-pointer border border-transparent hover:border-slate-100">
+                  <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center shrink-0 group-hover:bg-white group-hover:shadow-sm transition-all border border-slate-100">
                     {tx.paidVia === "LINE Bot" ? (
-                      <Smartphone size={12} className="text-[#5B58F2]" />
+                      <Smartphone size={16} className="text-[#5B58F2]" />
                     ) : (
-                      <CheckCircle2 size={12} className="text-emerald-500" />
+                      <CheckCircle2 size={16} className="text-emerald-500" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-1">
-                      <h3 className="text-sm font-semibold text-slate-800 truncate">
+                      <h3 className="text-sm font-semibold text-slate-800 truncate group-hover:text-[#5B58F2] transition-colors">
                         {tx.houseNumber} - {tx.ownerName}
                       </h3>
-                      <span className="text-xs font-semibold text-slate-400">
+                      <span className="text-xs font-bold text-slate-700">
                         ฿{parseFloat(tx.amount || "0").toLocaleString("th-TH")}
                       </span>
                     </div>
-                    <div className="flex items-center gap-3 text-[length:11px] font-medium text-slate-400">
+                    <div className="flex items-center gap-3 text-[11px] font-medium text-slate-400">
                       <span className="flex items-center gap-1">
-                        <Calendar size={10} /> 
+                        <Calendar size={11} /> 
                         {tx.paidAt ? new Date(tx.paidAt).toLocaleDateString("th-TH", { month: "short", day: "numeric" }) : "-"}
                       </span>
-                      <span className="flex items-center gap-1 text-emerald-600">
+                      <span className="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                         ยืนยันแล้ว
                       </span>
+                      <span className="text-slate-300 truncate">
+                        • {tx.months.length > 0 ? tx.months.map(m => formatThaiMonth(m)).join(", ") : "ไม่ระบุ"}
+                      </span>
                     </div>
-                    <p className="text-[length:11px] text-slate-500 mt-1 truncate">
-                      ชำระบิล: {tx.months.length > 0 ? tx.months.map(m => formatThaiMonth(m)).join(", ") : "ไม่ระบุ"}
-                    </p>
                   </div>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center w-6 h-6 rounded-md hover:bg-slate-50 cursor-pointer shrink-0 mt-1 text-slate-400">
-                    <ChevronRight size={14} />
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center w-8 h-8 rounded-full bg-white shadow-sm shrink-0 text-[#5B58F2]">
+                    <ChevronRight size={16} />
                   </div>
                 </div>
               ))
