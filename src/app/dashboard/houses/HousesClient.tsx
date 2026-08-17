@@ -10,6 +10,7 @@ import HouseForm, { HouseData } from "./HouseForm";
 import GenerateInvoiceButton from "./GenerateInvoiceButton";
 import { deleteHouse } from "./actions";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
+import CustomSelect from "@/components/CustomSelect";
 import CustomFieldsManager, { CustomField } from "./CustomFieldsManager";
 import TablePagination from "@/components/TablePagination";
 
@@ -19,6 +20,7 @@ export default function HousesClient({
   totalPages = 1,
   totalHouses = 0,
   initialSearch = "",
+  initialZone = "",
   initialSort = { key: "createdAt", dir: "desc" },
   limit = 10,
   customFieldsSchema = []
@@ -28,6 +30,7 @@ export default function HousesClient({
   totalPages?: number;
   totalHouses?: number;
   initialSearch?: string;
+  initialZone?: string;
   initialSort?: { key: string; dir: string };
   limit?: number;
   customFieldsSchema?: CustomField[];
@@ -52,19 +55,29 @@ export default function HousesClient({
 
   // Search & Sort State
   const [searchQuery, setSearchQuery] = useState(initialSearch);
+  const [selectedZone, setSelectedZone] = useState(initialZone);
   const [sortConfig, setSortConfig] = useState(initialSort);
+
+  // Zone Filter Effect
+  useEffect(() => {
+    if (selectedZone !== initialZone) {
+      startTransition(() => {
+        updateUrlParams(1, searchQuery, sortConfig.key, sortConfig.dir, limit, selectedZone || "");
+      });
+    }
+  }, [selectedZone]);
 
   // Debounced Search
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchQuery !== initialSearch) {
-        updateUrlParams(1, searchQuery, sortConfig.key, sortConfig.dir, limit);
+        updateUrlParams(1, searchQuery, sortConfig.key, sortConfig.dir, limit, selectedZone || "");
       }
     }, 500);
     return () => clearTimeout(timer);
   }, [searchQuery, initialSearch, sortConfig]);
 
-  const updateUrlParams = (page: number, q: string, sortKey: string, sortDir: string, newLimit: number) => {
+  const updateUrlParams = (page: number, q: string, sortKey: string, sortDir: string, newLimit: number, newZone: string) => {
     startTransition(() => {
       const params = new URLSearchParams(searchParams.toString());
       if (page > 1) params.set('page', page.toString());
@@ -89,12 +102,12 @@ export default function HousesClient({
   const handleSort = (key: string) => {
     const newDir = sortConfig.key === key && sortConfig.dir === 'asc' ? 'desc' : 'asc';
     setSortConfig({ key, dir: newDir });
-    updateUrlParams(currentPage, searchQuery, key, newDir, limit);
+    updateUrlParams(currentPage, searchQuery, key, newDir, limit, selectedZone || "");
   };
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
-      updateUrlParams(newPage, searchQuery, sortConfig.key, sortConfig.dir, limit);
+      updateUrlParams(newPage, searchQuery, sortConfig.key, sortConfig.dir, limit, selectedZone || "");
     }
   };
 
@@ -401,7 +414,7 @@ export default function HousesClient({
           totalItems={totalHouses}
           itemsPerPage={limit}
           onPageChange={handlePageChange}
-          onLimitChange={(newLimit) => updateUrlParams(1, searchQuery, sortConfig.key, sortConfig.dir, newLimit)}
+          onLimitChange={(newLimit) => updateUrlParams(1, searchQuery, sortConfig.key, sortConfig.dir, newLimit, selectedZone || "")}
         />
       </div>
 

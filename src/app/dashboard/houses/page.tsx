@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { houses, systemSettings } from "@/lib/schema";
-import { desc, asc, ilike, or, sql } from "drizzle-orm";
+import { desc, asc, ilike, or, and, eq, sql } from "drizzle-orm";
 import HousesClient from "./HousesClient";
 
 export default async function HousesPage(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
@@ -11,13 +11,23 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
   const q = typeof searchParams.q === 'string' ? searchParams.q : '';
   const sort = typeof searchParams.sort === 'string' ? searchParams.sort : 'createdAt';
   const dir = typeof searchParams.dir === 'string' ? searchParams.dir : 'desc';
+  const zone = typeof searchParams.zone === 'string' ? searchParams.zone : '';
 
   let whereClause = undefined;
+  
+  const conditions = [];
   if (q) {
-    whereClause = or(
+    conditions.push(or(
       ilike(houses.houseNumber, `%${q}%`),
       ilike(houses.ownerName, `%${q}%`)
-    );
+    ));
+  }
+  if (zone) {
+    conditions.push(eq(houses.zone, zone));
+  }
+
+  if (conditions.length > 0) {
+    whereClause = and(...conditions);
   }
 
   let orderByClause;
@@ -44,7 +54,7 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
     customFieldsSchema = [
       { id: "houseNumber", name: "บ้านเลขที่", placeholder: "เช่น 123/45", type: "text", required: true, isSystem: true, isHidden: false },
       { id: "ownerName", name: "ชื่อเจ้าบ้าน / ผู้รับผิดชอบ", placeholder: "เช่น สมศรี ใจดี", type: "text", required: true, isSystem: true, isHidden: false },
-      { id: "zone", name: "ชุมชน / หมู่ (ตัวเลือก)", placeholder: "เช่น หมู่ 1 ซอย 5", type: "text", required: false, isSystem: true, isHidden: false },
+      { id: "zone", name: "ชุมชน / หมู่ (ตัวเลือก)", placeholder: "เช่น หมู่ 1 ซอย 5", type: "select", options: ["หนองรี", "หนองกราด", "หนองเสม็ด", "บ้านเก่า", "วัดขุนก้อง", "วัดกลาง", "ป่าเรไร", "วัดร่องมันเทศ", "บ้านถนนหัก", "วัดถนนหัก", "ถนนหักพัฒนา", "ทุ่งแหลม", "หนองโพรง", "วัดใหม่เรไรทอง", "จะบวก", "หัวสะพาน", "ป่าตาเส็ง", "ป่ารักน้ำ", "ดอนแสลงพันธ์", "โคกหลวงพ่อ"], required: false, isSystem: true, isHidden: false },
       { id: "road", name: "ถนน (ตัวเลือก)", placeholder: "เช่น ถนนสุขุมวิท", type: "text", required: false, isSystem: true, isHidden: false },
     ];
   }
@@ -57,6 +67,7 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
         totalPages={totalPages} 
         totalHouses={total} 
         initialSearch={q}
+        initialZone={zone}
         initialSort={{ key: sort, dir }}
         limit={limit}
         customFieldsSchema={customFieldsSchema}

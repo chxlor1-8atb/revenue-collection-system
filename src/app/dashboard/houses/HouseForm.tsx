@@ -128,14 +128,33 @@ export default function HouseForm({
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       {getIconForField(field.id)}
                     </div>
-                    <input
-                      type={field.type || "text"}
-                      name={field.isSystem ? field.id : `custom_${field.id}`}
-                      required={field.required}
-                      defaultValue={defaultValue}
-                      className="pl-10 block w-full rounded-xl border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 border"
-                      placeholder={field.placeholder || ""}
-                    />
+                    {field.type === "select" ? (
+                      <>
+                      <select
+                        name={field.isSystem ? field.id : `custom_${field.id}`}
+                        required={field.required}
+                        defaultValue={defaultValue || ""}
+                        className="pl-10 block w-full rounded-xl border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 border bg-white appearance-none"
+                      >
+                        <option value="" disabled>{field.placeholder || "เลือก..."}</option>
+                        {field.options?.map((opt: string) => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                      </div>
+                    </>
+                    ) : (
+                      <input
+                        type={field.type || "text"}
+                        name={field.isSystem ? field.id : `custom_${field.id}`}
+                        required={field.required}
+                        defaultValue={defaultValue}
+                        className="pl-10 block w-full rounded-xl border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 border"
+                        placeholder={field.placeholder || ""}
+                      />
+                    )}
                   </div>
                 </div>
               );

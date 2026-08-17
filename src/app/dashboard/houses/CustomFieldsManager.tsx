@@ -7,11 +7,12 @@ import { useRouter } from "next/navigation";
 export interface CustomField {
   id: string;
   name: string;
-  type: string;
+  type: "text" | "number" | "date" | "select";
+  options?: string[];
+  required: boolean;
+  isSystem: boolean;
+  isHidden: boolean;
   placeholder?: string;
-  required?: boolean;
-  isSystem?: boolean;
-  isHidden?: boolean;
 }
 
 interface CustomFieldsManagerProps {
