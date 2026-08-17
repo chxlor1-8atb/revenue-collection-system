@@ -165,92 +165,92 @@ export default async function DashboardPage() {
     <div className="space-y-10 pb-12 font-sans">
       
       {/* 4 Stat Cards matching LoopAI style */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8">
+      <div className="flex flex-wrap gap-4 lg:gap-6">
         
         {/* Card 1: Verified Revenue */}
-        <div className="bg-white rounded-[32px] p-6 lg:p-8 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-          <div className="flex items-start justify-between mb-6">
-            <div className="flex items-center gap-3">
+        <div className="bg-white rounded-[32px] p-6 lg:p-8 border border-slate-100/80 flex flex-col min-h-[160px] w-full sm:w-fit shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <div className="flex items-start justify-between gap-6 mb-6">
+            <div className="flex items-center gap-3 shrink-0">
               <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100/50">
                 <Banknote size={24} strokeWidth={2} />
               </div>
-              <span className="text-slate-800 font-bold tracking-tight text-lg">ยอดรับชำระแล้ว</span>
+              <span className="text-slate-800 font-bold tracking-tight text-lg whitespace-nowrap">ยอดรับชำระแล้ว</span>
             </div>
-            <span className="bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full text-[11px] font-bold border border-emerald-100">
+            <span className="bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full text-[11px] font-bold border border-emerald-100 whitespace-nowrap">
               ปี {currentYear + 543}: ฿{currentYearRevenue.toLocaleString("th-TH", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </span>
           </div>
-          <div className="mt-auto flex items-end justify-between">
-            <div className="text-[length:32px] font-bold text-slate-900 tracking-tight leading-none">
+          <div className="mt-auto flex items-end justify-between gap-6">
+            <div className="text-[length:32px] font-bold text-slate-900 tracking-tight leading-none shrink-0 whitespace-nowrap">
               <span className="text-[length:20px] font-semibold text-slate-400 mr-1">฿</span>
               {totalVerifiedRevenue.toLocaleString("th-TH", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </div>
-            <span className="text-[length:13px] text-slate-400 font-medium">จากยอดชำระสำเร็จทั้งหมด</span>
+            <span className="text-[length:13px] text-slate-400 font-medium whitespace-nowrap">จากยอดชำระสำเร็จทั้งหมด</span>
           </div>
         </div>
 
         {/* Card 2: Houses with Unpaid Invoices */}
-        <div className="bg-white rounded-[32px] p-6 lg:p-8 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-          <div className="flex items-start justify-between mb-6">
-            <div className="flex items-center gap-3">
+        <div className="bg-white rounded-[32px] p-6 lg:p-8 border border-slate-100/80 flex flex-col min-h-[160px] w-full sm:w-fit shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <div className="flex items-start justify-between gap-6 mb-6">
+            <div className="flex items-center gap-3 shrink-0">
               <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center shrink-0 border border-red-100/50">
                 <Home size={24} strokeWidth={2} />
               </div>
-              <span className="text-slate-800 font-bold tracking-tight text-lg">บ้านที่ค้างชำระ</span>
+              <span className="text-slate-800 font-bold tracking-tight text-lg whitespace-nowrap">บ้านที่ค้างชำระ</span>
             </div>
-            <span className="bg-red-50 text-red-600 px-2.5 py-1 rounded-full text-[11px] font-bold border border-red-100">
+            <span className="bg-red-50 text-red-600 px-2.5 py-1 rounded-full text-[11px] font-bold border border-red-100 whitespace-nowrap">
               ต้องติดตาม
             </span>
           </div>
-          <div className="mt-auto flex items-end justify-between">
-            <div className="text-[length:32px] font-bold text-slate-900 tracking-tight leading-none">
+          <div className="mt-auto flex items-end justify-between gap-6">
+            <div className="text-[length:32px] font-bold text-slate-900 tracking-tight leading-none shrink-0 whitespace-nowrap">
               {housesWithUnpaidCount}
             </div>
-            <span className="text-[length:13px] text-slate-400 font-medium">จากทั้งหมด {totalHousesCount} หลัง</span>
+            <span className="text-[length:13px] text-slate-400 font-medium whitespace-nowrap">จากทั้งหมด {totalHousesCount} หลัง</span>
           </div>
         </div>
 
         {/* Card 3: Pending Reviews */}
-        <div className="bg-white rounded-[32px] p-6 lg:p-8 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-          <div className="flex items-start justify-between mb-6">
-            <div className="flex items-center gap-3">
+        <div className="bg-white rounded-[32px] p-6 lg:p-8 border border-slate-100/80 flex flex-col min-h-[160px] w-full sm:w-fit shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <div className="flex items-start justify-between gap-6 mb-6">
+            <div className="flex items-center gap-3 shrink-0">
               <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100/50">
                 <Clock size={24} strokeWidth={2} />
               </div>
-              <span className="text-slate-800 font-bold tracking-tight text-lg">รอยืนยันสลิป</span>
+              <span className="text-slate-800 font-bold tracking-tight text-lg whitespace-nowrap">รอยืนยันสลิป</span>
             </div>
-            <span className="bg-amber-50 text-amber-600 px-2.5 py-1 rounded-full text-[11px] font-bold border border-amber-100">
+            <span className="bg-amber-50 text-amber-600 px-2.5 py-1 rounded-full text-[11px] font-bold border border-amber-100 whitespace-nowrap">
               รอดำเนินการ
             </span>
           </div>
-          <div className="mt-auto flex items-end justify-between">
-            <div className="text-[length:32px] font-bold text-slate-900 tracking-tight leading-none">
+          <div className="mt-auto flex items-end justify-between gap-6">
+            <div className="text-[length:32px] font-bold text-slate-900 tracking-tight leading-none shrink-0 whitespace-nowrap">
               {waitingForReviewCount}
             </div>
-            <Link href="/dashboard/review" className="text-[length:13px] text-[#5B58F2] hover:underline font-semibold flex items-center gap-1">
+            <Link href="/dashboard/review" className="text-[length:13px] text-[#5B58F2] hover:underline font-semibold flex items-center gap-1 whitespace-nowrap">
               ไปที่รายการตรวจสอบ <ChevronRight size={12} strokeWidth={3} />
             </Link>
           </div>
         </div>
 
         {/* Card 4: LINE Slips */}
-        <div className="bg-white rounded-[32px] p-6 lg:p-8 border border-slate-100/80 flex flex-col min-h-[160px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-          <div className="flex items-start justify-between mb-6">
-            <div className="flex items-center gap-3">
+        <div className="bg-white rounded-[32px] p-6 lg:p-8 border border-slate-100/80 flex flex-col min-h-[160px] w-full sm:w-fit shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <div className="flex items-start justify-between gap-6 mb-6">
+            <div className="flex items-center gap-3 shrink-0">
               <div className="w-12 h-12 rounded-2xl bg-[#EEF0FF] text-[#5B58F2] flex items-center justify-center shrink-0 border border-[#5B58F2]/20">
                 <Smartphone size={24} strokeWidth={2} />
               </div>
-              <span className="text-slate-800 font-bold tracking-tight text-lg">แจ้งผ่าน LINE</span>
+              <span className="text-slate-800 font-bold tracking-tight text-lg whitespace-nowrap">แจ้งผ่าน LINE</span>
             </div>
-            <span className="bg-[#EEF0FF] text-[#5B58F2] px-2.5 py-1 rounded-full text-[11px] font-bold border border-[#5B58F2]/20">
+            <span className="bg-[#EEF0FF] text-[#5B58F2] px-2.5 py-1 rounded-full text-[11px] font-bold border border-[#5B58F2]/20 whitespace-nowrap">
               รายการใหม่
             </span>
           </div>
-          <div className="mt-auto flex items-end justify-between">
-            <div className="text-[length:32px] font-bold text-slate-900 tracking-tight leading-none">
+          <div className="mt-auto flex items-end justify-between gap-6">
+            <div className="text-[length:32px] font-bold text-slate-900 tracking-tight leading-none shrink-0 whitespace-nowrap">
               {pendingLineSlipsCount}
             </div>
-            <Link href="/dashboard/line-slips" className="text-[length:13px] text-[#5B58F2] hover:underline font-semibold flex items-center gap-1">
+            <Link href="/dashboard/line-slips" className="text-[length:13px] text-[#5B58F2] hover:underline font-semibold flex items-center gap-1 whitespace-nowrap">
               จัดการข้อความ <ChevronRight size={12} strokeWidth={3} />
             </Link>
           </div>

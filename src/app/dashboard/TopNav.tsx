@@ -49,6 +49,7 @@ export default function TopNav({ userName, settings }: { userName: string, setti
                   <li key={item.href}>
                     <Link
                       href={item.href}
+                      prefetch={true}
                       className={`relative flex items-center justify-center px-5 py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
                         isActive 
                           ? "text-white bg-[#1A1A1A] shadow-md" 
