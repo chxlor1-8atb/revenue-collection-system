@@ -107,6 +107,13 @@ export default function BlobManagementPage() {
 
   const totalSize = files.reduce((sum, f) => sum + f.size, 0);
 
+  // Storage Usage Calculations (Based on 1 GB Free Tier)
+  const MAX_STORAGE_BYTES = 1 * 1024 * 1024 * 1024; // 1 GB
+  const usagePercentage = (totalSize / MAX_STORAGE_BYTES) * 100;
+  const averageFileSize = files.length > 0 ? totalSize / files.length : 0;
+  const remainingBytes = Math.max(0, MAX_STORAGE_BYTES - totalSize);
+  const estimatedRemainingImages = averageFileSize > 0 ? Math.floor(remainingBytes / averageFileSize) : 0;
+
   const tabs: { label: string; prefix: TabPrefix; icon: any }[] = [
     { label: 'ทั้งหมด', prefix: '', icon: <FolderOpen size={16} /> },
     { label: 'line-slips/', prefix: 'line-slips/', icon: <Image size={16} /> },
@@ -137,14 +144,56 @@ export default function BlobManagementPage() {
         </button>
       </div>
 
+      {/* Storage Usage Bar */}
+      <div className="bg-white rounded-xl border border-slate-200 p-5 mb-4">
+        <div className="flex justify-between items-end mb-2">
+          <div>
+            <h3 className="text-sm font-bold text-slate-800">ปริมาณการใช้งาน Storage (โควต้า 1 GB)</h3>
+            <p className="text-xs text-slate-500 mt-0.5">
+              พื้นที่ว่างเหลือ {loading ? '—' : formatSize(remainingBytes)}
+            </p>
+          </div>
+          <div className="text-right">
+            <span className="text-lg font-bold text-slate-800">
+              {loading ? '—' : usagePercentage.toFixed(2)}%
+            </span>
+          </div>
+        </div>
+        
+        {/* Progress Bar */}
+        <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden mb-3">
+          <div 
+            className={`h-full rounded-full transition-all duration-500 ${
+              usagePercentage > 90 ? 'bg-red-500' : usagePercentage > 75 ? 'bg-amber-400' : 'bg-emerald-500'
+            }`}
+            style={{ width: `${Math.min(100, usagePercentage)}%` }}
+          />
+        </div>
+
+        <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs">
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="text-slate-600">ใช้ไปแล้ว: <span className="font-medium text-slate-800">{loading ? '—' : formatSize(totalSize)}</span></span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-blue-400" />
+            <span className="text-slate-600">รองรับได้อีกประมาณ: <span className="font-medium text-slate-800">{loading ? '—' : estimatedRemainingImages.toLocaleString()} ภาพ</span></span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-slate-300" />
+            <span className="text-slate-600">ขนาดเฉลี่ยต่อภาพ: <span className="font-medium text-slate-800">{loading ? '—' : formatSize(averageFileSize)}</span></span>
+          </div>
+        </div>
+      </div>
+
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-xl border border-slate-200 p-4">
-          <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">จำนวนไฟล์</p>
+          <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">จำนวนไฟล์ในระบบ</p>
           <p className="text-2xl font-bold text-slate-900 mt-1">{loading ? '—' : files.length}</p>
         </div>
         <div className="bg-white rounded-xl border border-slate-200 p-4">
-          <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">ขนาดรวม</p>
+          <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">ขนาดรวมเฉพาะไฟล์นี้</p>
           <p className="text-2xl font-bold text-slate-900 mt-1">{loading ? '—' : formatSize(totalSize)}</p>
         </div>
         <div className="bg-white rounded-xl border border-slate-200 p-4 col-span-2 sm:col-span-1">
