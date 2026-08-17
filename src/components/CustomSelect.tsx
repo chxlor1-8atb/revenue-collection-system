@@ -64,25 +64,27 @@ export default function CustomSelect({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
             transition={{ duration: 0.15 }}
-            className="absolute z-50 w-full mt-1.5 bg-white border border-slate-200 rounded-[12px] shadow-lg p-1 max-h-[280px] overflow-y-auto custom-scrollbar"
+            className="absolute z-50 w-full mt-1.5 bg-white border border-slate-200 rounded-[12px] shadow-lg overflow-hidden flex flex-col"
           >
-            {options.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => {
-                  onChange(option.value);
-                  setIsOpen(false);
-                }}
-                className={`w-full text-left px-3 py-2.5 text-[13px] rounded-[8px] transition-colors ${
-                  value === option.value
-                    ? 'bg-[#5B58F2] text-white font-medium'
-                    : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
+            <div className="max-h-60 overflow-y-auto custom-scrollbar p-1 flex flex-col gap-0.5">
+              {options.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => {
+                    onChange(option.value);
+                    setIsOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2.5 text-[13px] rounded-[8px] transition-colors shrink-0 ${
+                    value === option.value
+                      ? 'bg-[#5B58F2] text-white font-medium'
+                      : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
