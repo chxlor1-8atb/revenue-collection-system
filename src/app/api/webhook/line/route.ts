@@ -233,21 +233,11 @@ export async function POST(request: Request) {
           });
 
           // PULL SYSTEM LOGIC
-          const host = req.headers.get("host") || "localhost:3000";
-          const protocol = req.headers.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
-          
-          let appUrl = (process.env.NEXT_PUBLIC_APP_URL || "").trim().replace(/['"]/g, "");
-          if (!appUrl) {
-            appUrl = `${protocol}://${host}`;
-          }
-          if (!appUrl.startsWith("http")) {
-            appUrl = `https://${appUrl}`;
-          }
-          if (appUrl.startsWith("http://") && !appUrl.includes("localhost")) {
-            appUrl = appUrl.replace("http://", "https://");
-          }
-          // Remove trailing slash
-          appUrl = appUrl.replace(/\/+$/, "");
+          const host = req.headers.get("host") || "";
+          const isLocal = host.includes("localhost") || host.includes("127.0.0.1");
+          const appUrl = isLocal 
+            ? "http://localhost:3000" 
+            : "https://nangronggarbagepayments.vercel.app";
           const thaiMonths = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
           
           if (text === "เช็คบิล" || text === "บิล") {
@@ -274,7 +264,7 @@ export async function POST(request: Request) {
             }
             
             const payUrl = `${appUrl}/house/${house.id}`;
-            const qrUrl = `${appUrl}/api/qr-image?amount=${totalAmount}`;
+            const qrUrl = `${appUrl}/api/qr-image?amount=${totalAmount}&ext=.png`;
             const flexMsg = generateBillFlexMessage(house.houseNumber, monthStr, totalAmount, payUrl, qrUrl);
             await replyWithMessages(replyToken, [flexMsg]);
             continue;
