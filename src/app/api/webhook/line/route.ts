@@ -140,7 +140,25 @@ export async function POST(request: Request) {
               .limit(1);
             
             if (existingRefTx.length > 0) {
-              await replyMessage(replyToken, `สลิปนี้เคยถูกใช้ยืนยันการชำระเงินไปแล้วค่ะ ❌\nกรุณาส่งสลิปใหม่ที่ยังไม่เคยใช้นะคะ 🙏`);
+              const orig = verification.data || {};
+              const senderName = orig.sender?.name || orig.senderName || orig.sender?.account?.name || orig.senderAccount;
+              const senderAccount = orig.sender?.account?.number || orig.senderAccountNumber;
+              const receiverName = orig.receiver?.name || orig.receiverName || orig.receiver?.account?.name || orig.receiverAccount;
+              const receiverAccount = orig.receiver?.account?.number || orig.receiverAccountNumber;
+              const transDate = orig.transDate || orig.transTime || orig.transTimestamp;
+              
+              const flexError = generateSlipErrorFlexMessage(
+                 "สลิปซ้ำ", 
+                 "สลิปนี้เคยถูกใช้ยืนยันการชำระเงินไปแล้ว", 
+                 "#f59e0b", // Orange
+                 orig.amount ? parseFloat(orig.amount as any) : undefined,
+                 senderName,
+                 senderAccount,
+                 receiverName,
+                 receiverAccount,
+                 transDate
+              );
+              await replyWithMessages(replyToken, [flexError]);
               continue;
             }
           }
@@ -249,6 +267,8 @@ export async function POST(request: Request) {
             ]);
             continue;
           }
+        }
+
         // 3.6 Auto-match with linked house if amount matches exactly
         if (slipAmount && slipAmount !== "0") {
           const linkedHouses = await db.select().from(houses).where(eq(houses.lineUserId, userId)).limit(1);
