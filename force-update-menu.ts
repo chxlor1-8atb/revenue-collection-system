@@ -34,8 +34,8 @@ async function run() {
     const richMenuId = createResponse.richMenuId;
     console.log('Created ID:', richMenuId);
     
-    console.log('Downloading image from Vercel...');
-    const res = await fetch('https://nangronggarbagepayments.vercel.app/api/rich-menu-image');
+    console.log('Downloading image from Localhost...');
+    const res = await fetch('http://localhost:3000/api/rich-menu-image');
     const arrayBuffer = await res.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     const imageBlob = new Blob([buffer], { type: 'image/jpeg' });

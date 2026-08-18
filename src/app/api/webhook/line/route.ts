@@ -334,7 +334,7 @@ export async function POST(request: Request) {
               continue;
             }
             const house = houseList[0];
-            await replyMessage(replyToken, `🏠 ข้อมูลที่ผูกบัญชีไว้\n\nบ้านเลขที่: ${house.houseNumber}\nชื่อเจ้าบ้าน: ${house.ownerName || "ไม่ระบุ"}\nชุมชน/โซน: ${house.zone || "ไม่ระบุ"}\n\n💡 หากต้องการเปลี่ยนบ้านที่ผูกไว้ สามารถพิมพ์ "บ้านเลขที่ใหม่" ส่งเข้ามาในแชทได้เลยค่ะ`);
+            await replyMessage(replyToken, `🏠 ข้อมูลที่ผูกบัญชีไว้\n\nบ้านเลขที่: ${house.houseNumber}\nชื่อเจ้าบ้าน: ${house.ownerName || "ไม่ระบุ"}\nถนน: ${house.road || "-"}\nชุมชน/โซน: ${house.zone || "ไม่ระบุ"}\n\n💡 หากต้องการเปลี่ยนบ้านที่ผูกไว้ สามารถพิมพ์ "บ้านเลขที่ใหม่" ส่งเข้ามาในแชทได้เลยค่ะ`);
             continue;
           }
 

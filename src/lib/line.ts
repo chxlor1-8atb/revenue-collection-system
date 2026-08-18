@@ -417,6 +417,20 @@ export function generateDuplicateHouseSelectionFlexMessage(
               },
               {
                 type: "text",
+                text: "ถนน",
+                color: "#888888",
+                size: "xs",
+                margin: "md"
+              },
+              {
+                type: "text",
+                text: house.road || "-",
+                weight: "bold",
+                size: "sm",
+                wrap: true
+              },
+              {
+                type: "text",
                 text: "ชุมชน/โซน",
                 color: "#888888",
                 size: "xs",
