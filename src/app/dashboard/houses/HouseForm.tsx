@@ -23,7 +23,7 @@ export default function HouseForm({
   initialData?: HouseData, 
   customFieldsSchema?: CustomField[],
   onClose: () => void,
-  onSuccess: () => void
+  onSuccess: (houseId?: number) => void
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +58,7 @@ export default function HouseForm({
       }
 
       if (res.success) {
-        onSuccess();
+        onSuccess(res.houseId);
       } else {
         setError(res.error || "เกิดข้อผิดพลาด");
       }
@@ -74,6 +74,8 @@ export default function HouseForm({
       case 'houseNumber': return <Home size={16} className="text-slate-400" />;
       case 'ownerName': return <User size={16} className="text-slate-400" />;
       case 'zone': 
+      case 'moo':
+      case 'soi':
       case 'road': return <MapPin size={16} className="text-slate-400" />;
       default: return <AlignLeft size={16} className="text-slate-400" />;
     }

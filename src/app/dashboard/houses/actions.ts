@@ -2,13 +2,15 @@
 
 import { db } from "@/lib/db";
 import { houses, invoices } from "@/lib/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export async function addHouse(formData: FormData) {
   const houseNumber = formData.get("houseNumber")?.toString();
   const ownerName = formData.get("ownerName")?.toString();
   const zone = formData.get("zone")?.toString() || null;
+  const moo = formData.get("moo")?.toString() || null;
+  const soi = formData.get("soi")?.toString() || null;
   const road = formData.get("road")?.toString() || null;
   const defaultBillingAmountRaw = formData.get("defaultBillingAmount")?.toString();
   const defaultBillingAmount = defaultBillingAmountRaw ? parseFloat(defaultBillingAmountRaw).toString() : null;
@@ -28,17 +30,19 @@ export async function addHouse(formData: FormData) {
   }
 
   try {
-    await db.insert(houses).values({
+    const [insertedHouse] = await db.insert(houses).values({
       houseNumber,
       ownerName,
       zone,
+      moo,
+      soi,
       road,
       defaultBillingAmount,
       customFields,
-    });
+    }).returning({ id: houses.id });
 
     revalidatePath("/dashboard/houses");
-    return { success: true };
+    return { success: true, houseId: insertedHouse.id };
   } catch (error: any) {
     console.error("Error adding house:", error);
     return { success: false, error: error.message || "เกิดข้อผิดพลาดในการบันทึกข้อมูล" };
@@ -49,6 +53,8 @@ export async function updateHouse(id: number, formData: FormData) {
   const houseNumber = formData.get("houseNumber")?.toString();
   const ownerName = formData.get("ownerName")?.toString();
   const zone = formData.get("zone")?.toString() || null;
+  const moo = formData.get("moo")?.toString() || null;
+  const soi = formData.get("soi")?.toString() || null;
   const road = formData.get("road")?.toString() || null;
   const defaultBillingAmountRaw = formData.get("defaultBillingAmount")?.toString();
   const defaultBillingAmount = defaultBillingAmountRaw ? parseFloat(defaultBillingAmountRaw).toString() : null;
@@ -72,13 +78,15 @@ export async function updateHouse(id: number, formData: FormData) {
       houseNumber,
       ownerName,
       zone,
+      moo,
+      soi,
       road,
       defaultBillingAmount,
       customFields,
     }).where(eq(houses.id, id));
 
     revalidatePath("/dashboard/houses");
-    return { success: true };
+    return { success: true, houseId: id };
   } catch (error: any) {
     console.error("Error updating house:", error);
     return { success: false, error: error.message || "เกิดข้อผิดพลาดในการอัปเดตข้อมูล" };
@@ -101,5 +109,31 @@ export async function deleteHouse(id: number) {
   } catch (error: any) {
     console.error("Error deleting house:", error);
     return { success: false, error: error.message || "เกิดข้อผิดพลาดในการลบข้อมูล" };
+  }
+}
+
+export async function createInitialInvoice(houseId: number, monthYear: string, amount: string) {
+  try {
+    const existing = await db.select().from(invoices).where(
+      and(eq(invoices.houseId, houseId), eq(invoices.monthYear, monthYear))
+    ).limit(1);
+    
+    if (existing.length > 0) {
+      return { success: false, error: "บิลสำหรับเดือนนี้ถูกสร้างไปแล้ว" };
+    }
+    
+    await db.insert(invoices).values({
+      houseId,
+      monthYear,
+      amount,
+      status: 'unpaid'
+    });
+
+    revalidatePath(`/dashboard/houses/${houseId}`);
+    revalidatePath(`/dashboard/houses`);
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error creating initial invoice:", error);
+    return { success: false, error: error.message || "เกิดข้อผิดพลาดในการสร้างบิล" };
   }
 }

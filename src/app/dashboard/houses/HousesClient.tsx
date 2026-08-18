@@ -1,18 +1,19 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useTransition, useMemo } from "react";
-import { Plus, Edit2, Trash2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Download, Upload, QrCode, X, Settings, Home } from "lucide-react";
+import { Plus, Edit2, Trash2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Download, Upload, QrCode, X, Settings, Home, Loader2, FileText, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import QRCode from "qrcode";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import HouseForm, { HouseData } from "./HouseForm";
 import GenerateInvoiceButton from "./GenerateInvoiceButton";
-import { deleteHouse } from "./actions";
+import { deleteHouse, createInitialInvoice } from "./actions";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
 import CustomSelect from "@/components/CustomSelect";
 import CustomFieldsManager, { CustomField } from "./CustomFieldsManager";
 import TablePagination from "@/components/TablePagination";
+import MonthPicker from "@/components/MonthPicker";
 
 export default function HousesClient({ 
   initialHouses,
@@ -52,6 +53,10 @@ export default function HousesClient({
   
   // QR Code Modal State
   const [qrModal, setQrModal] = useState<{ isOpen: boolean; houseNumber: string; url: string; qrDataUrl: string } | null>(null);
+
+  // Initial Bill Prompt State
+  const [initialBillPrompt, setInitialBillPrompt] = useState<{ isOpen: boolean; houseId: number; monthYear: string; amount: string } | null>(null);
+  const [isGeneratingBill, setIsGeneratingBill] = useState(false);
 
   // Search & Sort State
   const [searchQuery, setSearchQuery] = useState(initialSearch);
@@ -438,9 +443,18 @@ export default function HousesClient({
           initialData={editingHouse} 
           customFieldsSchema={customFieldsSchema}
           onClose={() => setShowForm(false)}
-          onSuccess={() => {
+          onSuccess={(houseId) => {
             setShowForm(false);
-            router.refresh();
+            if (houseId) {
+              setInitialBillPrompt({
+                isOpen: true,
+                houseId,
+                monthYear: new Date().toISOString().slice(0, 7),
+                amount: "20.00"
+              });
+            } else {
+              router.refresh();
+            }
           }} 
         />
       )}
@@ -528,6 +542,90 @@ export default function HousesClient({
               <a href={qrModal.url} target="_blank" className="text-xs text-blue-600 hover:underline break-all">
                 {qrModal.url}
               </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Initial Bill Prompt Modal */}
+      {initialBillPrompt && initialBillPrompt.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="bg-slate-50 px-6 py-4 border-b flex justify-between items-center shrink-0">
+              <h3 className="font-semibold text-slate-800 text-lg flex items-center gap-2">
+                <FileText className="text-blue-600" size={20} />
+                สร้างบิลตั้งต้น
+              </h3>
+              {!isGeneratingBill && (
+                <button 
+                  onClick={() => { setInitialBillPrompt(null); router.refresh(); }}
+                  className="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-1 rounded-full transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              )}
+            </div>
+            
+            <div className="p-6">
+              <p className="text-slate-600 mb-6 leading-relaxed">
+                คุณต้องการสร้างบิลตั้งต้นหรือยอดยกมา สำหรับบ้านที่เพิ่งเพิ่มเข้าไปใหม่นี้เลยหรือไม่?
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">ประจำเดือน <span className="text-red-500">*</span></label>
+                  <MonthPicker
+                    value={initialBillPrompt.monthYear}
+                    onChange={(val) => setInitialBillPrompt(prev => prev ? { ...prev, monthYear: val } : null)}
+                    disabled={isGeneratingBill}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">ยอดเงิน (บาท) <span className="text-red-500">*</span></label>
+                  <input
+                    type="number"
+                    value={initialBillPrompt.amount}
+                    onChange={(e) => setInitialBillPrompt(prev => prev ? { ...prev, amount: e.target.value } : null)}
+                    disabled={isGeneratingBill}
+                    className="block w-full rounded-xl border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 border px-3"
+                    step="0.01"
+                    min="0"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { setInitialBillPrompt(null); router.refresh(); }}
+                  disabled={isGeneratingBill}
+                  className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition-colors disabled:opacity-50"
+                >
+                  ข้ามไปก่อน
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!initialBillPrompt.monthYear || !initialBillPrompt.amount) return;
+                    setIsGeneratingBill(true);
+                    const res = await createInitialInvoice(initialBillPrompt.houseId, initialBillPrompt.monthYear, initialBillPrompt.amount);
+                    setIsGeneratingBill(false);
+                    if (res.success) {
+                      setSuccessMsg("สร้างบิลตั้งต้นสำเร็จ");
+                      setInitialBillPrompt(null);
+                      router.refresh();
+                    } else {
+                      setError(res.error || "เกิดข้อผิดพลาดในการสร้างบิล");
+                      setInitialBillPrompt(null);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                  }}
+                  disabled={isGeneratingBill}
+                  className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors flex items-center justify-center disabled:opacity-50"
+                >
+                  {isGeneratingBill ? (
+                    <><Loader2 size={16} className="animate-spin mr-2" /> กำลังสร้าง...</>
+                  ) : "สร้างบิลตั้งต้น"}
+                </button>
+              </div>
             </div>
           </div>
         </div>

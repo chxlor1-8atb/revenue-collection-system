@@ -14,7 +14,9 @@ export const houses = pgTable('houses', {
   id: serial('id').primaryKey(),
   houseNumber: text('house_number').notNull(), // บ้านเลขที่
   ownerName: text('owner_name').notNull(), // ชื่อเจ้าบ้าน
-  zone: text('zone'), // ชุมชน/หมู่
+  zone: text('zone'), // ชุมชน
+  moo: text('moo'), // หมู่
+  soi: text('soi'), // ซอย
   road: text('road'), // ถนน
   defaultBillingAmount: numeric('default_billing_amount', { precision: 12, scale: 2 }), // ยอดจัดเก็บประจำเดือน
   customFields: jsonb('custom_fields').default('{}'), // เก็บข้อมูล custom fields ในรูปแบบ JSON (key-value)

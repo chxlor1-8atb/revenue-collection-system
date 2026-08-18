@@ -102,7 +102,8 @@ export function generateBillFlexMessage(
   houseNumber: string, 
   monthYearStr: string, 
   amount: number, 
-  payUrl: string
+  payUrl: string,
+  qrUrl: string
 ): any {
   return {
     type: "flex",
@@ -110,26 +111,29 @@ export function generateBillFlexMessage(
     contents: {
       type: "bubble",
       size: "kilo",
+      hero: {
+        type: "image",
+        url: qrUrl,
+        size: "full",
+        aspectRatio: "1:1",
+        aspectMode: "fit",
+        backgroundColor: "#ffffff"
+      },
       header: {
         type: "box",
         layout: "vertical",
         contents: [
           {
             type: "text",
-            text: "บิลแจ้งหนี้ค่าขยะ",
+            text: "สแกน QR เพื่อชำระเงิน",
             weight: "bold",
             size: "xl",
-            color: "#ffffff"
-          },
-          {
-            type: "text",
-            text: "กองสาธารณสุขและสิ่งแวดล้อม",
-            color: "#ffffffcc",
-            size: "xs"
+            color: "#ffffff",
+            align: "center"
           }
         ],
         backgroundColor: "#059669",
-        paddingAll: "20px"
+        paddingAll: "15px"
       },
       body: {
         type: "box",
@@ -236,8 +240,10 @@ export function generateReceiptFlexMessage(
   houseNumber: string, 
   monthYearStr: string, 
   amount: number, 
-  receiptUrl: string
+  receiptUrl: string,
+  paidAt?: Date | null
 ): any {
+  const paidDateStr = paidAt ? new Date(paidAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : "-";
   return {
     type: "flex",
     altText: `ใบเสร็จรับเงินค่าขยะประจำเดือน ${monthYearStr} ของบ้านเลขที่ ${houseNumber}`,
@@ -340,6 +346,29 @@ export function generateReceiptFlexMessage(
               }
             ],
             margin: "lg"
+          },
+          {
+            type: "box",
+            layout: "horizontal",
+            contents: [
+              {
+                type: "text",
+                text: "เวลาที่ชำระ",
+                color: "#888888",
+                size: "sm",
+                flex: 1
+              },
+              {
+                type: "text",
+                text: paidDateStr,
+                color: "#111111",
+                size: "xs",
+                weight: "bold",
+                align: "end",
+                flex: 2
+              }
+            ],
+            margin: "md"
           }
         ],
         paddingAll: "20px"

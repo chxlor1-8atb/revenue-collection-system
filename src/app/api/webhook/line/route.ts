@@ -260,7 +260,8 @@ export async function POST(request: Request) {
             }
             
             const payUrl = `${appUrl}/house/${house.id}`;
-            const flexMsg = generateBillFlexMessage(house.houseNumber, monthStr, totalAmount, payUrl);
+            const qrUrl = `${appUrl}/api/qr-image?amount=${totalAmount}`;
+            const flexMsg = generateBillFlexMessage(house.houseNumber, monthStr, totalAmount, payUrl, qrUrl);
             await replyWithMessages(replyToken, [flexMsg]);
             continue;
           }
@@ -282,33 +283,45 @@ export async function POST(request: Request) {
               continue;
             }
             
-            const latestTx = await db.select().from(transactions)
+            const latestTxs = await db.select().from(transactions)
               .where(and(
                  inArray(transactions.id, txIds),
                  eq(transactions.slipStatus, 'verified')
               ))
               .orderBy(desc(transactions.paidAt))
-              .limit(1);
+              .limit(5);
               
-            if (latestTx.length === 0) {
+            if (latestTxs.length === 0) {
               await replyMessage(replyToken, `ยังไม่มีประวัติการรับชำระเงินสำหรับบ้านเลขที่ ${house.houseNumber} ค่ะ`);
               continue;
             }
             
-            const tx = latestTx[0];
-            const txInvoices = await db.select().from(invoices).where(eq(invoices.transactionId, tx.id));
+            const receiptUrl = `${appUrl}/house/${house.id}`;
+            const carouselContents = [];
             
-            let monthStr = "";
-            if (txInvoices.length === 1) {
-              const [y, m] = txInvoices[0].monthYear.split("-");
-              monthStr = `${thaiMonths[parseInt(m)]} ${parseInt(y) + 543}`;
-            } else {
-              monthStr = `${txInvoices.length} รายการ`;
+            for (const tx of latestTxs) {
+              const txInvoices = await db.select().from(invoices).where(eq(invoices.transactionId, tx.id));
+              let monthStr = "";
+              if (txInvoices.length === 1) {
+                const [y, m] = txInvoices[0].monthYear.split("-");
+                monthStr = `${thaiMonths[parseInt(m)]} ${parseInt(y) + 543}`;
+              } else {
+                monthStr = `${txInvoices.length} รายการ`;
+              }
+              const flexMsg = generateReceiptFlexMessage(house.houseNumber, monthStr, parseFloat(tx.amount || "0"), receiptUrl, tx.paidAt);
+              carouselContents.push(flexMsg.contents);
             }
             
-            const receiptUrl = `${appUrl}/house/${house.id}`;
-            const flexMsg = generateReceiptFlexMessage(house.houseNumber, monthStr, parseFloat(tx.amount || "0"), receiptUrl);
-            await replyWithMessages(replyToken, [flexMsg]);
+            const carouselMsg = {
+              type: "flex",
+              altText: `ประวัติการชำระเงิน 5 รายการล่าสุด`,
+              contents: {
+                type: "carousel",
+                contents: carouselContents
+              }
+            };
+            
+            await replyWithMessages(replyToken, [carouselMsg]);
             continue;
           }
           
