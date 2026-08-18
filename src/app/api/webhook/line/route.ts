@@ -233,7 +233,7 @@ export async function POST(request: Request) {
           });
 
           // PULL SYSTEM LOGIC
-          const host = req.headers.get("host") || "";
+          const host = request.headers.get("host") || "";
           const isLocal = host.includes("localhost") || host.includes("127.0.0.1");
           const appUrl = isLocal 
             ? "http://localhost:3000" 
