@@ -13,7 +13,7 @@ if (!token) {
 }
 
 const client = new messagingApi.MessagingApiClient({
-  channelAccessToken: token,
+  channelAccessToken: token as string,
 });
 
 async function main() {
@@ -71,7 +71,7 @@ async function main() {
 
     console.log("3. Uploading Image to LINE...");
     const blobClient = new messagingApi.MessagingApiBlobClient({
-      channelAccessToken: token,
+      channelAccessToken: token as string,
     });
     
     // Convert buffer to a Blob-like object for the new SDK
