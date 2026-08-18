@@ -290,9 +290,9 @@ export default function HousesClient({
       )}
 
       {/* Main Card Container */}
-      <div className="bg-white rounded-[32px] shadow-sm border border-slate-100 overflow-hidden flex flex-col">
+      <div className="bg-white rounded-[32px] shadow-sm border border-slate-100 flex flex-col">
         {/* Toolbar: Search */}
-        <div className="p-8 lg:p-10 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="p-8 lg:p-10 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4 rounded-t-[32px] bg-white relative z-20">
           <div className="flex flex-col sm:flex-row w-full gap-4 z-20">
             <div className="relative w-full sm:w-80">
               <SearchAutocomplete 
@@ -421,14 +421,16 @@ export default function HousesClient({
         </div>
         
         {/* Pagination Footer */}
-        <TablePagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalItems={totalHouses}
-          itemsPerPage={limit}
-          onPageChange={handlePageChange}
-          onLimitChange={(newLimit) => updateUrlParams(1, searchQuery, sortConfig.key, sortConfig.dir, newLimit, selectedZone || "")}
-        />
+        <div className="rounded-b-[32px] overflow-hidden bg-white">
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalHouses}
+            itemsPerPage={limit}
+            onPageChange={handlePageChange}
+            onLimitChange={(newLimit) => updateUrlParams(1, searchQuery, sortConfig.key, sortConfig.dir, newLimit, selectedZone || "")}
+          />
+        </div>
       </div>
 
       {showForm && (
