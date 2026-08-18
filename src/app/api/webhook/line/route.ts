@@ -235,10 +235,19 @@ export async function POST(request: Request) {
           // PULL SYSTEM LOGIC
           const host = req.headers.get("host") || "localhost:3000";
           const protocol = req.headers.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
-          let appUrl = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host}`;
-          if (!appUrl.startsWith("http")) appUrl = `https://${appUrl}`;
-          if (appUrl.startsWith("http://") && !appUrl.includes("localhost")) appUrl = appUrl.replace("http://", "https://");
-
+          
+          let appUrl = (process.env.NEXT_PUBLIC_APP_URL || "").trim().replace(/['"]/g, "");
+          if (!appUrl) {
+            appUrl = `${protocol}://${host}`;
+          }
+          if (!appUrl.startsWith("http")) {
+            appUrl = `https://${appUrl}`;
+          }
+          if (appUrl.startsWith("http://") && !appUrl.includes("localhost")) {
+            appUrl = appUrl.replace("http://", "https://");
+          }
+          // Remove trailing slash
+          appUrl = appUrl.replace(/\/+$/, "");
           const thaiMonths = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
           
           if (text === "เช็คบิล" || text === "บิล") {
