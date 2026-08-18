@@ -1,9 +1,10 @@
 import { db } from "@/lib/db";
-import { houses, invoices } from "@/lib/schema";
-import { eq, asc } from "drizzle-orm";
+import { houses, invoices, transactions } from "@/lib/schema";
+import { eq, asc, desc, and, inArray, gte } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import InvoiceSelectionForm from "@/components/InvoiceSelectionForm";
 import Link from "next/link";
+import { CheckCircle2 } from "lucide-react";
 
 export default async function HouseDashboard({ params }: { params: Promise<{ houseId: string }> }) {
   const houseId = parseInt((await params).houseId, 10);
@@ -22,6 +23,36 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
   }
 
   const house = result[0];
+  
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  
+  const txIds = houseInvoices.filter(inv => inv.transactionId).map(inv => inv.transactionId) as number[];
+  const uniqueTxIds = [...new Set(txIds)];
+  
+  let recentTransactions: any[] = [];
+  if (uniqueTxIds.length > 0) {
+    // @ts-ignore
+    recentTransactions = await db.select()
+      .from(transactions)
+      .where(
+        and(
+          inArray(transactions.id, uniqueTxIds),
+          eq(transactions.slipStatus, 'verified'),
+          // @ts-ignore
+          gte(transactions.paidAt, thirtyDaysAgo)
+        )
+      )
+      .orderBy(desc(transactions.paidAt));
+  }
+
+  const formatThaiDate = (date: Date) => {
+    if (!date) return "";
+    return date.toLocaleDateString('th-TH', { 
+      year: 'numeric', month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+  };
 
   // Deterministic barcode using houseId as seed to prevent SSR/client hydration mismatch
   const generateBarcode = () => {
@@ -136,6 +167,37 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
             <span className="text-xs font-semibold text-slate-400 tracking-wider">INVOICES</span>
           </div>
           <InvoiceSelectionForm invoices={houseInvoices} house={house} />
+          
+          {recentTransactions.length > 0 && (
+            <div className="mt-8 pt-8 border-t border-slate-100">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="font-semibold text-slate-900 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  ประวัติการชำระเงิน (30 วันล่าสุด)
+                </h3>
+              </div>
+              <div className="space-y-3">
+                {recentTransactions.map((tx) => (
+                  <div key={tx.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <div>
+                      <p className="text-sm font-medium text-slate-700">
+                        {formatThaiDate(new Date(tx.paidAt))}
+                      </p>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        ผ่าน {tx.verifiedBy === 'line_bot_auto' ? 'ระบบอัตโนมัติ' : tx.verifiedBy === 'line_bot' ? 'LINE Bot' : 'เจ้าหน้าที่'}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-mono font-bold text-emerald-600">
+                        +{parseFloat(tx.amount || "0").toFixed(2)} ฿
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="mt-8 pt-4 border-t border-slate-100 text-center">
             <p className="text-xs text-slate-400">
               กรณีมีข้อสงสัย ติดต่อ <strong>กองสาธารณสุขและสิ่งแวดล้อม</strong><br/>
