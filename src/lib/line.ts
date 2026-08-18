@@ -5,7 +5,7 @@ export async function replyMessage(replyToken: string, text: string) {
   const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
   if (!token) return;
 
-  await fetch(LINE_API_URL, {
+  const response = await fetch(LINE_API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -21,13 +21,18 @@ export async function replyMessage(replyToken: string, text: string) {
       ],
     }),
   });
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`[LINE API Error] replyMessage failed: ${response.status} ${response.statusText}`, errorText);
+  }
 }
 
 export async function replyWithMessages(replyToken: string, messages: any[]) {
   const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
   if (!token) return;
 
-  await fetch(LINE_API_URL, {
+  const response = await fetch(LINE_API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -38,6 +43,11 @@ export async function replyWithMessages(replyToken: string, messages: any[]) {
       messages: messages,
     }),
   });
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`[LINE API Error] replyWithMessages failed: ${response.status} ${response.statusText}`, errorText);
+  }
 }
 
 export async function getMessageContent(messageId: string): Promise<Buffer | null> {
