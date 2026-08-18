@@ -42,25 +42,30 @@ export async function verifySlipWithBuffer(imageBuffer: Buffer): Promise<Slip2Go
 
     const result = await response.json();
     
-    // Assuming Slip2Go returns { status: 'success', data: { amount, ... } }
-    if (result.status === 'success' || result.data) {
-      return {
-        success: true,
-        data: {
-          amount: parseFloat(result.data.amount),
-          sender: {
-            name: result.data.sender?.name || result.data.senderName,
-          },
-          receiver: {
-            name: result.data.receiver?.name || result.data.receiverName,
-          },
-          transRef: result.data.transRef,
-          transDate: result.data.transDate || result.data.transTime,
-        }
-      };
-    } else {
-      return { success: false, error: result.message || "Invalid slip" };
+    // Check if the slip is fraud or data is missing
+    if (result.code === "200500" || result.message === "Slip is fraud.") {
+      return { success: false, error: "ตรวจพบว่าสลิปนี้เป็นสลิปปลอมหรือเคยใช้งานไปแล้ว" };
     }
+
+    if (!result.data || result.data.amount === undefined) {
+      return { success: false, error: result.message || "ข้อมูลสลิปไม่ถูกต้อง หรือไม่สามารถอ่าน QR Code ได้" };
+    }
+
+    // Success case
+    return {
+      success: true,
+      data: {
+        amount: parseFloat(result.data.amount),
+        sender: {
+          name: result.data.sender?.name || result.data.senderName,
+        },
+        receiver: {
+          name: result.data.receiver?.name || result.data.receiverName,
+        },
+        transRef: result.data.transRef,
+        transDate: result.data.transDate || result.data.transTime,
+      }
+    };
   } catch (error) {
     console.error("Slip2Go API error:", error);
     return { success: false, error: "Internal Server Error during verification" };
