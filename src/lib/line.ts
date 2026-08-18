@@ -120,25 +120,6 @@ export async function getMessageContent(messageId: string): Promise<Buffer | nul
   return Buffer.from(arrayBuffer);
 }
 
-export const LINE_PUSH_API_URL = "https://api.line.me/v2/bot/message/push";
-
-export async function pushMessage(to: string, messages: any[]) {
-  const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
-  if (!token) return;
-
-  await fetch(LINE_PUSH_API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      to: to,
-      messages: messages,
-    }),
-  });
-}
-
 // --- Flex Message Templates ---
 
 export function generateBillFlexMessage(
