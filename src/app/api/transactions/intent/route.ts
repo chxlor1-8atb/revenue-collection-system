@@ -52,49 +52,47 @@ export async function POST(request: Request) {
       // Ignore cleanup error, proceed with intent creation
     }
 
+    // Clean up any existing waiting_for_slip transactions for this house to prevent duplicates
+    if (houseId) {
+      const activeTxs = await db.select({ 
+        txId: transactions.id 
+      })
+      .from(transactions)
+      .innerJoin(invoices, eq(invoices.transactionId, transactions.id))
+      .where(
+        and(
+          eq(transactions.slipStatus, 'waiting_for_slip'),
+          eq(invoices.houseId, houseId)
+        )
+      );
+
+      const activeTxIds = [...new Set(activeTxs.map(t => t.txId))];
+      if (activeTxIds.length > 0) {
+        // Delete pending advance invoices for these transactions
+        await db.delete(invoices).where(
+          and(
+            inArray(invoices.transactionId, activeTxIds),
+            eq(invoices.status, 'pending_advance')
+          )
+        );
+
+        // Unlink regular invoices
+        await db.update(invoices)
+          .set({ transactionId: null })
+          .where(inArray(invoices.transactionId, activeTxIds));
+          
+        // Delete the old intent transactions
+        await db.delete(transactions)
+          .where(inArray(transactions.id, activeTxIds));
+      }
+    }
+
     // Get invoices if any selected
     let targetInvoices: any[] = [];
     if (invoiceIds && invoiceIds.length > 0) {
       targetInvoices = await db.select().from(invoices).where(inArray(invoices.id, invoiceIds));
       if (targetInvoices.length !== invoiceIds.length) {
         return NextResponse.json({ error: "Some invoices not found" }, { status: 404 });
-      }
-
-      // Check if any invoice is currently locked (has an active waiting_for_slip transaction)
-      const lockedInvoices = await db.select({ 
-          id: invoices.id, 
-          transactionId: transactions.id 
-        })
-        .from(invoices)
-        .innerJoin(transactions, eq(invoices.transactionId, transactions.id))
-        .where(
-          and(
-            inArray(invoices.id, invoiceIds),
-            eq(transactions.slipStatus, 'waiting_for_slip')
-          )
-        );
-
-      if (lockedInvoices.length > 0) {
-        const activeTxIds = [...new Set(lockedInvoices.map(i => i.transactionId))];
-        
-        // If it's NOT an exact match (or it's expired), we clear the old one(s) instead of blocking.
-        // For simplicity with advance payments, we just clear and recreate instead of trying to match exact advance months
-        if (activeTxIds.length > 0) {
-          // Delete pending advance invoices for these transactions first
-          await db.delete(invoices).where(
-            and(
-              inArray(invoices.transactionId, activeTxIds),
-              eq(invoices.status, 'pending_advance')
-            )
-          );
-
-          await db.update(invoices)
-            .set({ transactionId: null })
-            .where(inArray(invoices.transactionId, activeTxIds));
-            
-          await db.delete(transactions)
-            .where(inArray(transactions.id, activeTxIds));
-        }
       }
     }
 
