@@ -364,3 +364,94 @@ export function generateReceiptFlexMessage(
     }
   };
 }
+
+export function generateDuplicateHouseSelectionFlexMessage(
+  houses: any[],
+  slipId?: number
+): any {
+  return {
+    type: "flex",
+    altText: `พบบ้านเลขที่ซ้ำกัน กรุณาเลือกบ้านของคุณ`,
+    contents: {
+      type: "carousel",
+      contents: houses.map(house => {
+        let actionData = `action=bindHouse&houseId=${house.id}`;
+        if (slipId) {
+          actionData += `&slipId=${slipId}`;
+        }
+        
+        return {
+          type: "bubble",
+          size: "micro",
+          header: {
+            type: "box",
+            layout: "vertical",
+            contents: [
+              {
+                type: "text",
+                text: house.houseNumber,
+                weight: "bold",
+                size: "xl",
+                color: "#ffffff"
+              }
+            ],
+            backgroundColor: "#f59e0b",
+            paddingAll: "15px"
+          },
+          body: {
+            type: "box",
+            layout: "vertical",
+            contents: [
+              {
+                type: "text",
+                text: "ชื่อเจ้าบ้าน",
+                color: "#888888",
+                size: "xs"
+              },
+              {
+                type: "text",
+                text: house.ownerName || "ไม่ระบุ",
+                weight: "bold",
+                size: "sm",
+                wrap: true
+              },
+              {
+                type: "text",
+                text: "ชุมชน/โซน",
+                color: "#888888",
+                size: "xs",
+                margin: "md"
+              },
+              {
+                type: "text",
+                text: house.zone || "ไม่ระบุ",
+                weight: "bold",
+                size: "sm",
+                wrap: true
+              }
+            ],
+            paddingAll: "15px"
+          },
+          footer: {
+            type: "box",
+            layout: "vertical",
+            contents: [
+              {
+                type: "button",
+                action: {
+                  type: "postback",
+                  label: "เลือกบ้านนี้",
+                  data: actionData,
+                  displayText: `เลือกบ้าน ${house.houseNumber} (${house.ownerName || 'ไม่ระบุ'})`
+                },
+                style: "primary",
+                color: "#f59e0b"
+              }
+            ],
+            paddingAll: "15px"
+          }
+        };
+      })
+    }
+  };
+}

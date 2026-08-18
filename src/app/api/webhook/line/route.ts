@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { replyMessage, getMessageContent, replyWithMessages, generateBillFlexMessage, generateReceiptFlexMessage } from "@/lib/line";
+import { replyMessage, getMessageContent, replyWithMessages, generateBillFlexMessage, generateReceiptFlexMessage, generateDuplicateHouseSelectionFlexMessage } from "@/lib/line";
 import { db } from "@/lib/db";
 import { lineMessages, houses, invoices, transactions } from "@/lib/schema";
 import { eq, and, desc, gte, inArray } from "drizzle-orm";
@@ -311,6 +311,16 @@ export async function POST(request: Request) {
             await replyWithMessages(replyToken, [flexMsg]);
             continue;
           }
+          
+          if (text === "วิธีใช้งาน") {
+            await replyMessage(replyToken, "📖 วิธีใช้งานระบบชำระค่าขยะ:\n\n1️⃣ ผูกบัญชีบ้าน\nพิมพ์ 'บ้านเลขที่' ของคุณ (เช่น 124/4) ส่งเข้ามาในแชท\n\n2️⃣ เช็คบิลค้างชำระ\nกดปุ่ม 'เช็คบิล' ที่เมนูด้านล่าง ระบบจะแสดงยอดที่ต้องจ่าย\n\n3️⃣ ชำระเงิน\nกดปุ่มชำระเงินเพื่อแสกน QR Code จากนั้นส่งรูป 'สลิปการโอนเงิน' กลับมาในแชทนี้ ระบบจะตัดยอดให้อัตโนมัติค่ะ 💚");
+            continue;
+          }
+          
+          if (text === "แจ้งปัญหา") {
+            await replyMessage(replyToken, "🗑️ หากท่านพบปัญหาเรื่องการเก็บขยะ (เช่น รถไม่มาเก็บ, ถังขยะชำรุด)\n\nกรุณาพิมพ์รายละเอียดปัญหา พร้อมระบุ 'หมู่บ้าน/ชุมชน' และแนบรูปถ่ายสถานที่ส่งเข้ามาในแชทนี้ได้เลยค่ะ เจ้าหน้าที่จะรีบตรวจสอบและดำเนินการแก้ไขให้โดยเร็วที่สุดค่ะ 🙏\n\n📞 หรือติดต่อกองสาธารณสุขฯ โทร 044-631-419");
+            continue;
+          }
 
           // 1. Find the most recent pending image from this user
           const recentImages = await db.select()
@@ -361,7 +371,8 @@ export async function POST(request: Request) {
                   return NextResponse.json({ status: "ok" });
               }
             } else if (houseResult.length > 1) {
-              await replyMessage(replyToken, `พบบ้านเลขที่ ${text} ซ้ำกันหลายรายการในระบบ\nเจ้าหน้าที่จะทำการตรวจสอบข้อมูลและอัปเดตยอดให้ภายใน 24 ชั่วโมงค่ะ 💚`);
+              const flexMsg = generateDuplicateHouseSelectionFlexMessage(houseResult, slipData.id);
+              await replyWithMessages(replyToken, [flexMsg]);
               return NextResponse.json({ status: "ok" });
             }
 
@@ -377,8 +388,72 @@ export async function POST(request: Request) {
               // 2. Link the new house
               await db.update(houses).set({ lineUserId: userId }).where(eq(houses.id, houseResult[0].id));
               await replyMessage(replyToken, `✅ เปลี่ยน/ผูกบัญชีกับบ้านเลขที่ ${text} สำเร็จแล้ว!\nคุณสามารถพิมพ์ "เช็คบิล" เพื่อดูยอด หรือ "ใบเสร็จ" เพื่อดูประวัติการจ่ายเงินได้เลยค่ะ 💚`);
+            } else if (houseResult.length > 1) {
+              const flexMsg = generateDuplicateHouseSelectionFlexMessage(houseResult);
+              await replyWithMessages(replyToken, [flexMsg]);
             } else {
               await replyMessage(replyToken, "หากต้องการชำระเงิน กรุณาส่งรูป 'สลิปการโอนเงิน' เข้ามาในแชทก่อน แล้วค่อยพิมพ์บ้านเลขที่ตามนะคะ 🙏\n\nหรือหากต้องการเช็คยอด พิมพ์คำว่า 'เช็คบิล' ได้เลยค่ะ");
+            }
+          }
+          }
+        } else if (event.message?.type) {
+          // Ignore other message types
+        }
+      
+      // Handle Postback Events
+      if (event.type === "postback") {
+        const userId = event.source.userId;
+        const replyToken = event.replyToken;
+        const data = event.postback.data;
+        
+        // Parse url-encoded postback data (e.g. action=bindHouse&houseId=123)
+        const params = new URLSearchParams(data);
+        const action = params.get('action');
+        
+        if (action === "bindHouse") {
+          const houseId = parseInt(params.get('houseId') || "0", 10);
+          const slipId = params.get('slipId') ? parseInt(params.get('slipId')!, 10) : null;
+          
+          if (houseId > 0) {
+            const houseResult = await db.select().from(houses).where(eq(houses.id, houseId)).limit(1);
+            if (houseResult.length === 1) {
+              const house = houseResult[0];
+              // 1. Unlink any previous houses bound to this LINE user
+              await db.update(houses).set({ lineUserId: null }).where(eq(houses.lineUserId, userId));
+              // 2. Link the new house
+              await db.update(houses).set({ lineUserId: userId }).where(eq(houses.id, houseId));
+              
+              if (slipId) {
+                // Continuation of auto-approve logic
+                const slipResult = await db.select().from(lineMessages).where(eq(lineMessages.id, slipId)).limit(1);
+                if (slipResult.length === 1) {
+                  const slipData = slipResult[0];
+                  const unpaidInvoices = await db.select().from(invoices).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
+                  const totalDebt = unpaidInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
+                  
+                  if (totalDebt > 0 && slipData.amount && Math.abs(parseFloat(slipData.amount) - totalDebt) < 0.01) {
+                    const newTx = await db.insert(transactions).values({
+                      amount: slipData.amount,
+                      amountClaimedByPayer: slipData.amount,
+                      slipImageUrl: slipData.imageUrl || "",
+                      slipStatus: "verified",
+                      paidAt: new Date(),
+                      verifiedBy: "line_bot_auto",
+                    }).returning();
+
+                    await db.update(lineMessages).set({ status: 'verified_auto', transactionId: newTx[0].id }).where(eq(lineMessages.id, slipData.id));
+                    await db.update(invoices).set({ status: 'paid', transactionId: newTx[0].id }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
+                    
+                    await replyMessage(replyToken, `✅ ยืนยันข้อมูลสำเร็จ!\nระบบได้ตัดยอดหนี้ ${totalDebt} บาท สำหรับบ้านเลขที่ ${house.houseNumber} เรียบร้อยแล้วค่ะ ขอบคุณที่ใช้บริการ 💚`);
+                    continue;
+                  }
+                }
+                await replyMessage(replyToken, `ขอบคุณค่ะ! ระบบได้บันทึกสลิปสำหรับบ้านเลขที่ ${house.houseNumber} แล้ว\n\nเจ้าหน้าที่จะทำการตรวจสอบและอัปเดตยอดในระบบให้ภายใน 24 ชั่วโมงค่ะ 💚`);
+              } else {
+                await replyMessage(replyToken, `✅ เปลี่ยน/ผูกบัญชีกับบ้านเลขที่ ${house.houseNumber} สำเร็จแล้ว!\nคุณสามารถพิมพ์ "เช็คบิล" เพื่อดูยอด หรือ "ใบเสร็จ" เพื่อดูประวัติการจ่ายเงินได้เลยค่ะ 💚`);
+              }
+            } else {
+              await replyMessage(replyToken, "❌ ไม่พบข้อมูลบ้านในระบบ กรุณาลองใหม่อีกครั้งค่ะ");
             }
           }
         }

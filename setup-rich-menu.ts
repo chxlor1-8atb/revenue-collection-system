@@ -22,35 +22,27 @@ async function main() {
     const richMenu = {
       size: {
         width: 2500,
-        height: 843,
+        height: 1686,
       },
       selected: true,
       name: "Main Menu",
       chatBarText: "เมนูหลัก",
       areas: [
         {
-          bounds: {
-            x: 0,
-            y: 0,
-            width: 1250,
-            height: 843,
-          },
-          action: {
-            type: "message",
-            text: "เช็คบิล",
-          },
+          bounds: { x: 0, y: 0, width: 1250, height: 843 },
+          action: { type: "message", text: "เช็คบิล" },
         },
         {
-          bounds: {
-            x: 1250,
-            y: 0,
-            width: 1250,
-            height: 843,
-          },
-          action: {
-            type: "message",
-            text: "ใบเสร็จ",
-          },
+          bounds: { x: 1250, y: 0, width: 1250, height: 843 },
+          action: { type: "message", text: "ใบเสร็จ" },
+        },
+        {
+          bounds: { x: 0, y: 843, width: 1250, height: 843 },
+          action: { type: "message", text: "วิธีใช้งาน" },
+        },
+        {
+          bounds: { x: 1250, y: 843, width: 1250, height: 843 },
+          action: { type: "message", text: "แจ้งปัญหา" },
         },
       ],
     };
