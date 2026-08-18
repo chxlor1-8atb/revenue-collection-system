@@ -140,7 +140,7 @@ export async function POST(request: Request) {
               .limit(1);
             
             if (existingRefTx.length > 0) {
-              const orig = verification.data || {};
+              const orig: any = verification.data || {};
               const senderName = orig.sender?.name || orig.senderName || orig.sender?.account?.name || orig.senderAccount;
               const senderAccount = orig.sender?.account?.number || orig.senderAccountNumber;
               const receiverName = orig.receiver?.name || orig.receiverName || orig.receiver?.account?.name || orig.receiverAccount;
