@@ -58,15 +58,15 @@ export async function verifySlipWithBuffer(imageBuffer: Buffer): Promise<Slip2Go
       data: {
         amount: parseFloat(result.data.amount),
         sender: {
-          name: result.data.sender?.name || result.data.senderName,
-          accountNumber: result.data.sender?.account?.name || result.data.sender?.account?.number || result.data.senderAccount,
+          name: result.data.sender?.name || result.data.senderName || result.data.sender?.account?.name || result.data.senderAccount,
+          accountNumber: result.data.sender?.account?.number || result.data.senderAccountNumber || "",
         },
         receiver: {
-          name: result.data.receiver?.name || result.data.receiverName,
-          accountNumber: result.data.receiver?.account?.name || result.data.receiver?.account?.number || result.data.receiverAccount,
+          name: result.data.receiver?.name || result.data.receiverName || result.data.receiver?.account?.name || result.data.receiverAccount,
+          accountNumber: result.data.receiver?.account?.number || result.data.receiverAccountNumber || "",
         },
-        transRef: result.data.transRef,
-        transDate: result.data.transDate || result.data.transTime,
+        transRef: result.data.transRef || result.data.transactionRef || "",
+        transDate: result.data.transDate || result.data.transTime || result.data.transTimestamp || "",
       }
     };
   } catch (error) {
