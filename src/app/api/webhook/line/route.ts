@@ -530,21 +530,14 @@ export async function POST(request: Request) {
               const totalDebt = unpaidInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
               
               if (totalDebt > 0 && slipData.isVerified && slipData.amount && Math.abs(parseFloat(slipData.amount) - totalDebt) < 0.01) {
-                // Perfect match! Auto-approve
-                  const newTx = await db.insert(transactions).values({
-                    amount: slipData.amount,
-                    amountClaimedByPayer: slipData.amount,
-                    slipImageUrl: slipData.imageUrl || "",
-                    slipStatus: "verified",
-                    paidAt: new Date(),
-                    verifiedBy: "line_bot_auto",
-                  }).returning();
-
-                  await db.update(lineMessages).set({ status: 'verified_auto', transactionId: newTx[0].id }).where(eq(lineMessages.id, slipData.id));
-                  await db.update(invoices).set({ status: 'paid', transactionId: newTx[0].id }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
+                // Perfect match! Auto-approve using existing transaction
+                if (slipData.transactionId) {
+                  await db.update(lineMessages).set({ status: 'verified_auto' }).where(eq(lineMessages.id, slipData.id));
+                  await db.update(invoices).set({ status: 'paid', transactionId: slipData.transactionId }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
                   
                   await replyMessage(replyToken, `✅ ยืนยันข้อมูลสำเร็จ!\nระบบได้ตัดยอดหนี้ ${totalDebt} บาท สำหรับบ้านเลขที่ ${text} เรียบร้อยแล้วค่ะ ขอบคุณที่ใช้บริการ 💚`);
                   return NextResponse.json({ status: "ok" });
+                }
               }
             } else if (houseResult.length > 1) {
               const flexMsg = generateDuplicateHouseSelectionFlexMessage(houseResult, slipData.id);
