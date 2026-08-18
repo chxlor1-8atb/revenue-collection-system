@@ -8,6 +8,7 @@ export interface Slip2GoResponse {
     };
     receiver: {
       name: string;
+      accountNumber?: string;
     };
     transRef: string;
     transDate: string;
