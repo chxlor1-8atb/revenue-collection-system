@@ -372,8 +372,11 @@ export async function POST(request: Request) {
             // Maybe they are trying to link their account
             const houseResult = await db.select().from(houses).where(eq(houses.houseNumber, text));
             if (houseResult.length === 1) {
+              // 1. Unlink any previous houses bound to this LINE user
+              await db.update(houses).set({ lineUserId: null }).where(eq(houses.lineUserId, userId));
+              // 2. Link the new house
               await db.update(houses).set({ lineUserId: userId }).where(eq(houses.id, houseResult[0].id));
-              await replyMessage(replyToken, `✅ ผูกบัญชีกับบ้านเลขที่ ${text} สำเร็จแล้ว!\nคุณสามารถพิมพ์ "เช็คบิล" เพื่อดูยอด หรือ "ใบเสร็จ" เพื่อดูประวัติการจ่ายเงินได้เลยค่ะ 💚`);
+              await replyMessage(replyToken, `✅ เปลี่ยน/ผูกบัญชีกับบ้านเลขที่ ${text} สำเร็จแล้ว!\nคุณสามารถพิมพ์ "เช็คบิล" เพื่อดูยอด หรือ "ใบเสร็จ" เพื่อดูประวัติการจ่ายเงินได้เลยค่ะ 💚`);
             } else {
               await replyMessage(replyToken, "หากต้องการชำระเงิน กรุณาส่งรูป 'สลิปการโอนเงิน' เข้ามาในแชทก่อน แล้วค่อยพิมพ์บ้านเลขที่ตามนะคะ 🙏\n\nหรือหากต้องการเช็คยอด พิมพ์คำว่า 'เช็คบิล' ได้เลยค่ะ");
             }
