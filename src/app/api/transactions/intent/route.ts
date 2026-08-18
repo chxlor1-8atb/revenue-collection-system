@@ -1,14 +1,18 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { transactions, invoices, systemSettings } from "@/lib/schema";
-import { inArray, eq, and, lt, isNull } from "drizzle-orm";
+import { transactions, invoices, systemSettings, houses } from "@/lib/schema";
+import { inArray, eq, and, lt, isNull, desc } from "drizzle-orm";
 
 export async function POST(request: Request) {
   try {
-    const { invoiceIds, qrCodeId } = await request.json();
+    const { invoiceIds, advanceMonths = 0, houseId } = await request.json();
 
-    if (!invoiceIds || invoiceIds.length === 0) {
+    if ((!invoiceIds || invoiceIds.length === 0) && advanceMonths === 0) {
       return NextResponse.json({ error: "No invoices provided" }, { status: 400 });
+    }
+
+    if (advanceMonths > 0 && !houseId) {
+      return NextResponse.json({ error: "houseId is required for advance payments" }, { status: 400 });
     }
 
     // 0. Auto-cleanup: Clear old stuck transactions
@@ -26,7 +30,15 @@ export async function POST(request: Request) {
       
       const expiredIds = expiredTxs.map(t => t.id);
       if (expiredIds.length > 0) {
-        // Unlink invoices first
+        // First delete any pending_advance invoices linked to these expired transactions
+        await db.delete(invoices).where(
+          and(
+            inArray(invoices.transactionId, expiredIds),
+            eq(invoices.status, 'pending_advance')
+          )
+        );
+
+        // Unlink regular invoices
         await db.update(invoices)
           .set({ transactionId: null })
           .where(inArray(invoices.transactionId, expiredIds));
@@ -40,78 +52,103 @@ export async function POST(request: Request) {
       // Ignore cleanup error, proceed with intent creation
     }
 
-    // Get invoices
-    const targetInvoices = await db.select().from(invoices).where(inArray(invoices.id, invoiceIds));
-    if (targetInvoices.length === 0) {
-      return NextResponse.json({ error: "Invoices not found" }, { status: 404 });
+    // Get invoices if any selected
+    let targetInvoices: any[] = [];
+    if (invoiceIds && invoiceIds.length > 0) {
+      targetInvoices = await db.select().from(invoices).where(inArray(invoices.id, invoiceIds));
+      if (targetInvoices.length !== invoiceIds.length) {
+        return NextResponse.json({ error: "Some invoices not found" }, { status: 404 });
+      }
+
+      // Check if any invoice is currently locked (has an active waiting_for_slip transaction)
+      const lockedInvoices = await db.select({ 
+          id: invoices.id, 
+          transactionId: transactions.id 
+        })
+        .from(invoices)
+        .innerJoin(transactions, eq(invoices.transactionId, transactions.id))
+        .where(
+          and(
+            inArray(invoices.id, invoiceIds),
+            eq(transactions.slipStatus, 'waiting_for_slip')
+          )
+        );
+
+      if (lockedInvoices.length > 0) {
+        const activeTxIds = [...new Set(lockedInvoices.map(i => i.transactionId))];
+        
+        // If it's NOT an exact match (or it's expired), we clear the old one(s) instead of blocking.
+        // For simplicity with advance payments, we just clear and recreate instead of trying to match exact advance months
+        if (activeTxIds.length > 0) {
+          // Delete pending advance invoices for these transactions first
+          await db.delete(invoices).where(
+            and(
+              inArray(invoices.transactionId, activeTxIds),
+              eq(invoices.status, 'pending_advance')
+            )
+          );
+
+          await db.update(invoices)
+            .set({ transactionId: null })
+            .where(inArray(invoices.transactionId, activeTxIds));
+            
+          await db.delete(transactions)
+            .where(inArray(transactions.id, activeTxIds));
+        }
+      }
     }
 
-    // Check if any invoice is currently locked (has an active waiting_for_slip transaction)
-    const lockedInvoices = await db.select({ 
-        id: invoices.id, 
-        transactionId: transactions.id 
-      })
-      .from(invoices)
-      .innerJoin(transactions, eq(invoices.transactionId, transactions.id))
-      .where(
-        and(
-          inArray(invoices.id, invoiceIds),
-          eq(transactions.slipStatus, 'waiting_for_slip')
-        )
-      );
+    // Calculate base amount from selected invoices
+    let finalAmount = targetInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
 
-    if (lockedInvoices.length > 0) {
-      const activeTxIds = [...new Set(lockedInvoices.map(i => i.transactionId))];
+    // Prepare advance invoices if needed
+    const advanceInvoicesToInsert = [];
+    if (advanceMonths > 0) {
+      // Find latest invoice for this house to determine the next month
+      const allHouseInvoices = await db.select().from(invoices).where(eq(invoices.houseId, houseId)).orderBy(desc(invoices.monthYear)).limit(1);
       
-      // If there is exactly ONE active transaction involved, let's check if it's an exact match
-      if (activeTxIds.length === 1) {
-        const txId = activeTxIds[0];
-        const invoicesForThisTx = await db.select({ id: invoices.id })
-          .from(invoices)
-          .where(eq(invoices.transactionId, txId));
-          
-        const txInvoiceIds = invoicesForThisTx.map(i => i.id).sort();
-        const requestedInvoiceIds = [...invoiceIds].sort();
-        
-        const isExactMatch = txInvoiceIds.length === requestedInvoiceIds.length && 
-          txInvoiceIds.every((id, index) => id === requestedInvoiceIds[index]);
-          
-        if (isExactMatch) {
-          // Exact same request! Check if it's still active (not expired 3 min rule)
-          const strictExpiryTime = new Date();
-          strictExpiryTime.setMinutes(strictExpiryTime.getMinutes() - 3);
-
-          const txData = await db.select({ amount: transactions.amount, createdAt: transactions.createdAt })
-            .from(transactions)
-            .where(eq(transactions.id, txId))
-            .limit(1);
-            
-          if (txData.length > 0) {
-             const txCreatedAt = new Date(txData[0].createdAt || new Date());
-             if (txCreatedAt >= strictExpiryTime) {
-               // Still active, just return this one!
-               return NextResponse.json({ 
-                 transactionId: txId, 
-                 amount: parseFloat(txData[0].amount || "0") 
-               });
-             }
-          }
+      let year, month;
+      if (allHouseInvoices.length > 0) {
+        const parts = allHouseInvoices[0].monthYear.split('-');
+        year = parseInt(parts[0]);
+        month = parseInt(parts[1]);
+      } else {
+        // If no invoices exist, treat 'last month' as the month before current,
+        // so that the first advance month generated is the current month.
+        const now = new Date();
+        year = now.getFullYear();
+        month = now.getMonth(); // 0-11, so if current is August (7), this sets month=7.
+        if (month === 0) { // If current is January (0)
+          month = 12;
+          year--;
         }
       }
 
-      // If it's NOT an exact match (or it's expired), we clear the old one(s) instead of blocking.
-      if (activeTxIds.length > 0) {
-        await db.update(invoices)
-          .set({ transactionId: null })
-          .where(inArray(invoices.transactionId, activeTxIds));
-          
-        await db.delete(transactions)
-          .where(inArray(transactions.id, activeTxIds));
+      // Find billing amount
+      let billingAmount = 100;
+      const houseRecord = await db.select().from(houses).where(eq(houses.id, houseId)).limit(1);
+      if (houseRecord.length > 0 && houseRecord[0].defaultBillingAmount) {
+        billingAmount = parseFloat(houseRecord[0].defaultBillingAmount);
+      } else if (allHouseInvoices.length > 0) {
+        billingAmount = parseFloat(allHouseInvoices[0].amount);
+      }
+
+      for (let i = 0; i < advanceMonths; i++) {
+        month++;
+        if (month > 12) {
+          month = 1;
+          year++;
+        }
+        const nextMonthStr = `${year}-${String(month).padStart(2, '0')}`;
+        advanceInvoicesToInsert.push({
+          houseId: houseId,
+          monthYear: nextMonthStr,
+          amount: billingAmount.toString(),
+          status: 'pending_advance'
+        });
+        finalAmount += billingAmount;
       }
     }
-
-    // Calculate base amount
-    const baseAmount = targetInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
 
     // Get system settings to verify setup
     const settings = await db.select().from(systemSettings).limit(1);
@@ -119,9 +156,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "System PromptPay is not configured. Please contact admin." }, { status: 400 });
     }
 
-    const finalAmount = baseAmount;
-
-    // Create transaction with the exact base amount (no decimal differentiation)
+    // Create transaction with the exact final amount
     const [newTx] = await db.insert(transactions).values({
       amount: finalAmount.toString(),
       slipImageUrl: '',
@@ -130,22 +165,33 @@ export async function POST(request: Request) {
 
     const transactionId = newTx.id;
 
-    // Link invoices to this transaction with concurrency protection
-    const updatedInvoices = await db.update(invoices)
-      .set({ transactionId: transactionId })
-      .where(
-        and(
-          inArray(invoices.id, invoiceIds),
-          isNull(invoices.transactionId) // Ensure they weren't locked by a racing request
+    // Link regular invoices to this transaction
+    if (invoiceIds && invoiceIds.length > 0) {
+      const updatedInvoices = await db.update(invoices)
+        .set({ transactionId: transactionId })
+        .where(
+          and(
+            inArray(invoices.id, invoiceIds),
+            isNull(invoices.transactionId) // Ensure they weren't locked by a racing request
+          )
         )
-      )
-      .returning({ id: invoices.id });
+        .returning({ id: invoices.id });
 
-    if (updatedInvoices.length !== invoiceIds.length) {
-      // Race condition detected! Another request grabbed these invoices.
-      // Rollback the transaction we just created
-      await db.delete(transactions).where(eq(transactions.id, transactionId));
-      return NextResponse.json({ error: "Invoices were locked by another request. Please try again." }, { status: 409 });
+      if (updatedInvoices.length !== invoiceIds.length) {
+        // Race condition detected! Another request grabbed these invoices.
+        // Rollback the transaction we just created
+        await db.delete(transactions).where(eq(transactions.id, transactionId));
+        return NextResponse.json({ error: "Invoices were locked by another request. Please try again." }, { status: 409 });
+      }
+    }
+
+    // Insert advance invoices linked to this transaction
+    if (advanceInvoicesToInsert.length > 0) {
+      const advanceInvoicesWithTx = advanceInvoicesToInsert.map(inv => ({
+        ...inv,
+        transactionId: transactionId
+      }));
+      await db.insert(invoices).values(advanceInvoicesWithTx);
     }
 
     return NextResponse.json({ 

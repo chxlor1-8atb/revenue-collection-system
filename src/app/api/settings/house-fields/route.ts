@@ -8,6 +8,7 @@ const defaultSchema = [
   { id: "ownerName", name: "ชื่อเจ้าบ้าน / ผู้รับผิดชอบ", placeholder: "เช่น สมศรี ใจดี", type: "text", required: true, isSystem: true, isHidden: false },
   { id: "zone", name: "ชุมชน / หมู่ (ตัวเลือก)", placeholder: "เช่น หมู่ 1 ซอย 5", type: "select", options: ["หนองรี", "หนองกราด", "หนองเสม็ด", "บ้านเก่า", "วัดขุนก้อง", "วัดกลาง", "ป่าเรไร", "วัดร่องมันเทศ", "บ้านถนนหัก", "วัดถนนหัก", "ถนนหักพัฒนา", "ทุ่งแหลม", "หนองโพรง", "วัดใหม่เรไรทอง", "จะบวก", "หัวสะพาน", "ป่าตาเส็ง", "ป่ารักน้ำ", "ดอนแสลงพันธ์", "โคกหลวงพ่อ"], required: false, isSystem: true, isHidden: false },
   { id: "road", name: "ถนน (ตัวเลือก)", placeholder: "เช่น ถนนสุขุมวิท", type: "text", required: false, isSystem: true, isHidden: false },
+  { id: "defaultBillingAmount", name: "ยอดเก็บประจำเดือน (บาท)", placeholder: "เช่น 100", type: "number", required: false, isSystem: true, isHidden: false },
 ];
 
 export async function GET() {
@@ -19,7 +20,13 @@ export async function GET() {
       return NextResponse.json(defaultSchema);
     }
 
-    return NextResponse.json(settings[0].houseCustomFieldsSchema);
+    let schema = settings[0].houseCustomFieldsSchema as any[];
+    // Inject defaultBillingAmount if missing in existing database
+    if (!schema.find(s => s.id === 'defaultBillingAmount')) {
+      schema.splice(2, 0, { id: "defaultBillingAmount", name: "ยอดเก็บประจำเดือน (บาท)", placeholder: "เช่น 100", type: "number", required: false, isSystem: true, isHidden: false });
+    }
+
+    return NextResponse.json(schema);
   } catch (error: any) {
     console.error("Failed to fetch custom fields schema:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });

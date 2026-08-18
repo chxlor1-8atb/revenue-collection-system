@@ -10,6 +10,8 @@ export async function addHouse(formData: FormData) {
   const ownerName = formData.get("ownerName")?.toString();
   const zone = formData.get("zone")?.toString() || null;
   const road = formData.get("road")?.toString() || null;
+  const defaultBillingAmountRaw = formData.get("defaultBillingAmount")?.toString();
+  const defaultBillingAmount = defaultBillingAmountRaw ? parseFloat(defaultBillingAmountRaw).toString() : null;
   const customFieldsRaw = formData.get("customFields")?.toString();
 
   let customFields = {};
@@ -31,6 +33,7 @@ export async function addHouse(formData: FormData) {
       ownerName,
       zone,
       road,
+      defaultBillingAmount,
       customFields,
     });
 
@@ -47,6 +50,8 @@ export async function updateHouse(id: number, formData: FormData) {
   const ownerName = formData.get("ownerName")?.toString();
   const zone = formData.get("zone")?.toString() || null;
   const road = formData.get("road")?.toString() || null;
+  const defaultBillingAmountRaw = formData.get("defaultBillingAmount")?.toString();
+  const defaultBillingAmount = defaultBillingAmountRaw ? parseFloat(defaultBillingAmountRaw).toString() : null;
   const customFieldsRaw = formData.get("customFields")?.toString();
 
   let customFields = {};
@@ -68,6 +73,7 @@ export async function updateHouse(id: number, formData: FormData) {
       ownerName,
       zone,
       road,
+      defaultBillingAmount,
       customFields,
     }).where(eq(houses.id, id));
 

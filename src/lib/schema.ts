@@ -16,7 +16,9 @@ export const houses = pgTable('houses', {
   ownerName: text('owner_name').notNull(), // ชื่อเจ้าบ้าน
   zone: text('zone'), // ชุมชน/หมู่
   road: text('road'), // ถนน
+  defaultBillingAmount: numeric('default_billing_amount', { precision: 12, scale: 2 }), // ยอดจัดเก็บประจำเดือน
   customFields: jsonb('custom_fields').default('{}'), // เก็บข้อมูล custom fields ในรูปแบบ JSON (key-value)
+  lineUserId: text('line_user_id'), // LINE User ID for pushing notifications
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -43,7 +45,7 @@ export const invoices = pgTable('invoices', {
   houseId: integer('house_id').references(() => houses.id).notNull(),
   monthYear: text('month_year').notNull(), // e.g. "2024-01"
   amount: numeric('amount', { precision: 12, scale: 2 }).notNull(),
-  status: text('status').notNull().default('unpaid'), // unpaid, pending, paid
+  status: text('status').notNull().default('unpaid'), // unpaid, pending, paid, pending_advance
   transactionId: integer('transaction_id').references(() => transactions.id), // Link to the payment if any
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),

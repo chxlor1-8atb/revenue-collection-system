@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { replyMessage, getMessageContent } from "@/lib/line";
+import { replyMessage, getMessageContent, replyWithMessages, generateBillFlexMessage, generateReceiptFlexMessage } from "@/lib/line";
 import { db } from "@/lib/db";
 import { lineMessages, houses, invoices, transactions } from "@/lib/schema";
-import { eq, and, desc, gte } from "drizzle-orm";
+import { eq, and, desc, gte, inArray } from "drizzle-orm";
 import { put } from "@vercel/blob";
 import { verifySlipWithBuffer } from "@/lib/slip2go";
 
@@ -232,6 +232,86 @@ export async function POST(request: Request) {
             status: "processed"
           });
 
+          // PULL SYSTEM LOGIC
+          const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+          const thaiMonths = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+          
+          if (text === "เช็คบิล" || text === "บิล") {
+            const houseList = await db.select().from(houses).where(eq(houses.lineUserId, userId));
+            if (houseList.length === 0) {
+              await replyMessage(replyToken, "คุณยังไม่ได้ผูกบัญชีบ้านค่ะ\nกรุณาพิมพ์ 'บ้านเลขที่' ของคุณ (เช่น 123/45) ส่งเข้ามาในแชทเพื่อผูกบัญชีก่อนนะคะ 🙏");
+              continue;
+            }
+            const house = houseList[0];
+            const unpaidInvoices = await db.select().from(invoices).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
+            
+            if (unpaidInvoices.length === 0) {
+              await replyMessage(replyToken, `บ้านเลขที่ ${house.houseNumber} ไม่มีบิลค้างชำระค่ะ ✅\nขอบคุณที่ใช้บริการ 💚`);
+              continue;
+            }
+            
+            const totalAmount = unpaidInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
+            let monthStr = "";
+            if (unpaidInvoices.length === 1) {
+              const [y, m] = unpaidInvoices[0].monthYear.split("-");
+              monthStr = `${thaiMonths[parseInt(m)]} ${parseInt(y) + 543}`;
+            } else {
+              monthStr = `${unpaidInvoices.length} เดือนค้างชำระ`;
+            }
+            
+            const payUrl = `${appUrl}/house/${house.id}`;
+            const flexMsg = generateBillFlexMessage(house.houseNumber, monthStr, totalAmount, payUrl);
+            await replyWithMessages(replyToken, [flexMsg]);
+            continue;
+          }
+
+          if (text === "ใบเสร็จ") {
+            const houseList = await db.select().from(houses).where(eq(houses.lineUserId, userId));
+            if (houseList.length === 0) {
+              await replyMessage(replyToken, "คุณยังไม่ได้ผูกบัญชีบ้านค่ะ\nกรุณาพิมพ์ 'บ้านเลขที่' ของคุณ (เช่น 123/45) ส่งเข้ามาในแชทเพื่อผูกบัญชีก่อนนะคะ 🙏");
+              continue;
+            }
+            const house = houseList[0];
+            
+            // Find latest verified transaction with invoices for this house
+            const houseInvoices = await db.select().from(invoices).where(eq(invoices.houseId, house.id));
+            const txIds = houseInvoices.map(inv => inv.transactionId).filter(Boolean) as number[];
+            
+            if (txIds.length === 0) {
+              await replyMessage(replyToken, `ยังไม่มีประวัติการรับชำระเงินสำหรับบ้านเลขที่ ${house.houseNumber} ค่ะ`);
+              continue;
+            }
+            
+            const latestTx = await db.select().from(transactions)
+              .where(and(
+                 inArray(transactions.id, txIds),
+                 eq(transactions.slipStatus, 'verified')
+              ))
+              .orderBy(desc(transactions.paidAt))
+              .limit(1);
+              
+            if (latestTx.length === 0) {
+              await replyMessage(replyToken, `ยังไม่มีประวัติการรับชำระเงินสำหรับบ้านเลขที่ ${house.houseNumber} ค่ะ`);
+              continue;
+            }
+            
+            const tx = latestTx[0];
+            const txInvoices = await db.select().from(invoices).where(eq(invoices.transactionId, tx.id));
+            
+            let monthStr = "";
+            if (txInvoices.length === 1) {
+              const [y, m] = txInvoices[0].monthYear.split("-");
+              monthStr = `${thaiMonths[parseInt(m)]} ${parseInt(y) + 543}`;
+            } else {
+              monthStr = `${txInvoices.length} รายการ`;
+            }
+            
+            const receiptUrl = `${appUrl}/house/${house.id}`;
+            const flexMsg = generateReceiptFlexMessage(house.houseNumber, monthStr, parseFloat(tx.amount || "0"), receiptUrl);
+            await replyWithMessages(replyToken, [flexMsg]);
+            continue;
+          }
+
           // 1. Find the most recent pending image from this user
           const recentImages = await db.select()
             .from(lineMessages)
@@ -256,6 +336,9 @@ export async function POST(request: Request) {
             
             if (houseResult.length === 1) {
               const house = houseResult[0];
+              // Link lineUserId to the house
+              await db.update(houses).set({ lineUserId: userId }).where(eq(houses.id, house.id));
+
               // Find unpaid invoices for this house
               const unpaidInvoices = await db.select().from(invoices).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
               const totalDebt = unpaidInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
@@ -286,7 +369,14 @@ export async function POST(request: Request) {
             await replyMessage(replyToken, `ขอบคุณค่ะ! ระบบได้บันทึกสลิปสำหรับบ้านเลขที่ ${text} แล้ว\n\nเจ้าหน้าที่จะทำการตรวจสอบและอัปเดตยอดในระบบให้ภายใน 24 ชั่วโมงค่ะ 💚`);
           } else {
             // User sent text without a prior pending image
-            await replyMessage(replyToken, "หากต้องการชำระเงิน กรุณาส่งรูป 'สลิปการโอนเงิน' เข้ามาในแชทก่อน แล้วค่อยพิมพ์บ้านเลขที่ตามนะคะ 🙏");
+            // Maybe they are trying to link their account
+            const houseResult = await db.select().from(houses).where(eq(houses.houseNumber, text));
+            if (houseResult.length === 1) {
+              await db.update(houses).set({ lineUserId: userId }).where(eq(houses.id, houseResult[0].id));
+              await replyMessage(replyToken, `✅ ผูกบัญชีกับบ้านเลขที่ ${text} สำเร็จแล้ว!\nคุณสามารถพิมพ์ "เช็คบิล" เพื่อดูยอด หรือ "ใบเสร็จ" เพื่อดูประวัติการจ่ายเงินได้เลยค่ะ 💚`);
+            } else {
+              await replyMessage(replyToken, "หากต้องการชำระเงิน กรุณาส่งรูป 'สลิปการโอนเงิน' เข้ามาในแชทก่อน แล้วค่อยพิมพ์บ้านเลขที่ตามนะคะ 🙏\n\nหรือหากต้องการเช็คยอด พิมพ์คำว่า 'เช็คบิล' ได้เลยค่ะ");
+            }
           }
         }
       }

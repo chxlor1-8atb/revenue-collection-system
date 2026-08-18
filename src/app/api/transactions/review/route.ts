@@ -111,6 +111,16 @@ export async function POST(request: Request) {
         .set({ status: 'paid' })
         .where(eq(invoices.transactionId, transactionId));
     } else {
+      // Delete any pending_advance invoices
+      await db.delete(invoices)
+        .where(
+          and(
+            eq(invoices.transactionId, transactionId),
+            eq(invoices.status, 'pending_advance')
+          )
+        );
+
+      // Unlink regular invoices
       await db.update(invoices)
         .set({ status: 'unpaid', transactionId: null })
         .where(eq(invoices.transactionId, transactionId));

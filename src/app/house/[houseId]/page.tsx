@@ -134,11 +134,7 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
               <p className="text-xs text-slate-500 mt-1">กำหนดชำระภายในวันที่ 15 ของทุกเดือน</p>
             </div>
             <span className="text-xs font-semibold text-slate-400 tracking-wider">INVOICES</span>
-          </div>
-          
-          <InvoiceSelectionForm invoices={houseInvoices} houseId={houseId} />
-
-          {/* Contact Info Footer */}
+          <InvoiceSelectionForm invoices={houseInvoices} house={house} />
           <div className="mt-8 pt-4 border-t border-slate-100 text-center">
             <p className="text-xs text-slate-400">
               กรณีมีข้อสงสัย ติดต่อ <strong>กองสาธารณสุขและสิ่งแวดล้อม</strong><br/>

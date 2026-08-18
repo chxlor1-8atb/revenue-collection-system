@@ -27,7 +27,10 @@ export async function POST(request: Request) {
     const { monthYear, amount } = parseResult.data;
 
     // 1. Fetch all houses
-    const allHouses = await db.select({ id: houses.id }).from(houses);
+    const allHouses = await db.select({ 
+      id: houses.id, 
+      defaultBillingAmount: houses.defaultBillingAmount
+    }).from(houses);
     
     if (allHouses.length === 0) {
        return NextResponse.json({ error: "No houses found" }, { status: 400 });
@@ -37,7 +40,7 @@ export async function POST(request: Request) {
     const newInvoices = allHouses.map(house => ({
       houseId: house.id,
       monthYear: monthYear,
-      amount: amount,
+      amount: house.defaultBillingAmount ? house.defaultBillingAmount : amount,
       status: 'unpaid'
     }));
 

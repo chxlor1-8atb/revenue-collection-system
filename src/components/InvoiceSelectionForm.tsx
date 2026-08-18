@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, QrCode } from "lucide-react";
 
-export default function InvoiceSelectionForm({ invoices, houseId }: { invoices: any[], houseId: number }) {
+export default function InvoiceSelectionForm({ invoices, house }: { invoices: any[], house: any }) {
   const [selectedInvoices, setSelectedInvoices] = useState<number[]>([]);
+  const [advanceMonths, setAdvanceMonths] = useState(0);
   const router = useRouter();
 
   const handleToggle = (invoiceId: number) => {
@@ -26,7 +27,11 @@ export default function InvoiceSelectionForm({ invoices, houseId }: { invoices: 
       const res = await fetch("/api/transactions/intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invoiceIds: selectedInvoices })
+        body: JSON.stringify({ 
+          invoiceIds: selectedInvoices,
+          advanceMonths,
+          houseId: house.id
+        })
       });
       const data = await res.json();
       if (!res.ok) {
@@ -44,10 +49,18 @@ export default function InvoiceSelectionForm({ invoices, houseId }: { invoices: 
     }
   };
 
+  const getAdvanceRate = () => {
+    if (house.defaultBillingAmount) return parseFloat(house.defaultBillingAmount);
+    if (invoices.length > 0) return parseFloat(invoices[invoices.length - 1].amount);
+    return 0; // Or a system default if you have one
+  };
+
   const calculateTotal = () => {
-    return invoices
+    const invoicesTotal = invoices
       .filter(inv => selectedInvoices.includes(inv.id))
       .reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
+    const advanceTotal = advanceMonths * getAdvanceRate();
+    return invoicesTotal + advanceTotal;
   };
 
   const formatThaiMonth = (monthYear: string) => {
@@ -139,6 +152,37 @@ export default function InvoiceSelectionForm({ invoices, houseId }: { invoices: 
         )}
       </div>
 
+      {/* Advance Payment Section */}
+      <div className="mb-8 p-5 bg-emerald-50 rounded-2xl border border-emerald-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h3 className="font-semibold text-emerald-900 flex items-center gap-2">
+            <span className="text-emerald-600">✨</span> ชำระเงินล่วงหน้า
+          </h3>
+          <p className="text-xs text-emerald-700 mt-1">
+            จ่ายล่วงหน้าเพื่อความสะดวก เดือนต่อไปไม่ต้องกังวล (เรท {getAdvanceRate()} บาท/เดือน)
+          </p>
+        </div>
+        <div className="flex items-center gap-3 self-start sm:self-auto bg-white p-1 rounded-xl border border-emerald-200 shadow-sm">
+          <button 
+            onClick={() => setAdvanceMonths(Math.max(0, advanceMonths - 1))}
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 disabled:opacity-50"
+            disabled={advanceMonths === 0}
+          >
+            -
+          </button>
+          <div className="w-16 text-center font-bold text-emerald-800">
+            {advanceMonths} <span className="text-xs font-normal text-emerald-600">เดือน</span>
+          </div>
+          <button 
+            onClick={() => setAdvanceMonths(advanceMonths + 1)}
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 hover:bg-emerald-200 disabled:opacity-50"
+            disabled={getAdvanceRate() === 0}
+          >
+            +
+          </button>
+        </div>
+      </div>
+
       {/* Ticket Footer / Total */}
       <div className="mt-auto pt-6 border-t-2 border-dashed border-slate-200">
         <div className="flex justify-between items-end mb-6">
@@ -152,7 +196,7 @@ export default function InvoiceSelectionForm({ invoices, houseId }: { invoices: 
 
         <button 
           className="w-full relative overflow-hidden group bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 rounded-xl transition-all duration-200 shadow-lg shadow-emerald-600/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          disabled={selectedInvoices.length === 0 || isLoading}
+          disabled={(selectedInvoices.length === 0 && advanceMonths === 0) || isLoading || calculateTotal() === 0}
           onClick={handleProceedToPayment}
         >
           <QrCode size={20} />
