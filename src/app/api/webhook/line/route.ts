@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { replyMessage, getMessageContent, replyWithMessages, generateBillFlexMessage, generateReceiptFlexMessage, generateDuplicateHouseSelectionFlexMessage, generateSlipVerificationSuccessFlexMessage, generateSlipErrorFlexMessage } from "@/lib/line";
+import { generateBillFlexMessage, generateSlipErrorFlexMessage, generateSlipVerificationSuccessFlexMessage, replyMessage, replyWithMessages, safeReplyOrPush, getMessageContent, generateReceiptFlexMessage, generateDuplicateHouseSelectionFlexMessage } from "@/lib/line";
 import { db } from "@/lib/db";
 import { lineMessages, houses, invoices, transactions } from "@/lib/schema";
 import { eq, and, desc, gte, inArray } from "drizzle-orm";
@@ -123,7 +123,7 @@ export async function POST(request: Request) {
                transDate
             );
             
-            await replyWithMessages(replyToken, [flexError]);
+            await safeReplyOrPush(userId, replyToken, [flexError]);
             continue;
           }
 
@@ -158,7 +158,10 @@ export async function POST(request: Request) {
                  receiverAccount,
                  transDate
               );
-              await replyWithMessages(replyToken, [flexError]);
+              await safeReplyOrPush(userId, replyToken, [
+                flexError,
+                { type: "text", text: "❌ ตรวจพบการใช้สลิปซ้ำ! สลิปนี้เคยถูกใช้ยืนยันการชำระเงินไปแล้วค่ะ" }
+              ]);
               continue;
             }
           }
@@ -208,7 +211,10 @@ export async function POST(request: Request) {
                 transactionId: tx.id
               });
               
-              await replyMessage(replyToken, `ได้รับยอดเงิน ${slipAmount} บาท เรียบร้อยแล้วค่ะ ✅\nแต่ระบบเกิดขัดข้องไม่สามารถจับคู่บิลได้ (ไม่พบหนี้)\n\nกรุณาแจ้งแอดมินเพื่อตรวจสอบและตัดยอดให้แบบ Manual นะคะ 🙏`);
+              await safeReplyOrPush(userId, replyToken, [{
+                type: "text",
+                text: `ได้รับยอดเงิน ${slipAmount} บาท เรียบร้อยแล้วค่ะ ✅\nแต่ระบบเกิดขัดข้องไม่สามารถจับคู่บิลได้ (ไม่พบหนี้)\n\nกรุณาแจ้งแอดมินเพื่อตรวจสอบและตัดยอดให้แบบ Manual นะคะ 🙏`
+              }]);
               continue;
             }
 
@@ -258,7 +264,7 @@ export async function POST(request: Request) {
               verification.data?.transDate || ""
             );
             
-            await replyWithMessages(replyToken, [
+            await safeReplyOrPush(userId, replyToken, [
               flexMsg,
               {
                 type: "text",
@@ -312,7 +318,7 @@ export async function POST(request: Request) {
                 verification.data?.transDate || ""
               );
               
-              await replyWithMessages(replyToken, [
+              await safeReplyOrPush(userId, replyToken, [
                 flexMsg,
                 {
                   type: "text",
@@ -346,7 +352,7 @@ export async function POST(request: Request) {
             verification.data?.transDate || ""
           );
           
-          await replyWithMessages(replyToken, [
+          await safeReplyOrPush(userId, replyToken, [
             flexMsg,
             {
               type: "text",

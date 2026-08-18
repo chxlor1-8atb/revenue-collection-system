@@ -1,9 +1,10 @@
 export const LINE_API_URL = "https://api.line.me/v2/bot/message/reply";
+export const LINE_PUSH_API_URL = "https://api.line.me/v2/bot/message/push";
 export const LINE_CONTENT_API_URL = "https://api-data.line.me/v2/bot/message";
 
 export async function replyMessage(replyToken: string, text: string) {
   const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
-  if (!token) return;
+  if (!token) return false;
 
   const response = await fetch(LINE_API_URL, {
     method: "POST",
@@ -25,12 +26,38 @@ export async function replyMessage(replyToken: string, text: string) {
   if (!response.ok) {
     const errorText = await response.text();
     console.error(`[LINE API Error] replyMessage failed: ${response.status} ${response.statusText}`, errorText);
+    return false;
   }
+  return true;
+}
+
+export async function pushMessage(userId: string, messages: any[]) {
+  const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
+  if (!token) return false;
+
+  const response = await fetch(LINE_PUSH_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      to: userId,
+      messages: messages,
+    }),
+  });
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`[LINE API Error] pushMessage failed: ${response.status} ${response.statusText}`, errorText);
+    return false;
+  }
+  return true;
 }
 
 export async function replyWithMessages(replyToken: string, messages: any[]) {
   const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
-  if (!token) return;
+  if (!token) return false;
 
   const response = await fetch(LINE_API_URL, {
     method: "POST",
@@ -47,6 +74,22 @@ export async function replyWithMessages(replyToken: string, messages: any[]) {
   if (!response.ok) {
     const errorText = await response.text();
     console.error(`[LINE API Error] replyWithMessages failed: ${response.status} ${response.statusText}`, errorText);
+    return false;
+  }
+  return true;
+}
+
+// Smart replier: Tries to reply with token. If token is invalid (e.g. consumed by Slip2Go), 
+// it falls back to pushing ONLY the text messages, avoiding double flex cards.
+export async function safeReplyOrPush(userId: string, replyToken: string, messages: any[]) {
+  const replied = await replyWithMessages(replyToken, messages);
+  if (!replied) {
+    console.log("[Webhook] Reply token invalid/consumed. Falling back to pushMessage for texts only.");
+    // Extract only text messages to prevent sending duplicate Flex cards that Slip2Go already sent
+    const textMessages = messages.filter(m => m.type === "text");
+    if (textMessages.length > 0) {
+      await pushMessage(userId, textMessages);
+    }
   }
 }
 
