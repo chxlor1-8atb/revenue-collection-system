@@ -121,7 +121,7 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
                 <span>คลิกเพื่อส่งสลิปผ่านทาง LINE</span>
               </a>
               <p className="mt-4 text-xs font-sans text-slate-500 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                โอนเสร็จแล้วกดปุ่มสีเขียวเพื่อส่งสลิปเข้าไปในแชท LINE<br/>ระบบจะตรวจสอบสลิปและตัดหนี้ <b>{Math.floor(totalAmount)} บาท</b> ให้อัตโนมัติ!
+                โอนเงินเรียบร้อยแล้ว กรุณากดปุ่มสีเขียวด้านบนเพื่อกลับไปยังแชท LINE<br/>และ <b>"ส่งรูปสลิปให้ระบบตัดยอดอัตโนมัติ"</b>
               </p>
             </div>
 

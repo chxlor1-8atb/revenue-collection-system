@@ -275,6 +275,78 @@ export async function POST(request: Request) {
           }
         }
 
+        // 3.5.5 Auto-match with Web Intent Transaction
+        if (slipAmount && slipAmount !== "0") {
+          const linkedHouses = await db.select().from(houses).where(eq(houses.lineUserId, userId));
+          if (linkedHouses.length > 0) {
+            const houseIds = linkedHouses.map(h => h.id);
+            
+            const activeIntents = await db.select({
+              txId: transactions.id,
+              amount: transactions.amount,
+              houseId: invoices.houseId
+            })
+            .from(transactions)
+            .innerJoin(invoices, eq(invoices.transactionId, transactions.id))
+            .where(
+              and(
+                eq(transactions.slipStatus, 'waiting_for_slip'),
+                inArray(invoices.houseId, houseIds)
+              )
+            );
+            
+            const uniqueIntents = Array.from(new Map(activeIntents.map(item => [item.txId, item])).values());
+            const matchingIntent = uniqueIntents.find(intent => 
+              intent.amount && Math.abs(parseFloat(intent.amount) - parseFloat(slipAmount)) < 0.01
+            );
+            
+            if (matchingIntent) {
+              await db.update(transactions).set({
+                slipImageUrl: blobUrl,
+                slipStatus: "verified",
+                slipRefId: transRef || null,
+                paidAt: new Date(),
+                verifiedBy: "line_bot_auto"
+              }).where(eq(transactions.id, matchingIntent.txId));
+              
+              await db.update(invoices).set({ status: 'paid' }).where(eq(invoices.transactionId, matchingIntent.txId));
+              
+              const matchedHouse = linkedHouses.find(h => h.id === matchingIntent.houseId);
+              
+              await db.insert(lineMessages).values({
+                lineMessageId: event.message.id,
+                lineUserId: userId,
+                type: "image",
+                imageUrl: blobUrl,
+                status: "verified_auto",
+                amount: slipAmount,
+                senderName: verification.data?.sender.name,
+                isVerified: true,
+                transactionId: matchingIntent.txId,
+                houseNumber: matchedHouse?.houseNumber
+              });
+              
+              const flexMsg = generateSlipVerificationSuccessFlexMessage(
+                verification.data?.amount || 0,
+                verification.data?.sender?.name || "",
+                verification.data?.sender?.accountNumber || "",
+                verification.data?.receiver?.name || "",
+                verification.data?.receiver?.accountNumber || "",
+                verification.data?.transDate || ""
+              );
+              
+              await safeReplyOrPush(userId, replyToken, [
+                flexMsg,
+                {
+                  type: "text",
+                  text: `✅ ระบบได้ทำการชำระบิลตามที่คุณทำรายการไว้บนหน้าเว็บเรียบร้อยแล้วค่ะ (ยอด ${slipAmount} บาท บ้านเลขที่ ${matchedHouse?.houseNumber || ''}) ขอบคุณที่ใช้บริการ 💚`
+                }
+              ]);
+              continue;
+            }
+          }
+        }
+
         // 3.6 Auto-match with linked house if amount matches exactly
         if (slipAmount && slipAmount !== "0") {
           const linkedHouses = await db.select().from(houses).where(eq(houses.lineUserId, userId)).limit(1);
