@@ -241,9 +241,37 @@ export function generateReceiptFlexMessage(
   monthYearStr: string, 
   amount: number, 
   receiptUrl: string,
-  paidAt?: Date | null
+  paidAt?: Date | null,
+  slipUrl?: string | null
 ): any {
   const paidDateStr = paidAt ? new Date(paidAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : "-";
+  
+  const footerContents: any[] = [];
+  
+  if (slipUrl && slipUrl.startsWith("http")) {
+    footerContents.push({
+      type: "button",
+      action: {
+        type: "uri",
+        label: "ดูรูปสลิป",
+        uri: slipUrl
+      },
+      style: "primary",
+      color: "#0ea5e9",
+      margin: "sm"
+    });
+  }
+
+  footerContents.push({
+    type: "button",
+    action: {
+      type: "uri",
+      label: "ตรวจสอบประวัติบิลทั้งหมด",
+      uri: receiptUrl
+    },
+    style: "secondary",
+    margin: "sm"
+  });
   return {
     type: "flex",
     altText: `ใบเสร็จรับเงินค่าขยะประจำเดือน ${monthYearStr} ของบ้านเลขที่ ${houseNumber}`,
@@ -376,18 +404,7 @@ export function generateReceiptFlexMessage(
       footer: {
         type: "box",
         layout: "vertical",
-        contents: [
-          {
-            type: "button",
-            action: {
-              type: "uri",
-              label: "ตรวจสอบประวัติบิลทั้งหมด",
-              uri: receiptUrl
-            },
-            style: "secondary",
-            margin: "sm"
-          }
-        ],
+        contents: footerContents,
         paddingAll: "20px"
       }
     }

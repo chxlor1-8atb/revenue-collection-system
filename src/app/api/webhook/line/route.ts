@@ -308,7 +308,7 @@ export async function POST(request: Request) {
               } else {
                 monthStr = `${txInvoices.length} รายการ`;
               }
-              const flexMsg = generateReceiptFlexMessage(house.houseNumber, monthStr, parseFloat(tx.amount || "0"), receiptUrl, tx.paidAt);
+              const flexMsg = generateReceiptFlexMessage(house.houseNumber, monthStr, parseFloat(tx.amount || "0"), receiptUrl, tx.paidAt, tx.slipImageUrl);
               carouselContents.push(flexMsg.contents);
             }
             
