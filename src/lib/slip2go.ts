@@ -14,6 +14,8 @@ export interface Slip2GoResponse {
     transDate: string;
   };
   error?: string;
+  errorCode?: string;
+  originalData?: any;
 }
 
 export async function verifySlipWithBuffer(imageBuffer: Buffer): Promise<Slip2GoResponse> {
@@ -44,12 +46,21 @@ export async function verifySlipWithBuffer(imageBuffer: Buffer): Promise<Slip2Go
     const result = await response.json();
     
     // Check if the slip is fraud or data is missing
-    if (result.code === "200500" || result.message === "Slip is fraud.") {
-      return { success: false, error: "ตรวจพบว่าสลิปนี้เป็นสลิปปลอมหรือเคยใช้งานไปแล้ว" };
+    if (result.code === "200500" || result.message === "Slip is fraud." || result.message?.includes("Duplicate")) {
+      return { 
+        success: false, 
+        error: "ตรวจพบว่าสลิปนี้เป็นสลิปปลอมหรือเคยใช้งานไปแล้ว",
+        errorCode: "duplicate",
+        originalData: result.data
+      };
     }
 
     if (!result.data || result.data.amount === undefined) {
-      return { success: false, error: result.message || "ข้อมูลสลิปไม่ถูกต้อง หรือไม่สามารถอ่าน QR Code ได้" };
+      return { 
+        success: false, 
+        error: result.message || "ข้อมูลสลิปไม่ถูกต้อง หรือไม่สามารถอ่าน QR Code ได้",
+        errorCode: "invalid"
+      };
     }
 
     // Success case

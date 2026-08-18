@@ -682,3 +682,251 @@ export function generateSlipVerificationSuccessFlexMessage(
     }
   };
 }
+
+export function generateSlipErrorFlexMessage(
+  title: string,
+  subtitle: string,
+  color: string,
+  amount?: number,
+  senderName?: string,
+  senderAccount?: string,
+  receiverName?: string,
+  receiverAccount?: string,
+  transDate?: string
+): any {
+  
+  const formattedDate = transDate ? transDate : "-";
+  
+  const bodyContents: any[] = [];
+  
+  if (amount !== undefined) {
+    bodyContents.push(
+      {
+        type: "box",
+        layout: "horizontal",
+        contents: [
+          {
+            type: "text",
+            text: amount.toFixed(2),
+            size: "3xl",
+            weight: "bold",
+            color: "#0ea5e9",
+            flex: 0
+          },
+          {
+            type: "text",
+            text: "บาท",
+            size: "sm",
+            color: "#888888",
+            gravity: "bottom",
+            margin: "md",
+            flex: 1
+          }
+        ],
+        alignItems: "flex-end"
+      },
+      {
+        type: "separator",
+        margin: "xxl"
+      },
+      {
+        type: "box",
+        layout: "horizontal",
+        margin: "xxl",
+        contents: [
+          {
+            type: "text",
+            text: "จาก",
+            color: "#aaaaaa",
+            size: "sm",
+            flex: 1
+          },
+          {
+            type: "box",
+            layout: "vertical",
+            flex: 4,
+            contents: [
+              {
+                type: "text",
+                text: senderName || "-",
+                color: "#0ea5e9",
+                size: "sm",
+                wrap: true
+              },
+              {
+                type: "text",
+                text: senderAccount || "-",
+                color: "#666666",
+                size: "xs"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        type: "box",
+        layout: "horizontal",
+        margin: "lg",
+        contents: [
+          {
+            type: "text",
+            text: "ไปยัง",
+            color: "#aaaaaa",
+            size: "sm",
+            flex: 1
+          },
+          {
+            type: "box",
+            layout: "vertical",
+            flex: 4,
+            contents: [
+              {
+                type: "text",
+                text: receiverName || "-",
+                color: color, // Highlight receiver name with the error color (e.g. Red/Blue)
+                size: "sm",
+                wrap: true
+              },
+              {
+                type: "text",
+                text: receiverAccount || "-",
+                color: color,
+                size: "xs"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        type: "separator",
+        margin: "xxl"
+      },
+      {
+        type: "box",
+        layout: "horizontal",
+        margin: "xxl",
+        contents: [
+          {
+            type: "box",
+            layout: "vertical",
+            flex: 2,
+            contents: [
+              {
+                type: "text",
+                text: "วันเวลาตามสลิป",
+                color: "#aaaaaa",
+                size: "xs"
+              },
+              {
+                type: "text",
+                text: formattedDate,
+                color: "#0ea5e9",
+                size: "sm",
+                weight: "bold",
+                margin: "sm",
+                wrap: true
+              }
+            ]
+          }
+        ]
+      }
+    );
+  } else {
+    // If no data, just show a message
+    bodyContents.push({
+      type: "text",
+      text: "กรุณาลองใหม่อีกครั้ง",
+      align: "center",
+      color: "#888888",
+      size: "md",
+      margin: "xxl"
+    });
+  }
+
+  return {
+    type: "flex",
+    altText: `${title}: ${subtitle}`,
+    contents: {
+      type: "bubble",
+      size: "mega",
+      header: {
+        type: "box",
+        layout: "vertical",
+        contents: [
+          {
+            type: "text",
+            text: title,
+            weight: "bold",
+            color: "#ffffff",
+            size: "xl"
+          },
+          {
+            type: "text",
+            text: subtitle,
+            color: "#ffffff",
+            size: "sm",
+            margin: "sm"
+          }
+        ],
+        backgroundColor: color,
+        paddingAll: "15px",
+        paddingTop: "19px",
+        paddingBottom: "16px"
+      },
+      body: {
+        type: "box",
+        layout: "vertical",
+        contents: bodyContents
+      },
+      footer: {
+        type: "box",
+        layout: "horizontal",
+        contents: [
+          {
+            type: "box",
+            layout: "vertical",
+            flex: 2,
+            contents: [
+              {
+                type: "text",
+                text: "ร้าน กองสาธารณสุข สาขา เทศบาลนางรอง",
+                color: "#0ea5e9",
+                size: "xxs",
+                wrap: true
+              },
+              {
+                type: "text",
+                text: "วันที่ส่งตรวจ " + new Date().toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }),
+                color: "#888888",
+                size: "xxs",
+                margin: "xs"
+              }
+            ]
+          },
+          {
+            type: "box",
+            layout: "vertical",
+            flex: 1,
+            contents: [
+              {
+                type: "text",
+                text: "Slip2Go",
+                color: "#000000",
+                size: "sm",
+                weight: "bold",
+                align: "end"
+              },
+              {
+                type: "text",
+                text: "บริการตรวจสอบสลิป",
+                color: "#aaaaaa",
+                size: "xxs",
+                align: "end"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  };
+}

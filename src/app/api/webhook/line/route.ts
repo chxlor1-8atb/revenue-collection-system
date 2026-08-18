@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { replyMessage, getMessageContent, replyWithMessages, generateBillFlexMessage, generateReceiptFlexMessage, generateDuplicateHouseSelectionFlexMessage, generateSlipVerificationSuccessFlexMessage } from "@/lib/line";
+import { replyMessage, getMessageContent, replyWithMessages, generateBillFlexMessage, generateReceiptFlexMessage, generateDuplicateHouseSelectionFlexMessage, generateSlipVerificationSuccessFlexMessage, generateSlipErrorFlexMessage } from "@/lib/line";
 import { db } from "@/lib/db";
 import { lineMessages, houses, invoices, transactions } from "@/lib/schema";
 import { eq, and, desc, gte, inArray } from "drizzle-orm";
@@ -89,7 +89,41 @@ export async function POST(request: Request) {
                 isVerified: false,
               });
             } catch {}
-            await replyMessage(replyToken, `❌ ตรวจสอบสลิปไม่ผ่านค่ะ\nรายละเอียด: ${verification.error}\n\nกรุณาตรวจสอบว่าส่งรูปสลิปที่ชัดเจนและครบถ้วนนะคะ 🙏`);
+            
+            let title = "สลิปไม่ถูกต้อง";
+            let subtitle = "กรุณาตรวจสอบว่าส่งรูปสลิปที่ชัดเจน";
+            let color = "#ef4444"; // Red
+            
+            if (verification.errorCode === "duplicate") {
+              title = "สลิปซ้ำ";
+              subtitle = "โปรดตรวจสอบสลิป";
+              color = "#f59e0b"; // Orange
+            } else if (verification.errorCode === "invalid") {
+              title = "บัญชีผู้รับไม่ถูกต้อง";
+              subtitle = "โปรดตรวจสอบรูปสลิป หรือบัญชีผู้รับของท่าน";
+              color = "#0ea5e9"; // Blue
+            }
+            
+            const orig = verification.originalData || {};
+            const senderName = orig.sender?.name || orig.senderName || orig.sender?.account?.name || orig.senderAccount;
+            const senderAccount = orig.sender?.account?.number || orig.senderAccountNumber;
+            const receiverName = orig.receiver?.name || orig.receiverName || orig.receiver?.account?.name || orig.receiverAccount;
+            const receiverAccount = orig.receiver?.account?.number || orig.receiverAccountNumber;
+            const transDate = orig.transDate || orig.transTime || orig.transTimestamp;
+            
+            const flexError = generateSlipErrorFlexMessage(
+               title, 
+               subtitle, 
+               color, 
+               orig.amount ? parseFloat(orig.amount) : undefined,
+               senderName,
+               senderAccount,
+               receiverName,
+               receiverAccount,
+               transDate
+            );
+            
+            await replyWithMessages(replyToken, [flexError]);
             continue;
           }
 
