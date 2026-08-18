@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -15,6 +15,8 @@ interface CustomSelectProps {
   onChange: (value: string) => void;
   placeholder?: string;
   disabled?: boolean;
+  icon?: ReactNode;
+  name?: string;
 }
 
 export default function CustomSelect({
@@ -23,6 +25,8 @@ export default function CustomSelect({
   onChange,
   placeholder = "เลือก...",
   disabled = false,
+  icon,
+  name,
 }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -41,16 +45,22 @@ export default function CustomSelect({
 
   return (
     <div className="relative" ref={containerRef}>
+      {name && <input type="hidden" name={name} value={value} />}
       <button
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`w-full flex items-center justify-between px-3 h-[42px] bg-white border ${
+        className={`w-full flex items-center justify-between ${icon ? 'pl-10 pr-3' : 'px-3'} h-[42px] bg-white border ${
           isOpen ? 'border-[#5B58F2] ring-2 ring-[#5B58F2]/20' : 'border-slate-200 hover:border-slate-300'
         } rounded-[12px] shadow-none focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 transition-all ${
           disabled ? 'opacity-50 cursor-not-allowed bg-slate-50' : 'cursor-pointer'
         }`}
       >
+        {icon && (
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            {icon}
+          </div>
+        )}
         <span className={`text-[13px] ${selectedOption ? 'text-slate-700' : 'text-slate-400'}`}>
           {selectedOption ? selectedOption.label : placeholder}
         </span>

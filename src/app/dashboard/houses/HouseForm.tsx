@@ -4,6 +4,21 @@ import { useState } from "react";
 import { addHouse, updateHouse } from "./actions";
 import { X, Save, Home, User, MapPin, AlignLeft } from "lucide-react";
 import { CustomField } from "./CustomFieldsManager";
+import CustomSelect from "@/components/CustomSelect";
+
+function SelectFieldWrapper({ name, defaultValue, options, placeholder, icon }: any) {
+  const [val, setVal] = useState(defaultValue || "");
+  return (
+    <CustomSelect 
+      name={name}
+      value={val}
+      onChange={setVal}
+      options={options}
+      placeholder={placeholder}
+      icon={icon}
+    />
+  );
+}
 
 export type HouseData = {
   id?: number;
@@ -127,35 +142,28 @@ export default function HouseForm({
                     {field.name} {field.required && <span className="text-red-500">*</span>}
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      {getIconForField(field.id)}
-                    </div>
                     {field.type === "select" ? (
-                      <>
-                      <select
+                      <SelectFieldWrapper
                         name={field.isSystem ? field.id : `custom_${field.id}`}
-                        required={field.required}
-                        defaultValue={defaultValue || ""}
-                        className="pl-10 block w-full rounded-xl border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 border bg-white appearance-none"
-                      >
-                        <option value="" disabled>{field.placeholder || "เลือก..."}</option>
-                        {field.options?.map((opt: string) => (
-                          <option key={opt} value={opt}>{opt}</option>
-                        ))}
-                      </select>
-                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                      </div>
-                    </>
-                    ) : (
-                      <input
-                        type={field.type || "text"}
-                        name={field.isSystem ? field.id : `custom_${field.id}`}
-                        required={field.required}
                         defaultValue={defaultValue}
-                        className="pl-10 block w-full rounded-xl border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 border"
-                        placeholder={field.placeholder || ""}
+                        options={field.options?.map((opt: string) => ({ value: opt, label: opt })) || []}
+                        placeholder={field.placeholder}
+                        icon={getIconForField(field.id)}
                       />
+                    ) : (
+                      <>
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          {getIconForField(field.id)}
+                        </div>
+                        <input
+                          type={field.type || "text"}
+                          name={field.isSystem ? field.id : `custom_${field.id}`}
+                          required={field.required}
+                          defaultValue={defaultValue}
+                          className="pl-10 block w-full rounded-xl border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 border"
+                          placeholder={field.placeholder || ""}
+                        />
+                      </>
                     )}
                   </div>
                 </div>
