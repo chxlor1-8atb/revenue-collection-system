@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { replyMessage, getMessageContent, replyWithMessages, generateBillFlexMessage, generateReceiptFlexMessage, generateDuplicateHouseSelectionFlexMessage } from "@/lib/line";
+import { replyMessage, getMessageContent, replyWithMessages, generateBillFlexMessage, generateReceiptFlexMessage, generateDuplicateHouseSelectionFlexMessage, generateSlipVerificationSuccessFlexMessage } from "@/lib/line";
 import { db } from "@/lib/db";
 import { lineMessages, houses, invoices, transactions } from "@/lib/schema";
 import { eq, and, desc, gte, inArray } from "drizzle-orm";
@@ -197,7 +197,22 @@ export async function POST(request: Request) {
                if (house.length > 0) houseText = ` (บ้านเลขที่ ${house[0].houseNumber})`;
             }
             
-            await replyMessage(replyToken, `ตรวจสอบสลิปสำเร็จ! ✅\nยอดเงิน: ${slipAmount} บาท\nระบบได้ทำการตัดยอดหนี้ให้เรียบร้อยแล้วค่ะ${houseText} ขอบคุณที่ใช้บริการ 💚`);
+            const flexMsg = generateSlipVerificationSuccessFlexMessage(
+              verification.data?.amount || 0,
+              verification.data?.sender?.name || "",
+              verification.data?.sender?.accountNumber || "",
+              verification.data?.receiver?.name || "",
+              verification.data?.receiver?.accountNumber || "",
+              verification.data?.transDate || ""
+            );
+            
+            await replyWithMessages(replyToken, [
+              flexMsg,
+              {
+                type: "text",
+                text: `ระบบได้ทำการตัดยอดหนี้ให้เรียบร้อยแล้วค่ะ${houseText} ขอบคุณที่ใช้บริการ 💚`
+              }
+            ]);
             continue;
           }
         }
@@ -215,7 +230,22 @@ export async function POST(request: Request) {
           });
 
           // 5. Reply asking for house number
-          await replyMessage(replyToken, `ตรวจสอบสลิปสำเร็จ! ✅\nยอดเงิน: ${slipAmount} บาท\nผู้โอน: ${verification.data?.sender.name}\n\nกรุณาพิมพ์ 'บ้านเลขที่' ของคุณ (เช่น 123/45) เพื่อให้ระบบตัดยอดหนี้อัตโนมัติค่ะ 🙏`);
+          const flexMsg = generateSlipVerificationSuccessFlexMessage(
+            verification.data?.amount || 0,
+            verification.data?.sender?.name || "",
+            verification.data?.sender?.accountNumber || "",
+            verification.data?.receiver?.name || "",
+            verification.data?.receiver?.accountNumber || "",
+            verification.data?.transDate || ""
+          );
+          
+          await replyWithMessages(replyToken, [
+            flexMsg,
+            {
+              type: "text",
+              text: `กรุณาพิมพ์ 'บ้านเลขที่' ของคุณ (เช่น 123/45) เพื่อให้ระบบตัดยอดหนี้อัตโนมัติค่ะ 🙏`
+            }
+          ]);
 
         } else if (event.message.type === "text") {
           const text = event.message.text.trim();

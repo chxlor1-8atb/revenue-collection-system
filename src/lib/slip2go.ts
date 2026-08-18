@@ -58,9 +58,11 @@ export async function verifySlipWithBuffer(imageBuffer: Buffer): Promise<Slip2Go
         amount: parseFloat(result.data.amount),
         sender: {
           name: result.data.sender?.name || result.data.senderName,
+          accountNumber: result.data.sender?.account?.name || result.data.sender?.account?.number || result.data.senderAccount,
         },
         receiver: {
           name: result.data.receiver?.name || result.data.receiverName,
+          accountNumber: result.data.receiver?.account?.name || result.data.receiver?.account?.number || result.data.receiverAccount,
         },
         transRef: result.data.transRef,
         transDate: result.data.transDate || result.data.transTime,

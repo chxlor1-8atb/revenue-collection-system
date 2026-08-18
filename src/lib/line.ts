@@ -515,3 +515,170 @@ export function generateDuplicateHouseSelectionFlexMessage(
     }
   };
 }
+
+export function generateSlipVerificationSuccessFlexMessage(
+  amount: number,
+  senderName: string,
+  senderAccount: string,
+  receiverName: string,
+  receiverAccount: string,
+  transDate: string
+): any {
+  return {
+    type: "flex",
+    altText: `ตรวจสอบสลิปสำเร็จ ยอดเงิน ${amount} บาท`,
+    contents: {
+      type: "bubble",
+      size: "mega",
+      header: {
+        type: "box",
+        layout: "vertical",
+        contents: [
+          {
+            type: "text",
+            text: "สลิปถูกต้อง",
+            weight: "bold",
+            color: "#ffffff",
+            size: "xl"
+          }
+        ],
+        backgroundColor: "#00b900",
+        paddingAll: "15px",
+        paddingTop: "19px",
+        paddingBottom: "16px"
+      },
+      body: {
+        type: "box",
+        layout: "vertical",
+        contents: [
+          {
+            type: "box",
+            layout: "horizontal",
+            contents: [
+              {
+                type: "text",
+                text: amount.toFixed(2),
+                size: "3xl",
+                weight: "bold",
+                color: "#0ea5e9",
+                flex: 0
+              },
+              {
+                type: "text",
+                text: "บาท",
+                size: "sm",
+                color: "#888888",
+                gravity: "bottom",
+                margin: "md",
+                flex: 1
+              }
+            ],
+            alignItems: "flex-end"
+          },
+          {
+            type: "separator",
+            margin: "xxl"
+          },
+          {
+            type: "box",
+            layout: "horizontal",
+            margin: "xxl",
+            contents: [
+              {
+                type: "text",
+                text: "จาก",
+                color: "#aaaaaa",
+                size: "sm",
+                flex: 1
+              },
+              {
+                type: "box",
+                layout: "vertical",
+                flex: 4,
+                contents: [
+                  {
+                    type: "text",
+                    text: senderName || "-",
+                    color: "#0ea5e9",
+                    size: "sm",
+                    wrap: true
+                  },
+                  {
+                    type: "text",
+                    text: senderAccount || "-",
+                    color: "#666666",
+                    size: "xs"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            type: "box",
+            layout: "horizontal",
+            margin: "lg",
+            contents: [
+              {
+                type: "text",
+                text: "ไปยัง",
+                color: "#aaaaaa",
+                size: "sm",
+                flex: 1
+              },
+              {
+                type: "box",
+                layout: "vertical",
+                flex: 4,
+                contents: [
+                  {
+                    type: "text",
+                    text: receiverName || "-",
+                    color: "#00b900",
+                    size: "sm",
+                    wrap: true
+                  },
+                  {
+                    type: "text",
+                    text: receiverAccount || "-",
+                    color: "#00b900",
+                    size: "xs"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            type: "separator",
+            margin: "xxl"
+          },
+          {
+            type: "box",
+            layout: "vertical",
+            margin: "xxl",
+            contents: [
+              {
+                type: "text",
+                text: "วันเวลาตามสลิป",
+                color: "#aaaaaa",
+                size: "xs"
+              },
+              {
+                type: "text",
+                text: transDate || "-",
+                color: "#0ea5e9",
+                size: "sm",
+                weight: "bold",
+                margin: "sm"
+              }
+            ]
+          },
+          {
+            type: "separator",
+            margin: "xxl"
+          }
+        ],
+        paddingAll: "20px"
+      }
+    }
+  };
+}
