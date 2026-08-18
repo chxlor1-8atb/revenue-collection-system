@@ -85,7 +85,7 @@ export async function POST(request: Request) {
                 lineUserId: userId,
                 type: "image",
                 imageUrl: blobUrl,
-                status: "pending",
+                status: "rejected",
                 isVerified: false,
               });
             } catch {}
@@ -416,7 +416,7 @@ export async function POST(request: Request) {
               const unpaidInvoices = await db.select().from(invoices).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
               const totalDebt = unpaidInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
               
-              if (totalDebt > 0 && slipData.amount && Math.abs(parseFloat(slipData.amount) - totalDebt) < 0.01) {
+              if (totalDebt > 0 && slipData.isVerified && slipData.amount && Math.abs(parseFloat(slipData.amount) - totalDebt) < 0.01) {
                 // Perfect match! Auto-approve
                   const newTx = await db.insert(transactions).values({
                     amount: slipData.amount,
@@ -494,7 +494,7 @@ export async function POST(request: Request) {
                   const unpaidInvoices = await db.select().from(invoices).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
                   const totalDebt = unpaidInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
                   
-                  if (totalDebt > 0 && slipData.amount && Math.abs(parseFloat(slipData.amount) - totalDebt) < 0.01) {
+                  if (totalDebt > 0 && slipData.isVerified && slipData.amount && Math.abs(parseFloat(slipData.amount) - totalDebt) < 0.01) {
                     const newTx = await db.insert(transactions).values({
                       amount: slipData.amount,
                       amountClaimedByPayer: slipData.amount,
