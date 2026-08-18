@@ -55,13 +55,22 @@ export default function ReviewClient() {
       {/* 1. กำลังทำรายการ (Waiting for Slip) */}
       {activeTab === "waiting" && (
         <div className="bg-amber-50 rounded-2xl border border-amber-200 p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-slate-200 rounded-xl">
-              <QrCode className="text-slate-900" size={24} />
+          <div className="flex items-center gap-4 mb-6 bg-white/60 p-4 rounded-xl border border-amber-200/60 shadow-sm backdrop-blur-sm">
+            <div className="relative p-3 bg-gradient-to-br from-amber-100 to-amber-200 rounded-xl border border-amber-300 shadow-inner">
+              <QrCode className="text-amber-700" size={26} />
+              <div className="absolute -top-1 -right-1">
+                 <span className="relative flex h-3 w-3">
+                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                   <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500 border border-amber-200"></span>
+                 </span>
+              </div>
             </div>
             <div>
-              <h2 className="text-lg font-bold text-amber-900">กำลังทำรายการชำระเงิน ({waiting.length})</h2>
-              <p className="text-sm text-amber-700">มีผู้ใช้งานกำลังสแกนจ่ายคิวอาร์โค้ด รอระบบตัดยอดอัตโนมัติภายใน 3 นาที</p>
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-bold text-amber-950">กำลังทำรายการชำระเงิน</h2>
+                <span className="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-0.5 rounded-full border border-amber-200">{waiting.length} รายการ</span>
+              </div>
+              <p className="text-sm text-amber-700 mt-0.5 font-medium">ผู้ใช้งานกำลังสแกนจ่ายคิวอาร์โค้ด รอระบบอัปเดตสลิปอัตโนมัติ</p>
             </div>
           </div>
           
@@ -77,25 +86,53 @@ export default function ReviewClient() {
               ))}
             </div>
           ) : waiting.length === 0 ? (
-            <div className="bg-white/50 rounded-xl p-8 border border-amber-100 text-center text-amber-700">
-              ไม่มีผู้ใช้งานกำลังทำรายการในขณะนี้
+            <div className="bg-white/50 rounded-xl p-8 border border-amber-100 text-center text-amber-700 flex flex-col items-center justify-center min-h-[200px]">
+              <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mb-4 border-2 border-dashed border-amber-200">
+                <QrCode size={24} className="text-amber-400" />
+              </div>
+              <p className="font-medium text-amber-800">ไม่มีผู้ใช้งานกำลังทำรายการในขณะนี้</p>
+              <p className="text-sm text-amber-600/70 mt-1">รายการที่กำลังสแกนจ่ายแต่ยังไม่แนบสลิปจะแสดงที่นี่</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
               {waiting.map((tx: any, index: number) => {
                 const houses = [...new Set(tx.invoices.map((i: any) => i.houseNumber))];
                 return (
-                  <div key={tx.id} className="bg-white rounded-xl p-4 border border-amber-100 shadow-sm flex items-center justify-between animate-in slide-in-from-bottom-6 fade-in duration-700" style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'both' }}>
-                     <div>
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">รหัสรายการ #{tx.id}</span>
-                        <span className="font-bold text-slate-700">บ้านเลขที่ {houses.join(", ")}</span>
-                     </div>
-                     <div className="text-right">
+                  <div key={tx.id} className="relative overflow-hidden bg-white rounded-xl p-4 border-2 border-amber-100 shadow-sm flex flex-col gap-3 animate-in slide-in-from-bottom-6 fade-in duration-700 hover:border-amber-300 transition-colors" style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'both' }}>
+                    {/* Animated top bar to simulate loading */}
+                    <div className="absolute top-0 left-0 h-1 bg-amber-400 w-full animate-pulse"></div>
+                    
+                    <div className="flex items-center justify-between relative z-10 pt-1">
+                      <div className="flex items-center gap-3">
+                        <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-amber-50 ring-4 ring-amber-50/50">
+                          <QrCode size={20} className="text-amber-600" />
+                          <span className="absolute -right-0.5 -top-0.5 flex h-3.5 w-3.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border-2 border-white"></span>
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">รหัสรายการ #{tx.id}</span>
+                          <span className="font-bold text-slate-700 text-sm">บ้านเลขที่ {houses.join(", ")}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="text-right">
                         <span className="block font-mono font-bold text-lg text-amber-600">{parseFloat(tx.amount).toFixed(2)} ฿</span>
-                        <span className="text-[length:10px] text-amber-500 flex items-center gap-1 justify-end mt-1">
-                          <Loader2 size={10} className="animate-spin" /> รอสลิป...
-                        </span>
-                     </div>
+                      </div>
+                    </div>
+                    
+                    <div className="relative z-10 flex items-center justify-between bg-gradient-to-r from-amber-50 to-white rounded-lg p-2.5 px-3 border border-amber-100/60 mt-1">
+                      <span className="text-[11px] text-amber-700 flex items-center gap-2 font-medium">
+                        <Loader2 size={14} className="animate-spin text-amber-500" /> 
+                        กำลังรอผู้ใช้แนบสลิป
+                      </span>
+                      <div className="flex gap-1.5 opacity-80">
+                        <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                      </div>
+                    </div>
                   </div>
                 );
               })}
