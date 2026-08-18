@@ -5,7 +5,6 @@ import { notFound, redirect } from "next/navigation";
 import generatePayload from "promptpay-qr";
 import qrcode from "qrcode";
 import CountdownTimer from "@/components/CountdownTimer";
-import SlipUploader from "@/components/SlipUploader";
 
 export default async function PayPage({ params }: { params: Promise<{ transactionId: string }> }) {
   const transactionId = parseInt((await params).transactionId, 10);
@@ -124,8 +123,6 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
               <p className="mt-4 text-xs font-sans text-slate-500 bg-slate-50 p-3 rounded-lg border border-slate-100">
                 โอนเสร็จแล้วกดปุ่มสีเขียวเพื่อส่งสลิปเข้าไปในแชท LINE<br/>ระบบจะตรวจสอบสลิปและตัดหนี้ <b>{Math.floor(totalAmount)} บาท</b> ให้อัตโนมัติ!
               </p>
-              
-              <SlipUploader transactionId={transactionId} />
             </div>
 
           </div>
