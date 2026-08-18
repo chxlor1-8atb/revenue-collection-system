@@ -249,6 +249,59 @@ export async function POST(request: Request) {
             ]);
             continue;
           }
+        // 3.6 Auto-match with linked house if amount matches exactly
+        if (slipAmount && slipAmount !== "0") {
+          const linkedHouses = await db.select().from(houses).where(eq(houses.lineUserId, userId)).limit(1);
+          if (linkedHouses.length > 0) {
+            const house = linkedHouses[0];
+            const unpaidInvoices = await db.select().from(invoices).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
+            const totalDebt = unpaidInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
+            
+            if (totalDebt > 0 && Math.abs(parseFloat(slipAmount) - totalDebt) < 0.01) {
+              // Perfect match! Auto-approve for the linked house
+              const newTx = await db.insert(transactions).values({
+                amount: slipAmount,
+                amountClaimedByPayer: slipAmount,
+                slipImageUrl: blobUrl,
+                slipStatus: "verified",
+                slipRefId: transRef || null,
+                paidAt: new Date(),
+                verifiedBy: "line_bot_auto",
+              }).returning();
+              
+              await db.update(invoices).set({ status: 'paid', transactionId: newTx[0].id }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
+              
+              await db.insert(lineMessages).values({
+                lineMessageId: event.message.id,
+                lineUserId: userId,
+                type: "image",
+                imageUrl: blobUrl,
+                status: "verified_auto",
+                amount: slipAmount,
+                senderName: verification.data?.sender.name,
+                isVerified: true,
+                transactionId: newTx[0].id
+              });
+              
+              const flexMsg = generateSlipVerificationSuccessFlexMessage(
+                verification.data?.amount || 0,
+                verification.data?.sender?.name || "",
+                verification.data?.sender?.accountNumber || "",
+                verification.data?.receiver?.name || "",
+                verification.data?.receiver?.accountNumber || "",
+                verification.data?.transDate || ""
+              );
+              
+              await replyWithMessages(replyToken, [
+                flexMsg,
+                {
+                  type: "text",
+                  text: `✅ ระบบได้ทำการตัดยอดหนี้ ${totalDebt} บาท สำหรับบ้านเลขที่ ${house.houseNumber} ให้เรียบร้อยแล้วค่ะ ขอบคุณที่ใช้บริการ 💚`
+                }
+              ]);
+              continue;
+            }
+          }
         }
           
         // 4. Save to database (Normal fallback flow)
