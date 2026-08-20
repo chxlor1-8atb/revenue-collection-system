@@ -80,7 +80,7 @@ export default function SlipModalButton({ imageUrl, buttonStyle = "history", chi
                   <img 
                     src={imageUrl} 
                     alt="Slip" 
-                    className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl ring-1 ring-white/10" 
+                    className="max-w-[90vw] md:max-w-[60vw] lg:max-w-[40vw] max-h-[85vh] object-contain rounded-xl shadow-2xl ring-1 ring-white/10 bg-black/20" 
                   />
                 </div>
              </motion.div>
