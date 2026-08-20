@@ -196,16 +196,16 @@ export async function GET(req: NextRequest) {
                   <div
                     style={{
                       display: 'flex',
-                      width: 170,
-                      height: 170,
-                      borderRadius: 45,
+                      width: 280,
+                      height: 280,
+                      borderRadius: 75,
                       alignItems: 'center',
                       justifyContent: 'center',
                       background: btn.accent,
-                      boxShadow: `0 10px 20px ${btn.accent}40`,
+                      boxShadow: `0 15px 30px ${btn.accent}40`,
                     }}
                   >
-                    <svg width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="170" height="170" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       {btn.iconPath}
                     </svg>
                   </div>
@@ -245,15 +245,15 @@ export async function GET(req: NextRequest) {
                       alignItems: 'center',
                       marginTop: 45,
                       background: btn.accent,
-                      padding: '20px 45px',
+                      padding: '25px 55px',
                       borderRadius: 100,
                       alignSelf: 'flex-start',
                     }}
                   >
-                    <span style={{ fontSize: 40, fontWeight: 700, color: 'white', marginRight: 15 }}>
+                    <span style={{ fontSize: 50, fontWeight: 700, color: 'white', marginRight: 20 }}>
                       {btn.actionText}
                     </span>
-                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M5 12h14M12 5l7 7-7 7" />
                     </svg>
                   </div>
