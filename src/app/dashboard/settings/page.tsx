@@ -17,12 +17,18 @@ export default async function SettingsPage() {
           collectorId={settings.id} 
           initialName={settings.accountName} 
           initialPromptPay={settings.promptPayId}
+          initialAutoBillingDay={settings.autoBillingDay}
+          initialDueDateDays={settings.dueDateDays}
+          initialAutoRemindDays={settings.autoRemindDays}
         />
       ) : (
         <SettingsForm 
           collectorId={1} 
           initialName="ชื่อบัญชีรับเงิน" 
           initialPromptPay="เบอร์พร้อมเพย์"
+          initialAutoBillingDay={null}
+          initialDueDateDays={null}
+          initialAutoRemindDays={null}
         />
       )}
     </div>

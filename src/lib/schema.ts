@@ -7,6 +7,9 @@ export const systemSettings = pgTable('system_settings', {
   qrCodeImageUrl: text('qr_code_image_url'),
   telegramChatId: text('telegram_chat_id'),
   houseCustomFieldsSchema: jsonb('house_custom_fields_schema').default('[]'),
+  autoBillingDay: integer('auto_billing_day'),
+  dueDateDays: integer('due_date_days'),
+  autoRemindDays: integer('auto_remind_days'),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
@@ -47,14 +50,13 @@ export const invoices = pgTable('invoices', {
   houseId: integer('house_id').references(() => houses.id).notNull(),
   monthYear: text('month_year').notNull(), // e.g. "2024-01"
   amount: numeric('amount', { precision: 12, scale: 2 }).notNull(),
+  type: text('type').default('monthly'), // monthly, arrears, custom
+  title: text('title'),
+  isBroadcasted: boolean('is_broadcasted').default(false),
   status: text('status').notNull().default('unpaid'), // unpaid, pending, paid, pending_advance
   transactionId: integer('transaction_id').references(() => transactions.id), // Link to the payment if any
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-}, (table) => {
-  return {
-    uniqueHouseMonth: uniqueIndex('unique_house_month').on(table.houseId, table.monthYear),
-  };
 });
 
 export const adminUsers = pgTable('admin_users', {

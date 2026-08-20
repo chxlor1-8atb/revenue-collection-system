@@ -7,13 +7,22 @@ export default function SettingsForm({
   collectorId,
   initialName,
   initialPromptPay,
+  initialAutoBillingDay,
+  initialDueDateDays,
+  initialAutoRemindDays,
 }: {
   collectorId: number;
   initialName: string;
   initialPromptPay: string;
+  initialAutoBillingDay: number | null;
+  initialDueDateDays: number | null;
+  initialAutoRemindDays: number | null;
 }) {
   const [name, setName] = useState(initialName);
   const [promptPayId, setPromptPayId] = useState(initialPromptPay);
+  const [autoBillingDay, setAutoBillingDay] = useState<string>(initialAutoBillingDay?.toString() || "");
+  const [dueDateDays, setDueDateDays] = useState<string>(initialDueDateDays?.toString() || "");
+  const [autoRemindDays, setAutoRemindDays] = useState<string>(initialAutoRemindDays?.toString() || "");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
   const router = useRouter();
@@ -29,7 +38,7 @@ export default function SettingsForm({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id: collectorId, name, promptPayId }),
+        body: JSON.stringify({ id: collectorId, name, promptPayId, autoBillingDay: autoBillingDay ? parseInt(autoBillingDay) : null, dueDateDays: dueDateDays ? parseInt(dueDateDays) : null, autoRemindDays: autoRemindDays ? parseInt(autoRemindDays) : null }),
       });
 
       if (res.ok) {
@@ -91,6 +100,56 @@ export default function SettingsForm({
         >
           {isLoading ? "กำลังบันทึก..." : "บันทึกการตั้งค่า"}
         </button>
+              
+        <div className="pt-6 border-t border-slate-200 mt-6">
+          <h3 className="text-lg font-bold text-slate-800 mb-4">ตั้งค่าระบบบิลและทวงหนี้อัตโนมัติ</h3>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                วันที่ออกบิลอัตโนมัติ (วันที่ของทุกเดือน)
+              </label>
+              <input
+                type="number"
+                min="1"
+                max="28"
+                value={autoBillingDay}
+                onChange={(e) => setAutoBillingDay(e.target.value)}
+                placeholder="เช่น 25 (เว้นว่างถ้าไม่ต้องการให้ออกบิลอัตโนมัติ)"
+                className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+              />
+              <p className="text-xs text-slate-500 mt-1">ระบบจะส่งแจ้งเตือน LINE ทันทีที่ออกบิล (แนะนำ 1-28)</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                จำนวนวันครบกำหนดชำระ (Due Date)
+              </label>
+              <input
+                type="number"
+                min="1"
+                value={dueDateDays}
+                onChange={(e) => setDueDateDays(e.target.value)}
+                placeholder="เช่น 10 (หมายถึงให้เวลาจ่าย 10 วันนับจากวันออกบิล)"
+                className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                จำนวนวันที่เลยกำหนด แล้วให้ทวงหนี้ (Auto-Remind)
+              </label>
+              <input
+                type="number"
+                min="1"
+                value={autoRemindDays}
+                onChange={(e) => setAutoRemindDays(e.target.value)}
+                placeholder="เช่น 3 (หมายถึงเลยกำหนด 3 วันแล้วให้บอททวงหนี้)"
+                className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+              />
+            </div>
+          </div>
+        </div>
       </form>
     </div>
   );

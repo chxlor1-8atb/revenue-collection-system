@@ -55,7 +55,7 @@ export default function HousesClient({
   const [qrModal, setQrModal] = useState<{ isOpen: boolean; houseNumber: string; url: string; qrDataUrl: string } | null>(null);
 
   // Initial Bill Prompt State
-  const [initialBillPrompt, setInitialBillPrompt] = useState<{ isOpen: boolean; houseId: number; monthYear: string; amount: string; isManual?: boolean } | null>(null);
+  const [initialBillPrompt, setInitialBillPrompt] = useState<{ isOpen: boolean; houseId: number; monthYear: string; amount: string; isManual?: boolean; type?: string; title?: string } | null>(null);
   const [sendingLine, setSendingLine] = useState<number | null>(null);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
   const [isGeneratingBill, setIsGeneratingBill] = useState(false);
@@ -657,7 +657,7 @@ export default function HousesClient({
                   onClick={async () => {
                     if (!initialBillPrompt.monthYear || !initialBillPrompt.amount) return;
                     setIsGeneratingBill(true);
-                    const res = await createInitialInvoice(initialBillPrompt.houseId, initialBillPrompt.monthYear, initialBillPrompt.amount);
+                    const res = await createInitialInvoice(initialBillPrompt.houseId, initialBillPrompt.monthYear, initialBillPrompt.amount, initialBillPrompt.type || "monthly", initialBillPrompt.title || null);
                     setIsGeneratingBill(false);
                     if (res.success) {
                       setSuccessMsg("สร้างบิลตั้งต้นสำเร็จ");

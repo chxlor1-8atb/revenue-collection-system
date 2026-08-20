@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
-    const updateData = { accountName: name, promptPayId };
+    const updateData = { accountName: name, promptPayId, autoBillingDay, dueDateDays, autoRemindDays };
 
     const existing = await db.select().from(systemSettings).limit(1);
     if (existing.length > 0) {

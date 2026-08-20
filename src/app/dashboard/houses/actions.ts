@@ -112,20 +112,24 @@ export async function deleteHouse(id: number) {
   }
 }
 
-export async function createInitialInvoice(houseId: number, monthYear: string, amount: string) {
+export async function createInitialInvoice(houseId: number, monthYear: string, amount: string, type: string = 'monthly', title: string | null = null) {
   try {
-    const existing = await db.select().from(invoices).where(
-      and(eq(invoices.houseId, houseId), eq(invoices.monthYear, monthYear))
-    ).limit(1);
-    
-    if (existing.length > 0) {
-      return { success: false, error: "บิลสำหรับเดือนนี้ถูกสร้างไปแล้ว" };
+    if (type === 'monthly') {
+      const existing = await db.select().from(invoices).where(
+        and(eq(invoices.houseId, houseId), eq(invoices.monthYear, monthYear), eq(invoices.type, 'monthly'))
+      ).limit(1);
+      
+      if (existing.length > 0) {
+        return { success: false, error: "บิลประจำเดือนนี้ถูกสร้างไปแล้ว" };
+      }
     }
     
     await db.insert(invoices).values({
       houseId,
       monthYear,
       amount,
+      type,
+      title,
       status: 'unpaid'
     });
 
@@ -133,7 +137,7 @@ export async function createInitialInvoice(houseId: number, monthYear: string, a
     revalidatePath(`/dashboard/houses`);
     return { success: true };
   } catch (error: any) {
-    console.error("Error creating initial invoice:", error);
+    console.error("Error creating invoice:", error);
     return { success: false, error: error.message || "เกิดข้อผิดพลาดในการสร้างบิล" };
   }
 }

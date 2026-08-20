@@ -1,0 +1,118 @@
+import { NextResponse } from 'next/server';
+import { db } from '@/lib/db';
+import { houses, invoices, systemSettings } from '@/lib/schema';
+import { eq, and } from 'drizzle-orm';
+import { generateBillFlexMessage, pushMessage } from '@/lib/line';
+import { formatThaiMonthYear } from '@/lib/utils';
+const generatePayload = require("promptpay-qr");
+
+export const dynamic = 'force-dynamic';
+export const maxDuration = 300; // 5 minutes max for cron
+
+export async function GET(req: Request) {
+  try {
+    // 1. Get settings
+    const [settings] = await db.select().from(systemSettings).limit(1);
+    if (!settings || !settings.autoBillingDay) {
+      return NextResponse.json({ message: 'Auto billing is disabled or not configured' }, { status: 200 });
+    }
+
+    // 2. Check if today is the billing day
+    const now = new Date();
+    // Thai time
+    const thTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Bangkok' }));
+    
+    // For Vercel Cron, usually we trigger it every day and let the code decide if it should run
+    if (thTime.getDate() !== settings.autoBillingDay) {
+      return NextResponse.json({ message: `Today is not billing day (${settings.autoBillingDay})` }, { status: 200 });
+    }
+
+    const currentMonthYear = thTime.toISOString().slice(0, 7);
+
+    // 3. Get all houses
+    const allHouses = await db.select().from(houses);
+    let createdCount = 0;
+    let pushedCount = 0;
+
+    const mobileNumber = process.env.PROMPTPAY_MOBILE || "0000000000";
+    
+    // Get host from request
+    let origin = "https://nangronggarbagepayments.vercel.app";
+    const host = req.headers.get('host');
+    if (host && (host.includes('localhost') || host.includes('vercel'))) {
+      origin = (host.includes('localhost') ? 'http://' : 'https://') + host;
+    }
+
+    for (const house of allHouses) {
+      // Check if bill already exists
+      const existing = await db.select().from(invoices).where(
+        and(eq(invoices.houseId, house.id), eq(invoices.monthYear, currentMonthYear), eq(invoices.type, 'monthly'))
+      ).limit(1);
+
+      if (existing.length === 0) {
+        // Create bill
+        const amount = house.defaultBillingAmount || "20.00";
+        
+        await db.insert(invoices).values({
+          houseId: house.id,
+          monthYear: currentMonthYear,
+          amount,
+          type: 'monthly',
+          status: 'unpaid',
+          isBroadcasted: house.lineUserId ? true : false, // mark as broadcasted if we are going to try pushing it
+        });
+        
+        createdCount++;
+
+        // Send LINE push
+        if (house.lineUserId) {
+          try {
+            // Find total unpaid to combine in the flex message
+            const unpaidInvoices = await db.select().from(invoices).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid'))).orderBy(invoices.monthYear);
+            const totalDebt = unpaidInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
+            
+            const monthYears = unpaidInvoices.map(inv => formatThaiMonthYear(inv.monthYear));
+            const combinedMonthYearStr = monthYears.length > 2 
+              ? \`\${monthYears[0]} - \${monthYears[monthYears.length - 1]}\` 
+              : monthYears.join(", ");
+
+            const payload = generatePayload(mobileNumber, { amount: totalDebt });
+            const qrUrl = \`\${origin}/api/qr-image?payload=\${encodeURIComponent(payload)}\`;
+            const payUrl = \`\${origin}/house/\${house.id}\`;
+
+            const flexMsg = generateBillFlexMessage(
+              house.houseNumber,
+              combinedMonthYearStr,
+              totalDebt,
+              payUrl,
+              qrUrl
+            );
+
+            await pushMessage(house.lineUserId, [
+              {
+                type: "text",
+                text: \`สวัสดีค่ะ 💚 แจ้งบิลค่าธรรมเนียมเก็บขนมูลฝอยรอบใหม่ สำหรับบ้านเลขที่ \${house.houseNumber} มาแล้วค่ะ\\n\\nสามารถตรวจสอบรายละเอียดและชำระเงินได้ที่ลิงก์ด้านล่างนี้นะคะ 🙏\`
+              },
+              flexMsg
+            ]);
+            pushedCount++;
+            
+            // Sleep 50ms to prevent LINE rate limit (max 100,000 push/min but still good to throttle slightly)
+            await new Promise(r => setTimeout(r, 50));
+          } catch (e) {
+            console.error(\`Failed to send LINE message to \${house.houseNumber}\`, e);
+          }
+        }
+      }
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      message: \`Auto-billing completed. Created \${createdCount} bills and pushed \${pushedCount} LINE messages.\` 
+    });
+
+  } catch (error: any) {
+    console.error('Error in auto billing cron:', error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}

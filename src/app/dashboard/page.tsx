@@ -2,7 +2,8 @@ export const dynamic = 'force-dynamic';
 
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { transactions, invoices, houses, lineMessages } from "@/lib/schema";
+import { transactions, invoices, houses, lineMessages, systemSettings } from "@/lib/schema";
+import { CalendarClock, BellRing } from "lucide-react";
 import { eq, desc, inArray, or } from "drizzle-orm";
 import RevenueChart from "./RevenueChart";
 import { StaggerContainer, StaggerItem } from "@/components/animations/Stagger";
@@ -48,6 +49,7 @@ export default async function DashboardPage() {
     .from(transactions)
     .where(eq(transactions.slipStatus, "verified"));
 
+  const [settings] = await db.select().from(systemSettings).limit(1);
   const currentYear = new Date().getFullYear();
   let currentYearRevenue = 0;
 
@@ -267,6 +269,37 @@ export default async function DashboardPage() {
               date: (tx.paidAt || tx.createdAt)?.toISOString() || null
             }))} 
           />
+
+          {settings?.autoBillingDay && (
+            <div className="bg-[#1F2E22] rounded-[32px] p-6 lg:p-8 text-white shadow-lg relative overflow-hidden mt-6 xl:mt-8">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+              
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center shrink-0 backdrop-blur-sm border border-white/10">
+                    <CalendarClock size={24} className="text-emerald-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold mb-1">ระบบออกบิลอัตโนมัติ (Auto-Billing)</h3>
+                    <p className="text-emerald-200/80 text-sm">
+                      ตั้งเวลาออกบิลวันที่ {settings.autoBillingDay} ของทุกเดือน และให้เวลาชำระ {settings.dueDateDays || 0} วัน
+                    </p>
+                  </div>
+                </div>
+
+                {settings.autoRemindDays && (
+                  <div className="flex items-center gap-3 bg-white/5 px-4 py-3 rounded-2xl border border-white/5 backdrop-blur-md">
+                    <BellRing size={20} className="text-amber-400" />
+                    <div>
+                      <div className="text-xs text-slate-300">แจ้งเตือนทวงหนี้อัตโนมัติ</div>
+                      <div className="text-sm font-semibold text-amber-400">หลังเลยกำหนด {settings.autoRemindDays} วัน</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
         </StaggerItem>
           
 
