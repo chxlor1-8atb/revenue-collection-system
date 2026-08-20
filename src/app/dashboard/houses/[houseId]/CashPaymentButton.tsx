@@ -1,0 +1,42 @@
+"use client";
+
+import { useState } from "react";
+import { markInvoiceAsPaidCash } from "../actions";
+import { Banknote, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+export default function CashPaymentButton({ invoiceId }: { invoiceId: number }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const handleCashPayment = async () => {
+    if (!confirm("ยืนยันรับชำระเงินสดสำหรับบิลนี้?")) return;
+    
+    setIsLoading(true);
+    try {
+      const res = await markInvoiceAsPaidCash(invoiceId);
+      if (res.success) {
+        alert("รับชำระเงินสดสำเร็จ");
+        router.refresh();
+      } else {
+        alert(res.error || "เกิดข้อผิดพลาด");
+      }
+    } catch (e: any) {
+      alert("เกิดข้อผิดพลาด: " + e.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleCashPayment}
+      disabled={isLoading}
+      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
+      title="รับชำระด้วยเงินสด"
+    >
+      {isLoading ? <Loader2 size={14} className="animate-spin" /> : <Banknote size={14} />}
+      จ่ายเงินสด
+    </button>
+  );
+}

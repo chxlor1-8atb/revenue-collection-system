@@ -689,7 +689,27 @@ export async function POST(request: Request) {
                   await db.update(lineMessages).set({ status: 'verified_auto' }).where(eq(lineMessages.id, slipData.id));
                   await db.update(invoices).set({ status: 'paid', transactionId: slipData.transactionId }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
                   
-                  await replyMessage(replyToken, `✅ ยืนยันข้อมูลสำเร็จ!\nระบบได้ตัดยอดหนี้ ${totalDebt} บาท สำหรับบ้านเลขที่ ${text} เรียบร้อยแล้วค่ะ ขอบคุณที่ใช้บริการ 💚`);
+                  
+                  const thaiMonths = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+                  let monthStr = "";
+                  if (unpaidInvoices.length === 1) {
+                    const [y, m] = unpaidInvoices[0].monthYear.split("-");
+                    monthStr = `${thaiMonths[parseInt(m)]} ${parseInt(y) + 543}`;
+                  } else {
+                    monthStr = `${unpaidInvoices.length} เดือนที่ค้างชำระ`;
+                  }
+
+                  const appUrl = request.headers.get("host")?.includes("localhost") ? "http://localhost:3000" : "https://nangronggarbagepayments.vercel.app";
+                  
+                  const receiptFlex = generateReceiptFlexMessage(
+                      house.houseNumber,
+                      monthStr,
+                      totalDebt,
+                      `${appUrl}/dashboard/history/${slipData.transactionId}/receipt`,
+                      new Date(),
+                      slipData.imageUrl
+                    );
+                    await replyWithMessages(replyToken, [receiptFlex]);
                   return NextResponse.json({ status: "ok" });
                 }
               }
@@ -767,7 +787,27 @@ export async function POST(request: Request) {
                     await db.update(lineMessages).set({ status: 'verified_auto', transactionId: newTx[0].id }).where(eq(lineMessages.id, slipData.id));
                     await db.update(invoices).set({ status: 'paid', transactionId: newTx[0].id }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
                     
-                    await replyMessage(replyToken, `✅ ยืนยันข้อมูลสำเร็จ!\nระบบได้ตัดยอดหนี้ ${totalDebt} บาท สำหรับบ้านเลขที่ ${house.houseNumber} เรียบร้อยแล้วค่ะ ขอบคุณที่ใช้บริการ 💚`);
+                    
+                    const thaiMonths = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+                    let monthStr = "";
+                    if (unpaidInvoices.length === 1) {
+                      const [y, m] = unpaidInvoices[0].monthYear.split("-");
+                      monthStr = `${thaiMonths[parseInt(m)]} ${parseInt(y) + 543}`;
+                    } else {
+                      monthStr = `${unpaidInvoices.length} เดือนที่ค้างชำระ`;
+                    }
+
+                    const appUrl = request.headers.get("host")?.includes("localhost") ? "http://localhost:3000" : "https://nangronggarbagepayments.vercel.app";
+                    
+                    const receiptFlex = generateReceiptFlexMessage(
+                      house.houseNumber,
+                      monthStr,
+                      totalDebt,
+                      `${appUrl}/dashboard/history/${newTx[0].id}/receipt`,
+                      new Date(),
+                      slipData.imageUrl
+                    );
+                    await replyWithMessages(replyToken, [receiptFlex]);
                     continue;
                   }
                 }

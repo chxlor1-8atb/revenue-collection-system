@@ -160,7 +160,7 @@ export async function GET(req: NextRequest) {
           houseNumber: txInvoices[0]?.houseNumber || "ไม่ระบุ",
           ownerName: txInvoices[0]?.ownerName || "ไม่ระบุ",
           months: txInvoices.map(inv => inv.monthYear),
-          paidVia: tx.verifiedBy === "line_bot" ? "LINE Bot" : lineData ? "LINE Bot" : "เว็บไซต์",
+          paidVia: tx.verifiedBy === "line_bot" ? "LINE Bot" : tx.verifiedBy === "admin_cash" ? "เงินสด (หน้าเคาน์เตอร์)" : lineData ? "LINE Bot" : "เว็บไซต์",
           senderName: lineData?.senderName || null,
         };
       });

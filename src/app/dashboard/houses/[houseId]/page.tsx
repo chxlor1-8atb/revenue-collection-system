@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Home, User, MapPin, ExternalLink, Receipt, CheckCircle2, Clock, AlertCircle } from "lucide-react";
 import SlipModalButton from "@/components/SlipModalButton";
+import CashPaymentButton from "./CashPaymentButton";
 
 export const dynamic = "force-dynamic";
 
@@ -131,9 +132,12 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
                           <Clock size={12} /> รอตรวจสอบสลิป
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-600 border border-red-200">
-                          <AlertCircle size={12} /> ค้างชำระ
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-600 border border-red-200">
+                            <AlertCircle size={12} /> ค้างชำระ
+                          </span>
+                          <CashPaymentButton invoiceId={inv.id} />
+                        </div>
                       )}
                     </td>
                     <td className="px-6 py-4 text-sm text-slate-500">

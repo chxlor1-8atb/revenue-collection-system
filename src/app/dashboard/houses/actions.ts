@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { houses, invoices } from "@/lib/schema";
+import { houses, invoices, transactions } from "@/lib/schema";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -206,5 +206,40 @@ export async function sendLineReminder(houseId: number, origin: string) {
   } catch (error: any) {
     console.error("Error sending LINE reminder:", error);
     return { success: false, error: error.message || "เกิดข้อผิดพลาดในการส่งข้อความ" };
+  }
+}
+
+export async function markInvoiceAsPaidCash(invoiceId: number) {
+  try {
+    const invData = await db.select().from(invoices).where(eq(invoices.id, invoiceId)).limit(1);
+    if (invData.length === 0) return { success: false, error: "ไม่พบบิลนี้" };
+    
+    const inv = invData[0];
+    if (inv.status === 'paid') return { success: false, error: "บิลนี้ชำระแล้ว" };
+
+    const houseData = await db.select().from(houses).where(eq(houses.id, inv.houseId)).limit(1);
+    if (houseData.length === 0) return { success: false, error: "ไม่พบบ้าน" };
+
+    // Create a transaction for cash
+    const tx = await db.insert(transactions).values({
+      amount: inv.amount,
+      slipStatus: 'verified',
+      slipImageUrl: 'cash',
+      paidAt: new Date(),
+      verifiedBy: 'admin_cash',
+      payerNote: 'รับชำระเงินสด'
+    }).returning({ id: transactions.id });
+
+    // Update invoice
+    await db.update(invoices).set({
+      status: 'paid',
+      transactionId: tx[0].id,
+      updatedAt: new Date(),
+    }).where(eq(invoices.id, invoiceId));
+
+    return { success: true, transactionId: tx[0].id };
+  } catch (error: any) {
+    console.error("Failed to mark invoice as paid (cash):", error);
+    return { success: false, error: error.message || "เกิดข้อผิดพลาด" };
   }
 }
