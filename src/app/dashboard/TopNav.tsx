@@ -121,6 +121,9 @@ export default function TopNav({ userName, settings }: { userName: string, setti
                   collectorId={settings?.id || 1} 
                   initialName={settings?.accountName || "ชื่อบัญชีรับเงิน"} 
                   initialPromptPay={settings?.promptPayId || "เบอร์พร้อมเพย์"}
+                  initialAutoBillingDay={settings?.autoBillingDay || null}
+                  initialDueDateDays={settings?.dueDateDays || null}
+                  initialAutoRemindDays={settings?.autoRemindDays || null}
                 />
              </div>
           </div>

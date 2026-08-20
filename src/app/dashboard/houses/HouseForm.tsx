@@ -21,6 +21,7 @@ function SelectFieldWrapper({ name, defaultValue, options, placeholder, icon }: 
 }
 
 export type HouseData = {
+  defaultBillingAmount: string | null;
   id?: number;
   houseNumber: string;
   ownerName: string;

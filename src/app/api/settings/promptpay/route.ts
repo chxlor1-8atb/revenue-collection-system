@@ -10,7 +10,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id, name, promptPayId } = await request.json();
+    const { id, name, promptPayId, autoBillingDay, dueDateDays, autoRemindDays } = await request.json();
 
     if (!id || !name || !promptPayId) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
