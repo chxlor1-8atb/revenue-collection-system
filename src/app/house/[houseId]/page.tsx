@@ -162,7 +162,7 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
         <div className="bg-white rounded-b-3xl p-8 sm:p-10 relative shadow-inner">
           <div className="mb-6 flex items-baseline justify-between border-b border-slate-100 pb-4">
             <div>
-              <h2 className="text-xl font-bold text-slate-900">รายการแจ้งหนี้ค่าขยะ</h2>
+              <h2 className="text-xl font-bold text-slate-900">รายการค่าธรรมเนียมเก็บขนมูลฝอย</h2>
               <p className="text-xs text-slate-500 mt-1">กำหนดชำระภายในวันที่ 15 ของทุกเดือน</p>
             </div>
             <span className="text-xs font-semibold text-slate-400 tracking-wider">INVOICES</span>
