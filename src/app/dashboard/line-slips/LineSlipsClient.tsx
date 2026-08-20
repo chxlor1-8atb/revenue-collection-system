@@ -358,7 +358,7 @@ export default function LineSlipsClient({
                             )}
                           </td>
                           <td className="px-4 py-4 text-right">
-                            <div className="flex items-center justify-end gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                            <div className="flex items-center justify-end gap-2">
                               <button
                                 onClick={() => openMatchModal(slip)}
                                 className="bg-[#EEF0FF] text-[#5B58F2] hover:bg-[#5B58F2] hover:text-white font-sans text-xs px-4 py-2 rounded-xl transition-colors font-semibold"

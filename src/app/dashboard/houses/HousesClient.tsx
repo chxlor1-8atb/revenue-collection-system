@@ -388,7 +388,7 @@ export default function HousesClient({
                     </Link>
                   </td>
                   <td className="px-4 py-4 text-right">
-                    <div className="flex items-center justify-end gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center justify-end gap-1">
                                             <button
                         onClick={() => setConfirmCashHouse({ id: house.id!, houseNumber: house.houseNumber })}
                         className="p-2 text-slate-400 hover:text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors"

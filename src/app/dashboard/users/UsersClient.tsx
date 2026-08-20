@@ -142,7 +142,7 @@ export default function UsersClient({
                     {user.createdAt ? new Date(user.createdAt).toLocaleDateString('th-TH') : '-'}
                   </td>
                   <td className="px-4 py-4 text-right">
-                    <div className="flex items-center justify-end gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center justify-end gap-1">
                       <button
                         onClick={() => handleEdit(user)}
                         className="p-2 text-slate-400 hover:text-[#5B58F2] hover:bg-slate-50 rounded-lg transition-colors"
