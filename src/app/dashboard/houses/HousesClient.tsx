@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useTransition, useMemo } from "react";
-import { Plus, Edit2, Trash2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Download, Upload, QrCode, X, Settings, Home, Loader2, FileText, CheckCircle2 } from "lucide-react";
+import { Plus, Edit2, Trash2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Download, Upload, QrCode, X, Settings, Home, Loader2, FileText, CheckCircle2, FilePlus, Send, Copy, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import QRCode from "qrcode";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import HouseForm, { HouseData } from "./HouseForm";
 import GenerateInvoiceButton from "./GenerateInvoiceButton";
-import { deleteHouse, createInitialInvoice } from "./actions";
+import { deleteHouse, createInitialInvoice, sendLineReminder } from "./actions";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
 import CustomSelect from "@/components/CustomSelect";
 import CustomFieldsManager, { CustomField } from "./CustomFieldsManager";
@@ -55,7 +55,9 @@ export default function HousesClient({
   const [qrModal, setQrModal] = useState<{ isOpen: boolean; houseNumber: string; url: string; qrDataUrl: string } | null>(null);
 
   // Initial Bill Prompt State
-  const [initialBillPrompt, setInitialBillPrompt] = useState<{ isOpen: boolean; houseId: number; monthYear: string; amount: string } | null>(null);
+  const [initialBillPrompt, setInitialBillPrompt] = useState<{ isOpen: boolean; houseId: number; monthYear: string; amount: string; isManual?: boolean } | null>(null);
+  const [sendingLine, setSendingLine] = useState<number | null>(null);
+  const [copiedLink, setCopiedLink] = useState<boolean>(false);
   const [isGeneratingBill, setIsGeneratingBill] = useState(false);
 
   // Search & Sort State
@@ -383,24 +385,61 @@ export default function HousesClient({
                   </td>
                   <td className="px-4 py-4 text-right">
                     <div className="flex items-center justify-end gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                      <button
+                                            <button
                         onClick={() => openQrModal(house)}
                         className="p-2 text-slate-400 hover:text-[#5B58F2] hover:bg-slate-100 rounded-lg transition-colors"
-                        title="QR Code"
+                        title="QR Code & ลิงก์ชำระเงิน"
                       >
                         <QrCode size={14} />
                       </button>
                       <button
+                        onClick={() => {
+                          setInitialBillPrompt({
+                            isOpen: true,
+                            houseId: house.id!,
+                            monthYear: new Date().toISOString().slice(0, 7),
+                            amount: house.defaultBillingAmount || "20.00",
+                            isManual: true
+                          });
+                        }}
+                        className="p-2 text-slate-400 hover:text-amber-500 hover:bg-slate-100 rounded-lg transition-colors"
+                        title="สร้างบิลค้างชำระ (แมนนวล)"
+                      >
+                        <FilePlus size={14} />
+                      </button>
+                      {(house as any).lineUserId ? (
+                        <button
+                          onClick={async () => {
+                            if (!confirm(`ต้องการส่งแจ้งเตือนยอดค้างชำระไปที่ LINE ของบ้านเลขที่ ${house.houseNumber} หรือไม่?`)) return;
+                            setSendingLine(house.id!);
+                            const res = await sendLineReminder(house.id!, window.location.origin);
+                            setSendingLine(null);
+                            if (res.success) {
+                              setSuccessMsg("ส่งแจ้งเตือนทาง LINE สำเร็จ!");
+                            } else {
+                              setError(res.error || "เกิดข้อผิดพลาด: " + (res.error || ""));
+                            }
+                          }}
+                          disabled={sendingLine === house.id}
+                          className="p-2 text-[#00B900] opacity-80 hover:opacity-100 hover:bg-slate-100 rounded-lg transition-colors"
+                          title="ส่งแจ้งเตือนบิลค้างชำระผ่าน LINE"
+                        >
+                          {sendingLine === house.id ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                        </button>
+                      ) : (
+                         <div className="w-[30px]" />
+                      )}
+                      <button
                         onClick={() => handleEdit(house)}
                         className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-slate-100 rounded-lg transition-colors"
-                        title="Edit"
+                        title="แก้ไขข้อมูลบ้าน"
                       >
                         <Edit2 size={14} />
                       </button>
                       <button
                         onClick={() => confirmDelete(house.id!, house.houseNumber)}
                         className="p-2 text-slate-400 hover:text-red-500 hover:bg-slate-100 rounded-lg transition-colors"
-                        title="Delete"
+                        title="ลบข้อมูลบ้าน"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -529,14 +568,26 @@ export default function HousesClient({
               <img src={qrModal.qrDataUrl} alt={`QR Code บ้าน ${qrModal.houseNumber}`} className="w-48 h-48 rounded-xl" />
             </div>
 
-            <a
+                        <a
               href={qrModal.qrDataUrl}
               download={`qrcode_house_${qrModal.houseNumber.replace(/\//g, '-')}.png`}
-              className="w-full py-3 bg-[#1F2E22] hover:bg-slate-800 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md shadow-[#1F2E22]/20"
+              className="w-full py-3 bg-[#1F2E22] hover:bg-slate-800 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md shadow-[#1F2E22]/20 mb-3"
             >
               <Download size={18} />
               บันทึกรูป QR Code
             </a>
+            
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(qrModal.url);
+                setCopiedLink(true);
+                setTimeout(() => setCopiedLink(false), 2000);
+              }}
+              className="w-full py-3 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-xl border border-slate-200 transition-colors flex items-center justify-center gap-2 shadow-sm"
+            >
+              {copiedLink ? <Check size={18} className="text-emerald-500" /> : <Copy size={18} />}
+              {copiedLink ? 'คัดลอกลิงก์สำเร็จ' : 'คัดลอกลิงก์ชำระเงิน'}
+            </button>
             
             <div className="mt-4 pt-4 border-t border-slate-100 w-full text-center">
               <a href={qrModal.url} target="_blank" className="text-xs text-blue-600 hover:underline break-all">
@@ -554,7 +605,7 @@ export default function HousesClient({
             <div className="bg-slate-50 px-6 py-4 border-b flex justify-between items-center shrink-0">
               <h3 className="font-semibold text-slate-800 text-lg flex items-center gap-2">
                 <FileText className="text-blue-600" size={20} />
-                สร้างบิลตั้งต้น
+                {initialBillPrompt.isManual ? "สร้างบิลค้างชำระแบบแมนนวล" : "สร้างบิลตั้งต้น"}
               </h3>
               {!isGeneratingBill && (
                 <button 
@@ -568,7 +619,7 @@ export default function HousesClient({
             
             <div className="p-6">
               <p className="text-slate-600 mb-6 leading-relaxed">
-                คุณต้องการสร้างบิลตั้งต้นหรือยอดยกมา สำหรับบ้านที่เพิ่งเพิ่มเข้าไปใหม่นี้เลยหรือไม่?
+                {initialBillPrompt.isManual ? "ระบุยอดเงินและประจำเดือนที่ต้องการสร้างบิลค้างชำระ (เพิ่มยอดหนี้) ให้กับบ้านหลังนี้" : "คุณต้องการสร้างบิลตั้งต้นหรือยอดยกมา สำหรับบ้านที่เพิ่งเพิ่มเข้าไปใหม่นี้เลยหรือไม่?"}
               </p>
 
               <div className="space-y-4 mb-6">
@@ -623,7 +674,7 @@ export default function HousesClient({
                 >
                   {isGeneratingBill ? (
                     <><Loader2 size={16} className="animate-spin mr-2" /> กำลังสร้าง...</>
-                  ) : "สร้างบิลตั้งต้น"}
+                  ) : initialBillPrompt.isManual ? "สร้างบิลทันที" : "สร้างบิลตั้งต้น"}
                 </button>
               </div>
             </div>
