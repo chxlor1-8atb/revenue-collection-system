@@ -181,7 +181,7 @@ export async function sendLineReminder(houseId: number, origin: string) {
 
     const mobileNumber = process.env.PROMPTPAY_MOBILE || "0000000000";
     const payload = generatePayload(mobileNumber, { amount: totalDebt });
-    const qrUrl = `${origin}/api/qr-image?payload=${encodeURIComponent(payload)}`;
+    const qrUrl = `${origin}/api/qr-image?amount=${totalDebt}&ext=.png`;
     const payUrl = `${origin}/house/${houseId}`;
 
     const flexMsg = generateBillFlexMessage(

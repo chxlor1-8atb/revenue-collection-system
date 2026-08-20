@@ -90,7 +90,7 @@ export async function GET(req: Request) {
               : monthYears.join(", ");
 
             const payload = generatePayload(mobileNumber, { amount: totalDebt });
-            const qrUrl = `${origin}/api/qr-image?payload=${encodeURIComponent(payload)}`;
+            const qrUrl = `${origin}/api/qr-image?amount=${totalDebt}&ext=.png`;
             const payUrl = `${origin}/house/${house.id}`;
 
             const flexMsg = generateBillFlexMessage(
