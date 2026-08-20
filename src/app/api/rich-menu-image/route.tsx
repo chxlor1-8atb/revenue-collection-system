@@ -174,7 +174,7 @@ export async function GET(req: NextRequest) {
                   border: `4px solid #D1D5DB`, // Subtle border
                   position: 'relative',
                   overflow: 'hidden',
-                  padding: 50,
+                  padding: 45, // Reduced padding for more internal space
                   boxShadow: `0 15px 30px rgba(0,0,0,0.05)`, // Soft shadow
                 }}
               >
@@ -191,21 +191,21 @@ export async function GET(req: NextRequest) {
                 />
 
                 {/* Top Section: Icon & Badge */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%', marginTop: 10 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
                   {/* Icon Container */}
                   <div
                     style={{
                       display: 'flex',
-                      width: 280,
-                      height: 280,
-                      borderRadius: 75,
+                      width: 220,
+                      height: 220,
+                      borderRadius: 60,
                       alignItems: 'center',
                       justifyContent: 'center',
                       background: btn.accent,
-                      boxShadow: `0 15px 30px ${btn.accent}40`,
+                      boxShadow: `0 10px 20px ${btn.accent}40`,
                     }}
                   >
-                    <svg width="170" height="170" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="130" height="130" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       {btn.iconPath}
                     </svg>
                   </div>
@@ -230,11 +230,11 @@ export async function GET(req: NextRequest) {
 
                 {/* Content Section - High Contrast Text */}
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ fontSize: 95, fontWeight: 700, color: '#111827', letterSpacing: '-1px' }}>
+                  <div style={{ fontSize: 90, fontWeight: 700, color: '#111827', letterSpacing: '-1px' }}>
                     {btn.label}
                   </div>
                   
-                  <div style={{ fontSize: 45, fontWeight: 700, color: '#4B5563', marginTop: 15 }}>
+                  <div style={{ fontSize: 40, fontWeight: 700, color: '#4B5563', marginTop: 10 }}>
                     {btn.subtitle}
                   </div>
                   
@@ -243,17 +243,17 @@ export async function GET(req: NextRequest) {
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      marginTop: 45,
+                      marginTop: 30,
                       background: btn.accent,
-                      padding: '25px 55px',
+                      padding: '18px 40px',
                       borderRadius: 100,
                       alignSelf: 'flex-start',
                     }}
                   >
-                    <span style={{ fontSize: 50, fontWeight: 700, color: 'white', marginRight: 20 }}>
+                    <span style={{ fontSize: 42, fontWeight: 700, color: 'white', marginRight: 15 }}>
                       {btn.actionText}
                     </span>
-                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M5 12h14M12 5l7 7-7 7" />
                     </svg>
                   </div>
