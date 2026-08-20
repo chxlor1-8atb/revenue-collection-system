@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useTransition, useMemo } from "react";
-import { Plus, Edit2, Trash2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Download, Upload, QrCode, X, Settings, Home, Loader2, FileText, CheckCircle2, FilePlus, Send, Copy, Check } from "lucide-react";
+import { Plus, Edit2, Trash2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Download, Upload, QrCode, X, Settings, Home, Loader2, FileText, CheckCircle2, FilePlus, Send, Copy, Check, Banknote } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import QRCode from "qrcode";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import HouseForm, { HouseData } from "./HouseForm";
 import GenerateInvoiceButton from "./GenerateInvoiceButton";
-import { deleteHouse, createInitialInvoice, sendLineReminder } from "./actions";
+import { deleteHouse, createInitialInvoice, sendLineReminder, markAllInvoicesAsPaidCash } from "./actions";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
 import CustomSelect from "@/components/CustomSelect";
 import CustomFieldsManager, { CustomField } from "./CustomFieldsManager";
