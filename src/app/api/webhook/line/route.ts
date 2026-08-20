@@ -8,6 +8,88 @@ import { verifySlipWithBuffer } from "@/lib/slip2go";
 
 import crypto from 'crypto';
 
+
+async function attemptAutoApprove(house: any, slipAmountStr: string, slipImageUrl: string, transRef: string | null = null): Promise<{ success: boolean; newTxId?: number; totalDebt?: number }> {
+  try {
+    const slipValue = parseFloat(slipAmountStr);
+    const defaultBill = parseFloat(house.defaultBillingAmount || "20");
+    
+    const unpaidInvoices = await db.select().from(invoices).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
+    const totalDebt = unpaidInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
+    
+    let isMatch = false;
+    let advanceMonthsCount = 0;
+    
+    if (Math.abs(slipValue - totalDebt) < 0.01) {
+      isMatch = true; // Exact match
+    } else if (slipValue > totalDebt && defaultBill > 0) {
+      const overpayAmount = slipValue - totalDebt;
+      const remainder = overpayAmount % defaultBill;
+      if (remainder < 0.01 || Math.abs(remainder - defaultBill) < 0.01) {
+        isMatch = true; // Advance match
+        advanceMonthsCount = Math.round(overpayAmount / defaultBill);
+      }
+    } else if (totalDebt === 0 && defaultBill > 0 && slipValue > 0) {
+      const remainder = slipValue % defaultBill;
+      if (remainder < 0.01 || Math.abs(remainder - defaultBill) < 0.01) {
+        isMatch = true;
+        advanceMonthsCount = Math.round(slipValue / defaultBill);
+      }
+    }
+
+    if (!isMatch) {
+      return { success: false, totalDebt };
+    }
+
+    // CREATE TRANSACTION
+    const newTx = await db.insert(transactions).values({
+      amount: slipAmountStr,
+      amountClaimedByPayer: slipAmountStr,
+      slipImageUrl: slipImageUrl,
+      slipStatus: "verified",
+      slipRefId: transRef,
+      paidAt: new Date(),
+      verifiedBy: "line_bot_auto",
+    }).returning();
+
+    const txId = newTx[0].id;
+
+    // MARK EXISTING INVOICES AS PAID
+    if (unpaidInvoices.length > 0) {
+      await db.update(invoices).set({ status: 'paid', transactionId: txId }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
+    }
+
+    // GENERATE ADVANCE INVOICES
+    if (advanceMonthsCount > 0) {
+      let lastMonthDate = new Date();
+      const latestInvoiceList = await db.select().from(invoices).where(eq(invoices.houseId, house.id)).orderBy(desc(invoices.monthYear)).limit(1);
+      if (latestInvoiceList.length > 0) {
+        const [year, month] = latestInvoiceList[0].monthYear.split("-");
+        lastMonthDate = new Date(parseInt(year), parseInt(month) - 1, 1);
+      }
+      
+      for (let i = 1; i <= advanceMonthsCount; i++) {
+        const advanceDate = new Date(lastMonthDate);
+        advanceDate.setMonth(advanceDate.getMonth() + i);
+        const advanceMonthYear = `${advanceDate.getFullYear()}-${String(advanceDate.getMonth() + 1).padStart(2, "0")}`;
+        
+        await db.insert(invoices).values({
+          houseId: house.id,
+          amount: defaultBill.toString(),
+          status: 'paid', // immediately paid
+          monthYear: advanceMonthYear,
+          transactionId: txId
+        });
+      }
+    }
+
+    return { success: true, newTxId: txId, totalDebt };
+  } catch (error) {
+    console.error("Auto approve error:", error);
+    return { success: false, totalDebt: 0 };
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const textBody = await request.text();
@@ -394,7 +476,7 @@ export async function POST(request: Request) {
                 flexMsg,
                 {
                   type: "text",
-                  text: `✅ ระบบได้ทำการตัดยอดหนี้ ${totalDebt} บาท สำหรับบ้านเลขที่ ${house.houseNumber} ให้เรียบร้อยแล้วค่ะ ขอบคุณที่ใช้บริการ 💚`
+                  text: `✅ ระบบได้ทำการตัดยอด ${parseFloat(slipAmount)} บาท สำหรับบ้านเลขที่ ${house.houseNumber} ให้เรียบร้อยแล้วค่ะ ขอบคุณที่ใช้บริการ 💚`
                 }
               ]);
               continue;
