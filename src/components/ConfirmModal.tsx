@@ -1,7 +1,7 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
 
-interface ConfirmModalProps {
+export interface ConfirmModalProps {
   isOpen: boolean;
   title: string;
   description: React.ReactNode;
@@ -9,8 +9,9 @@ interface ConfirmModalProps {
   warningText?: string;
   cancelText?: string;
   confirmText?: string;
-  onConfirm: () => void;
-  onCancel: () => void;
+  onConfirm: () => void | Promise<void>;
+  onCancel?: () => void;
+  onClose?: () => void;
   isLoading?: boolean;
 }
 
@@ -24,9 +25,12 @@ export default function ConfirmModal({
   confirmText = "ใช่, ดำเนินการ",
   onConfirm,
   onCancel,
+  onClose,
   isLoading = false
 }: ConfirmModalProps) {
   if (!isOpen) return null;
+
+  const handleCancel = onCancel || onClose || (() => {});
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -56,7 +60,7 @@ export default function ConfirmModal({
 
         <div className="flex flex-col sm:flex-row gap-4 mt-2 justify-between">
           <button
-            onClick={onCancel}
+            onClick={handleCancel}
             disabled={isLoading}
             className="w-full sm:w-1/2 px-4 py-3 bg-[#0D1F23] hover:bg-slate-800 text-white font-medium transition-colors"
           >
