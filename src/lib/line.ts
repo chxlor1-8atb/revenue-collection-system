@@ -268,7 +268,7 @@ export function generateReceiptFlexMessage(
   paidAt?: Date | null,
   slipUrl?: string | null
 ): any {
-  const paidDateStr = paidAt ? new Date(paidAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : "-";
+  const paidDateStr = paidAt ? new Date(paidAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Bangkok' }) : "-";
   
   const footerContents: any[] = [];
   

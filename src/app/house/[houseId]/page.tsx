@@ -50,7 +50,8 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
     if (!date) return "";
     return date.toLocaleDateString('th-TH', { 
       year: 'numeric', month: 'short', day: 'numeric',
-      hour: '2-digit', minute: '2-digit'
+      hour: '2-digit', minute: '2-digit',
+      timeZone: 'Asia/Bangkok'
     });
   };
 
