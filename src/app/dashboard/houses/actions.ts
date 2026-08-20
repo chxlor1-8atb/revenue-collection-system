@@ -243,3 +243,37 @@ export async function markInvoiceAsPaidCash(invoiceId: number) {
     return { success: false, error: error.message || "เกิดข้อผิดพลาด" };
   }
 }
+
+export async function markAllInvoicesAsPaidCash(houseId: number) {
+  try {
+    const unpaidInvoices = await db.select().from(invoices).where(and(eq(invoices.houseId, houseId), eq(invoices.status, 'unpaid')));
+    if (unpaidInvoices.length === 0) return { success: false, error: "ไม่มีบิลค้างชำระ" };
+    
+    const totalDebt = unpaidInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
+
+    const houseData = await db.select().from(houses).where(eq(houses.id, houseId)).limit(1);
+    if (houseData.length === 0) return { success: false, error: "ไม่พบบ้าน" };
+
+    // Create a transaction for cash
+    const tx = await db.insert(transactions).values({
+      amount: totalDebt.toString(),
+      slipStatus: 'verified',
+      slipImageUrl: 'cash',
+      paidAt: new Date(),
+      verifiedBy: 'admin_cash',
+      payerNote: 'รับชำระเงินสด (ทั้งหมด)'
+    }).returning({ id: transactions.id });
+
+    // Update invoices
+    await db.update(invoices).set({
+      status: 'paid',
+      transactionId: tx[0].id,
+      updatedAt: new Date(),
+    }).where(and(eq(invoices.houseId, houseId), eq(invoices.status, 'unpaid')));
+
+    return { success: true, transactionId: tx[0].id };
+  } catch (error: any) {
+    console.error("Failed to mark all invoices as paid (cash):", error);
+    return { success: false, error: error.message || "เกิดข้อผิดพลาด" };
+  }
+}

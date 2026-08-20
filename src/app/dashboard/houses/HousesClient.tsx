@@ -386,7 +386,25 @@ export default function HousesClient({
                   <td className="px-4 py-4 text-right">
                     <div className="flex items-center justify-end gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                             <button
-                        onClick={() => openQrModal(house)}
+                        onClick={async () => {
+                          if (!confirm(`ต้องการรับชำระเงินสด สำหรับบิลค้างชำระทั้งหมดของบ้านเลขที่ ${house.houseNumber} หรือไม่?`)) return;
+                          const res = await markAllInvoicesAsPaidCash(house.id!);
+                          if (res.success) {
+                            setSuccessMsg("รับชำระเงินสดสำเร็จ!");
+                            setTimeout(() => {
+                              setSuccessMsg("");
+                              window.location.reload();
+                            }, 1500);
+                          } else {
+                            alert(res.error || "เกิดข้อผิดพลาด");
+                          }
+                        }}
+                        className="p-2 text-slate-400 hover:text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors"
+                        title="รับชำระเงินสด (ทั้งหมด)"
+                      >
+                        <Banknote size={14} />
+                      </button>
+                      <button onClick={() => openQrModal(house)}
                         className="p-2 text-slate-400 hover:text-[#5B58F2] hover:bg-slate-100 rounded-lg transition-colors"
                         title="QR Code & ลิงก์ชำระเงิน"
                       >
