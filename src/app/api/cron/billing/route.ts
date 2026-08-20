@@ -3,7 +3,20 @@ import { db } from '@/lib/db';
 import { houses, invoices, systemSettings } from '@/lib/schema';
 import { eq, and } from 'drizzle-orm';
 import { generateBillFlexMessage, pushMessage } from '@/lib/line';
-import { formatThaiMonthYear } from '@/lib/utils';
+
+function formatThaiMonthYear(monthYear: string) {
+  const thaiMonths = [
+    "", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", 
+    "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", 
+    "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+  ];
+  const parts = monthYear.split("-");
+  if (parts.length !== 2) return monthYear;
+  const year = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10);
+  if (isNaN(year) || isNaN(month) || month < 1 || month > 12) return monthYear;
+  return `${thaiMonths[month]} ${year + 543}`;
+}
 const generatePayload = require("promptpay-qr");
 
 export const dynamic = 'force-dynamic';
@@ -73,12 +86,12 @@ export async function GET(req: Request) {
             
             const monthYears = unpaidInvoices.map(inv => formatThaiMonthYear(inv.monthYear));
             const combinedMonthYearStr = monthYears.length > 2 
-              ? \`\${monthYears[0]} - \${monthYears[monthYears.length - 1]}\` 
+              ? `${monthYears[0]} - ${monthYears[monthYears.length - 1]}` 
               : monthYears.join(", ");
 
             const payload = generatePayload(mobileNumber, { amount: totalDebt });
-            const qrUrl = \`\${origin}/api/qr-image?payload=\${encodeURIComponent(payload)}\`;
-            const payUrl = \`\${origin}/house/\${house.id}\`;
+            const qrUrl = `${origin}/api/qr-image?payload=${encodeURIComponent(payload)}`;
+            const payUrl = `${origin}/house/${house.id}`;
 
             const flexMsg = generateBillFlexMessage(
               house.houseNumber,
@@ -91,7 +104,7 @@ export async function GET(req: Request) {
             await pushMessage(house.lineUserId, [
               {
                 type: "text",
-                text: \`สวัสดีค่ะ 💚 แจ้งบิลค่าธรรมเนียมเก็บขนมูลฝอยรอบใหม่ สำหรับบ้านเลขที่ \${house.houseNumber} มาแล้วค่ะ\\n\\nสามารถตรวจสอบรายละเอียดและชำระเงินได้ที่ลิงก์ด้านล่างนี้นะคะ 🙏\`
+                text: `สวัสดีค่ะ 💚 แจ้งบิลค่าธรรมเนียมเก็บขนมูลฝอยรอบใหม่ สำหรับบ้านเลขที่ ${house.houseNumber} มาแล้วค่ะ\n\nสามารถตรวจสอบรายละเอียดและชำระเงินได้ที่ลิงก์ด้านล่างนี้นะคะ 🙏`
               },
               flexMsg
             ]);
@@ -100,7 +113,7 @@ export async function GET(req: Request) {
             // Sleep 50ms to prevent LINE rate limit (max 100,000 push/min but still good to throttle slightly)
             await new Promise(r => setTimeout(r, 50));
           } catch (e) {
-            console.error(\`Failed to send LINE message to \${house.houseNumber}\`, e);
+            console.error(`Failed to send LINE message to ${house.houseNumber}`, e);
           }
         }
       }
@@ -108,7 +121,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      message: \`Auto-billing completed. Created \${createdCount} bills and pushed \${pushedCount} LINE messages.\` 
+      message: `Auto-billing completed. Created ${createdCount} bills and pushed ${pushedCount} LINE messages.` 
     });
 
   } catch (error: any) {

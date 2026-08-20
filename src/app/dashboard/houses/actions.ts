@@ -145,7 +145,21 @@ export async function createInitialInvoice(houseId: number, monthYear: string, a
 
 const generatePayload = require("promptpay-qr");
 import { generateBillFlexMessage, pushMessage } from "@/lib/line";
-import { formatThaiMonthYear } from "@/lib/utils";
+
+function formatThaiMonthYear(monthYear: string) {
+  const thaiMonths = [
+    "", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", 
+    "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", 
+    "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+  ];
+  const parts = monthYear.split("-");
+  if (parts.length !== 2) return monthYear;
+  const year = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10);
+  if (isNaN(year) || isNaN(month) || month < 1 || month > 12) return monthYear;
+  return `${thaiMonths[month]} ${year + 543}`;
+}
+
 
 export async function sendLineReminder(houseId: number, origin: string) {
   try {
