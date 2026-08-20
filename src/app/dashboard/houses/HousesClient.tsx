@@ -47,6 +47,9 @@ export default function HousesClient({
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [deletingHouse, setDeletingHouse] = useState<{ id: number; houseNumber: string } | null>(null);
+  const [confirmCashHouse, setConfirmCashHouse] = useState<{ id: number; houseNumber: string } | null>(null);
+  const [isCashing, setIsCashing] = useState(false);
+  const [confirmLineHouse, setConfirmLineHouse] = useState<{ id: number; houseNumber: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
