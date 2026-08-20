@@ -656,7 +656,61 @@ export default function HousesClient({
           </div>
         </div>
       )}
-    </div>
+    
+      {/* QR Code Modal JSX */}
+      {qrModal && qrModal.isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setQrModal(null)}>
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden p-8 flex flex-col items-center animate-in zoom-in-95 duration-200 relative" onClick={e => e.stopPropagation()}>
+            <button 
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 p-2 rounded-full transition-colors"
+              onClick={() => setQrModal(null)}
+            >
+              <X size={20} />
+            </button>
+            
+            <div className="w-16 h-16 bg-[#1F2E22] text-white rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-[#1F2E22]/20">
+              <QrCode size={32} />
+            </div>
+            
+            <h3 className="text-2xl font-bold text-center text-slate-800 mb-1">
+              บ้านเลขที่ {qrModal.houseNumber}
+            </h3>
+            <p className="text-slate-500 text-sm mb-6 text-center">สแกนเพื่อเข้าสู่หน้าชำระเงินของบ้านหลังนี้</p>
+            
+            <div className="bg-white p-2 rounded-2xl border-2 border-slate-100 shadow-sm mb-6">
+              <img src={qrModal.qrDataUrl} alt={`QR Code บ้าน ${qrModal.houseNumber}`} className="w-48 h-48 rounded-xl" />
+            </div>
+
+            <a
+              href={qrModal.qrDataUrl}
+              download={`qrcode_house_${qrModal.houseNumber.replace(/\//g, '-')}.png`}
+              className="w-full py-3 bg-[#1F2E22] hover:bg-slate-800 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md shadow-[#1F2E22]/20 mb-3"
+            >
+              <Download size={18} />
+              บันทึกรูป QR Code
+            </a>
+            
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(qrModal.url);
+                setCopiedLink(true);
+                setTimeout(() => setCopiedLink(false), 2000);
+              }}
+              className="w-full py-3 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-xl border border-slate-200 transition-colors flex items-center justify-center gap-2 shadow-sm"
+            >
+              {copiedLink ? <Check size={18} className="text-emerald-500" /> : <Copy size={18} />}
+              {copiedLink ? 'คัดลอกลิงก์สำเร็จ' : 'คัดลอกลิงก์ชำระเงิน'}
+            </button>
+            
+            <div className="mt-4 pt-4 border-t border-slate-100 w-full text-center">
+              <a href={qrModal.url} target="_blank" className="text-xs text-blue-600 hover:underline break-all">
+                {qrModal.url}
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+</div>
   );
 }
 
