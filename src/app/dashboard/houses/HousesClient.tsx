@@ -15,6 +15,7 @@ import CustomFieldsManager, { CustomField } from "./CustomFieldsManager";
 import TablePagination from "@/components/TablePagination";
 import MonthPicker from "@/components/MonthPicker";
 import ConfirmModal from "@/components/ConfirmModal";
+import LineSendingModal from "@/components/LineSendingModal";
 
 export default function HousesClient({ 
   initialHouses,
@@ -61,6 +62,7 @@ export default function HousesClient({
   // Initial Bill Prompt State
   const [initialBillPrompt, setInitialBillPrompt] = useState<{ isOpen: boolean; houseId: number; monthYear: string; amount: string; isManual?: boolean; type?: string; title?: string } | null>(null);
   const [sendingLine, setSendingLine] = useState<number | null>(null);
+  const [lineSendModal, setLineSendModal] = useState<{ isOpen: boolean; phase: "sending" | "success" | "error"; houseNumber: string; errorMsg?: string }>({ isOpen: false, phase: "sending", houseNumber: "" });
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
   const [isGeneratingBill, setIsGeneratingBill] = useState(false);
 
@@ -287,16 +289,20 @@ export default function HousesClient({
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-xl text-sm border border-red-100 shadow-sm flex items-start gap-3">
-          <div className="mt-0.5">⚠️</div>
-          <div>{error}</div>
+        <div className="mb-6 p-3.5 bg-red-50 text-red-700 rounded-lg text-sm border border-red-200 flex items-center gap-2.5">
+          <div className="w-5 h-5 bg-red-100 rounded-full flex items-center justify-center shrink-0">
+            <X size={12} className="text-red-600" />
+          </div>
+          <span className="font-medium">{error}</span>
         </div>
       )}
 
       {successMsg && (
-        <div className="mb-6 p-4 bg-emerald-50 text-emerald-700 rounded-xl text-sm border border-emerald-100 shadow-sm flex items-start gap-3">
-          <div className="mt-0.5">✅</div>
-          <div>{successMsg}</div>
+        <div className="mb-6 p-3.5 bg-emerald-50 text-emerald-700 rounded-lg text-sm border border-emerald-200 flex items-center gap-2.5">
+          <div className="w-5 h-5 bg-emerald-100 rounded-full flex items-center justify-center shrink-0">
+            <CheckCircle2 size={12} className="text-emerald-600" />
+          </div>
+          <span className="font-medium">{successMsg}</span>
         </div>
       )}
 
@@ -559,18 +565,28 @@ export default function HousesClient({
         onConfirm={async () => {
           if (!confirmLineHouse) return;
           const id = confirmLineHouse.id;
+          const hn = confirmLineHouse.houseNumber;
           setConfirmLineHouse(null);
           setSendingLine(id);
+          setLineSendModal({ isOpen: true, phase: "sending", houseNumber: hn });
           const res = await sendLineReminder(id, window.location.origin);
           setSendingLine(null);
           if (res.success) {
-            setSuccessMsg("ส่งแจ้งเตือนทาง LINE สำเร็จ!");
-            setTimeout(() => setSuccessMsg(""), 3000);
+            setLineSendModal({ isOpen: true, phase: "success", houseNumber: hn });
           } else {
-            alert(res.error || "เกิดข้อผิดพลาด");
+            setLineSendModal({ isOpen: true, phase: "error", houseNumber: hn, errorMsg: res.error || "เกิดข้อผิดพลาดในการส่งแจ้งเตือน" });
           }
         }}
         onCancel={() => setConfirmLineHouse(null)}
+      />
+
+      {/* LINE Sending Animation Modal */}
+      <LineSendingModal
+        isOpen={lineSendModal.isOpen}
+        phase={lineSendModal.phase}
+        houseNumber={lineSendModal.houseNumber}
+        errorMsg={lineSendModal.errorMsg}
+        onClose={() => setLineSendModal({ isOpen: false, phase: "sending", houseNumber: "" })}
       />
 
       {/* Initial Bill Prompt Modal */}
