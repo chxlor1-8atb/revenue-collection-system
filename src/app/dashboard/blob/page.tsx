@@ -28,6 +28,7 @@ export default function BlobManagementPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDirection }>({ key: 'uploadedAt', direction: 'desc' });
   const [actionProgress, setActionProgress] = useState<string | null>(null);
+  const [confirmDeleteModal, setConfirmDeleteModal] = useState<{mode: string, extraData?: any} | null>(null);
   const [deleteResult, setDeleteResult] = useState<{ count: number; mode: string } | null>(null);
 
   const fetchFiles = useCallback(async (append = false) => {
@@ -131,7 +132,11 @@ export default function BlobManagementPage() {
       old: `คุณต้องการลบไฟล์ที่เก่ากว่า ${extraData?.days || 30} วันใช่ไหม? \n(การลบจะค่อยๆ ลบทีละชุดเพื่อไม่ให้ระบบค้าง)`,
       rejected: 'คุณต้องการลบสลิปที่ตรวจสอบไม่ผ่านทั้งหมดใช่ไหม? \n(การลบจะค่อยๆ ลบทีละชุด)',
     };
-    if (!confirm(confirmMessages[mode] || 'ยืนยันการลบ?')) return;
+    if (!confirmDeleteModal || confirmDeleteModal.mode !== mode) {
+      setConfirmDeleteModal({ mode, extraData });
+      return;
+    }
+    setConfirmDeleteModal(null);
 
     setActionProgress('กำลังเตรียมการลบ...');
     setDeleteResult(null);

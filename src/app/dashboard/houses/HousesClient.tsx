@@ -14,6 +14,7 @@ import CustomSelect from "@/components/CustomSelect";
 import CustomFieldsManager, { CustomField } from "./CustomFieldsManager";
 import TablePagination from "@/components/TablePagination";
 import MonthPicker from "@/components/MonthPicker";
+import ConfirmModal from "@/components/ConfirmModal";
 
 export default function HousesClient({ 
   initialHouses,
@@ -386,19 +387,7 @@ export default function HousesClient({
                   <td className="px-4 py-4 text-right">
                     <div className="flex items-center justify-end gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                             <button
-                        onClick={async () => {
-                          if (!confirm(`ต้องการรับชำระเงินสด สำหรับบิลค้างชำระทั้งหมดของบ้านเลขที่ ${house.houseNumber} หรือไม่?`)) return;
-                          const res = await markAllInvoicesAsPaidCash(house.id!);
-                          if (res.success) {
-                            setSuccessMsg("รับชำระเงินสดสำเร็จ!");
-                            setTimeout(() => {
-                              setSuccessMsg("");
-                              window.location.reload();
-                            }, 1500);
-                          } else {
-                            alert(res.error || "เกิดข้อผิดพลาด");
-                          }
-                        }}
+                        onClick={() => setConfirmCashHouse({ id: house.id!, houseNumber: house.houseNumber })}
                         className="p-2 text-slate-400 hover:text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors"
                         title="รับชำระเงินสด (ทั้งหมด)"
                       >
@@ -427,17 +416,7 @@ export default function HousesClient({
                       </button>
                       {(house as any).lineUserId ? (
                         <button
-                          onClick={async () => {
-                            if (!confirm(`ต้องการส่งแจ้งเตือนยอดค้างชำระไปที่ LINE ของบ้านเลขที่ ${house.houseNumber} หรือไม่?`)) return;
-                            setSendingLine(house.id!);
-                            const res = await sendLineReminder(house.id!, window.location.origin);
-                            setSendingLine(null);
-                            if (res.success) {
-                              setSuccessMsg("ส่งแจ้งเตือนทาง LINE สำเร็จ!");
-                            } else {
-                              setError(res.error || "เกิดข้อผิดพลาด: " + (res.error || ""));
-                            }
-                          }}
+                          onClick={() => setConfirmLineHouse({ id: house.id!, houseNumber: house.houseNumber })}
                           disabled={sendingLine === house.id}
                           className="p-2 text-[#00B900] opacity-80 hover:opacity-100 hover:bg-slate-100 rounded-lg transition-colors"
                           title="ส่งแจ้งเตือนบิลค้างชำระผ่าน LINE"
@@ -527,94 +506,69 @@ export default function HousesClient({
       )}
 
       {/* Delete Confirmation Modal */}
-      {deletingHouse && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200 p-6">
-            <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4">
-              <Trash2 size={24} />
-            </div>
-            <h3 className="text-xl font-bold text-center text-slate-800 mb-2">
-              ยืนยันการลบ
-            </h3>
-            <p className="text-center text-slate-600 mb-2">
-              คุณต้องการลบข้อมูลบ้านเลขที่ <strong className="text-slate-900">{deletingHouse.houseNumber}</strong> ใช่หรือไม่?
-            </p>
-            <p className="text-center text-xs text-red-500 mb-6 bg-red-50 p-2 rounded-lg">
-              *จะลบได้ก็ต่อเมื่อไม่มีบิลค้างอยู่ในระบบเท่านั้น
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setDeletingHouse(null)}
-                disabled={isDeleting}
-                className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition-colors disabled:opacity-50"
-              >
-                ยกเลิก
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl transition-colors flex items-center justify-center disabled:opacity-50"
-              >
-                {isDeleting ? "กำลังลบ..." : "ลบข้อมูล"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmModal 
+        isOpen={!!deletingHouse}
+        title="ยืนยันการลบข้อมูลบ้าน"
+        description={<>คุณต้องการลบข้อมูลบ้านเลขที่ <strong className="text-slate-900">{deletingHouse?.houseNumber}</strong> ใช่หรือไม่?</>}
+        warningText="จะลบได้ก็ต่อเมื่อไม่มีบิลค้างอยู่ในระบบเท่านั้น ข้อมูลที่ถูกลบจะไม่สามารถกู้คืนได้"
+        confirmText="ใช่, ลบข้อมูล"
+        onConfirm={handleDelete}
+        onCancel={() => setDeletingHouse(null)}
+        isLoading={isDeleting}
+      />
 
-      {/* QR Code Modal */}
-      {qrModal && qrModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setQrModal(null)}>
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden p-8 flex flex-col items-center animate-in zoom-in-95 duration-200 relative" onClick={e => e.stopPropagation()}>
-            <button 
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 p-2 rounded-full transition-colors"
-              onClick={() => setQrModal(null)}
-            >
-              <X size={20} />
-            </button>
-            
-            <div className="w-16 h-16 bg-[#1F2E22] text-white rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-[#1F2E22]/20">
-              <QrCode size={32} />
-            </div>
-            
-            <h3 className="text-2xl font-bold text-center text-slate-800 mb-1">
-              บ้านเลขที่ {qrModal.houseNumber}
-            </h3>
-            <p className="text-slate-500 text-sm mb-6 text-center">สแกนเพื่อเข้าสู่หน้าชำระเงินของบ้านหลังนี้</p>
-            
-            <div className="bg-white p-2 rounded-2xl border-2 border-slate-100 shadow-sm mb-6">
-              <img src={qrModal.qrDataUrl} alt={`QR Code บ้าน ${qrModal.houseNumber}`} className="w-48 h-48 rounded-xl" />
-            </div>
+      {/* Confirm Cash Modal */}
+      <ConfirmModal 
+        isOpen={!!confirmCashHouse}
+        title="ยืนยันรับชำระเงินสด"
+        description={<>คุณต้องการรับชำระเงินสด สำหรับบิลค้างชำระทั้งหมดของบ้านเลขที่ <strong className="text-slate-900">{confirmCashHouse?.houseNumber}</strong> ใช่หรือไม่?</>}
+        warningTitle="โปรดตรวจสอบยอดเงิน"
+        warningText="การดำเนินการนี้จะเคลียร์บิลค้างชำระทั้งหมดของบ้านหลังนี้เป็น 'จ่ายแล้ว' ทันที"
+        confirmText="ใช่, รับชำระเงิน"
+        onConfirm={async () => {
+          if (!confirmCashHouse) return;
+          setIsCashing(true);
+          const res = await markAllInvoicesAsPaidCash(confirmCashHouse.id);
+          setIsCashing(false);
+          setConfirmCashHouse(null);
+          if (res.success) {
+            setSuccessMsg("รับชำระเงินสดสำเร็จ!");
+            setTimeout(() => {
+              setSuccessMsg("");
+              window.location.reload();
+            }, 1500);
+          } else {
+            alert(res.error || "เกิดข้อผิดพลาด");
+          }
+        }}
+        onCancel={() => setConfirmCashHouse(null)}
+        isLoading={isCashing}
+      />
 
-                        <a
-              href={qrModal.qrDataUrl}
-              download={`qrcode_house_${qrModal.houseNumber.replace(/\//g, '-')}.png`}
-              className="w-full py-3 bg-[#1F2E22] hover:bg-slate-800 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md shadow-[#1F2E22]/20 mb-3"
-            >
-              <Download size={18} />
-              บันทึกรูป QR Code
-            </a>
-            
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(qrModal.url);
-                setCopiedLink(true);
-                setTimeout(() => setCopiedLink(false), 2000);
-              }}
-              className="w-full py-3 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-xl border border-slate-200 transition-colors flex items-center justify-center gap-2 shadow-sm"
-            >
-              {copiedLink ? <Check size={18} className="text-emerald-500" /> : <Copy size={18} />}
-              {copiedLink ? 'คัดลอกลิงก์สำเร็จ' : 'คัดลอกลิงก์ชำระเงิน'}
-            </button>
-            
-            <div className="mt-4 pt-4 border-t border-slate-100 w-full text-center">
-              <a href={qrModal.url} target="_blank" className="text-xs text-blue-600 hover:underline break-all">
-                {qrModal.url}
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Confirm Line Modal */}
+      <ConfirmModal 
+        isOpen={!!confirmLineHouse}
+        title="ยืนยันการส่งแจ้งเตือน"
+        description={<>คุณต้องการส่งแจ้งเตือนยอดค้างชำระไปที่ LINE ของบ้านเลขที่ <strong className="text-slate-900">{confirmLineHouse?.houseNumber}</strong> ใช่หรือไม่?</>}
+        warningTitle="การแจ้งเตือน"
+        warningText="ระบบจะส่งข้อความแจ้งเตือนพร้อม QR Code ชำระเงินไปยัง LINE ของลูกบ้าน"
+        confirmText="ใช่, ส่งแจ้งเตือน"
+        onConfirm={async () => {
+          if (!confirmLineHouse) return;
+          const id = confirmLineHouse.id;
+          setConfirmLineHouse(null);
+          setSendingLine(id);
+          const res = await sendLineReminder(id, window.location.origin);
+          setSendingLine(null);
+          if (res.success) {
+            setSuccessMsg("ส่งแจ้งเตือนทาง LINE สำเร็จ!");
+            setTimeout(() => setSuccessMsg(""), 3000);
+          } else {
+            alert(res.error || "เกิดข้อผิดพลาด");
+          }
+        }}
+        onCancel={() => setConfirmLineHouse(null)}
+      />
 
       {/* Initial Bill Prompt Modal */}
       {initialBillPrompt && initialBillPrompt.isOpen && (

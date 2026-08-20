@@ -1,83 +1,79 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { AlertTriangle, Loader2 } from "lucide-react";
-import { ReactNode } from "react";
+import React from 'react';
+import { AlertTriangle } from 'lucide-react';
 
 interface ConfirmModalProps {
   isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
   title: string;
-  description: ReactNode;
-  warningText?: ReactNode;
+  description: React.ReactNode;
+  warningTitle?: string;
+  warningText?: string;
   cancelText?: string;
   confirmText?: string;
+  onConfirm: () => void;
+  onCancel: () => void;
   isLoading?: boolean;
 }
 
 export default function ConfirmModal({
   isOpen,
-  onClose,
-  onConfirm,
   title,
   description,
+  warningTitle = "คำเตือน",
   warningText,
-  cancelText = "No, Cancel",
-  confirmText = "Yes, Confirm",
-  isLoading = false,
+  cancelText = "ไม่ใช่, ยกเลิก",
+  confirmText = "ใช่, ดำเนินการ",
+  onConfirm,
+  onCancel,
+  isLoading = false
 }: ConfirmModalProps) {
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-slate-900/40 backdrop-blur-sm">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ duration: 0.2 }}
-            className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden font-sans"
-          >
-            <div className="p-8 pb-8 text-center">
-              <h3 className="text-xl font-bold text-black mb-4 tracking-wide">
-                {title}
-              </h3>
-              
-              <div className="text-slate-800 mb-6 text-[15px]">
-                {description}
-              </div>
-              
-              {warningText && (
-                <div className="bg-[#FDECE3] border-l-4 border-[#F05A2B] text-left p-4 mb-8">
-                  <div className="flex items-center gap-2 text-[#9B371F] font-bold mb-1.5">
-                    <AlertTriangle size={18} strokeWidth={2.5} />
-                    <span>Warning</span>
-                  </div>
-                  <div className="text-[#9B371F] text-sm leading-relaxed pr-2 opacity-90">
-                    {warningText}
-                  </div>
-                </div>
-              )}
+  if (!isOpen) return null;
 
-              <div className="flex justify-between gap-4 mt-2">
-                <button
-                  disabled={isLoading}
-                  onClick={onClose}
-                  className="flex-1 py-2.5 px-4 font-semibold text-white bg-[#0B1E19] hover:bg-[#15342c] transition-colors disabled:opacity-50"
-                >
-                  {cancelText}
-                </button>
-                <button
-                  disabled={isLoading}
-                  onClick={onConfirm}
-                  className="flex-1 py-2.5 px-4 font-semibold text-black bg-white border border-black hover:bg-slate-50 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                  {isLoading && <Loader2 size={16} className="animate-spin" />}
-                  {confirmText}
-                </button>
-              </div>
-            </div>
-          </motion.div>
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div 
+        className="bg-white rounded-xl shadow-2xl w-full max-w-[450px] overflow-hidden p-8 animate-in zoom-in-95 duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className="text-xl font-bold text-center text-slate-900 mb-4">
+          {title}
+        </h3>
+        
+        <div className="text-center text-slate-800 font-medium mb-5 text-[15px]">
+          {description}
         </div>
-      )}
-    </AnimatePresence>
+
+        {warningText && (
+          <div className="bg-[#FFF1E5] p-4 border-l-4 border-[#C73C27] mb-6 rounded-r-md">
+            <div className="flex items-center gap-2 text-[#9A2B1B] font-bold mb-1">
+              <AlertTriangle size={18} className="shrink-0" />
+              <span>{warningTitle}</span>
+            </div>
+            <p className="text-[#9A2B1B] text-sm leading-relaxed">
+              {warningText}
+            </p>
+          </div>
+        )}
+
+        <div className="flex flex-col sm:flex-row gap-4 mt-2 justify-between">
+          <button
+            onClick={onCancel}
+            disabled={isLoading}
+            className="w-full sm:w-1/2 px-4 py-3 bg-[#0D1F23] hover:bg-slate-800 text-white font-medium transition-colors"
+          >
+            {cancelText}
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={isLoading}
+            className="w-full sm:w-1/2 px-4 py-3 bg-white border border-[#0D1F23] text-[#0D1F23] hover:bg-slate-50 font-medium transition-colors flex justify-center items-center gap-2"
+          >
+            {isLoading ? (
+              <span className="w-5 h-5 border-2 border-[#0D1F23] border-t-transparent rounded-full animate-spin shrink-0"></span>
+            ) : null}
+            {confirmText}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

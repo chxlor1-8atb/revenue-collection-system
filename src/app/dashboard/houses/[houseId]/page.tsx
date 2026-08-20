@@ -136,7 +136,7 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
                           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-600 border border-red-200">
                             <AlertCircle size={12} /> ค้างชำระ
                           </span>
-                          <CashPaymentButton invoiceId={inv.id} />
+                          <CashPaymentButton invoiceId={inv.id} monthYear={inv.monthYear} />
                         </div>
                       )}
                     </td>

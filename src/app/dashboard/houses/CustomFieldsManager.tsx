@@ -25,6 +25,7 @@ export default function CustomFieldsManager({ onClose, onUpdate }: CustomFieldsM
   const [fields, setFields] = useState<CustomField[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [fieldToDelete, setFieldToDelete] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   
   // Temporary edit state
@@ -81,9 +82,7 @@ export default function CustomFieldsManager({ onClose, onUpdate }: CustomFieldsM
       alert("ไม่สามารถลบฟิลด์ระบบได้ (แต่สามารถซ่อนได้)");
       return;
     }
-    if (confirm(`คุณต้องการลบฟิลด์ "${field?.name}" ใช่หรือไม่? ข้อมูลในฟิลด์นี้ของบ้านทุกหลังจะหายไป`)) {
-      setFields(fields.filter(f => f.id !== id));
-    }
+    setFieldToDelete(id);
   };
 
   const toggleHidden = (id: string) => {
