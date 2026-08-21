@@ -16,17 +16,18 @@ async function run() {
       await client.deleteRichMenu(m.richMenuId);
     }
     
-    console.log('Creating new Numbered Rich Menu with Keyboard at 04...');
+    console.log('Creating new Numbered Rich Menu with Non-clickable Slot 4...');
     const richMenu = {
       size: { width: 2500, height: 1686 },
       selected: true,
       name: 'Main Menu',
       chatBarText: 'เมนูหลัก',
       areas: [
+        // Top Row
         { bounds: { x: 0, y: 0, width: 833, height: 843 }, action: { type: 'message', text: 'เช็คบิล' } },
         { bounds: { x: 833, y: 0, width: 834, height: 843 }, action: { type: 'message', text: 'ใบเสร็จ' } },
         { bounds: { x: 1667, y: 0, width: 833, height: 843 }, action: { type: 'message', text: 'ข้อมูลของฉัน' } },
-        { bounds: { x: 0, y: 843, width: 833, height: 843 }, action: { type: 'message', text: 'พิมพ์ข้อความ' } },
+        // Bottom Row (Skip x:0, y:843 which is Slot 4)
         { bounds: { x: 833, y: 843, width: 834, height: 843 }, action: { type: 'message', text: 'วิธีใช้งาน' } },
         { bounds: { x: 1667, y: 843, width: 833, height: 843 }, action: { type: 'message', text: 'ติดต่อเจ้าหน้าที่' } },
       ],

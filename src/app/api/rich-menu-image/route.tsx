@@ -101,50 +101,45 @@ const cardIllustrations = {
 
   // 4. Open Keyboard (Hand/Finger Pointing Down to Bottom-Left Corner)
   keyboard: (
-    <svg width="420" height="370" viewBox="0 0 220 220" fill="none">
-      {/* Outer target aura */}
-      <circle cx="110" cy="110" r="96" fill="#F0FDF4" />
-      <circle cx="110" cy="110" r="82" fill="#DCFCE7" />
+    <div style={{
+      display: 'flex',
+      width: 380,
+      height: 360,
+      backgroundColor: '#111827',
+      borderRadius: '40px',
+      position: 'relative',
+      overflow: 'hidden',
+      boxShadow: '0 24px 48px rgba(0,0,0,0.2)',
+      border: '4px solid #FCD34D'
+    }}>
+      {/* Downward pointing hand emoji */}
+      <div style={{
+        display: 'flex',
+        fontSize: '240px',
+        position: 'absolute',
+        bottom: -20,
+        left: -10,
+        filter: 'drop-shadow(0px 12px 24px rgba(0,0,0,0.6))'
+      }}>
+        👇
+      </div>
       
-      {/* Mini Keyboard preview bar at the top */}
-      <rect x="38" y="44" width="144" height="50" rx="12" fill="#1E293B" />
-      <rect x="42" y="48" width="136" height="42" rx="9" fill="#334155" />
-      {/* Keyboard keys */}
-      <rect x="48" y="53" width="14" height="12" rx="3" fill="#FFFFFF" />
-      <rect x="66" y="53" width="14" height="12" rx="3" fill="#FFFFFF" />
-      <rect x="84" y="53" width="14" height="12" rx="3" fill="#FFFFFF" />
-      <rect x="102" y="53" width="14" height="12" rx="3" fill="#FFFFFF" />
-      <rect x="120" y="53" width="14" height="12" rx="3" fill="#FFFFFF" />
-      <rect x="138" y="53" width="34" height="12" rx="3" fill="#10B981" />
-      <rect x="54" y="70" width="88" height="14" rx="4" fill="#FFFFFF" />
-      <rect x="146" y="70" width="26" height="14" rx="4" fill="#94A3B8" />
-
-      {/* Target focus ring at bottom-left */}
-      <circle cx="68" cy="180" r="32" fill="#10B981" opacity="0.25" />
-      <circle cx="68" cy="180" r="22" fill="#10B981" opacity="0.45" />
-      <circle cx="68" cy="180" r="12" fill="#10B981" />
-
-      {/* Hand Sleeve & Wrist */}
-      <path d="M148 95l32 30-18 16-30-30z" fill="#0284C7" />
-      
-      {/* Hand Palm */}
-      <path d="M115 110l30 25c6 5 7 15 2 21l-4 5c-5 6-15 7-21 2l-22-18 15-35z" fill="#FDBA74" />
-      
-      {/* Folded fingers (Knuckles) */}
-      <circle cx="132" cy="144" r="10" fill="#FB923C" />
-      <circle cx="122" cy="154" r="10" fill="#FB923C" />
-      <circle cx="110" cy="160" r="9" fill="#EA580C" />
-      
-      {/* Big 3D Extended Index Finger Pointing Down-Left */}
-      <path d="M125 118l-45 48c-4 5-11 5-16 1s-5-11-1-16l42-45 20 12z" fill="#FDBA74" />
-      {/* Fingernail */}
-      <ellipse cx="69" cy="173" rx="5" ry="7" transform="rotate(-40 69 173)" fill="#FED7AA" />
-
-      {/* High-visibility Dynamic Down-Left Arrow */}
-      <path d="M50 142l-14 24m0 0l22 2m-22-2l-2-22" stroke="#EF4444" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="36" cy="130" r="5" fill="#F59E0B" />
-      <circle cx="185" cy="160" r="6" fill="#F59E0B" />
-    </svg>
+      {/* Stacked Text */}
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'absolute',
+        right: 32,
+        top: 32,
+        alignItems: 'center',
+        gap: '0px'
+      }}>
+        <span style={{ fontSize: '64px', fontWeight: '900', color: '#FFFFFF' }}>พิมพ์ใน</span>
+        <span style={{ fontSize: '64px', fontWeight: '900', color: '#FFFFFF' }}>แชท</span>
+        <span style={{ fontSize: '72px', fontWeight: '900', color: '#FCD34D', marginTop: '16px' }}>จิ้ม</span>
+        <span style={{ fontSize: '72px', fontWeight: '900', color: '#FCD34D' }}>มุมนี้</span>
+      </div>
+    </div>
   ),
 
   // 5. User Guide
@@ -315,14 +310,15 @@ export async function GET(req: NextRequest) {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      width: '92px',
-                      height: '92px',
-                      borderRadius: '46px',
-                      background: item.badgeBg,
-                      border: `3px solid ${item.badgeBorder}`,
+                      width: '140px',
+                      height: '140px',
+                      borderRadius: '44px',
+                      backgroundColor: item.badgeBg,
+                      border: `8px solid ${item.badgeBorder}`,
                       color: item.badgeColor,
-                      fontSize: '46px',
-                      fontWeight: 'bold',
+                      fontSize: '72px',
+                      fontWeight: '900',
+                      boxShadow: '0 16px 32px rgba(0,0,0,0.12)',
                     }}
                   >
                     {item.num}
@@ -349,61 +345,111 @@ export async function GET(req: NextRequest) {
 
           {/* Row 2: 04 (Keyboard at Bottom-Left), 05 (Guide), 06 (Support) */}
           <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: CARD_H, gap: `${GAP}px` }}>
-            {menuList.slice(3, 6).map((item, idx) => (
-              <div
-                key={idx}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  width: CARD_W,
-                  height: '100%',
-                  backgroundColor: item.num === '04' ? '#F0FDF4' : '#FFFFFF', // Special subtle tint for slot 04
-                  borderRadius: '48px',
-                  padding: '28px 24px 36px 24px',
-                  boxShadow: item.num === '04' ? '0 16px 40px rgba(16, 185, 129, 0.15)' : '0 16px 40px rgba(15, 23, 42, 0.09)',
-                  border: item.num === '04' ? '3px solid #10B981' : '2px solid rgba(255, 255, 255, 0.9)',
-                  position: 'relative',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                {/* Top Row: Number Badge */}
-                <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-start' }}>
+            {menuList.slice(3, 6).map((item, idx) => {
+              if (item.num === '04') {
+                return (
                   <div
+                    key={idx}
                     style={{
                       display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: '92px',
-                      height: '92px',
-                      borderRadius: '46px',
-                      background: item.badgeBg,
-                      border: `3px solid ${item.badgeBorder}`,
-                      color: item.badgeColor,
-                      fontSize: '46px',
-                      fontWeight: 'bold',
+                      width: CARD_W,
+                      height: '100%',
+                      backgroundColor: '#111827',
+                      borderRadius: '48px',
+                      border: '8px solid #FCD34D',
+                      position: 'relative',
+                      overflow: 'hidden',
+                      boxShadow: '0 16px 40px rgba(0,0,0,0.3)',
                     }}
                   >
-                    {item.num}
+                    {/* Hand Emoji pointing exactly to the bottom-left corner of the slot */}
+                    <div style={{
+                      display: 'flex',
+                      fontSize: '340px',
+                      position: 'absolute',
+                      bottom: -20,
+                      left: 20,
+                      filter: 'drop-shadow(0px 12px 24px rgba(0,0,0,0.6))'
+                    }}>
+                      👇
+                    </div>
+                    
+                    {/* Big Stacked Yellow Text */}
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      position: 'absolute',
+                      right: 60,
+                      top: 140,
+                      alignItems: 'center',
+                      gap: '0px'
+                    }}>
+                      <span style={{ fontSize: '110px', fontWeight: '900', color: '#FFFFFF' }}>พิมพ์ใน</span>
+                      <span style={{ fontSize: '110px', fontWeight: '900', color: '#FFFFFF' }}>แชท</span>
+                      <span style={{ fontSize: '140px', fontWeight: '900', color: '#FCD34D', marginTop: '20px' }}>จิ้ม</span>
+                      <span style={{ fontSize: '140px', fontWeight: '900', color: '#FCD34D' }}>มุมนี้</span>
+                    </div>
                   </div>
-                </div>
+                );
+              }
 
-                {/* Central Massive Vector Illustration */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 'auto 0' }}>
-                  {item.illustration}
-                </div>
+              return (
+                <div
+                  key={idx}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    width: CARD_W,
+                    height: '100%',
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '48px',
+                    padding: '28px 24px 36px 24px',
+                    boxShadow: '0 16px 40px rgba(15, 23, 42, 0.09)',
+                    border: '2px solid rgba(255, 255, 255, 0.9)',
+                    position: 'relative',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  {/* Top Row: Number Badge */}
+                  <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-start' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '140px',
+                        height: '140px',
+                        borderRadius: '44px',
+                        backgroundColor: item.badgeBg,
+                        border: `8px solid ${item.badgeBorder}`,
+                        color: item.badgeColor,
+                        fontSize: '72px',
+                        fontWeight: '900',
+                        boxShadow: '0 16px 32px rgba(0,0,0,0.12)',
+                      }}
+                    >
+                      {item.num}
+                    </div>
+                  </div>
 
-                {/* Extra Large Thai Title & Subtitle */}
-                <div style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center' }}>
-                  <div style={{ fontSize: '86px', fontWeight: 'bold', color: item.num === '04' ? '#047857' : '#0F172A', textAlign: 'center', lineHeight: 1.1, letterSpacing: '-0.5px' }}>
-                    {item.title}
+                  {/* Central Massive Vector Illustration */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 'auto 0' }}>
+                    {item.illustration}
                   </div>
-                  <div style={{ fontSize: '42px', fontWeight: 600, color: item.num === '04' ? '#059669' : '#64748B', textAlign: 'center', marginTop: '12px', lineHeight: 1.15 }}>
-                    {item.subtitle}
+
+                  {/* Extra Large Thai Title & Subtitle */}
+                  <div style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center' }}>
+                    <div style={{ fontSize: '86px', fontWeight: 'bold', color: '#0F172A', textAlign: 'center', lineHeight: 1.1, letterSpacing: '-0.5px' }}>
+                      {item.title}
+                    </div>
+                    <div style={{ fontSize: '42px', fontWeight: 600, color: '#64748B', textAlign: 'center', marginTop: '12px', lineHeight: 1.15 }}>
+                      {item.subtitle}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       ),
