@@ -76,13 +76,10 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
     orderByClause = dir === 'asc' ? asc(houses.createdAt) : desc(houses.createdAt);
   }
 
-  const [data, countResult, settingsData, totalHousesAllResult, unpaidHousesResult, projectedRevenueResult] = await Promise.all([
+  const [data, countResult, settingsData] = await Promise.all([
     db.select().from(houses).where(whereClause).orderBy(orderByClause).limit(limit).offset(offset),
     db.select({ count: sql<number>`count(*)` }).from(houses).where(whereClause),
     db.select({ houseCustomFieldsSchema: systemSettings.houseCustomFieldsSchema }).from(systemSettings).limit(1),
-    db.select({ count: sql<number>`count(*)` }).from(houses),
-    db.select({ count: sql<number>`count(DISTINCT ${invoices.houseId})` }).from(invoices).where(eq(invoices.status, 'unpaid')),
-    db.select({ total: sql<number>`COALESCE(SUM(CAST(${houses.defaultBillingAmount} AS numeric)), 0)` }).from(houses)
   ]);
 
   const total = Number(countResult[0]?.count || 0);
@@ -100,12 +97,6 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
       { id: "road", name: "ถนน (ตัวเลือก)", placeholder: "เช่น ถนนสุขุมวิท", type: "text", required: false, isSystem: true, isHidden: false },
     ];
   }
-
-  const overviewStats = {
-    totalHousesAll: Number(totalHousesAllResult[0]?.count || 0),
-    unpaidHousesCount: Number(unpaidHousesResult[0]?.count || 0),
-    monthlyProjectedRevenue: Number(projectedRevenueResult[0]?.total || 0),
-  };
 
   // When filtering by paymentStatus, also compute aggregate totals for the summary banner
   let paymentSummary: { unpaidTotal: number; paidTotal: number; unpaidCount: number; paidCount: number } | null = null;
@@ -142,7 +133,6 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
         limit={limit}
         customFieldsSchema={customFieldsSchema}
         paymentSummary={paymentSummary}
-        overviewStats={overviewStats}
       />
     </div>
   );
