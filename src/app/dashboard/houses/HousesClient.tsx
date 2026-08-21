@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useTransition, useMemo } from "react";
-import { Plus, Edit2, Trash2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Download, Upload, QrCode, X, Settings, Home, Loader2, FileText, CheckCircle2, FilePlus, Send, Copy, Check, Banknote } from "lucide-react";
+import { Plus, Edit2, Trash2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Download, Upload, QrCode, X, Settings, Home, Loader2, FileText, CheckCircle2, FilePlus, Send, Copy, Check, Banknote, Building2, RotateCcw, ArrowRight, AlertCircle, TrendingUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import QRCode from "qrcode";
 import Link from "next/link";
@@ -29,6 +29,7 @@ export default function HousesClient({
   limit = 10,
   customFieldsSchema = [],
   paymentSummary = null,
+  overviewStats = null,
 }: { 
   initialHouses: HouseData[];
   currentPage?: number;
@@ -41,6 +42,7 @@ export default function HousesClient({
   limit?: number;
   customFieldsSchema?: CustomField[];
   paymentSummary?: { unpaidTotal: number; paidTotal: number; unpaidCount: number; paidCount: number } | null;
+  overviewStats?: { totalHousesAll: number; unpaidHousesCount: number; monthlyProjectedRevenue: number } | null;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -266,11 +268,36 @@ export default function HousesClient({
     }
   };
 
+  const hasActiveFilters = Boolean(searchQuery || selectedZone || selectedPaymentStatus);
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setSelectedZone("");
+    setSelectedPaymentStatus("");
+    updateUrlParams(1, "", sortConfig.key, sortConfig.dir, limit, "", "");
+  };
+
   return (
-    <div className="font-sans">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <h1 className="font-bold text-2xl text-slate-800 tracking-tight">จัดการข้อมูลบ้าน</h1>
-        <div className="flex flex-wrap gap-2">
+    <div className="font-sans space-y-6">
+      {/* Header Section */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#5B58F2] to-[#7E7BFF] flex items-center justify-center text-white shadow-md shadow-[#5B58F2]/25 shrink-0">
+            <Building2 size={24} strokeWidth={2.2} />
+          </div>
+          <div>
+            <div className="flex items-center gap-2.5">
+              <h1 className="font-bold text-2xl text-slate-900 tracking-tight">จัดการข้อมูลบ้าน</h1>
+              <span className="bg-[#EEF0FF] text-[#5B58F2] text-xs font-bold px-2.5 py-0.5 rounded-full border border-[#D5D9FF]">
+                {totalHouses} หลัง
+              </span>
+            </div>
+            <p className="text-slate-500 text-sm mt-0.5">จัดการทะเบียนบ้าน รายละเอียดเจ้าบ้าน และออกบิลค่าบริการ</p>
+          </div>
+        </div>
+
+        {/* Header Action Buttons */}
+        <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
           <input 
             type="file" 
             accept=".csv" 
@@ -281,74 +308,125 @@ export default function HousesClient({
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isImporting}
-            className="flex items-center gap-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 rounded-xl text-xs font-semibold transition-colors shadow-sm disabled:opacity-50"
+            aria-label="นำเข้าข้อมูลจากไฟล์ CSV"
+            className="h-10 flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 px-3.5 rounded-xl text-xs font-semibold transition-all shadow-xs disabled:opacity-50"
           >
-            <Upload size={14} />
+            <Upload size={15} className="text-slate-500" />
             {isImporting ? 'กำลังนำเข้า...' : 'นำเข้า CSV'}
           </button>
           
           <a
             href="/api/houses/export"
-            className="flex items-center gap-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 rounded-xl text-xs font-semibold transition-colors shadow-sm"
+            aria-label="ส่งออกข้อมูลเป็นไฟล์ Excel"
+            className="h-10 flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 px-3.5 rounded-xl text-xs font-semibold transition-all shadow-xs"
           >
-            <Download size={14} />
-            ส่งออก Excel (XLSX)
+            <Download size={15} className="text-slate-500" />
+            ส่งออก Excel
           </a>
 
           <button
             onClick={() => setShowSettings(true)}
-            className="flex items-center gap-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-3 py-2 rounded-xl text-xs font-semibold transition-colors shadow-sm"
+            aria-label="ตั้งค่าฟิลด์ข้อมูลเพิ่มเติม"
+            className="h-10 w-10 flex items-center justify-center bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 rounded-xl transition-all shadow-xs"
             title="ตั้งค่าฟิลด์เพิ่มเติม"
           >
-            <Settings size={14} />
+            <Settings size={16} />
           </button>
 
           <button
             onClick={handleAdd}
-            className="flex items-center gap-1.5 bg-[#5B58F2] hover:bg-[#4A47D1] text-white px-4 py-2 rounded-xl text-xs font-semibold transition-colors shadow-sm"
+            aria-label="เพิ่มบ้านหลังใหม่"
+            className="h-10 flex items-center gap-2 bg-[#5B58F2] hover:bg-[#4A47D1] text-white px-4 rounded-xl text-xs font-semibold transition-all shadow-sm shadow-[#5B58F2]/20 hover:shadow-md"
           >
-            <Plus size={14} />
+            <Plus size={16} strokeWidth={2.5} />
             เพิ่มบ้านใหม่
           </button>
           
-          <div className="w-[1px] bg-slate-200 h-8 mx-1 self-center hidden sm:block"></div>
+          <div className="w-[1px] bg-slate-200 h-6 mx-1 hidden sm:block"></div>
 
           <GenerateInvoiceButton />
         </div>
       </div>
 
-      {error && (
-        <div className="mb-6 p-3.5 bg-red-50 text-red-700 rounded-lg text-sm border border-red-200 flex items-center gap-2.5">
-          <div className="w-5 h-5 bg-red-100 rounded-full flex items-center justify-center shrink-0">
-            <X size={12} className="text-red-600" />
+      {/* KPI Overview Metrics Cards */}
+      {overviewStats && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+            <div className="space-y-1">
+              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">ทะเบียนบ้านทั้งหมด</div>
+              <div className="text-2xl font-bold text-slate-900 tracking-tight">
+                {overviewStats.totalHousesAll.toLocaleString()} <span className="text-sm font-medium text-slate-500">หลัง</span>
+              </div>
+            </div>
+            <div className="w-11 h-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+              <Home size={20} />
+            </div>
           </div>
-          <span className="font-medium">{error}</span>
+
+          <div 
+            onClick={() => setSelectedPaymentStatus("unpaid")}
+            className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between cursor-pointer hover:border-red-200 hover:bg-red-50/20 transition-all group"
+          >
+            <div className="space-y-1">
+              <div className="text-xs font-bold text-red-600 uppercase tracking-wider flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                บ้านที่ค้างชำระ
+              </div>
+              <div className="text-2xl font-bold text-red-700 tracking-tight">
+                {overviewStats.unpaidHousesCount.toLocaleString()} <span className="text-sm font-medium text-red-500">หลัง</span>
+              </div>
+            </div>
+            <div className="w-11 h-11 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <AlertCircle size={20} />
+            </div>
+          </div>
+
+          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+            <div className="space-y-1">
+              <div className="text-xs font-bold text-emerald-600 uppercase tracking-wider">ยอดจัดเก็บคาดการณ์/เดือน</div>
+              <div className="text-2xl font-bold font-mono text-emerald-700 tracking-tight">
+                ฿{overviewStats.monthlyProjectedRevenue.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
+            </div>
+            <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <TrendingUp size={20} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div className="p-4 bg-red-50 text-red-800 rounded-2xl text-sm border border-red-200 flex items-center gap-3">
+          <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center shrink-0">
+            <X size={14} className="text-red-600" />
+          </div>
+          <span className="font-semibold">{error}</span>
         </div>
       )}
 
       {successMsg && (
-        <div className="mb-6 p-3.5 bg-emerald-50 text-emerald-700 rounded-lg text-sm border border-emerald-200 flex items-center gap-2.5">
-          <div className="w-5 h-5 bg-emerald-100 rounded-full flex items-center justify-center shrink-0">
-            <CheckCircle2 size={12} className="text-emerald-600" />
+        <div className="p-4 bg-emerald-50 text-emerald-800 rounded-2xl text-sm border border-emerald-200 flex items-center gap-3">
+          <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center shrink-0">
+            <CheckCircle2 size={14} className="text-emerald-600" />
           </div>
-          <span className="font-medium">{successMsg}</span>
+          <span className="font-semibold">{successMsg}</span>
         </div>
       )}
 
       {/* Main Card Container */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col">
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-200/80 flex flex-col overflow-hidden">
         {/* Toolbar: Search & Filters */}
-        <div className="p-5 lg:p-6 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 rounded-t-2xl bg-white relative z-20">
-          <div className="flex flex-col sm:flex-row flex-wrap w-full lg:w-auto gap-3 z-20">
-            <div className="relative w-full sm:w-72">
+        <div className="p-5 lg:p-6 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white relative z-20">
+          <div className="flex flex-col sm:flex-row flex-wrap w-full lg:w-auto gap-3 items-center z-20">
+            <div className="relative w-full sm:w-80">
               <SearchAutocomplete 
                 value={searchQuery}
                 onChange={setSearchQuery}
-                placeholder="ค้นหาจากทุกข้อมูล (บ้านเลขที่, ชื่อ, หมู่, เบอร์โทร...)"
-                className="w-full sm:w-72 focus:w-full sm:focus:w-72 !bg-slate-50 border-transparent focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none text-sm rounded-xl"
+                placeholder="ค้นหาบ้านเลขที่, ชื่อ, หมู่, ชุมชน..."
+                className="w-full sm:w-80 focus:w-full sm:focus:w-80 !bg-slate-50 hover:!bg-slate-100/70 border-transparent focus:!bg-white focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none text-sm rounded-xl transition-all"
               />
             </div>
-            <div className="w-full sm:w-52 z-10">
+            <div className="w-full sm:w-48 z-10">
               <CustomSelect
                 value={selectedZone || ""}
                 onChange={setSelectedZone}
@@ -359,7 +437,7 @@ export default function HousesClient({
                 ]}
               />
             </div>
-            <div className="w-full sm:w-48 z-10">
+            <div className="w-full sm:w-44 z-10">
               <CustomSelect
                 value={selectedPaymentStatus || ""}
                 onChange={setSelectedPaymentStatus}
@@ -371,53 +449,72 @@ export default function HousesClient({
                 ]}
               />
             </div>
+
+            {hasActiveFilters && (
+              <button
+                onClick={handleResetFilters}
+                aria-label="ล้างตัวกรองทั้งหมด"
+                className="h-[42px] px-3.5 flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all"
+              >
+                <RotateCcw size={13} />
+                ล้างตัวกรอง
+              </button>
+            )}
           </div>
-          <div className="text-[length:13px] text-slate-500 font-medium z-10 flex gap-4 shrink-0 self-end lg:self-center">
-            <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> ทั้งหมด {totalHouses} หลัง
+
+          <div className="text-xs text-slate-500 font-semibold z-10 flex gap-4 shrink-0 self-end lg:self-center">
+            <span className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl text-slate-700">
+              <span className="w-2 h-2 rounded-full bg-emerald-500"></span> 
+              พบ {totalHouses} หลัง
             </span>
           </div>
         </div>
 
         {/* Payment Summary Banner */}
         {paymentSummary && selectedPaymentStatus === 'unpaid' && (
-          <div className="mx-6 my-3 px-4 py-3 rounded-xl bg-red-50 border border-red-100 flex flex-wrap items-center gap-x-6 gap-y-1">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-red-500 shrink-0"></span>
-              <span className="text-sm font-semibold text-red-800">ยอดรวมค้างชำระ</span>
+          <div className="mx-6 my-4 p-4 rounded-2xl bg-red-50/90 border border-red-200/80 flex flex-wrap items-center gap-x-6 gap-y-2">
+            <div className="flex items-center gap-2.5">
+              <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div>
+              <span className="text-sm font-bold text-red-900">สรุปยอดบ้านที่ค้างชำระ</span>
             </div>
-            <div className="flex items-center gap-4 ml-auto">
-              <span className="text-xs text-red-700 font-medium">{paymentSummary.unpaidCount} บิล</span>
-              <span className="text-base font-bold text-red-800 tabular-nums">
-                {paymentSummary.unpaidTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท
+            <div className="flex items-center gap-6 ml-auto">
+              <span className="text-xs font-semibold text-red-700 bg-red-100 px-2.5 py-1 rounded-lg">
+                {paymentSummary.unpaidCount} บิล
               </span>
-            </div>
-          </div>
-        )}
-        {paymentSummary && selectedPaymentStatus === 'paid' && (
-          <div className="mx-6 my-3 px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-100 flex flex-wrap items-center gap-x-6 gap-y-1">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
-              <span className="text-sm font-semibold text-emerald-800">ยอดรวมชำระแล้ว</span>
-            </div>
-            <div className="flex items-center gap-4 ml-auto">
-              <span className="text-xs text-emerald-700 font-medium">{paymentSummary.paidCount} บิล</span>
-              <span className="text-base font-bold text-emerald-800 tabular-nums">
-                {paymentSummary.paidTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท
+              <span className="text-lg font-bold font-mono text-red-800 tabular-nums">
+                ฿{paymentSummary.unpaidTotal.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
           </div>
         )}
 
+        {paymentSummary && selectedPaymentStatus === 'paid' && (
+          <div className="mx-6 my-4 p-4 rounded-2xl bg-emerald-50/90 border border-emerald-200/80 flex flex-wrap items-center gap-x-6 gap-y-2">
+            <div className="flex items-center gap-2.5">
+              <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+              <span className="text-sm font-bold text-emerald-900">สรุปยอดบ้านที่ชำระครบแล้ว</span>
+            </div>
+            <div className="flex items-center gap-6 ml-auto">
+              <span className="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-lg">
+                {paymentSummary.paidCount} บิล
+              </span>
+              <span className="text-lg font-bold font-mono text-emerald-800 tabular-nums">
+                ฿{paymentSummary.paidTotal.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Data Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
-              <tr className="border-b border-slate-100">
-                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-16 text-center">ลำดับ</th>
+              <tr className="border-b border-slate-100 bg-slate-50/50">
+                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-16 text-center">ลำดับ</th>
                 {displayFields.map(field => (
                   <th 
                     key={field.id} 
-                    className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider ${field.isSystem && (field.id === 'houseNumber' || field.id === 'ownerName') ? 'cursor-pointer text-slate-600 hover:text-slate-900 transition-colors' : 'text-slate-500'}`} 
+                    className={`px-6 py-4 text-xs font-bold uppercase tracking-wider ${field.isSystem && (field.id === 'houseNumber' || field.id === 'ownerName') ? 'cursor-pointer text-slate-600 hover:text-slate-900 transition-colors' : 'text-slate-500'}`} 
                     onClick={() => {
                       if (field.id === 'houseNumber' || field.id === 'ownerName') handleSort(field.id);
                     }}
@@ -439,60 +536,105 @@ export default function HousesClient({
                     </div>
                   </th>
                 ))}
-                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">จัดการ</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">จัดการ</th>
               </tr>
             </thead>
-            <tbody className={`divide-y divide-slate-50 text-slate-700 transition-opacity duration-200 ${isPending ? 'opacity-50' : 'opacity-100'}`}>
+            <tbody className={`divide-y divide-slate-100 text-slate-700 transition-opacity duration-200 ${isPending ? 'opacity-50' : 'opacity-100'}`}>
               <AnimatePresence mode="wait">
                 {initialHouses.map((house, index) => (
                   <motion.tr 
                     key={house.id}
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                    className="hover:bg-slate-50/50 transition-colors group"
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.15 }}
+                    className="hover:bg-slate-50/80 transition-colors group"
                   >
-                  <td className="px-6 py-4 text-slate-400 font-medium text-sm text-center">
-                    {(currentPage - 1) * limit + index + 1}
-                  </td>
-                  {displayFields.map(field => {
-                    let val = "-";
-                    if (field.isSystem) {
-                      val = (house as any)[field.id] || "-";
-                    } else {
-                      val = (house.customFields as Record<string, any>)?.[field.id] || "-";
-                    }
-                    
-                    if (field.id === 'houseNumber') {
-                      return <td key={field.id} className="px-6 py-4 font-mono font-bold text-slate-800 text-sm">{val}</td>;
-                    }
-                    if (field.id === 'ownerName') {
-                      return <td key={field.id} className="px-6 py-4 font-bold text-slate-800 text-sm">{val}</td>;
-                    }
-                    return <td key={field.id} className="px-6 py-4 text-slate-600 font-medium text-sm">{val}</td>;
-                  })}
-                  <td className="px-6 py-4 text-right">
-                    <Link 
-                      href={`/dashboard/houses/${house.id}`} 
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-[#5B58F2] bg-[#EEF0FF] hover:bg-[#D5D9FF] rounded-lg transition-colors border border-[#D5D9FF]"
-                    >
-                      ดูข้อมูล / จัดการ
-                    </Link>
-                  </td>
-                  
-                </motion.tr>
+                    <td className="px-6 py-4 text-slate-400 font-medium text-xs text-center">
+                      <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-slate-100 text-slate-600 font-semibold">
+                        {(currentPage - 1) * limit + index + 1}
+                      </span>
+                    </td>
+
+                    {displayFields.map(field => {
+                      let val = "-";
+                      if (field.isSystem) {
+                        val = (house as any)[field.id] || "-";
+                      } else {
+                        val = (house.customFields as Record<string, any>)?.[field.id] || "-";
+                      }
+                      
+                      if (field.id === 'houseNumber') {
+                        return (
+                          <td key={field.id} className="px-6 py-4">
+                            <span className="font-mono font-bold text-slate-900 bg-slate-100/90 px-3 py-1 rounded-xl border border-slate-200/80 text-sm">
+                              {val}
+                            </span>
+                          </td>
+                        );
+                      }
+                      if (field.id === 'ownerName') {
+                        return (
+                          <td key={field.id} className="px-6 py-4 font-bold text-slate-900 text-sm">
+                            {val}
+                          </td>
+                        );
+                      }
+                      if (field.id === 'zone' && val !== '-') {
+                        return (
+                          <td key={field.id} className="px-6 py-4">
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200/60">
+                              {val}
+                            </span>
+                          </td>
+                        );
+                      }
+                      if (field.id === 'defaultBillingAmount' && val !== '-') {
+                        return (
+                          <td key={field.id} className="px-6 py-4 font-mono font-bold text-emerald-700 text-sm">
+                            ฿{parseFloat(val).toLocaleString('th-TH', { minimumFractionDigits: 2 })}
+                          </td>
+                        );
+                      }
+                      return (
+                        <td key={field.id} className="px-6 py-4 text-slate-600 font-medium text-sm">
+                          {val}
+                        </td>
+                      );
+                    })}
+
+                    <td className="px-6 py-4 text-right">
+                      <Link 
+                        href={`/dashboard/houses/${house.id}`} 
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-[#5B58F2] bg-[#EEF0FF] hover:bg-[#5B58F2] hover:text-white rounded-xl transition-all border border-[#D5D9FF] hover:border-transparent shadow-2xs group/btn"
+                      >
+                        <span>ดูข้อมูล / จัดการ</span>
+                        <ArrowRight size={13} className="group-hover/btn:translate-x-0.5 transition-transform" />
+                      </Link>
+                    </td>
+                  </motion.tr>
                 ))}
               </AnimatePresence>
               
               {initialHouses.length === 0 && !isPending && (
                 <tr>
                   <td colSpan={2 + customFieldsSchema.filter(f => !f.isHidden).length} className="p-16 text-center">
-                    <div className="text-slate-300 mb-3 flex justify-center"><Home size={40} /></div>
-                    <div className="text-slate-500 font-semibold">ไม่พบข้อมูลบ้าน</div>
-                    <div className="text-[length:13px] text-slate-400 mt-1">
-                      {searchQuery ? "ลองค้นหาด้วยคำอื่น" : "คลิก 'เพิ่มบ้านใหม่' เพื่อเริ่มต้น"}
+                    <div className="w-16 h-16 rounded-3xl bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-4">
+                      <Home size={32} />
                     </div>
+                    <div className="text-slate-800 font-bold text-lg">ไม่พบข้อมูลบ้านที่ตรงกับเงื่อนไข</div>
+                    <p className="text-slate-500 text-sm mt-1 max-w-sm mx-auto">
+                      {hasActiveFilters ? "ลองปรับเปลี่ยนคำค้นหาหรือตัวกรองชุมชน/สถานะ" : "ยังไม่มีข้อมูลบ้านในระบบ คลิก 'เพิ่มบ้านใหม่' เพื่อเริ่มต้น"}
+                    </p>
+                    {hasActiveFilters && (
+                      <button
+                        onClick={handleResetFilters}
+                        className="mt-4 inline-flex items-center gap-2 bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-semibold hover:bg-slate-50 transition-all shadow-xs"
+                      >
+                        <RotateCcw size={14} />
+                        ล้างตัวกรองทั้งหมด
+                      </button>
+                    )}
                   </td>
                 </tr>
               )}
@@ -501,7 +643,7 @@ export default function HousesClient({
         </div>
         
         {/* Pagination Footer */}
-        <div className="rounded-b-[32px] bg-white overflow-visible">
+        <div className="rounded-b-3xl bg-white overflow-visible border-t border-slate-100">
           <TablePagination
             currentPage={currentPage}
             totalPages={totalPages}
