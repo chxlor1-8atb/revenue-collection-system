@@ -188,8 +188,8 @@ export default function HouseActionsClient({ house, customFieldsSchema }: { hous
 
       {initialBillPrompt && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="bg-slate-50 px-6 py-4 border-b flex justify-between items-center shrink-0">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-in zoom-in-95 duration-200 relative">
+            <div className="bg-slate-50 px-6 py-4 border-b flex justify-between items-center shrink-0 rounded-t-2xl">
               <h3 className="font-semibold text-slate-800 text-lg flex items-center gap-2">
                 <FileText className="text-blue-600" size={20} />
                 สร้างบิลค้างชำระแบบแมนนวล
