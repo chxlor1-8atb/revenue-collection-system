@@ -120,7 +120,7 @@ export async function POST(request: Request) {
         const replyToken = event.replyToken;
 
         if (event.message.type === "image") {
-          console.log(`[Webhook] Image received โ€“ messageId: ${event.message.id}`);
+          console.log(`[Webhook] Image received – messageId: ${event.message.id}`);
 
           // Idempotency check
           const existingMsg = await db.select().from(lineMessages).where(eq(lineMessages.lineMessageId, event.message.id)).limit(1);
@@ -133,10 +133,10 @@ export async function POST(request: Request) {
           const imageBuffer = await getMessageContent(event.message.id);
           if (!imageBuffer) {
             console.error("[Webhook] Failed to download image from LINE");
-            await replyMessage(replyToken, "เธเธญเธญเธ เธฑเธขเธเนเธฐ เธฃเธฐเธเธเนเธกเนเธชเธฒเธกเธฒเธฃเธ–เธ”เธฒเธงเธเนเนเธซเธฅเธ”เธฃเธนเธเธ เธฒเธเนเธ”เน เธเธฃเธธเธ“เธฒเธชเนเธเนเธซเธกเนเธญเธตเธเธเธฃเธฑเนเธเธเนเธฐ");
+            await replyMessage(replyToken, "ขออภัยค่ะ ระบบไม่สามารถดาวน์โหลดรูปภาพได้ กรุณาส่งใหม่อีกครั้งค่ะ");
             continue;
           }
-          console.log(`[Webhook] Image downloaded โ€“ size: ${imageBuffer.length} bytes`);
+          console.log(`[Webhook] Image downloaded – size: ${imageBuffer.length} bytes`);
 
           // 2. Upload to Vercel Blob (with error handling)
           let blobUrl = "";
@@ -150,7 +150,7 @@ export async function POST(request: Request) {
             console.log("[Webhook] Blob upload success:", blobUrl);
           } catch (blobError: any) {
             console.error("[Webhook] Blob upload FAILED:", blobError?.message || blobError);
-            // Continue without blob URL โ€“ we still want to verify & save to DB
+            // Continue without blob URL – we still want to verify & save to DB
             blobUrl = `line://message/${event.message.id}`; // fallback reference
           }
 
@@ -172,17 +172,17 @@ export async function POST(request: Request) {
               });
             } catch {}
             
-            let title = "เธชเธฅเธดเธเนเธกเนเธ–เธนเธเธ•เนเธญเธ";
-            let subtitle = "เธเธฃเธธเธ“เธฒเธ•เธฃเธงเธเธชเธญเธเธงเนเธฒเธชเนเธเธฃเธนเธเธชเธฅเธดเธเธ—เธตเนเธเธฑเธ”เน€เธเธ";
+            let title = "สลิปไม่ถูกต้อง";
+            let subtitle = "กรุณาตรวจสอบว่าส่งรูปสลิปที่ชัดเจน";
             let color = "#ef4444"; // Red
             
             if (verification.errorCode === "duplicate") {
-              title = "เธชเธฅเธดเธเธเนเธณ";
-              subtitle = "เนเธเธฃเธ”เธ•เธฃเธงเธเธชเธญเธเธชเธฅเธดเธ";
+              title = "สลิปซ้ำ";
+              subtitle = "โปรดตรวจสอบสลิป";
               color = "#f59e0b"; // Orange
             } else if (verification.errorCode === "invalid") {
-              title = "เธเธฑเธเธเธตเธเธนเนเธฃเธฑเธเนเธกเนเธ–เธนเธเธ•เนเธญเธ";
-              subtitle = "เนเธเธฃเธ”เธ•เธฃเธงเธเธชเธญเธเธฃเธนเธเธชเธฅเธดเธ เธซเธฃเธทเธญเธเธฑเธเธเธตเธเธนเนเธฃเธฑเธเธเธญเธเธ—เนเธฒเธ";
+              title = "บัญชีผู้รับไม่ถูกต้อง";
+              subtitle = "โปรดตรวจสอบรูปสลิป หรือบัญชีผู้รับของท่าน";
               color = "#0ea5e9"; // Blue
             }
             
@@ -230,8 +230,8 @@ export async function POST(request: Request) {
               const transDate = orig.transDate || orig.transTime || orig.transTimestamp;
               
               const flexError = generateSlipErrorFlexMessage(
-                 "เธชเธฅเธดเธเธเนเธณ", 
-                 "เธชเธฅเธดเธเธเธตเนเน€เธเธขเธ–เธนเธเนเธเนเธขเธทเธเธขเธฑเธเธเธฒเธฃเธเธณเธฃเธฐเน€เธเธดเธเนเธเนเธฅเนเธง", 
+                 "สลิปซ้ำ", 
+                 "สลิปนี้เคยถูกใช้ยืนยันการชำระเงินไปแล้ว", 
                  "#f59e0b", // Orange
                  orig.amount ? parseFloat(orig.amount as any) : undefined,
                  senderName,
@@ -242,19 +242,19 @@ export async function POST(request: Request) {
               );
               await safeReplyOrPush(userId, replyToken, [
                 flexError,
-                { type: "text", text: "โ เธ•เธฃเธงเธเธเธเธเธฒเธฃเนเธเนเธชเธฅเธดเธเธเนเธณ! เธชเธฅเธดเธเธเธตเนเน€เธเธขเธ–เธนเธเนเธเนเธขเธทเธเธขเธฑเธเธเธฒเธฃเธเธณเธฃเธฐเน€เธเธดเธเนเธเนเธฅเนเธงเธเนเธฐ" }
+                { type: "text", text: "❌ ตรวจพบการใช้สลิปซ้ำ! สลิปนี้เคยถูกใช้ยืนยันการชำระเงินไปแล้วค่ะ" }
               ]);
               continue;
             }
           }
           
-          // 3.5 Match waiting_for_slip transaction by amount (FIFO โ€” oldest first)
+          // 3.5 Match waiting_for_slip transaction by amount (FIFO — oldest first)
           // Important: Only match if we have a valid non-zero amount to prevent matching null or "0"
           if (slipAmount && slipAmount !== "0" && slipAmount !== "0.00") {
             const expiryTime = new Date();
             expiryTime.setMinutes(expiryTime.getMinutes() - 5);
 
-            // Match waiting transactions by whole amount (FIFO โ€” oldest first)
+            // Match waiting transactions by whole amount (FIFO — oldest first)
             const waitingTx = await db.select()
               .from(transactions)
               .where(and(
@@ -277,7 +277,7 @@ export async function POST(request: Request) {
                   slipImageUrl: blobUrl, 
                   slipStatus: 'manual_review',
                   slipRefId: transRef || null,
-                  payerNote: 'เธขเธญเธ”เน€เธเธดเธเน€เธเนเธฒเธเธฃเธดเธ เนเธ•เนเธฃเธฐเธเธเธซเธฒเธเธดเธฅเนเธกเนเธเธ (Orphaned)'
+                  payerNote: 'ยอดเงินเข้าจริง แต่ระบบหาบิลไม่พบ (Orphaned)'
                 })
                 .where(eq(transactions.id, tx.id));
                 
@@ -295,12 +295,12 @@ export async function POST(request: Request) {
               
               await safeReplyOrPush(userId, replyToken, [{
                 type: "text",
-                text: `เนเธ”เนเธฃเธฑเธเธขเธญเธ”เน€เธเธดเธ ${slipAmount} เธเธฒเธ— เน€เธฃเธตเธขเธเธฃเนเธญเธขเนเธฅเนเธงเธเนเธฐ โ…\nเนเธ•เนเธฃเธฐเธเธเน€เธเธดเธ”เธเธฑเธ”เธเนเธญเธเนเธกเนเธชเธฒเธกเธฒเธฃเธ–เธเธฑเธเธเธนเนเธเธดเธฅเนเธ”เน (เนเธกเนเธเธเธซเธเธตเน)\n\nเธเธฃเธธเธ“เธฒเนเธเนเธเนเธญเธ”เธกเธดเธเน€เธเธทเนเธญเธ•เธฃเธงเธเธชเธญเธเนเธฅเธฐเธ•เธฑเธ”เธขเธญเธ”เนเธซเนเนเธเธ Manual เธเธฐเธเธฐ ๐`
+                text: `ได้รับยอดเงิน ${slipAmount} บาท เรียบร้อยแล้วค่ะ ✅\nแต่ระบบเกิดขัดข้องไม่สามารถจับคู่บิลได้ (ไม่พบหนี้)\n\nกรุณาแจ้งแอดมินเพื่อตรวจสอบและตัดยอดให้แบบ Manual นะคะ 🙏`
               }]);
               continue;
             }
 
-            // Amount matched โ€” verify and link invoices
+            // Amount matched — verify and link invoices
             const updateResult = await db.update(transactions)
               .set({ 
                 slipImageUrl: blobUrl, 
@@ -334,7 +334,7 @@ export async function POST(request: Request) {
             let houseText = "";
             if (txInvoices.length > 0) {
                const house = await db.select().from(houses).where(eq(houses.id, txInvoices[0].houseId)).limit(1);
-               if (house.length > 0) houseText = ` (เธเนเธฒเธเน€เธฅเธเธ—เธตเน ${house[0].houseNumber})`;
+               if (house.length > 0) houseText = ` (บ้านเลขที่ ${house[0].houseNumber})`;
             }
             
             const flexMsg = generateSlipVerificationSuccessFlexMessage(
@@ -350,7 +350,7 @@ export async function POST(request: Request) {
               flexMsg,
               {
                 type: "text",
-                text: `เธฃเธฐเธเธเนเธ”เนเธ—เธณเธเธฒเธฃเธ•เธฑเธ”เธขเธญเธ”เธซเธเธตเนเนเธซเนเน€เธฃเธตเธขเธเธฃเนเธญเธขเนเธฅเนเธงเธเนเธฐ${houseText} เธเธญเธเธเธธเธ“เธ—เธตเนเนเธเนเธเธฃเธดเธเธฒเธฃ ๐’`
+                text: `ระบบได้ทำการตัดยอดหนี้ให้เรียบร้อยแล้วค่ะ${houseText} ขอบคุณที่ใช้บริการ 💚`
               }
             ]);
             continue;
@@ -421,7 +421,7 @@ export async function POST(request: Request) {
                 flexMsg,
                 {
                   type: "text",
-                  text: `โ… เธฃเธฐเธเธเนเธ”เนเธ—เธณเธเธฒเธฃเธเธณเธฃเธฐเธเธดเธฅเธ•เธฒเธกเธ—เธตเนเธเธธเธ“เธ—เธณเธฃเธฒเธขเธเธฒเธฃเนเธงเนเธเธเธซเธเนเธฒเน€เธงเนเธเน€เธฃเธตเธขเธเธฃเนเธญเธขเนเธฅเนเธงเธเนเธฐ (เธขเธญเธ” ${slipAmount} เธเธฒเธ— เธเนเธฒเธเน€เธฅเธเธ—เธตเน ${matchedHouse?.houseNumber || ''}) เธเธญเธเธเธธเธ“เธ—เธตเนเนเธเนเธเธฃเธดเธเธฒเธฃ ๐’`
+                  text: `✅ ระบบได้ทำการชำระบิลตามที่คุณทำรายการไว้บนหน้าเว็บเรียบร้อยแล้วค่ะ (ยอด ${slipAmount} บาท บ้านเลขที่ ${matchedHouse?.houseNumber || ''}) ขอบคุณที่ใช้บริการ 💚`
                 }
               ]);
               continue;
@@ -476,7 +476,7 @@ export async function POST(request: Request) {
                 flexMsg,
                 {
                   type: "text",
-                  text: `โ… เธฃเธฐเธเธเนเธ”เนเธ—เธณเธเธฒเธฃเธ•เธฑเธ”เธขเธญเธ” ${parseFloat(slipAmount)} เธเธฒเธ— เธชเธณเธซเธฃเธฑเธเธเนเธฒเธเน€เธฅเธเธ—เธตเน ${house.houseNumber} เนเธซเนเน€เธฃเธตเธขเธเธฃเนเธญเธขเนเธฅเนเธงเธเนเธฐ เธเธญเธเธเธธเธ“เธ—เธตเนเนเธเนเธเธฃเธดเธเธฒเธฃ ๐’`
+                  text: `✅ ระบบได้ทำการตัดยอด ${parseFloat(slipAmount)} บาท สำหรับบ้านเลขที่ ${house.houseNumber} ให้เรียบร้อยแล้วค่ะ ขอบคุณที่ใช้บริการ 💚`
                 }
               ]);
               continue;
@@ -510,7 +510,7 @@ export async function POST(request: Request) {
             flexMsg,
             {
               type: "text",
-              text: `เธเธฃเธธเธ“เธฒเธเธดเธกเธเน 'เธเนเธฒเธเน€เธฅเธเธ—เธตเน' เธเธญเธเธเธธเธ“ (เน€เธเนเธ 123/45) เน€เธเธทเนเธญเนเธซเนเธฃเธฐเธเธเธ•เธฑเธ”เธขเธญเธ”เธซเธเธตเนเธญเธฑเธ•เนเธเธกเธฑเธ•เธดเธเนเธฐ ๐`
+              text: `กรุณาพิมพ์ 'บ้านเลขที่' ของคุณ (เช่น 123/45) เพื่อให้ระบบตัดยอดหนี้อัตโนมัติค่ะ 🙏`
             }
           ]);
 
@@ -535,19 +535,19 @@ export async function POST(request: Request) {
           const appUrl = isLocal 
             ? "http://localhost:3000" 
             : "https://nangronggarbagepayments.vercel.app";
-          const thaiMonths = ["", "เธกเธเธฃเธฒเธเธก", "เธเธธเธกเธ เธฒเธเธฑเธเธเน", "เธกเธตเธเธฒเธเธก", "เน€เธกเธฉเธฒเธขเธ", "เธเธคเธฉเธ เธฒเธเธก", "เธกเธดเธ–เธธเธเธฒเธขเธ", "เธเธฃเธเธเธฒเธเธก", "เธชเธดเธเธซเธฒเธเธก", "เธเธฑเธเธขเธฒเธขเธ", "เธ•เธธเธฅเธฒเธเธก", "เธเธคเธจเธเธดเธเธฒเธขเธ", "เธเธฑเธเธงเธฒเธเธก"];
+          const thaiMonths = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
           
-          if (text === "เน€เธเนเธเธเธดเธฅ" || text === "เธเธดเธฅ") {
+          if (text === "เช็คบิล" || text === "บิล") {
             const houseList = await db.select().from(houses).where(eq(houses.lineUserId, userId));
             if (houseList.length === 0) {
-              await replyMessage(replyToken, "เธเธธเธ“เธขเธฑเธเนเธกเนเนเธ”เนเธเธนเธเธเธฑเธเธเธตเธเนเธฒเธเธเนเธฐ\nเธเธฃเธธเธ“เธฒเธเธดเธกเธเน 'เธเนเธฒเธเน€เธฅเธเธ—เธตเน' เธเธญเธเธเธธเธ“ (เน€เธเนเธ 123/45) เธชเนเธเน€เธเนเธฒเธกเธฒเนเธเนเธเธ—เน€เธเธทเนเธญเธเธนเธเธเธฑเธเธเธตเธเนเธญเธเธเธฐเธเธฐ ๐");
+              await replyMessage(replyToken, "คุณยังไม่ได้ผูกบัญชีบ้านค่ะ\nกรุณาพิมพ์ 'บ้านเลขที่' ของคุณ (เช่น 123/45) ส่งเข้ามาในแชทเพื่อผูกบัญชีก่อนนะคะ 🙏");
               continue;
             }
             const house = houseList[0];
             const unpaidInvoices = await db.select().from(invoices).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
             
             if (unpaidInvoices.length === 0) {
-              await replyMessage(replyToken, `เธเนเธฒเธเน€เธฅเธเธ—เธตเน ${house.houseNumber} เนเธกเนเธกเธตเธเธดเธฅเธเนเธฒเธเธเธณเธฃเธฐเธเนเธฐ โ…\nเธเธญเธเธเธธเธ“เธ—เธตเนเนเธเนเธเธฃเธดเธเธฒเธฃ ๐’`);
+              await replyMessage(replyToken, `บ้านเลขที่ ${house.houseNumber} ไม่มีบิลค้างชำระค่ะ ✅\nขอบคุณที่ใช้บริการ 💚`);
               continue;
             }
             
@@ -557,7 +557,7 @@ export async function POST(request: Request) {
               const [y, m] = unpaidInvoices[0].monthYear.split("-");
               monthStr = `${thaiMonths[parseInt(m)]} ${parseInt(y) + 543}`;
             } else {
-              monthStr = `${unpaidInvoices.length} เน€เธ”เธทเธญเธเธเนเธฒเธเธเธณเธฃเธฐ`;
+              monthStr = `${unpaidInvoices.length} เดือนค้างชำระ`;
             }
             
             const payUrl = `${appUrl}/house/${house.id}`;
@@ -567,10 +567,10 @@ export async function POST(request: Request) {
             continue;
           }
 
-          if (text === "เนเธเน€เธชเธฃเนเธ") {
+          if (text === "ใบเสร็จ") {
             const houseList = await db.select().from(houses).where(eq(houses.lineUserId, userId));
             if (houseList.length === 0) {
-              await replyMessage(replyToken, "เธเธธเธ“เธขเธฑเธเนเธกเนเนเธ”เนเธเธนเธเธเธฑเธเธเธตเธเนเธฒเธเธเนเธฐ\nเธเธฃเธธเธ“เธฒเธเธดเธกเธเน 'เธเนเธฒเธเน€เธฅเธเธ—เธตเน' เธเธญเธเธเธธเธ“ (เน€เธเนเธ 123/45) เธชเนเธเน€เธเนเธฒเธกเธฒเนเธเนเธเธ—เน€เธเธทเนเธญเธเธนเธเธเธฑเธเธเธตเธเนเธญเธเธเธฐเธเธฐ ๐");
+              await replyMessage(replyToken, "คุณยังไม่ได้ผูกบัญชีบ้านค่ะ\nกรุณาพิมพ์ 'บ้านเลขที่' ของคุณ (เช่น 123/45) ส่งเข้ามาในแชทเพื่อผูกบัญชีก่อนนะคะ 🙏");
               continue;
             }
             const house = houseList[0];
@@ -580,7 +580,7 @@ export async function POST(request: Request) {
             const txIds = houseInvoices.map(inv => inv.transactionId).filter(Boolean) as number[];
             
             if (txIds.length === 0) {
-              await replyMessage(replyToken, `เธขเธฑเธเนเธกเนเธกเธตเธเธฃเธฐเธงเธฑเธ•เธดเธเธฒเธฃเธฃเธฑเธเธเธณเธฃเธฐเน€เธเธดเธเธชเธณเธซเธฃเธฑเธเธเนเธฒเธเน€เธฅเธเธ—เธตเน ${house.houseNumber} เธเนเธฐ`);
+              await replyMessage(replyToken, `ยังไม่มีประวัติการรับชำระเงินสำหรับบ้านเลขที่ ${house.houseNumber} ค่ะ`);
               continue;
             }
             
@@ -593,7 +593,7 @@ export async function POST(request: Request) {
               .limit(5);
               
             if (latestTxs.length === 0) {
-              await replyMessage(replyToken, `เธขเธฑเธเนเธกเนเธกเธตเธเธฃเธฐเธงเธฑเธ•เธดเธเธฒเธฃเธฃเธฑเธเธเธณเธฃเธฐเน€เธเธดเธเธชเธณเธซเธฃเธฑเธเธเนเธฒเธเน€เธฅเธเธ—เธตเน ${house.houseNumber} เธเนเธฐ`);
+              await replyMessage(replyToken, `ยังไม่มีประวัติการรับชำระเงินสำหรับบ้านเลขที่ ${house.houseNumber} ค่ะ`);
               continue;
             }
             
@@ -607,7 +607,7 @@ export async function POST(request: Request) {
                 const [y, m] = txInvoices[0].monthYear.split("-");
                 monthStr = `${thaiMonths[parseInt(m)]} ${parseInt(y) + 543}`;
               } else {
-                monthStr = `${txInvoices.length} เธฃเธฒเธขเธเธฒเธฃ`;
+                monthStr = `${txInvoices.length} รายการ`;
               }
               const flexMsg = generateReceiptFlexMessage(house.houseNumber, monthStr, parseFloat(tx.amount || "0"), receiptUrl, tx.paidAt, tx.slipImageUrl);
               carouselContents.push(flexMsg.contents);
@@ -615,7 +615,7 @@ export async function POST(request: Request) {
             
             const carouselMsg = {
               type: "flex",
-              altText: `เธเธฃเธฐเธงเธฑเธ•เธดเธเธฒเธฃเธเธณเธฃเธฐเน€เธเธดเธ 5 เธฃเธฒเธขเธเธฒเธฃเธฅเนเธฒเธชเธธเธ”`,
+              altText: `ประวัติการชำระเงิน 5 รายการล่าสุด`,
               contents: {
                 type: "carousel",
                 contents: carouselContents
@@ -625,7 +625,6 @@ export async function POST(request: Request) {
             await replyWithMessages(replyToken, [carouselMsg]);
             continue;
           }
-
           if (text === "วิธีใช้งาน") {
             await replyWithMessages(replyToken, [generateHowToUseFlexMessage()]);
             continue;
@@ -650,8 +649,6 @@ export async function POST(request: Request) {
             const house = houseList[0];
             await replyWithMessages(replyToken, [generateMyInfoFlexMessage(house)]);
             continue;
-          }
-
           }
 
           // 1. Find the most recent pending image from this user
@@ -692,13 +689,13 @@ export async function POST(request: Request) {
                   await db.update(invoices).set({ status: 'paid', transactionId: slipData.transactionId }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
                   
                   
-                  const thaiMonths = ["", "เธกเธเธฃเธฒเธเธก", "เธเธธเธกเธ เธฒเธเธฑเธเธเน", "เธกเธตเธเธฒเธเธก", "เน€เธกเธฉเธฒเธขเธ", "เธเธคเธฉเธ เธฒเธเธก", "เธกเธดเธ–เธธเธเธฒเธขเธ", "เธเธฃเธเธเธฒเธเธก", "เธชเธดเธเธซเธฒเธเธก", "เธเธฑเธเธขเธฒเธขเธ", "เธ•เธธเธฅเธฒเธเธก", "เธเธคเธจเธเธดเธเธฒเธขเธ", "เธเธฑเธเธงเธฒเธเธก"];
+                  const thaiMonths = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
                   let monthStr = "";
                   if (unpaidInvoices.length === 1) {
                     const [y, m] = unpaidInvoices[0].monthYear.split("-");
                     monthStr = `${thaiMonths[parseInt(m)]} ${parseInt(y) + 543}`;
                   } else {
-                    monthStr = `${unpaidInvoices.length} เน€เธ”เธทเธญเธเธ—เธตเนเธเนเธฒเธเธเธณเธฃเธฐ`;
+                    monthStr = `${unpaidInvoices.length} เดือนที่ค้างชำระ`;
                   }
 
                   const appUrl = request.headers.get("host")?.includes("localhost") ? "http://localhost:3000" : "https://nangronggarbagepayments.vercel.app";
@@ -722,7 +719,7 @@ export async function POST(request: Request) {
             }
 
             // If not auto-approved and not duplicate (or other reason)
-            await replyMessage(replyToken, `เธเธญเธเธเธธเธ“เธเนเธฐ! เธฃเธฐเธเธเนเธ”เนเธเธฑเธเธ—เธถเธเธชเธฅเธดเธเธชเธณเธซเธฃเธฑเธเธเนเธฒเธเน€เธฅเธเธ—เธตเน ${text} เนเธฅเนเธง\n\nเน€เธเนเธฒเธซเธเนเธฒเธ—เธตเนเธเธฐเธ—เธณเธเธฒเธฃเธ•เธฃเธงเธเธชเธญเธเนเธฅเธฐเธญเธฑเธเน€เธ”เธ•เธขเธญเธ”เนเธเธฃเธฐเธเธเนเธซเนเธ เธฒเธขเนเธ 24 เธเธฑเนเธงเนเธกเธเธเนเธฐ ๐’`);
+            await replyMessage(replyToken, `ขอบคุณค่ะ! ระบบได้บันทึกสลิปสำหรับบ้านเลขที่ ${text} แล้ว\n\nเจ้าหน้าที่จะทำการตรวจสอบและอัปเดตยอดในระบบให้ภายใน 24 ชั่วโมงค่ะ 💚`);
           } else {
             // User sent text without a prior pending image
             // Maybe they are trying to link their account
@@ -732,12 +729,12 @@ export async function POST(request: Request) {
               await db.update(houses).set({ lineUserId: null }).where(eq(houses.lineUserId, userId));
               // 2. Link the new house
               await db.update(houses).set({ lineUserId: userId }).where(eq(houses.id, houseResult[0].id));
-              await replyMessage(replyToken, `โ… เน€เธเธฅเธตเนเธขเธ/เธเธนเธเธเธฑเธเธเธตเธเธฑเธเธเนเธฒเธเน€เธฅเธเธ—เธตเน ${text} เธชเธณเน€เธฃเนเธเนเธฅเนเธง!\nเธเธธเธ“เธชเธฒเธกเธฒเธฃเธ–เธเธดเธกเธเน "เน€เธเนเธเธเธดเธฅ" เน€เธเธทเนเธญเธ”เธนเธขเธญเธ” เธซเธฃเธทเธญ "เนเธเน€เธชเธฃเนเธ" เน€เธเธทเนเธญเธ”เธนเธเธฃเธฐเธงเธฑเธ•เธดเธเธฒเธฃเธเนเธฒเธขเน€เธเธดเธเนเธ”เนเน€เธฅเธขเธเนเธฐ ๐’`);
+              await replyMessage(replyToken, `✅ เปลี่ยน/ผูกบัญชีกับบ้านเลขที่ ${text} สำเร็จแล้ว!\nคุณสามารถพิมพ์ "เช็คบิล" เพื่อดูยอด หรือ "ใบเสร็จ" เพื่อดูประวัติการจ่ายเงินได้เลยค่ะ 💚`);
             } else if (houseResult.length > 1) {
               const flexMsg = generateDuplicateHouseSelectionFlexMessage(houseResult);
               await replyWithMessages(replyToken, [flexMsg]);
             } else {
-              await replyMessage(replyToken, "เธซเธฒเธเธ•เนเธญเธเธเธฒเธฃเธเธณเธฃเธฐเน€เธเธดเธ เธเธฃเธธเธ“เธฒเธชเนเธเธฃเธนเธ 'เธชเธฅเธดเธเธเธฒเธฃเนเธญเธเน€เธเธดเธ' เน€เธเนเธฒเธกเธฒเนเธเนเธเธ—เธเนเธญเธ เนเธฅเนเธงเธเนเธญเธขเธเธดเธกเธเนเธเนเธฒเธเน€เธฅเธเธ—เธตเนเธ•เธฒเธกเธเธฐเธเธฐ ๐\n\nเธซเธฃเธทเธญเธซเธฒเธเธ•เนเธญเธเธเธฒเธฃเน€เธเนเธเธขเธญเธ” เธเธดเธกเธเนเธเธณเธงเนเธฒ 'เน€เธเนเธเธเธดเธฅ' เนเธ”เนเน€เธฅเธขเธเนเธฐ");
+              await replyMessage(replyToken, "หากต้องการชำระเงิน กรุณาส่งรูป 'สลิปการโอนเงิน' เข้ามาในแชทก่อน แล้วค่อยพิมพ์บ้านเลขที่ตามนะคะ 🙏\n\nหรือหากต้องการเช็คยอด พิมพ์คำว่า 'เช็คบิล' ได้เลยค่ะ");
             }
           }
           }
@@ -790,13 +787,13 @@ export async function POST(request: Request) {
                     await db.update(invoices).set({ status: 'paid', transactionId: newTx[0].id }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
                     
                     
-                    const thaiMonths = ["", "เธกเธเธฃเธฒเธเธก", "เธเธธเธกเธ เธฒเธเธฑเธเธเน", "เธกเธตเธเธฒเธเธก", "เน€เธกเธฉเธฒเธขเธ", "เธเธคเธฉเธ เธฒเธเธก", "เธกเธดเธ–เธธเธเธฒเธขเธ", "เธเธฃเธเธเธฒเธเธก", "เธชเธดเธเธซเธฒเธเธก", "เธเธฑเธเธขเธฒเธขเธ", "เธ•เธธเธฅเธฒเธเธก", "เธเธคเธจเธเธดเธเธฒเธขเธ", "เธเธฑเธเธงเธฒเธเธก"];
+                    const thaiMonths = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
                     let monthStr = "";
                     if (unpaidInvoices.length === 1) {
                       const [y, m] = unpaidInvoices[0].monthYear.split("-");
                       monthStr = `${thaiMonths[parseInt(m)]} ${parseInt(y) + 543}`;
                     } else {
-                      monthStr = `${unpaidInvoices.length} เน€เธ”เธทเธญเธเธ—เธตเนเธเนเธฒเธเธเธณเธฃเธฐ`;
+                      monthStr = `${unpaidInvoices.length} เดือนที่ค้างชำระ`;
                     }
 
                     const appUrl = request.headers.get("host")?.includes("localhost") ? "http://localhost:3000" : "https://nangronggarbagepayments.vercel.app";
@@ -813,12 +810,12 @@ export async function POST(request: Request) {
                     continue;
                   }
                 }
-                await replyMessage(replyToken, `เธเธญเธเธเธธเธ“เธเนเธฐ! เธฃเธฐเธเธเนเธ”เนเธเธฑเธเธ—เธถเธเธชเธฅเธดเธเธชเธณเธซเธฃเธฑเธเธเนเธฒเธเน€เธฅเธเธ—เธตเน ${house.houseNumber} เนเธฅเนเธง\n\nเน€เธเนเธฒเธซเธเนเธฒเธ—เธตเนเธเธฐเธ—เธณเธเธฒเธฃเธ•เธฃเธงเธเธชเธญเธเนเธฅเธฐเธญเธฑเธเน€เธ”เธ•เธขเธญเธ”เนเธเธฃเธฐเธเธเนเธซเนเธ เธฒเธขเนเธ 24 เธเธฑเนเธงเนเธกเธเธเนเธฐ ๐’`);
+                await replyMessage(replyToken, `ขอบคุณค่ะ! ระบบได้บันทึกสลิปสำหรับบ้านเลขที่ ${house.houseNumber} แล้ว\n\nเจ้าหน้าที่จะทำการตรวจสอบและอัปเดตยอดในระบบให้ภายใน 24 ชั่วโมงค่ะ 💚`);
               } else {
-                await replyMessage(replyToken, `โ… เน€เธเธฅเธตเนเธขเธ/เธเธนเธเธเธฑเธเธเธตเธเธฑเธเธเนเธฒเธเน€เธฅเธเธ—เธตเน ${house.houseNumber} เธชเธณเน€เธฃเนเธเนเธฅเนเธง!\nเธเธธเธ“เธชเธฒเธกเธฒเธฃเธ–เธเธดเธกเธเน "เน€เธเนเธเธเธดเธฅ" เน€เธเธทเนเธญเธ”เธนเธขเธญเธ” เธซเธฃเธทเธญ "เนเธเน€เธชเธฃเนเธ" เน€เธเธทเนเธญเธ”เธนเธเธฃเธฐเธงเธฑเธ•เธดเธเธฒเธฃเธเนเธฒเธขเน€เธเธดเธเนเธ”เนเน€เธฅเธขเธเนเธฐ ๐’`);
+                await replyMessage(replyToken, `✅ เปลี่ยน/ผูกบัญชีกับบ้านเลขที่ ${house.houseNumber} สำเร็จแล้ว!\nคุณสามารถพิมพ์ "เช็คบิล" เพื่อดูยอด หรือ "ใบเสร็จ" เพื่อดูประวัติการจ่ายเงินได้เลยค่ะ 💚`);
               }
             } else {
-              await replyMessage(replyToken, "โ เนเธกเนเธเธเธเนเธญเธกเธนเธฅเธเนเธฒเธเนเธเธฃเธฐเธเธ เธเธฃเธธเธ“เธฒเธฅเธญเธเนเธซเธกเนเธญเธตเธเธเธฃเธฑเนเธเธเนเธฐ");
+              await replyMessage(replyToken, "❌ ไม่พบข้อมูลบ้านในระบบ กรุณาลองใหม่อีกครั้งค่ะ");
             }
           }
         }
@@ -831,5 +828,4 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
-
 
