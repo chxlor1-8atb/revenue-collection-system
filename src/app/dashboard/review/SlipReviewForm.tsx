@@ -14,10 +14,12 @@ function formatThaiMonth(monthYear: string) {
 
 export default function SlipReviewForm({ 
   transaction, 
-  onReviewed 
+  onReviewed,
+  layout = "detailed"
 }: { 
   transaction: any;
   onReviewed?: () => void;
+  layout?: "detailed" | "grid";
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showRejectConfirm, setShowRejectConfirm] = useState(false);
@@ -63,6 +65,121 @@ export default function SlipReviewForm({
   };
 
   const hasSlipImage = Boolean(transaction.slipImageUrl && transaction.slipImageUrl !== "pending");
+
+  if (layout === "grid") {
+    const firstInvoice = transaction.invoices?.[0];
+    const totalInvoices = transaction.invoices?.length || 0;
+
+    return (
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:border-[#5B58F2]/40 hover:shadow-md transition-all p-5 flex flex-col justify-between h-full group">
+        <div>
+          {/* Card Top: ID & Ref */}
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <span className="font-mono text-xs font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200">
+              #{transaction.id}
+            </span>
+            <span className="text-[11px] font-medium text-slate-400">
+              {new Date(transaction.createdAt).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
+            </span>
+          </div>
+
+          {/* Slip Image Thumbnail */}
+          <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-2xs border border-slate-200 bg-slate-50 mb-3 group/img">
+            {hasSlipImage ? (
+              <>
+                <img 
+                  src={transaction.slipImageUrl} 
+                  alt={`Slip #${transaction.id}`} 
+                  className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center p-2">
+                  <SlipModalButton imageUrl={transaction.slipImageUrl}>
+                    <span className="px-3 py-1.5 bg-white/95 text-slate-900 rounded-lg text-xs font-bold shadow-md flex items-center gap-1 cursor-pointer hover:scale-105 transition-transform">
+                      <Eye size={13} /> ขยายดู
+                    </span>
+                  </SlipModalButton>
+                </div>
+              </>
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-1">
+                <ImageOff size={24} />
+                <span className="text-[11px]">ไม่มีรูปสลิป</span>
+              </div>
+            )}
+
+            {transaction.slipRefId && (
+              <div className="absolute bottom-1.5 left-1.5 right-1.5 text-center">
+                <span className="inline-block truncate max-w-full font-mono text-[10px] font-bold text-slate-700 bg-white/95 px-2 py-0.5 rounded-md border border-slate-200 shadow-2xs">
+                  Ref: {transaction.slipRefId}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* House Info */}
+          <div className="space-y-1 mb-3">
+            <div className="flex items-center justify-between gap-1">
+              <span className="font-mono font-bold text-slate-900 bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200 text-xs">
+                {firstInvoice ? `บ้าน ${firstInvoice.houseNumber}` : "ไม่ระบุบ้าน"}
+              </span>
+              {totalInvoices > 1 && (
+                <span className="text-[10px] font-bold text-[#5B58F2] bg-[#EEF0FF] px-2 py-0.5 rounded-full">
+                  +{totalInvoices - 1} บิล
+                </span>
+              )}
+            </div>
+            
+            <div className="font-bold text-slate-800 text-sm truncate mt-1">
+              {firstInvoice?.ownerName || "ไม่ระบุชื่อ"}
+            </div>
+            
+            <div className="text-xs text-slate-500 truncate">
+              {firstInvoice ? `งวด: ${formatThaiMonth(firstInvoice.monthYear)}` : "-"}
+            </div>
+          </div>
+        </div>
+
+        {/* Card Footer: Amount & Quick Actions */}
+        <div className="pt-3 border-t border-slate-100">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[10px] font-bold text-slate-400 uppercase">ยอดเงินโอน</span>
+            <span className="font-mono font-bold text-base text-emerald-700">
+              ฿{parseFloat(transaction.amount || "0").toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleReview('verified')}
+              disabled={isSubmitting}
+              className="flex-1 h-9 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1 shadow-xs transition-all disabled:opacity-50"
+            >
+              <CheckCircle2 size={14} /> อนุมัติ
+            </button>
+            <button
+              onClick={() => handleReview('rejected')}
+              disabled={isSubmitting}
+              className="h-9 px-3 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-xl font-bold text-xs flex items-center justify-center transition-all disabled:opacity-50"
+              title="ปฏิเสธสลิป"
+            >
+              <XCircle size={14} />
+            </button>
+          </div>
+        </div>
+
+        <ConfirmModal
+          isOpen={showRejectConfirm}
+          onCancel={() => setShowRejectConfirm(false)}
+          onConfirm={() => executeReview('rejected')}
+          isLoading={isSubmitting}
+          title="ปฏิเสธสลิปการโอนเงิน"
+          description={<>คุณต้องการปฏิเสธสลิปรายการ #{transaction.id} ใช่หรือไม่?</>}
+          warningText="หากปฏิเสธ สถานะบิลทั้งหมดจะกลับไปเป็นค้างชำระ ผู้ชำระจะต้องทำการแจ้งชำระเงินเข้ามาใหม่อีกครั้ง"
+          confirmText="ใช่, ปฏิเสธสลิป"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden hover:shadow-md transition-all">

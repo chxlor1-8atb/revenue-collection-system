@@ -3,13 +3,42 @@
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import SlipReviewForm from "./SlipReviewForm";
-import { FileSignature, Loader2, QrCode, CheckCircle2, Clock, Sparkles, RefreshCw, Layers } from "lucide-react";
+import { FileSignature, Loader2, QrCode, CheckCircle2, Clock, Sparkles, RefreshCw, Layers, LayoutGrid, List, User, MapPin, ExternalLink, Calendar } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
+function formatThaiMonth(monthYear: string) {
+  const thaiMonths = ["", "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+  const [year, month] = monthYear.split("-");
+  return `${thaiMonths[parseInt(month, 10)]} ${parseInt(year, 10) + 543}`;
+}
+
 export default function ReviewClient() {
   const [activeTab, setActiveTab] = useState<"pending" | "waiting">("pending");
+  const [viewMode, setViewModeState] = useState<"grid" | "detailed">("grid");
+
+  // Load and save viewMode to localStorage
+  useEffect(() => {
+    try {
+      const savedMode = localStorage.getItem("review_view_mode");
+      if (savedMode === "grid" || savedMode === "detailed") {
+        setViewModeState(savedMode);
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, []);
+
+  const setViewMode = (mode: "grid" | "detailed") => {
+    setViewModeState(mode);
+    try {
+      localStorage.setItem("review_view_mode", mode);
+    } catch (e) {
+      // ignore
+    }
+  };
 
   // Poll every 3 seconds
   const { data, error, isLoading, mutate, isValidating } = useSWR('/api/transactions/review', fetcher, {
@@ -46,8 +75,31 @@ export default function ReviewClient() {
             </div>
           </div>
 
-          {/* Manual Refresh Button */}
+          {/* Header Controls: View Mode & Refresh */}
           <div className="flex items-center gap-3 self-end lg:self-center">
+            {activeTab === "pending" && (
+              <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/60">
+                <button
+                  onClick={() => setViewMode("detailed")}
+                  aria-label="มุมมองละเอียด"
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    viewMode === "detailed" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                  }`}
+                >
+                  <List size={14} /> ละเอียด
+                </button>
+                <button
+                  onClick={() => setViewMode("grid")}
+                  aria-label="มุมมองการ์ด"
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    viewMode === "grid" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                  }`}
+                >
+                  <LayoutGrid size={14} /> การ์ด
+                </button>
+              </div>
+            )}
+
             <button
               onClick={() => mutate()}
               disabled={isValidating}
@@ -120,7 +172,7 @@ export default function ReviewClient() {
 
         {/* 3. Master Content Body */}
         <div className="p-6 lg:p-8 bg-slate-50/30">
-          {/* Waiting View */}
+          {/* Waiting View: Live Scanning Grid Cards */}
           {activeTab === "waiting" && (
             <div className="space-y-4">
               <div className="bg-amber-50/90 rounded-2xl border border-amber-200/80 p-4 lg:p-5 flex items-center justify-between gap-4">
@@ -136,8 +188,8 @@ export default function ReviewClient() {
               </div>
               
               {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {Array.from({ length: 3 }).map((_, i) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {Array.from({ length: 4 }).map((_, i) => (
                     <div key={i} className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs animate-pulse space-y-3">
                       <div className="h-4 bg-slate-200 rounded w-1/3"></div>
                       <div className="h-6 bg-slate-200 rounded w-2/3"></div>
@@ -156,45 +208,77 @@ export default function ReviewClient() {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {waiting.map((tx: any, index: number) => {
-                    const houses = [...new Set(tx.invoices?.map((i: any) => i.houseNumber))];
+                    const firstInv = tx.invoices?.[0];
+                    const totalInvoices = tx.invoices?.length || 0;
                     return (
                       <motion.div
                         key={tx.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.2, delay: index * 0.05 }}
-                        className="bg-white rounded-2xl p-5 border border-amber-200/90 hover:border-amber-400 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden"
+                        className="bg-white rounded-2xl p-5 border border-amber-200/90 hover:border-amber-400 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden group"
                       >
                         <div className="absolute top-0 left-0 right-0 h-1 bg-amber-400"></div>
 
                         <div>
-                          <div className="flex items-center justify-between mb-3 pt-1">
-                            <span className="font-mono text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200">
-                              #{tx.id}
+                          {/* Card Top: House Badge & Status */}
+                          <div className="flex items-start justify-between gap-2 mb-3 pt-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-mono text-xs font-bold text-slate-900 bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200">
+                                {firstInv ? `บ้าน ${firstInv.houseNumber}` : `#${tx.id}`}
+                              </span>
+                              {totalInvoices > 1 && (
+                                <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded-md">
+                                  +{totalInvoices - 1} บิล
+                                </span>
+                              )}
+                            </div>
+
+                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                              <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                              </span>
+                              สแกนจ่าย
                             </span>
+                          </div>
+
+                          {/* Owner & Invoice Month */}
+                          <div className="space-y-1 mb-4">
+                            <div className="font-bold text-slate-800 text-sm flex items-center gap-1.5 truncate">
+                              <User size={14} className="text-slate-400 shrink-0" />
+                              <span className="truncate">{firstInv?.ownerName || "ผู้ชำระเงิน"}</span>
+                            </div>
+                            
+                            {firstInv && (
+                              <div className="text-xs text-slate-500 flex items-center gap-1.5 truncate">
+                                <Calendar size={12} className="text-slate-400 shrink-0" />
+                                <span>งวด: {formatThaiMonth(firstInv.monthYear)}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Card Bottom: Amount & Live Timer */}
+                        <div className="pt-3 border-t border-slate-100">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase">ยอดเงิน</span>
                             <span className="font-mono font-bold text-lg text-amber-600">
                               ฿{parseFloat(tx.amount || "0").toLocaleString("th-TH", { minimumFractionDigits: 2 })}
                             </span>
                           </div>
 
-                          <div className="space-y-1 mb-4">
-                            <div className="text-xs text-slate-400 font-medium">บ้านเลขที่</div>
-                            <div className="font-bold text-slate-800 text-sm">
-                              {houses.length > 0 ? houses.join(", ") : "ไม่ระบุ"}
-                            </div>
+                          <div className="flex items-center justify-between text-xs text-amber-700 bg-amber-50/70 -mx-5 -mb-5 p-2.5 px-4 rounded-b-2xl border-t border-amber-100">
+                            <span className="flex items-center gap-1.5 font-semibold text-[11px]">
+                              <Loader2 size={12} className="animate-spin text-amber-500" />
+                              กำลังรอแนบสลิป
+                            </span>
+                            <span className="text-[11px] font-mono text-amber-600">
+                              {new Date(tx.createdAt).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
+                            </span>
                           </div>
-                        </div>
-
-                        <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-amber-700 bg-amber-50/60 -mx-5 -mb-5 p-3 px-5 rounded-b-2xl">
-                          <span className="flex items-center gap-1.5 font-semibold">
-                            <Loader2 size={13} className="animate-spin text-amber-500" />
-                            กำลังรอแนบสลิป
-                          </span>
-                          <span className="text-[11px] text-amber-600/80">
-                            {new Date(tx.createdAt).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
-                          </span>
                         </div>
                       </motion.div>
                     );
@@ -204,20 +288,16 @@ export default function ReviewClient() {
             </div>
           )}
 
-          {/* Pending Review View */}
+          {/* Pending Review View: Grid Cards or Detailed Cards */}
           {activeTab === "pending" && (
             <div>
               {isLoading ? (
-                <div className="space-y-4">
-                  {Array.from({ length: 2 }).map((_, i) => (
-                    <div key={i} className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xs animate-pulse grid grid-cols-1 lg:grid-cols-12 gap-6">
-                      <div className="lg:col-span-4 bg-slate-200 rounded-2xl h-72"></div>
-                      <div className="lg:col-span-8 space-y-4">
-                        <div className="h-6 bg-slate-200 rounded w-1/3"></div>
-                        <div className="h-4 bg-slate-200 rounded w-1/4"></div>
-                        <div className="h-24 bg-slate-200 rounded w-full"></div>
-                        <div className="h-12 bg-slate-200 rounded w-full mt-6"></div>
-                      </div>
+                <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" : "space-y-4"}>
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs animate-pulse space-y-3">
+                      <div className="h-32 bg-slate-200 rounded-xl w-full"></div>
+                      <div className="h-5 bg-slate-200 rounded w-2/3"></div>
+                      <div className="h-4 bg-slate-200 rounded w-1/2"></div>
                     </div>
                   ))}
                 </div>
@@ -232,16 +312,17 @@ export default function ReviewClient() {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-6">
+                <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" : "space-y-6"}>
                   {pending.map((tx: any, index: number) => (
                     <motion.div 
                       key={tx.id}
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.2, delay: index * 0.08 }}
+                      transition={{ duration: 0.2, delay: index * 0.05 }}
                     >
                       <SlipReviewForm 
                         transaction={tx} 
+                        layout={viewMode}
                         onReviewed={() => mutate()} 
                       />
                     </motion.div>
