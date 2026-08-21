@@ -582,7 +582,7 @@ export function generateSlipVerificationSuccessFlexMessage(
               {
                 type: "text",
                 text: amount.toFixed(2),
-                size: "3xl",
+                size: "3xl", flex: 0,
                 weight: "bold",
                 color: "#0ea5e9",
                 flex: 0
@@ -732,7 +732,7 @@ export function generateSlipErrorFlexMessage(
           {
             type: "text",
             text: amount.toFixed(2),
-            size: "3xl",
+            size: "3xl", flex: 0,
             weight: "bold",
             color: "#0ea5e9",
             flex: 0
@@ -976,9 +976,9 @@ export function generateHowToUseFlexMessage(appUrl: string): any {
             alignItems: "center",
             contents: [
               {
-                type: "icon",
+                type: "image",
                 url: `${appUrl}/api/icons/book?color=f97316`,
-                size: "3xl"
+                size: "3xl", flex: 0
               },
               {
                 type: "text",
@@ -1084,9 +1084,9 @@ export function generateReportProblemFlexMessage(appUrl: string): any {
             alignItems: "center",
             contents: [
               {
-                type: "icon",
+                type: "image",
                 url: `${appUrl}/api/icons/alert?color=ef4444`,
-                size: "3xl"
+                size: "3xl", flex: 0
               },
               {
                 type: "text",
@@ -1155,9 +1155,9 @@ export function generateContactFlexMessage(appUrl: string): any {
             alignItems: "center",
             contents: [
               {
-                type: "icon",
+                type: "image",
                 url: `${appUrl}/api/icons/phone?color=0ea5e9`,
-                size: "3xl"
+                size: "3xl", flex: 0
               },
               {
                 type: "box",
@@ -1228,9 +1228,9 @@ export function generateMyInfoFlexMessage(appUrl: string, house: any): any {
             alignItems: "center",
             contents: [
               {
-                type: "icon",
+                type: "image",
                 url: `${appUrl}/api/icons/home?color=8b5cf6`,
-                size: "3xl"
+                size: "3xl", flex: 0
               },
               {
                 type: "text",
@@ -1290,5 +1290,6 @@ export function generateMyInfoFlexMessage(appUrl: string, house: any): any {
     }
   };
 }
+
 
 
