@@ -61,21 +61,12 @@ export default function ReviewClient() {
               <FileSignature size={24} />
             </div>
             <div>
-              <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-xl lg:text-2xl font-bold text-slate-900 tracking-tight">รายการตรวจสอบสลิป</h1>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                  </span>
-                  เชื่อมต่อระบบสด (Live Sync)
-                </span>
-              </div>
+              <h1 className="text-xl lg:text-2xl font-bold text-slate-900 tracking-tight">รายการตรวจสอบสลิป</h1>
               <p className="text-slate-500 text-sm mt-0.5">ตรวจสอบและยืนยันยอดเงินที่ผู้ใช้งานโอนผ่าน QR Code</p>
             </div>
           </div>
 
-          {/* Header Controls: View Mode & Refresh */}
+          {/* Header Controls: View Mode */}
           <div className="flex items-center gap-3 self-end lg:self-center">
             <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/60">
               <button
@@ -97,17 +88,6 @@ export default function ReviewClient() {
                 <LayoutGrid size={14} /> การ์ด
               </button>
             </div>
-
-            <button
-              onClick={() => mutate()}
-              disabled={isValidating}
-              aria-label="รีเฟรชข้อมูล"
-              className="h-10 px-3.5 flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all disabled:opacity-50"
-              title="รีเฟรชข้อมูลทันที"
-            >
-              <RefreshCw size={14} className={isValidating ? "animate-spin text-[#5B58F2]" : "text-slate-500"} />
-              <span>รีเฟรช</span>
-            </button>
           </div>
         </div>
 
