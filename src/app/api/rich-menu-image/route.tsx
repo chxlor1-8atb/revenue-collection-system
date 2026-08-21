@@ -173,81 +173,80 @@ export async function GET(req: NextRequest) {
                   flexDirection: 'column',
                   width: cardW,
                   height: cardH,
-                  borderRadius: 65, // iOS squircle simulation
-                  background: '#FFFFFF', // Pure white card
-                  border: '3px solid #E5E5EA', // Apple System Gray 5 border instead of buggy drop shadows
+                  borderRadius: 40,
+                  background: '#FFFFFF',
+                  border: '4px solid #E5E5EA',
                   position: 'relative',
                   overflow: 'hidden',
-                  padding: 50,
+                  padding: 40,
+                  alignItems: 'center',
                 }}
               >
-                {/* Top Section: Icon & Badge */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
-                  {/* Icon Container (Apple Style) */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      width: 200,
-                      height: 200,
-                      borderRadius: 45, // Apple proportional radius
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      background: `linear-gradient(135deg, ${btn.bgStart}, ${btn.bgEnd})`,
-                      // Removed boxShadow to prevent Satori from rendering hard stacked boxes
-                    }}
-                  >
-                    <svg width="110" height="110" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      {btn.iconPath}
-                    </svg>
-                  </div>
-
-                  {/* Badge (iOS Style) */}
-                  {btn.badge && (
-                    <div
-                      style={{
-                        display: 'flex',
-                        background: '#FF3B30', // Apple Red
-                        padding: '12px 28px',
-                        borderRadius: 40,
-                      }}
-                    >
-                      <span style={{ color: 'white', fontSize: 34, fontWeight: 700 }}>{btn.badge}</span>
-                    </div>
-                  )}
+                {/* Number Badge (Top Left) */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 30,
+                    left: 30,
+                    width: 90,
+                    height: 90,
+                    borderRadius: 45,
+                    background: btn.accent,
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 50,
+                    fontWeight: 700,
+                  }}
+                >
+                  {i + 1}
                 </div>
 
-                {/* Spacer */}
-                <div style={{ display: 'flex', flex: 1 }} />
+                {/* Giant Icon in Center */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginTop: 50,
+                    width: 320,
+                    height: 320,
+                    borderRadius: 160,
+                    background: btn.tintBg,
+                  }}
+                >
+                  <svg width="180" height="180" viewBox="0 0 24 24" fill="none" stroke={btn.accent} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    {btn.iconPath}
+                  </svg>
+                </div>
 
-                {/* Content Section */}
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ fontSize: 90, fontWeight: 700, color: '#000000', letterSpacing: '-2px' }}>
-                    {btn.label}
-                  </div>
-                  
-                  <div style={{ fontSize: 44, fontWeight: 400, color: '#8E8E93', marginTop: 12 }}>
-                    {btn.subtitle}
-                  </div>
-                  
-                  {/* Action Pill - iOS Tinted Style */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      marginTop: 35,
-                      background: btn.tintBg,
-                      padding: '20px 45px',
-                      borderRadius: 100,
-                      alignSelf: 'flex-start',
-                    }}
-                  >
-                    <span style={{ fontSize: 42, fontWeight: 700, color: btn.accent, marginRight: 15 }}>
-                      {btn.actionText}
-                    </span>
-                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={btn.accent} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M5 12h14M12 5l7 7-7 7" />
-                    </svg>
-                  </div>
+                {/* Title */}
+                <div style={{ fontSize: 75, fontWeight: 700, color: '#111111', marginTop: 30 }}>
+                  {btn.label}
+                </div>
+                
+                {/* Subtitle */}
+                <div style={{ fontSize: 36, color: '#666666', marginTop: 15 }}>
+                  {btn.subtitle}
+                </div>
+
+                {/* Bottom Full-width Pill Button */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: 40,
+                    left: 40,
+                    right: 40,
+                    background: `linear-gradient(90deg, ${btn.bgStart}, ${btn.bgEnd})`,
+                    borderRadius: 100,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: 100,
+                  }}
+                >
+                  <span style={{ color: 'white', fontSize: 45, fontWeight: 700 }}>{btn.actionText}</span>
                 </div>
               </div>
             ))}
