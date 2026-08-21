@@ -582,7 +582,7 @@ export function generateSlipVerificationSuccessFlexMessage(
               {
                 type: "text",
                 text: amount.toFixed(2),
-                size: "3xl", flex: 0,
+                size: "3xl",
                 weight: "bold",
                 color: "#0ea5e9",
                 flex: 0
@@ -732,10 +732,10 @@ export function generateSlipErrorFlexMessage(
           {
             type: "text",
             text: amount.toFixed(2),
-            size: "3xl", flex: 0,
-            weight: "bold",
-            color: "#0ea5e9",
-            flex: 0
+            size: "3xl",
+                weight: "bold",
+                color: "#0ea5e9",
+                flex: 0
           },
           {
             type: "text",
