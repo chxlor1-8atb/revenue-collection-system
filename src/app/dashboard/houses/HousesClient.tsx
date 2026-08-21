@@ -374,42 +374,6 @@ export default function HousesClient({
         </div>
       </div>
 
-      {/* Community Hub: Zone Filter Pills */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-        <div className="flex items-center gap-2 mb-2 px-1">
-          <MapPin size={15} className="text-[#5B58F2]" />
-          <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">เลือกดูตามชุมชน (20 ชุมชน)</span>
-        </div>
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 pt-0.5">
-          <button
-            onClick={() => setSelectedZone("")}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-              !selectedZone 
-                ? "bg-[#1A1A1A] text-white shadow-xs" 
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
-            }`}
-          >
-            ทั้งหมด ({totalHouses})
-          </button>
-          {ALL_ZONES.map(z => {
-            const isSelected = selectedZone === z;
-            return (
-              <button
-                key={z}
-                onClick={() => setSelectedZone(isSelected ? "" : z)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                  isSelected 
-                    ? "bg-[#5B58F2] text-white shadow-xs shadow-[#5B58F2]/30" 
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
-                }`}
-              >
-                {z}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       {error && (
         <div className="p-4 bg-red-50 text-red-800 rounded-2xl text-sm border border-red-200 flex items-center gap-3">
           <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center shrink-0">
@@ -441,11 +405,12 @@ export default function HousesClient({
                 className="w-full sm:w-80 focus:w-full sm:focus:w-80 !bg-slate-50 hover:!bg-slate-100/70 border-transparent focus:!bg-white focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none text-sm rounded-xl transition-all"
               />
             </div>
-            <div className="w-full sm:w-44 z-10">
+            <div className="w-full sm:w-48 z-10">
               <CustomSelect
                 value={selectedZone || ""}
                 onChange={setSelectedZone}
-                placeholder="ทุกชุมชน"
+                placeholder="ทุกชุมชน (20 ชุมชน)"
+                icon={<MapPin size={15} className="text-[#5B58F2]" />}
                 options={[
                   { value: "", label: "ทุกชุมชน" },
                   ...ALL_ZONES.map(z => ({ value: z, label: z }))
@@ -508,6 +473,40 @@ export default function HousesClient({
             </div>
           </div>
         </div>
+
+        {/* Active Filter Chips */}
+        {hasActiveFilters && (
+          <div className="px-6 py-2.5 bg-slate-50/80 border-b border-slate-100 flex flex-wrap items-center gap-2 text-xs">
+            <span className="text-slate-500 font-semibold">ตัวกรอง:</span>
+            {searchQuery && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-slate-700 font-medium">
+                <span>"{searchQuery}"</span>
+                <button onClick={() => setSearchQuery("")} className="hover:text-red-500 ml-1">
+                  <X size={12} />
+                </button>
+              </span>
+            )}
+            {selectedZone && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#EEF0FF] border border-[#D5D9FF] rounded-lg text-[#5B58F2] font-semibold">
+                <MapPin size={12} />
+                <span>ชุมชน{selectedZone}</span>
+                <button onClick={() => setSelectedZone("")} className="hover:text-red-500 ml-1">
+                  <X size={12} />
+                </button>
+              </span>
+            )}
+            {selectedPaymentStatus && (
+              <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg font-semibold ${
+                selectedPaymentStatus === 'unpaid' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+              }`}>
+                <span>{selectedPaymentStatus === 'unpaid' ? 'ค้างชำระ' : 'ชำระครบแล้ว'}</span>
+                <button onClick={() => setSelectedPaymentStatus("")} className="hover:text-red-500 ml-1">
+                  <X size={12} />
+                </button>
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Payment Summary Banner */}
         {paymentSummary && selectedPaymentStatus === 'unpaid' && (
