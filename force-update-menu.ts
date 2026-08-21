@@ -16,19 +16,19 @@ async function run() {
       await client.deleteRichMenu(m.richMenuId);
     }
     
-    console.log('Creating new Bento Grid rich menu...');
+    console.log('Creating new Smart City Vector rich menu...');
     const richMenu = {
       size: { width: 2500, height: 1686 },
       selected: true,
       name: 'Main Menu',
       chatBarText: 'เมนูหลัก',
       areas: [
-        { bounds: { x: 0, y: 0, width: 1666, height: 843 }, action: { type: 'message', text: 'เช็คบิล' } },
-        { bounds: { x: 1666, y: 0, width: 834, height: 843 }, action: { type: 'message', text: 'ใบเสร็จ' } },
-        { bounds: { x: 0, y: 843, width: 625, height: 843 }, action: { type: 'message', text: 'ข้อมูลของฉัน' } },
-        { bounds: { x: 625, y: 843, width: 625, height: 843 }, action: { type: 'message', text: 'วิธีใช้งาน' } },
-        { bounds: { x: 1250, y: 843, width: 625, height: 843 }, action: { type: 'message', text: 'แจ้งปัญหา' } },
-        { bounds: { x: 1875, y: 843, width: 625, height: 843 }, action: { type: 'message', text: 'ติดต่อเจ้าหน้าที่' } },
+        { bounds: { x: 0, y: 0, width: 833, height: 843 }, action: { type: 'message', text: 'เช็คบิล' } },
+        { bounds: { x: 833, y: 0, width: 834, height: 843 }, action: { type: 'message', text: 'ใบเสร็จ' } },
+        { bounds: { x: 1667, y: 0, width: 833, height: 843 }, action: { type: 'message', text: 'ข้อมูลของฉัน' } },
+        { bounds: { x: 0, y: 843, width: 833, height: 843 }, action: { type: 'message', text: 'วิธีใช้งาน' } },
+        { bounds: { x: 833, y: 843, width: 834, height: 843 }, action: { type: 'message', text: 'แจ้งปัญหา' } },
+        { bounds: { x: 1667, y: 843, width: 833, height: 843 }, action: { type: 'message', text: 'ติดต่อเจ้าหน้าที่' } },
       ],
     };
     const createResponse = await client.createRichMenu(richMenu as any);
@@ -39,8 +39,8 @@ async function run() {
     const res = await fetch('http://localhost:3000/api/rich-menu-image');
     const arrayBuffer = await res.arrayBuffer();
     const pngBuffer = Buffer.from(arrayBuffer);
-    const jpegBuffer = await sharp(pngBuffer).jpeg({ quality: 60 }).toBuffer();
-    console.log('Size after compression:', jpegBuffer.length / 1024, 'KB');
+    const jpegBuffer = await sharp(pngBuffer).jpeg({ quality: 85 }).toBuffer();
+    console.log('Size after compression:', (jpegBuffer.length / 1024).toFixed(1), 'KB');
     const imageBlob = new Blob([jpegBuffer], { type: 'image/jpeg' });
     
     console.log('Uploading image to LINE...');

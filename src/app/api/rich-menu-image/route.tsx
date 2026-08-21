@@ -3,73 +3,273 @@ import { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
 
-// Lucide icons
-const icons = {
+// Rich Vector Illustrations for each card
+const cardIllustrations = {
+  // 1. Bill Payment (Phone with QR + Trash Bin + Coins)
   bill: (
-    <g>
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <polyline points="10 9 9 9 8 9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </g>
+    <svg width="220" height="220" viewBox="0 0 220 220" fill="none">
+      {/* Background Glow Circle */}
+      <circle cx="110" cy="110" r="95" fill="#ECFDF5" />
+      <circle cx="110" cy="110" r="80" fill="#D1FAE5" />
+      
+      {/* Trash Bin */}
+      <rect x="135" y="105" width="55" height="70" rx="8" fill="#10B981" />
+      <rect x="130" y="98" width="65" height="10" rx="4" fill="#059669" />
+      <rect x="150" y="92" width="25" height="7" rx="3" fill="#047857" />
+      <path d="M152 125l6-6 6 6m0 0l-3 6m3-6h-8m-3 16l-6-6 6-6m0 0l3-6m-3 6h8" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      
+      {/* Phone Body */}
+      <rect x="50" y="45" width="90" height="140" rx="16" fill="#1E293B" />
+      <rect x="55" y="55" width="80" height="120" rx="10" fill="#FFFFFF" />
+      
+      {/* Phone Screen: QR Code Box */}
+      <rect x="68" y="70" width="54" height="54" rx="8" fill="#F0FDF4" stroke="#10B981" strokeWidth="2" />
+      <rect x="75" y="77" width="16" height="16" rx="3" fill="#10B981" />
+      <rect x="99" y="77" width="16" height="16" rx="3" fill="#10B981" />
+      <rect x="75" y="101" width="16" height="16" rx="3" fill="#10B981" />
+      <rect x="99" y="101" width="8" height="8" fill="#059669" />
+      <rect x="107" y="109" width="8" height="8" fill="#059669" />
+      
+      {/* Scan line */}
+      <line x1="68" y1="97" x2="122" y2="97" stroke="#34D399" strokeWidth="3" strokeLinecap="round" />
+      
+      {/* Coins */}
+      <circle cx="45" cy="160" r="18" fill="#FBBF24" stroke="#F59E0B" strokeWidth="3" />
+      <circle cx="45" cy="160" r="12" fill="#FDE68A" />
+      <path d="M45 153v14m-4-10h8a3 3 0 0 1 0 6h-8a3 3 0 0 0 0 6h8" stroke="#D97706" strokeWidth="2" strokeLinecap="round" />
+      
+      <circle cx="70" cy="175" r="15" fill="#F59E0B" stroke="#D97706" strokeWidth="2" />
+      <circle cx="70" cy="175" r="10" fill="#FDE68A" />
+    </svg>
   ),
+
+  // 2. Receipt (Phone with Receipt Paper + Checkmark)
   receipt: (
-    <g>
-      <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M16 8h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M16 12h-8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M16 16h-8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </g>
+    <svg width="220" height="220" viewBox="0 0 220 220" fill="none">
+      <circle cx="110" cy="110" r="95" fill="#EFF6FF" />
+      <circle cx="110" cy="110" r="80" fill="#DBEAFE" />
+      
+      {/* Phone Base */}
+      <rect x="65" y="45" width="90" height="140" rx="16" fill="#1E293B" />
+      <rect x="70" y="55" width="80" height="120" rx="10" fill="#3B82F6" />
+      
+      {/* Receipt Paper Floating Out */}
+      <path d="M78 40h64v100l-8-5-8 5-8-5-8 5-8-5-8 5-8-5-8 5V40z" fill="#FFFFFF" />
+      
+      {/* Green Success Badge */}
+      <circle cx="110" cy="68" r="16" fill="#10B981" />
+      <path d="M103 68l5 5 10-10" stroke="#FFFFFF" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+      
+      {/* Receipt lines */}
+      <rect x="90" y="94" width="40" height="5" rx="2" fill="#93C5FD" />
+      <rect x="88" y="105" width="44" height="4" rx="2" fill="#E2E8F0" />
+      <rect x="88" y="114" width="44" height="4" rx="2" fill="#E2E8F0" />
+      <rect x="88" y="123" width="28" height="4" rx="2" fill="#E2E8F0" />
+      
+      {/* Floating Card */}
+      <rect x="125" y="125" width="65" height="42" rx="8" fill="#2563EB" stroke="#FFFFFF" strokeWidth="2.5" />
+      <rect x="133" y="136" width="14" height="10" rx="2" fill="#FBBF24" />
+      <circle cx="172" cy="153" r="6" fill="#EF4444" opacity="0.9" />
+      <circle cx="164" cy="153" r="6" fill="#F59E0B" opacity="0.9" />
+    </svg>
   ),
-  user: (
-    <g>
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="12" cy="7" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
-    </g>
+
+  // 3. House Registry (Modern House + Document + Location Pin)
+  house: (
+    <svg width="220" height="220" viewBox="0 0 220 220" fill="none">
+      <circle cx="110" cy="110" r="95" fill="#F5F3FF" />
+      <circle cx="110" cy="110" r="80" fill="#EDE9FE" />
+      
+      {/* House Body */}
+      <path d="M60 115l50-35 50 35v55a6 6 0 0 1-6 6H66a6 6 0 0 1-6-6v-55z" fill="#8B5CF6" />
+      {/* Roof Highlight */}
+      <path d="M54 118l56-40 56 40" stroke="#6D28D9" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="140" y="80" width="12" height="22" fill="#6D28D9" rx="2" />
+      
+      {/* House Door & Windows */}
+      <rect x="96" y="136" width="28" height="40" rx="4" fill="#FFFFFF" />
+      <rect x="74" y="128" width="16" height="16" rx="3" fill="#DDD6FE" />
+      <rect x="130" y="128" width="16" height="16" rx="3" fill="#DDD6FE" />
+      
+      {/* Location Pin */}
+      <path d="M155 50c-11 0-20 9-20 20 0 15 20 32 20 32s20-17 20-32c0-11-9-20-20-20z" fill="#EC4899" />
+      <circle cx="155" cy="70" r="7" fill="#FFFFFF" />
+      
+      {/* Document Icon on Left */}
+      <rect x="35" y="120" width="30" height="40" rx="4" fill="#FFFFFF" stroke="#8B5CF6" strokeWidth="2" />
+      <line x1="42" y1="130" x2="58" y2="130" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round" />
+      <line x1="42" y1="138" x2="58" y2="138" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round" />
+      <line x1="42" y1="146" x2="52" y2="146" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round" />
+    </svg>
   ),
-  book: (
-    <g>
-      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </g>
+
+  // 4. User Guide (Open Book + Lightbulb + Gears)
+  guide: (
+    <svg width="220" height="220" viewBox="0 0 220 220" fill="none">
+      <circle cx="110" cy="110" r="95" fill="#FFFBEB" />
+      <circle cx="110" cy="110" r="80" fill="#FEF3C7" />
+      
+      {/* Open Book */}
+      <path d="M50 115c18-8 40-6 60 5 20-11 42-13 60-5v55c-18-8-40-6-60 5-20-11-42-13-60-5v-55z" fill="#F59E0B" />
+      <path d="M54 110c17-8 38-6 56 4v55c-18-10-39-12-56-4v-55z" fill="#FFFFFF" />
+      <path d="M166 110c-17-8-38-6-56 4v55c18-10 39-12 56-4v-55z" fill="#FFFFFF" />
+      
+      {/* Text lines in book */}
+      <line x1="64" y1="124" x2="98" y2="120" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round" />
+      <line x1="64" y1="134" x2="98" y2="130" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round" />
+      <line x1="64" y1="144" x2="90" y2="140" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round" />
+      
+      <line x1="122" y1="120" x2="156" y2="124" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round" />
+      <line x1="122" y1="130" x2="156" y2="134" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round" />
+      <line x1="122" y1="140" x2="148" y2="144" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round" />
+      
+      {/* Floating Lightbulb */}
+      <circle cx="110" cy="65" r="22" fill="#FBBF24" />
+      <path d="M102 85h16v6h-16z" fill="#D97706" rx="2" />
+      <path d="M105 60a6 6 0 0 1 10 0c0 4-5 6-5 9" stroke="#78350F" strokeWidth="2.5" strokeLinecap="round" />
+      {/* Rays */}
+      <line x1="110" y1="35" x2="110" y2="40" stroke="#F59E0B" strokeWidth="3" strokeLinecap="round" />
+      <line x1="82" y1="50" x2="87" y2="54" stroke="#F59E0B" strokeWidth="3" strokeLinecap="round" />
+      <line x1="138" y1="50" x2="133" y2="54" stroke="#F59E0B" strokeWidth="3" strokeLinecap="round" />
+    </svg>
   ),
-  alert: (
-    <g>
-      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-    </g>
+
+  // 5. Report Issue (Warning Triangle + Damaged Bin + Megaphone)
+  report: (
+    <svg width="220" height="220" viewBox="0 0 220 220" fill="none">
+      <circle cx="110" cy="110" r="95" fill="#FFF1F2" />
+      <circle cx="110" cy="110" r="80" fill="#FFE4E6" />
+      
+      {/* Trash Bin with trash overflowing */}
+      <rect x="50" y="115" width="48" height="60" rx="6" fill="#94A3B8" />
+      <rect x="45" y="108" width="58" height="8" rx="3" fill="#64748B" />
+      <path d="M58 108l10-18 15 6-5 12" fill="#CBD5E1" />
+      
+      {/* Big Alert Warning Triangle */}
+      <path d="M135 60l42 70a6 6 0 0 1-5 9h-84a6 6 0 0 1-5-9l42-70a6 6 0 0 1 10 0z" fill="#F43F5E" />
+      <path d="M135 72l32 54h-64l32-54z" fill="#FB7185" />
+      <line x1="135" y1="88" x2="135" y2="106" stroke="#FFFFFF" strokeWidth="5" strokeLinecap="round" />
+      <circle cx="135" cy="117" r="3.5" fill="#FFFFFF" />
+      
+      {/* Speech exclamation badge */}
+      <circle cx="75" cy="80" r="16" fill="#E11D48" />
+      <line x1="75" y1="73" x2="75" y2="82" stroke="#FFFFFF" strokeWidth="3.5" strokeLinecap="round" />
+      <circle cx="75" cy="88" r="2" fill="#FFFFFF" />
+    </svg>
   ),
-  phone: (
-    <g>
-      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </g>
+
+  // 6. Contact Staff (Support Agent with Headset + Chat Bubbles)
+  support: (
+    <svg width="220" height="220" viewBox="0 0 220 220" fill="none">
+      <circle cx="110" cy="110" r="95" fill="#ECFEFF" />
+      <circle cx="110" cy="110" r="80" fill="#CFFAFE" />
+      
+      {/* Support Person */}
+      <path d="M68 180c0-23 19-42 42-42s42 19 42 42v2H68v-2z" fill="#0891B2" />
+      <circle cx="110" cy="108" r="28" fill="#FDBA74" />
+      {/* Hair */}
+      <path d="M82 105c0-16 12-28 28-28s28 12 28 28c0 4-1 8-2 10-6-14-16-16-26-16s-20 2-26 16c-1-2-2-6-2-10z" fill="#1E293B" />
+      
+      {/* Headset */}
+      <path d="M80 108c0-17 13-30 30-30s30 13 30 30" stroke="#0284C7" strokeWidth="5" fill="none" strokeLinecap="round" />
+      <rect x="76" y="100" width="8" height="16" rx="4" fill="#0369A1" />
+      <rect x="136" y="100" width="8" height="16" rx="4" fill="#0369A1" />
+      <path d="M138 116v8c0 4-4 8-8 8h-10" stroke="#0369A1" strokeWidth="3" fill="none" strokeLinecap="round" />
+      <circle cx="118" cy="132" r="4" fill="#0284C7" />
+      
+      {/* Chat Bubbles */}
+      <rect x="140" y="55" width="45" height="30" rx="10" fill="#22C55E" />
+      <circle cx="152" cy="70" r="3" fill="#FFFFFF" />
+      <circle cx="162" cy="70" r="3" fill="#FFFFFF" />
+      <circle cx="172" cy="70" r="3" fill="#FFFFFF" />
+      
+      <rect x="35" y="70" width="40" height="26" rx="8" fill="#3B82F6" />
+      <circle cx="47" cy="83" r="2.5" fill="#FFFFFF" />
+      <circle cx="55" cy="83" r="2.5" fill="#FFFFFF" />
+      <circle cx="63" cy="83" r="2.5" fill="#FFFFFF" />
+    </svg>
   )
 };
+
+const menuList = [
+  {
+    tag: 'PAYMENT',
+    tagBg: '#ECFDF5',
+    tagColor: '#059669',
+    title: 'เช็คบิล / จ่ายค่าขยะ',
+    subtitle: 'ตรวจสอบยอด & สแกนจ่าย QR',
+    btnText: 'ชำระเงิน',
+    btnBg: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+    btnShadow: '0 8px 20px rgba(16, 185, 129, 0.35)',
+    illustration: cardIllustrations.bill,
+  },
+  {
+    tag: 'RECEIPTS',
+    tagBg: '#EFF6FF',
+    tagColor: '#2563EB',
+    title: 'ประวัติใบเสร็จ',
+    subtitle: 'ดูและดาวน์โหลดใบเสร็จรับเงิน',
+    btnText: 'ดูใบเสร็จ',
+    btnBg: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+    btnShadow: '0 8px 20px rgba(37, 99, 235, 0.35)',
+    illustration: cardIllustrations.receipt,
+  },
+  {
+    tag: 'HOUSE REGISTRY',
+    tagBg: '#F5F3FF',
+    tagColor: '#7C3AED',
+    title: 'ข้อมูลทะเบียนบ้าน',
+    subtitle: 'ตรวจสอบและจัดการที่พักอาศัย',
+    btnText: 'จัดการข้อมูล',
+    btnBg: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
+    btnShadow: '0 8px 20px rgba(124, 58, 237, 0.35)',
+    illustration: cardIllustrations.house,
+  },
+  {
+    tag: 'USER GUIDE',
+    tagBg: '#FFFBEB',
+    tagColor: '#D97706',
+    title: 'คู่มือการใช้งาน',
+    subtitle: 'ขั้นตอนและวิธีชำระค่าธรรมเนียม',
+    btnText: 'ดูคู่มือ',
+    btnBg: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+    btnShadow: '0 8px 20px rgba(217, 119, 6, 0.35)',
+    illustration: cardIllustrations.guide,
+  },
+  {
+    tag: 'REPORT ISSUE',
+    tagBg: '#FFF1F2',
+    tagColor: '#E11D48',
+    title: 'แจ้งปัญหา / ร้องเรียน',
+    subtitle: 'ขยะตกค้าง ถังขยะชำรุด หรืออื่นๆ',
+    btnText: 'แจ้งเรื่อง',
+    btnBg: 'linear-gradient(135deg, #F43F5E 0%, #E11D48 100%)',
+    btnShadow: '0 8px 20px rgba(225, 29, 72, 0.35)',
+    illustration: cardIllustrations.report,
+  },
+  {
+    tag: 'SUPPORT 24/7',
+    tagBg: '#ECFEFF',
+    tagColor: '#0891B2',
+    title: 'ติดต่อเจ้าหน้าที่',
+    subtitle: 'สอบถามข้อมูลและขอความช่วยเหลือ',
+    btnText: 'ติดต่อเรา',
+    btnBg: 'linear-gradient(135deg, #06B6D4 0%, #0891B2 100%)',
+    btnShadow: '0 8px 20px rgba(8, 145, 178, 0.35)',
+    illustration: cardIllustrations.support,
+  },
+];
 
 export async function GET(req: NextRequest) {
   try {
     const W = 2500;
     const H = 1686;
     
-    // Grid gap & padding
-    const GAP = 24;
-    const P = 32; // Outer padding
+    const GAP = 28;
+    const P = 36;
     
-    // Row heights
-    const R1_H = (H - GAP - P * 2) / 2; 
-    const R2_H = R1_H;
-    
-    // Col widths
-    const R1_W_TOTAL = W - P * 2 - GAP;
-    const R1_ITEM1_W = Math.floor((R1_W_TOTAL * 2) / 3);
-    const R1_ITEM2_W = R1_W_TOTAL - R1_ITEM1_W;
-    
-    const R2_W_TOTAL = W - P * 2 - GAP * 3;
-    const R2_ITEM_W = Math.floor(R2_W_TOTAL / 4);
-
-    const baseUrl = req.nextUrl.origin;
+    const CARD_W = Math.floor((W - P * 2 - GAP * 2) / 3); // 3 cols
+    const CARD_H = Math.floor((H - P * 2 - GAP) / 2);     // 2 rows
 
     return new ImageResponse(
       (
@@ -79,131 +279,159 @@ export async function GET(req: NextRequest) {
             flexDirection: 'column',
             width: '100%',
             height: '100%',
-            backgroundColor: '#000000', // Black background to contrast the beautiful images
+            backgroundColor: '#F1F5F9', // Modern Slate 100
             padding: `${P}px`,
             gap: `${GAP}px`,
           }}
         >
-          {/* ROW 1 */}
-          <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: R1_H, gap: `${GAP}px` }}>
-            
-            {/* ITEM 1: Check Bill */}
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                width: R1_ITEM1_W,
-                height: '100%',
-                borderRadius: '48px',
-                position: 'relative',
-                overflow: 'hidden',
-                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4)'
-              }}
-            >
-              <img src={`${baseUrl}/bento/bg_green.jpg`} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-              <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', padding: '64px', justifyContent: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', color: '#ffffff', marginBottom: '24px' }}>
-                  <svg width="80" height="80" viewBox="0 0 24 24">{icons.bill}</svg>
-                </div>
-                <div style={{ fontSize: '100px', fontWeight: 'bold', color: '#ffffff', lineHeight: 1.1, letterSpacing: '-2px', textShadow: '0 4px 10px rgba(0,0,0,0.2)' }}>
-                  เช็คบิลค่าขยะ
-                </div>
-                <div style={{ fontSize: '48px', color: 'rgba(255,255,255,0.9)', marginTop: '16px', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
-                  ตรวจสอบยอดและชำระเงิน
-                </div>
-                
-                <div style={{ display: 'flex', marginTop: 'auto' }}>
-                  <div style={{ background: 'rgba(255,255,255,0.2)', color: '#ffffff', padding: '24px 48px', borderRadius: '100px', fontSize: '40px', fontWeight: 'bold', display: 'flex', alignItems: 'center', border: '2px solid rgba(255,255,255,0.4)', backdropFilter: 'blur(10px)' }}>
-                    กดที่นี่เพื่อเริ่มต้น
-                    <svg style={{ marginLeft: '16px' }} width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          {/* Row 1 */}
+          <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: CARD_H, gap: `${GAP}px` }}>
+            {menuList.slice(0, 3).map((item, idx) => (
+              <div
+                key={idx}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  width: CARD_W,
+                  height: '100%',
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '40px',
+                  padding: '40px 36px 36px 36px',
+                  boxShadow: '0 10px 30px rgba(15, 23, 42, 0.06)',
+                  border: '1.5px solid #E2E8F0',
+                  position: 'relative',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                {/* Top Tag & Header */}
+                <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-start' }}>
+                  <div
+                    style={{
+                      background: item.tagBg,
+                      color: item.tagColor,
+                      padding: '8px 20px',
+                      borderRadius: '100px',
+                      fontSize: '24px',
+                      fontWeight: 'bold',
+                      letterSpacing: '1px',
+                    }}
+                  >
+                    {item.tag}
                   </div>
                 </div>
-              </div>
-            </div>
 
-            {/* ITEM 2: Receipt */}
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                width: R1_ITEM2_W,
-                height: '100%',
-                borderRadius: '48px',
-                justifyContent: 'space-between',
-                position: 'relative',
-                overflow: 'hidden',
-                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4)'
-              }}
-            >
-              <img src={`${baseUrl}/bento/bg_blue.jpg`} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-              <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', padding: '64px', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', color: '#ffffff' }}>
-                  <svg width="80" height="80" viewBox="0 0 24 24">{icons.receipt}</svg>
+                {/* Central Vector Illustration */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '8px 0' }}>
+                  {item.illustration}
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ fontSize: '72px', fontWeight: 'bold', color: '#ffffff', lineHeight: 1.1, textShadow: '0 4px 10px rgba(0,0,0,0.2)' }}>
-                    ใบเสร็จ
+
+                {/* Texts & Button */}
+                <div style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center' }}>
+                  <div style={{ fontSize: '46px', fontWeight: 'bold', color: '#0F172A', textAlign: 'center', lineHeight: 1.2 }}>
+                    {item.title}
                   </div>
-                  <div style={{ fontSize: '40px', color: 'rgba(255,255,255,0.9)', marginTop: '12px', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
-                    ประวัติชำระเงิน
+                  <div style={{ fontSize: '28px', color: '#64748B', textAlign: 'center', marginTop: '8px', lineHeight: 1.2 }}>
+                    {item.subtitle}
+                  </div>
+
+                  {/* Modern Pill Button */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '100%',
+                      background: item.btnBg,
+                      color: '#FFFFFF',
+                      borderRadius: '100px',
+                      padding: '18px 0',
+                      marginTop: '24px',
+                      fontSize: '34px',
+                      fontWeight: 'bold',
+                      boxShadow: item.btnShadow,
+                    }}
+                  >
+                    {item.btnText}
                   </div>
                 </div>
               </div>
-            </div>
-            
+            ))}
           </div>
 
-          {/* ROW 2 */}
-          <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: R2_H, gap: `${GAP}px` }}>
-            
-            {/* ITEM 3: My Info */}
-            <div style={{ display: 'flex', flexDirection: 'column', width: R2_ITEM_W, height: '100%', borderRadius: '48px', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.4)' }}>
-              <img src={`${baseUrl}/bento/bg_purple.jpg`} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-              <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', padding: '48px', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '140px', height: '140px', borderRadius: '70px', background: 'rgba(255,255,255,0.2)', border: '2px solid rgba(255,255,255,0.3)', color: '#ffffff', marginBottom: '32px' }}>
-                  <svg width="70" height="70" viewBox="0 0 24 24">{icons.user}</svg>
+          {/* Row 2 */}
+          <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: CARD_H, gap: `${GAP}px` }}>
+            {menuList.slice(3, 6).map((item, idx) => (
+              <div
+                key={idx}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  width: CARD_W,
+                  height: '100%',
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '40px',
+                  padding: '40px 36px 36px 36px',
+                  boxShadow: '0 10px 30px rgba(15, 23, 42, 0.06)',
+                  border: '1.5px solid #E2E8F0',
+                  position: 'relative',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                {/* Top Tag & Header */}
+                <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-start' }}>
+                  <div
+                    style={{
+                      background: item.tagBg,
+                      color: item.tagColor,
+                      padding: '8px 20px',
+                      borderRadius: '100px',
+                      fontSize: '24px',
+                      fontWeight: 'bold',
+                      letterSpacing: '1px',
+                    }}
+                  >
+                    {item.tag}
+                  </div>
                 </div>
-                <div style={{ fontSize: '44px', fontWeight: 'bold', color: '#ffffff', textShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>ข้อมูลของฉัน</div>
-                <div style={{ fontSize: '32px', color: 'rgba(255,255,255,0.9)', marginTop: '12px', textAlign: 'center', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>แก้ไขบ้านเลขที่</div>
-              </div>
-            </div>
 
-            {/* ITEM 4: How to use */}
-            <div style={{ display: 'flex', flexDirection: 'column', width: R2_ITEM_W, height: '100%', borderRadius: '48px', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.4)' }}>
-              <img src={`${baseUrl}/bento/bg_orange.jpg`} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-              <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', padding: '48px', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '140px', height: '140px', borderRadius: '70px', background: 'rgba(255,255,255,0.2)', border: '2px solid rgba(255,255,255,0.3)', color: '#ffffff', marginBottom: '32px' }}>
-                  <svg width="70" height="70" viewBox="0 0 24 24">{icons.book}</svg>
+                {/* Central Vector Illustration */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '8px 0' }}>
+                  {item.illustration}
                 </div>
-                <div style={{ fontSize: '44px', fontWeight: 'bold', color: '#ffffff', textShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>วิธีใช้งาน</div>
-                <div style={{ fontSize: '32px', color: 'rgba(255,255,255,0.9)', marginTop: '12px', textAlign: 'center', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>ขั้นตอนจ่ายเงิน</div>
-              </div>
-            </div>
 
-            {/* ITEM 5: Report */}
-            <div style={{ display: 'flex', flexDirection: 'column', width: R2_ITEM_W, height: '100%', borderRadius: '48px', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.4)' }}>
-              <img src={`${baseUrl}/bento/bg_red.jpg`} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-              <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', padding: '48px', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '140px', height: '140px', borderRadius: '70px', background: 'rgba(255,255,255,0.2)', border: '2px solid rgba(255,255,255,0.3)', color: '#ffffff', marginBottom: '32px' }}>
-                  <svg width="70" height="70" viewBox="0 0 24 24">{icons.alert}</svg>
-                </div>
-                <div style={{ fontSize: '44px', fontWeight: 'bold', color: '#ffffff', textShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>แจ้งปัญหา</div>
-                <div style={{ fontSize: '32px', color: 'rgba(255,255,255,0.9)', marginTop: '12px', textAlign: 'center', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>ขยะตกค้าง</div>
-              </div>
-            </div>
+                {/* Texts & Button */}
+                <div style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center' }}>
+                  <div style={{ fontSize: '46px', fontWeight: 'bold', color: '#0F172A', textAlign: 'center', lineHeight: 1.2 }}>
+                    {item.title}
+                  </div>
+                  <div style={{ fontSize: '28px', color: '#64748B', textAlign: 'center', marginTop: '8px', lineHeight: 1.2 }}>
+                    {item.subtitle}
+                  </div>
 
-            {/* ITEM 6: Contact */}
-            <div style={{ display: 'flex', flexDirection: 'column', width: R2_ITEM_W, height: '100%', borderRadius: '48px', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.4)' }}>
-              <img src={`${baseUrl}/bento/bg_lightblue.jpg`} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-              <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', padding: '48px', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '140px', height: '140px', borderRadius: '70px', background: 'rgba(255,255,255,0.2)', border: '2px solid rgba(255,255,255,0.3)', color: '#ffffff', marginBottom: '32px' }}>
-                  <svg width="70" height="70" viewBox="0 0 24 24">{icons.phone}</svg>
+                  {/* Modern Pill Button */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '100%',
+                      background: item.btnBg,
+                      color: '#FFFFFF',
+                      borderRadius: '100px',
+                      padding: '18px 0',
+                      marginTop: '24px',
+                      fontSize: '34px',
+                      fontWeight: 'bold',
+                      boxShadow: item.btnShadow,
+                    }}
+                  >
+                    {item.btnText}
+                  </div>
                 </div>
-                <div style={{ fontSize: '44px', fontWeight: 'bold', color: '#ffffff', textShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>ติดต่อเรา</div>
-                <div style={{ fontSize: '32px', color: 'rgba(255,255,255,0.9)', marginTop: '12px', textAlign: 'center', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>เจ้าหน้าที่เทศบาล</div>
               </div>
-            </div>
-            
+            ))}
           </div>
         </div>
       ),
