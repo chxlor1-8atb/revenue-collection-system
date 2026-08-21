@@ -213,10 +213,10 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
                 <p className="text-sm mt-1">บิลจะถูกสร้างอัตโนมัติตามรอบบิลที่คุณตั้งค่าไว้</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto overflow-y-auto max-h-[600px] custom-scrollbar">
                 <table className="w-full text-left border-collapse min-w-[600px]">
-                  <thead>
-                    <tr className="bg-white border-b border-slate-100 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                  <thead className="sticky top-0 z-10">
+                    <tr className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider shadow-sm">
                       <th className="px-6 py-4">ประจำเดือน</th>
                       <th className="px-6 py-4">ยอดเงิน</th>
                       <th className="px-6 py-4">สถานะ</th>
@@ -224,7 +224,7 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
                       <th className="px-6 py-4 text-right">หลักฐาน</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-50 text-slate-700">
+                  <tbody className="divide-y divide-slate-100 text-slate-700 bg-white">
                     {houseInvoices.map((inv) => (
                       <tr key={inv.id} className="hover:bg-slate-50/80 transition-colors">
                         <td className="px-6 py-4 font-semibold text-slate-800">{formatThaiMonth(inv.monthYear)}</td>
