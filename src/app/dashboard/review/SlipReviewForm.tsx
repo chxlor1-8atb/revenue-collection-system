@@ -2,8 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle, XCircle, ImageOff } from "lucide-react";
+import { CheckCircle2, XCircle, ImageOff, Eye, Calendar, Home, User, Hash, Clock, AlertTriangle, Download } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
+import SlipModalButton from "@/components/SlipModalButton";
+
+function formatThaiMonth(monthYear: string) {
+  const thaiMonths = ["", "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+  const [year, month] = monthYear.split("-");
+  return `${thaiMonths[parseInt(month, 10)]} ${parseInt(year, 10) + 543}`;
+}
 
 export default function SlipReviewForm({ 
   transaction, 
@@ -55,67 +62,135 @@ export default function SlipReviewForm({
     }
   };
 
+  const hasSlipImage = Boolean(transaction.slipImageUrl && transaction.slipImageUrl !== "pending");
+
   return (
-    <div className="ledger-card">
-      <div className="flex gap-4">
-        {/* Left side: Slip Image */}
-        <div style={{ flex: "0 0 300px" }}>
-          {transaction.slipImageUrl && transaction.slipImageUrl !== "pending" ? (
-            <img 
-              src={transaction.slipImageUrl} 
-              alt="Slip" 
-              style={{ width: "100%", borderRadius: "4px", border: "1px solid var(--border)" }} 
-            />
+    <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden hover:shadow-md transition-all">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
+        
+        {/* Left Column: Slip Image */}
+        <div className="lg:col-span-4 bg-slate-50 p-6 flex flex-col items-center justify-center border-b lg:border-b-0 lg:border-r border-slate-100 relative group">
+          {hasSlipImage ? (
+            <div className="relative w-full max-w-[280px] aspect-[3/4] rounded-2xl overflow-hidden shadow-md border border-slate-200 bg-white group/img">
+              <img 
+                src={transaction.slipImageUrl} 
+                alt={`Slip for transaction #${transaction.id}`}
+                className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300" 
+              />
+              <div className="absolute inset-0 bg-slate-950/30 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center p-4">
+                <SlipModalButton imageUrl={transaction.slipImageUrl}>
+                  <span className="px-3.5 py-2 bg-white/95 hover:bg-white text-slate-900 rounded-xl text-xs font-bold shadow-lg backdrop-blur-xs flex items-center gap-1.5 cursor-pointer transition-transform hover:scale-105">
+                    <Eye size={14} /> ขยายดูสลิป
+                  </span>
+                </SlipModalButton>
+              </div>
+            </div>
           ) : (
-            <div style={{ width: "100%", aspectRatio: "3/4", borderRadius: "4px", border: "1px solid var(--border)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "8px", background: "#f8f9fa", color: "#94a3b8" }}>
-              <ImageOff size={32} strokeWidth={1.5} />
-              <span style={{ fontSize: "12px" }}>ไม่มีรูปสลิป</span>
+            <div className="w-full max-w-[280px] aspect-[3/4] rounded-2xl border-2 border-dashed border-slate-200 bg-white flex flex-col items-center justify-center gap-2 text-slate-400">
+              <ImageOff size={36} strokeWidth={1.5} className="text-slate-300" />
+              <span className="text-xs font-semibold">ไม่มีรูปภาพสลิป</span>
+            </div>
+          )}
+
+          {transaction.slipRefId && (
+            <div className="mt-3 text-center">
+              <span className="inline-flex items-center gap-1 font-mono text-[11px] font-bold text-slate-600 bg-white px-3 py-1 rounded-full border border-slate-200 shadow-2xs">
+                Ref: {transaction.slipRefId}
+              </span>
             </div>
           )}
         </div>
         
-        {/* Right side: Details & Actions */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-          <div className="flex justify-between items-start mb-4">
-            <h3 className="font-bold text-lg">รหัสทำรายการ: #{transaction.id}</h3>
-            <span className="font-mono font-bold text-xl text-[#3A5A40]">
-              ยอดแจ้งชำระ: {parseFloat(transaction.amount).toFixed(2)} ฿
-            </span>
+        {/* Right Column: Transaction Details & Actions */}
+        <div className="lg:col-span-8 p-6 lg:p-8 flex flex-col justify-between">
+          <div>
+            {/* Header: ID, Date & Total Amount */}
+            <div className="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-slate-100">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono font-bold text-sm text-slate-900 bg-slate-100 px-3 py-1 rounded-xl border border-slate-200">
+                    #{transaction.id}
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200/80">
+                    <Clock size={12} /> รอตรวจสอบ
+                  </span>
+                </div>
+                <div className="text-xs text-slate-500 mt-2 flex items-center gap-1.5 font-medium">
+                  <Calendar size={13} className="text-slate-400" />
+                  อัปโหลดเมื่อ: {new Date(transaction.createdAt).toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' })}
+                </div>
+              </div>
+
+              <div className="text-right">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">ยอดเงินที่โอน</span>
+                <span className="font-mono font-bold text-2xl lg:text-3xl text-emerald-700">
+                  ฿{parseFloat(transaction.amount || "0").toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+              </div>
+            </div>
+
+            {/* Attached Invoices List */}
+            <div className="mt-5 space-y-3">
+              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
+                <span>รายการบิลที่แจ้งชำระ ({transaction.invoices?.length || 0} รายการ)</span>
+              </div>
+
+              <div className="space-y-2 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
+                {transaction.invoices?.map((inv: any) => (
+                  <div 
+                    key={inv.id} 
+                    className="flex items-center justify-between p-3.5 bg-slate-50/80 hover:bg-slate-50 rounded-2xl border border-slate-200/70 text-sm transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-white text-slate-700 flex items-center justify-center border border-slate-200 shadow-2xs shrink-0 font-mono font-bold text-xs">
+                        <Home size={14} className="text-[#5B58F2]" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-slate-800 flex items-center gap-2">
+                          <span>บ้านเลขที่ {inv.houseNumber}</span>
+                          <span className="text-xs font-normal text-slate-500">({inv.ownerName})</span>
+                        </div>
+                        <div className="text-xs text-slate-500">
+                          งวดประจำเดือน: <strong className="text-slate-700">{formatThaiMonth(inv.monthYear)}</strong>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="font-mono font-bold text-slate-800">
+                      ฿{parseFloat(inv.amount || "0").toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {transaction.payerNote && (
+              <div className="mt-4 p-3 bg-blue-50/70 rounded-xl border border-blue-100 text-xs text-blue-900">
+                <span className="font-bold">หมายเหตุจากผู้โอน:</span> {transaction.payerNote}
+              </div>
+            )}
           </div>
-          
-          <div className="perforation-line" style={{ margin: "0.5rem 0 1rem 0" }}></div>
 
-          <div className="mb-4">
-            <p className="font-bold mb-2">รายการบิลที่แนบมาด้วย:</p>
-            <ul className="font-mono text-sm space-y-1 bg-[#F6F4EC] p-3 rounded-sm border">
-              {transaction.invoices.map((inv: any) => (
-                <li key={inv.id} className="flex justify-between">
-                  <span>บ้านเลขที่: {inv.houseNumber} ({inv.ownerName}) - บิล: {inv.monthYear}</span>
-                  <span>{parseFloat(inv.amount).toFixed(2)} ฿</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <p className="text-xs text-gray-500 mb-6">
-            เวลาอัปโหลด: {new Date(transaction.createdAt).toLocaleString('th-TH')}
-          </p>
-
-          <div style={{ marginTop: "auto", display: "flex", gap: "1rem" }}>
+          {/* Action Buttons */}
+          <div className="pt-6 mt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center gap-3">
             <button 
               onClick={() => handleReview('verified')}
               disabled={isSubmitting}
-              className="btn btn-primary flex-1 flex items-center justify-center gap-2"
+              aria-label="อนุมัติสลิปนี้"
+              className="w-full sm:flex-1 h-12 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-bold text-sm flex items-center justify-center gap-2 shadow-sm shadow-emerald-600/25 transition-all disabled:opacity-50"
             >
-              <CheckCircle size={18} strokeWidth={1.5} /> อนุมัติ (ยอดเงินถูกต้อง)
+              <CheckCircle2 size={18} strokeWidth={2.2} /> 
+              {isSubmitting ? "กำลังบันทึก..." : "อนุมัติ (ยอดเงินถูกต้อง)"}
             </button>
+
             <button 
               onClick={() => handleReview('rejected')}
               disabled={isSubmitting}
-              className="btn flex-1 flex items-center justify-center gap-2"
-              style={{ backgroundColor: "#fee2e2", color: "#b91c1c", border: "1px solid #fca5a5" }}
+              aria-label="ปฏิเสธสลิปนี้"
+              className="w-full sm:flex-1 h-12 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-50"
             >
-              <XCircle size={18} strokeWidth={1.5} /> ปฏิเสธ (สลิปมีปัญหา)
+              <XCircle size={18} strokeWidth={2.2} /> 
+              ปฏิเสธ (สลิปไม่ถูกต้อง)
             </button>
           </div>
         </div>
@@ -123,12 +198,12 @@ export default function SlipReviewForm({
 
       <ConfirmModal
         isOpen={showRejectConfirm}
-        onClose={() => setShowRejectConfirm(false)}
+        onCancel={() => setShowRejectConfirm(false)}
         onConfirm={() => executeReview('rejected')}
         isLoading={isSubmitting}
         title="ปฏิเสธสลิปการโอนเงิน"
-        description="คุณแน่ใจหรือไม่ที่จะปฏิเสธสลิปใบนี้ ?"
-        warningText="หากปฏิเสธ สถานะบิลทั้งหมดจะกลับไปเป็นค้างชำระ ผู้จ่ายจะต้องทำการแจ้งชำระเงินเข้ามาใหม่"
+        description={<>คุณต้องการปฏิเสธสลิปรายการ #{transaction.id} ใช่หรือไม่?</>}
+        warningText="หากปฏิเสธ สถานะบิลทั้งหมดจะกลับไปเป็นค้างชำระ ผู้ชำระจะต้องทำการแจ้งชำระเงินเข้ามาใหม่อีกครั้ง"
         confirmText="ใช่, ปฏิเสธสลิป"
       />
     </div>
