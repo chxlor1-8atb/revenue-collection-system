@@ -8,8 +8,8 @@ const cardIllustrations = {
   // 1. Bill Payment
   bill: (
     <svg width="420" height="370" viewBox="0 0 220 220" fill="none">
-      <circle cx="110" cy="110" r="96" fill="#ECFDF5" />
-      <circle cx="110" cy="110" r="82" fill="#D1FAE5" />
+      <circle cx="110" cy="110" r="110" fill="#ECFDF5" />
+      <circle cx="110" cy="110" r="96" fill="#D1FAE5" />
       
       {/* Trash Bin */}
       <rect x="135" y="105" width="56" height="72" rx="10" fill="#10B981" />
@@ -43,8 +43,8 @@ const cardIllustrations = {
   // 2. Receipt
   receipt: (
     <svg width="420" height="370" viewBox="0 0 220 220" fill="none">
-      <circle cx="110" cy="110" r="96" fill="#EFF6FF" />
-      <circle cx="110" cy="110" r="82" fill="#DBEAFE" />
+      <circle cx="110" cy="110" r="110" fill="#EFF6FF" />
+      <circle cx="110" cy="110" r="96" fill="#DBEAFE" />
       
       {/* Phone Base */}
       <rect x="64" y="42" width="94" height="146" rx="18" fill="#1E293B" />
@@ -74,8 +74,8 @@ const cardIllustrations = {
   // 3. House Registry
   house: (
     <svg width="420" height="370" viewBox="0 0 220 220" fill="none">
-      <circle cx="110" cy="110" r="96" fill="#F5F3FF" />
-      <circle cx="110" cy="110" r="82" fill="#EDE9FE" />
+      <circle cx="110" cy="110" r="110" fill="#F5F3FF" />
+      <circle cx="110" cy="110" r="96" fill="#EDE9FE" />
       
       {/* House Body */}
       <path d="M58 114l52-36 52 36v58a6 6 0 0 1-6 6H64a6 6 0 0 1-6-6v-58z" fill="#8B5CF6" />
@@ -145,8 +145,8 @@ const cardIllustrations = {
   // 5. User Guide
   guide: (
     <svg width="420" height="370" viewBox="0 0 220 220" fill="none">
-      <circle cx="110" cy="110" r="96" fill="#FFFBEB" />
-      <circle cx="110" cy="110" r="82" fill="#FEF3C7" />
+      <circle cx="110" cy="110" r="110" fill="#FFFBEB" />
+      <circle cx="110" cy="110" r="96" fill="#FEF3C7" />
       
       {/* Open Book */}
       <path d="M48 114c19-8 42-6 62 5 20-11 43-13 62-5v58c-19-8-42-6-62 5-20-11-43-13-62-5v-58z" fill="#F59E0B" />
@@ -174,8 +174,8 @@ const cardIllustrations = {
   // 6. Contact Staff
   support: (
     <svg width="420" height="370" viewBox="0 0 220 220" fill="none">
-      <circle cx="110" cy="110" r="96" fill="#ECFEFF" />
-      <circle cx="110" cy="110" r="82" fill="#CFFAFE" />
+      <circle cx="110" cy="110" r="110" fill="#ECFEFF" />
+      <circle cx="110" cy="110" r="96" fill="#CFFAFE" />
       
       <path d="M66 182c0-24 20-44 44-44s44 20 44 44v2H66v-2z" fill="#0891B2" />
       <circle cx="110" cy="106" r="30" fill="#FDBA74" />
@@ -295,7 +295,7 @@ export async function GET(req: NextRequest) {
                   height: '100%',
                   backgroundColor: '#FFFFFF',
                   borderRadius: '48px',
-                  padding: '28px 24px 36px 24px',
+                  padding: '36px 36px 60px 36px',
                   boxShadow: '0 16px 40px rgba(15, 23, 42, 0.09)',
                   border: '2px solid rgba(255, 255, 255, 0.9)',
                   position: 'relative',
@@ -326,12 +326,12 @@ export async function GET(req: NextRequest) {
                 </div>
 
                 {/* Central Massive Vector Illustration */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 'auto 0', transform: 'scale(1.25)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 'auto 0', transform: 'scale(1.3) translateY(-20px)' }}>
                   {item.illustration}
                 </div>
 
                 {/* Extra Large Thai Title & Subtitle */}
-                <div style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center', marginBottom: '16px' }}>
                   <div style={{ fontSize: '100px', fontWeight: '900', color: '#0F172A', textAlign: 'center', lineHeight: 1.1, letterSpacing: '-0.5px' }}>
                     {item.title}
                   </div>
@@ -412,7 +412,7 @@ export async function GET(req: NextRequest) {
                     height: '100%',
                     backgroundColor: '#FFFFFF',
                     borderRadius: '48px',
-                    padding: '28px 24px 36px 24px',
+                    padding: '36px 36px 60px 36px',
                     boxShadow: '0 16px 40px rgba(15, 23, 42, 0.09)',
                     border: '2px solid rgba(255, 255, 255, 0.9)',
                     position: 'relative',
@@ -443,12 +443,12 @@ export async function GET(req: NextRequest) {
                   </div>
 
                   {/* Central Massive Vector Illustration */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 'auto 0', transform: 'scale(1.25)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 'auto 0', transform: 'scale(1.3) translateY(-20px)' }}>
                     {item.illustration}
                   </div>
 
                   {/* Extra Large Thai Title & Subtitle */}
-                  <div style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center', marginBottom: '10px' }}>
                     <div style={{ fontSize: '100px', fontWeight: '900', color: '#0F172A', textAlign: 'center', lineHeight: 1.1, letterSpacing: '-0.5px' }}>
                       {item.title}
                     </div>
