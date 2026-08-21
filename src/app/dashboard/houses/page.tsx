@@ -52,7 +52,23 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
   }
 
   let orderByClause;
-  if (sort === 'houseNumber') {
+  if (paymentStatus === 'unpaid') {
+    // เรียงตามยอดค้างชำระรวมมากไปน้อย
+    orderByClause = sql`(
+      SELECT COALESCE(SUM(amount::numeric), 0)
+      FROM ${invoices}
+      WHERE ${invoices.houseId} = ${houses.id}
+      AND ${invoices.status} = 'unpaid'
+    ) DESC NULLS LAST`;
+  } else if (paymentStatus === 'paid') {
+    // เรียงตามยอดชำระแล้วรวมมากไปน้อย
+    orderByClause = sql`(
+      SELECT COALESCE(SUM(amount::numeric), 0)
+      FROM ${invoices}
+      WHERE ${invoices.houseId} = ${houses.id}
+      AND ${invoices.status} = 'paid'
+    ) DESC NULLS LAST`;
+  } else if (sort === 'houseNumber') {
     orderByClause = dir === 'asc' ? asc(houses.houseNumber) : desc(houses.houseNumber);
   } else if (sort === 'ownerName') {
     orderByClause = dir === 'asc' ? asc(houses.ownerName) : desc(houses.ownerName);
