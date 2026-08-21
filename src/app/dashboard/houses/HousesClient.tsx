@@ -324,76 +324,7 @@ export default function HousesClient({
   };
 
   return (
-    <div className="font-sans space-y-6">
-      {/* Header Section */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#5B58F2] to-[#7E7BFF] flex items-center justify-center text-white shadow-md shadow-[#5B58F2]/25 shrink-0">
-            <Building2 size={24} strokeWidth={2.2} />
-          </div>
-          <div>
-            <div className="flex items-center gap-2.5">
-              <h1 className="font-bold text-2xl text-slate-900 tracking-tight">จัดการข้อมูลบ้าน</h1>
-              <span className="bg-[#EEF0FF] text-[#5B58F2] text-xs font-bold px-2.5 py-0.5 rounded-full border border-[#D5D9FF]">
-                {totalHouses} หลัง
-              </span>
-            </div>
-            <p className="text-slate-500 text-sm mt-0.5">จัดการทะเบียนบ้าน รายละเอียดเจ้าบ้าน และออกบิลค่าบริการ</p>
-          </div>
-        </div>
-
-        {/* Header Action Buttons */}
-        <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
-          <input 
-            type="file" 
-            accept=".csv" 
-            ref={fileInputRef} 
-            onChange={handleFileUpload} 
-            className="hidden" 
-          />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isImporting}
-            aria-label="นำเข้าข้อมูลจากไฟล์ CSV"
-            className="h-10 flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 px-3.5 rounded-xl text-xs font-semibold transition-all shadow-xs disabled:opacity-50"
-          >
-            <Upload size={15} className="text-slate-500" />
-            {isImporting ? 'กำลังนำเข้า...' : 'นำเข้า CSV'}
-          </button>
-          
-          <a
-            href="/api/houses/export"
-            aria-label="ส่งออกข้อมูลเป็นไฟล์ Excel"
-            className="h-10 flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 px-3.5 rounded-xl text-xs font-semibold transition-all shadow-xs"
-          >
-            <Download size={15} className="text-slate-500" />
-            ส่งออก Excel
-          </a>
-
-          <button
-            onClick={() => setShowSettings(true)}
-            aria-label="ตั้งค่าฟิลด์ข้อมูลเพิ่มเติม"
-            className="h-10 w-10 flex items-center justify-center bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 rounded-xl transition-all shadow-xs"
-            title="ตั้งค่าฟิลด์เพิ่มเติม"
-          >
-            <Settings size={16} />
-          </button>
-
-          <button
-            onClick={handleAdd}
-            aria-label="เพิ่มบ้านหลังใหม่"
-            className="h-10 flex items-center gap-2 bg-[#5B58F2] hover:bg-[#4A47D1] text-white px-4 rounded-xl text-xs font-semibold transition-all shadow-sm shadow-[#5B58F2]/20 hover:shadow-md"
-          >
-            <Plus size={16} strokeWidth={2.5} />
-            เพิ่มบ้านใหม่
-          </button>
-          
-          <div className="w-[1px] bg-slate-200 h-6 mx-1 hidden sm:block"></div>
-
-          <GenerateInvoiceButton />
-        </div>
-      </div>
-
+    <div className="font-sans pb-12 space-y-4">
       {error && (
         <div className="p-4 bg-red-50 text-red-800 rounded-2xl text-sm border border-red-200 flex items-center gap-3">
           <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center shrink-0">
@@ -412,17 +343,86 @@ export default function HousesClient({
         </div>
       )}
 
-      {/* Main Card Container */}
+      {/* Unified Master Card Container */}
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200/80 flex flex-col overflow-hidden">
-        {/* Toolbar: Search, Filters & View Toggle */}
-        <div className="p-5 lg:p-6 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white relative z-20">
+        {/* 1. Header Section */}
+        <div className="p-6 lg:p-7 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#5B58F2] to-[#7E7BFF] flex items-center justify-center text-white shadow-md shadow-[#5B58F2]/25 shrink-0">
+              <Building2 size={24} strokeWidth={2.2} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2.5">
+                <h1 className="font-bold text-2xl text-slate-900 tracking-tight">จัดการข้อมูลบ้าน</h1>
+                <span className="bg-[#EEF0FF] text-[#5B58F2] text-xs font-bold px-2.5 py-0.5 rounded-full border border-[#D5D9FF]">
+                  {totalHouses} หลัง
+                </span>
+              </div>
+              <p className="text-slate-500 text-sm mt-0.5">จัดการทะเบียนบ้าน รายละเอียดเจ้าบ้าน และออกบิลค่าบริการ</p>
+            </div>
+          </div>
+
+          {/* Header Action Buttons */}
+          <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
+            <input 
+              type="file" 
+              accept=".csv" 
+              ref={fileInputRef} 
+              onChange={handleFileUpload} 
+              className="hidden" 
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isImporting}
+              aria-label="นำเข้าข้อมูลจากไฟล์ CSV"
+              className="h-10 flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 px-3.5 rounded-xl text-xs font-semibold transition-all shadow-xs disabled:opacity-50"
+            >
+              <Upload size={15} className="text-slate-500" />
+              {isImporting ? 'กำลังนำเข้า...' : 'นำเข้า CSV'}
+            </button>
+            
+            <a
+              href="/api/houses/export"
+              aria-label="ส่งออกข้อมูลเป็นไฟล์ Excel"
+              className="h-10 flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 px-3.5 rounded-xl text-xs font-semibold transition-all shadow-xs"
+            >
+              <Download size={15} className="text-slate-500" />
+              ส่งออก Excel
+            </a>
+
+            <button
+              onClick={() => setShowSettings(true)}
+              aria-label="ตั้งค่าฟิลด์ข้อมูลเพิ่มเติม"
+              className="h-10 w-10 flex items-center justify-center bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 rounded-xl transition-all shadow-xs"
+              title="ตั้งค่าฟิลด์เพิ่มเติม"
+            >
+              <Settings size={16} />
+            </button>
+
+            <button
+              onClick={handleAdd}
+              aria-label="เพิ่มบ้านหลังใหม่"
+              className="h-10 flex items-center gap-2 bg-[#5B58F2] hover:bg-[#4A47D1] text-white px-4 rounded-xl text-xs font-semibold transition-all shadow-sm shadow-[#5B58F2]/20 hover:shadow-md"
+            >
+              <Plus size={16} strokeWidth={2.5} />
+              เพิ่มบ้านใหม่
+            </button>
+            
+            <div className="w-[1px] bg-slate-200 h-6 mx-1 hidden sm:block"></div>
+
+            <GenerateInvoiceButton />
+          </div>
+        </div>
+
+        {/* 2. Toolbar: Search, Filters & View Toggle */}
+        <div className="p-5 lg:p-6 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-slate-50/60 relative z-20">
           <div className="flex flex-col sm:flex-row flex-wrap w-full lg:w-auto gap-3 items-center z-20">
             <div className="relative w-full sm:w-80">
               <SearchAutocomplete 
                 value={searchQuery}
                 onChange={setSearchQuery}
                 placeholder="ค้นหาบ้านเลขที่, ชื่อ, หมู่, ชุมชน..."
-                className="w-full sm:w-80 focus:w-full sm:focus:w-80 !bg-slate-50 hover:!bg-slate-100/70 border-transparent focus:!bg-white focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none text-sm rounded-xl transition-all"
+                className="w-full sm:w-80 focus:w-full sm:focus:w-80 !bg-white hover:!bg-slate-50 border-slate-200 focus:!bg-white focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none text-sm rounded-xl transition-all"
               />
             </div>
             <div className="w-full sm:w-48 z-10">
