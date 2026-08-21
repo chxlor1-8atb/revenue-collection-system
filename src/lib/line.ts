@@ -1,4 +1,4 @@
-﻿export const LINE_API_URL = "https://api.line.me/v2/bot/message/reply";
+export const LINE_API_URL = "https://api.line.me/v2/bot/message/reply";
 export const LINE_PUSH_API_URL = "https://api.line.me/v2/bot/message/push";
 export const LINE_CONTENT_API_URL = "https://api-data.line.me/v2/bot/message";
 
@@ -135,56 +135,16 @@ export function generateBillFlexMessage(
     contents: {
       type: "bubble",
       size: "kilo",
-      hero: {
-        type: "image",
-        url: qrUrl,
-        size: "full",
-        aspectRatio: "1:1",
-        aspectMode: "fit",
-        backgroundColor: "#ffffff"
-      },
-      header: {
-        type: "box",
-        layout: "vertical",
-        contents: [
-          {
-            type: "text",
-            text: "สแกน QR เพื่อชำระเงิน",
-            weight: "bold",
-            size: "xl",
-            color: "#ffffff",
-            align: "center"
-          }
-        ],
-        backgroundColor: "#059669",
-        paddingAll: "15px"
-      },
       body: {
         type: "box",
         layout: "vertical",
         contents: [
           {
-            type: "box",
-            layout: "horizontal",
-            contents: [
-              {
-                type: "text",
-                text: "บ้านเลขที่",
-                color: "#888888",
-                size: "sm",
-                flex: 1
-              },
-              {
-                type: "text",
-                text: houseNumber,
-                color: "#111111",
-                size: "sm",
-                weight: "bold",
-                align: "end",
-                flex: 2
-              }
-            ],
-            margin: "md"
+            type: "text",
+            text: "บิลค่าขยะ",
+            weight: "bold",
+            size: "lg",
+            color: "#059669"
           },
           {
             type: "box",
@@ -192,22 +152,49 @@ export function generateBillFlexMessage(
             contents: [
               {
                 type: "text",
-                text: "ประจำเดือน",
+                text: `บ้าน ${houseNumber}`,
                 color: "#888888",
-                size: "sm",
+                size: "xs",
                 flex: 1
               },
               {
                 type: "text",
                 text: monthYearStr,
-                color: "#111111",
-                size: "sm",
-                weight: "bold",
+                color: "#888888",
+                size: "xs",
                 align: "end",
-                flex: 2
+                flex: 1
               }
             ],
-            margin: "md"
+            margin: "sm"
+          },
+          {
+            type: "separator",
+            margin: "lg"
+          },
+          {
+            type: "box",
+            layout: "vertical",
+            contents: [
+              {
+                type: "image",
+                url: qrUrl,
+                size: "xl",
+                aspectRatio: "1:1",
+                aspectMode: "fit"
+              }
+            ],
+            margin: "lg",
+            paddingStart: "40px",
+            paddingEnd: "40px"
+          },
+          {
+            type: "text",
+            text: "สแกน QR เพื่อชำระเงิน",
+            color: "#888888",
+            size: "xs",
+            align: "center",
+            margin: "sm"
           },
           {
             type: "separator",
@@ -219,7 +206,7 @@ export function generateBillFlexMessage(
             contents: [
               {
                 type: "text",
-                text: "ยอดที่ต้องชำระ",
+                text: "ยอดชำระ",
                 color: "#888888",
                 size: "sm",
                 gravity: "center"
