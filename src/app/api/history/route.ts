@@ -38,32 +38,23 @@ export async function GET(req: NextRequest) {
     }
 
     if (channel === "line") {
-      const lineMsgTxIds = await db.select({ txId: lineMessages.transactionId }).from(lineMessages).where(sql`${lineMessages.transactionId} IS NOT NULL`);
-      const lineTxIds = lineMsgTxIds.map(m => m.txId as number);
       conditions.push(or(
         eq(transactions.verifiedBy, "line_bot"),
-        lineTxIds.length > 0 ? inArray(transactions.id, lineTxIds) : sql`false`
+        sql`EXISTS (SELECT 1 FROM ${lineMessages} WHERE ${lineMessages.transactionId} = ${transactions.id})`
       ));
     } else if (channel === "web") {
-      const lineMsgTxIds = await db.select({ txId: lineMessages.transactionId }).from(lineMessages).where(sql`${lineMessages.transactionId} IS NOT NULL`);
-      const lineTxIds = lineMsgTxIds.map(m => m.txId as number);
       conditions.push(and(
         or(sql`${transactions.verifiedBy} IS NULL`, sql`${transactions.verifiedBy} != 'line_bot'`),
-        lineTxIds.length > 0 ? notInArray(transactions.id, lineTxIds) : undefined
+        sql`NOT EXISTS (SELECT 1 FROM ${lineMessages} WHERE ${lineMessages.transactionId} = ${transactions.id})`
       ));
     }
 
     if (monthYear) {
-      const matchedInvoices = await db.select({ transactionId: invoices.transactionId })
-        .from(invoices)
-        .where(and(eq(invoices.monthYear, monthYear), sql`${invoices.transactionId} IS NOT NULL`));
-      
-      const monthTxIds = Array.from(new Set(matchedInvoices.map(i => i.transactionId as number)));
-      if (monthTxIds.length === 0) {
-        return isExport ? new NextResponse("\uFEFF", { headers: { "Content-Type": "text/csv; charset=utf-8" } }) 
-                        : NextResponse.json({ data: [], totalCount: 0, totalAmount: 0 });
-      }
-      conditions.push(inArray(transactions.id, monthTxIds));
+      conditions.push(sql`EXISTS (
+        SELECT 1 FROM ${invoices} 
+        WHERE ${invoices.transactionId} = ${transactions.id} 
+        AND ${invoices.monthYear} = ${monthYear}
+      )`);
     }
 
     if (startDate) {
@@ -73,62 +64,42 @@ export async function GET(req: NextRequest) {
       conditions.push(lte(transactions.paidAt, new Date(`${endDate}T23:59:59.999Z`)));
     }
 
-    let matchingTxIds: number[] | null = null;
-
-    if (search) {
-      // Find houses matching search
-      const matchedHouses = await db.select({ id: houses.id }).from(houses)
-        .where(or(
-          ilike(houses.houseNumber, `%${search}%`),
-          ilike(houses.ownerName, `%${search}%`)
-        ));
-      
-      const houseIds = matchedHouses.map(h => h.id);
-      let matchedInvoicesTxIds: number[] = [];
-
-      if (houseIds.length > 0) {
-        const matchedInvoices = await db.select({ transactionId: invoices.transactionId })
-          .from(invoices)
-          .where(and(inArray(invoices.houseId, houseIds), sql`${invoices.transactionId} IS NOT NULL`));
-        matchedInvoicesTxIds = Array.from(new Set(matchedInvoices.map(i => i.transactionId as number)));
-      }
-
-      // Search by house info OR directly by slipRefId (Ref code) / payerNote
-      const directSearchConditions = [
-        ilike(transactions.slipRefId, `%${search}%`),
-        ilike(transactions.payerNote, `%${search}%`),
-      ];
-
-      if (matchedInvoicesTxIds.length > 0) {
-        conditions.push(or(
-          inArray(transactions.id, matchedInvoicesTxIds),
-          ...directSearchConditions
-        ));
-      } else {
-        conditions.push(or(...directSearchConditions));
-      }
+    if (search.trim()) {
+      const q = search.trim();
+      conditions.push(or(
+        ilike(transactions.slipRefId, `%${q}%`),
+        ilike(transactions.payerNote, `%${q}%`),
+        sql`EXISTS (
+          SELECT 1 FROM ${invoices}
+          JOIN ${houses} ON ${invoices.houseId} = ${houses.id}
+          WHERE ${invoices.transactionId} = ${transactions.id}
+          AND (${ilike(houses.houseNumber, `%${q}%`)} OR ${ilike(houses.ownerName, `%${q}%`)})
+        )`
+      ));
     }
 
-    // First pass to get total count and total amount
-    const allMatchingTxs = await db.select({
-      id: transactions.id,
-      amount: transactions.amount
-    }).from(transactions).where(and(...conditions));
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-    const totalCount = allMatchingTxs.length;
-    const totalAmount = allMatchingTxs.reduce((sum, tx) => sum + parseFloat(tx.amount || "0"), 0);
-
-    // Sort logic (descending by paidAt)
+    // Fast concurrent aggregation & pagination query
     const pagedTxsQuery = db.select()
       .from(transactions)
-      .where(and(...conditions))
+      .where(whereClause)
       .orderBy(desc(transactions.paidAt));
 
     if (!isExport) {
       pagedTxsQuery.limit(limit).offset((page - 1) * limit);
     }
 
-    const pagedTxs = await pagedTxsQuery;
+    const [summaryResult, pagedTxs] = await Promise.all([
+      db.select({
+        count: sql<number>`count(*)`,
+        totalAmount: sql<number>`COALESCE(SUM(${transactions.amount}::numeric), 0)`
+      }).from(transactions).where(whereClause),
+      pagedTxsQuery
+    ]);
+
+    const totalCount = Number(summaryResult[0]?.count || 0);
+    const totalAmount = Number(summaryResult[0]?.totalAmount || 0);
     const pagedTxIds = pagedTxs.map(t => t.id);
 
     let historyItems: any[] = [];

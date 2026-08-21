@@ -147,7 +147,7 @@ export default function HistoryClient() {
             value={searchInput}
             onChange={setSearchInput}
             onSubmit={() => { setPage(1); setSearch(searchInput); }}
-            placeholder="ค้นหาบ้านหรือชื่อเจ้าของ..."
+            placeholder="ค้นหาบ้านเลขที่, ชื่อเจ้าของ, หรือ Ref Code..."
             className="w-full bg-white border border-slate-200 text-slate-900 rounded-[12px] focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none cursor-text"
           />
         </form>
