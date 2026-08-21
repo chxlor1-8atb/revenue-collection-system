@@ -15,19 +15,19 @@ async function run() {
       await client.deleteRichMenu(m.richMenuId);
     }
     
-    console.log('Creating new rich menu...');
+    console.log('Creating new Bento Grid rich menu...');
     const richMenu = {
       size: { width: 2500, height: 1686 },
       selected: true,
       name: 'Main Menu',
       chatBarText: 'เมนูหลัก',
       areas: [
-        { bounds: { x: 0, y: 0, width: 833, height: 843 }, action: { type: 'message', text: 'เช็คบิล' } },
-        { bounds: { x: 833, y: 0, width: 834, height: 843 }, action: { type: 'message', text: 'ใบเสร็จ' } },
-        { bounds: { x: 1667, y: 0, width: 833, height: 843 }, action: { type: 'message', text: 'ข้อมูลของฉัน' } },
-        { bounds: { x: 0, y: 843, width: 833, height: 843 }, action: { type: 'message', text: 'วิธีใช้งาน' } },
-        { bounds: { x: 833, y: 843, width: 834, height: 843 }, action: { type: 'message', text: 'แจ้งปัญหา' } },
-        { bounds: { x: 1667, y: 843, width: 833, height: 843 }, action: { type: 'message', text: 'ติดต่อเจ้าหน้าที่' } },
+        { bounds: { x: 0, y: 0, width: 1666, height: 843 }, action: { type: 'message', text: 'เช็คบิล' } },
+        { bounds: { x: 1666, y: 0, width: 834, height: 843 }, action: { type: 'message', text: 'ใบเสร็จ' } },
+        { bounds: { x: 0, y: 843, width: 625, height: 843 }, action: { type: 'message', text: 'ข้อมูลของฉัน' } },
+        { bounds: { x: 625, y: 843, width: 625, height: 843 }, action: { type: 'message', text: 'วิธีใช้งาน' } },
+        { bounds: { x: 1250, y: 843, width: 625, height: 843 }, action: { type: 'message', text: 'แจ้งปัญหา' } },
+        { bounds: { x: 1875, y: 843, width: 625, height: 843 }, action: { type: 'message', text: 'ติดต่อเจ้าหน้าที่' } },
       ],
     };
     const createResponse = await client.createRichMenu(richMenu as any);

@@ -1,135 +1,75 @@
-import { ImageResponse } from 'next/og';
+﻿import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
 
-const menuButtons = [
-  {
-    label: 'เช็คบิล',
-    subtitle: 'ตรวจสอบยอดค้างชำระ',
-    actionText: 'ดูบิลของฉัน',
-    bgStart: '#22c55e',
-    bgEnd: '#15803d',
-    btnBg: '#ffffff',
-    btnColor: '#15803d',
-    iconPath: (
-      <g>
-        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-        <polyline points="14 2 14 8 20 8" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-        <line x1="16" y1="13" x2="8" y2="13" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-        <line x1="16" y1="17" x2="8" y2="17" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-        <line x1="10" y1="9" x2="8" y2="9" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-      </g>
-    ),
-  },
-  {
-    label: 'ใบเสร็จ',
-    subtitle: 'ประวัติการชำระเงิน',
-    actionText: 'ดูใบเสร็จ',
-    bgStart: '#3b82f6',
-    bgEnd: '#1d4ed8',
-    btnBg: '#ffffff',
-    btnColor: '#1d4ed8',
-    iconPath: (
-      <g>
-        <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1z" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M16 8h-6" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M16 12h-8" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M16 16h-8" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-      </g>
-    ),
-  },
-  {
-    label: 'ข้อมูลของฉัน',
-    subtitle: 'ข้อมูลบ้านและบัญชี',
-    actionText: 'จัดการบัญชี',
-    bgStart: '#a855f7',
-    bgEnd: '#7e22ce',
-    btnBg: '#ffffff',
-    btnColor: '#7e22ce',
-    iconPath: (
-      <g>
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-        <circle cx="12" cy="7" r="4" fill="none" stroke="white" strokeWidth="1.8" />
-      </g>
-    ),
-  },
-  {
-    label: 'วิธีใช้งาน',
-    subtitle: 'คู่มือและขั้นตอน',
-    actionText: 'อ่านคู่มือ',
-    bgStart: '#f97316',
-    bgEnd: '#c2410c',
-    btnBg: '#ffffff',
-    btnColor: '#c2410c',
-    iconPath: (
-      <g>
-        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      </g>
-    ),
-  },
-  {
-    label: 'แจ้งปัญหา',
-    subtitle: 'รายงานปัญหาขยะ',
-    actionText: 'ส่งรายงาน',
-    bgStart: '#ef4444',
-    bgEnd: '#b91c1c',
-    btnBg: '#ffffff',
-    btnColor: '#b91c1c',
-    iconPath: (
-      <g>
-        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-        <line x1="12" y1="9" x2="12" y2="13" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-        <line x1="12" y1="17" x2="12.01" y2="17" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-      </g>
-    ),
-  },
-  {
-    label: 'ติดต่อ',
-    subtitle: 'สายตรงเจ้าหน้าที่',
-    actionText: 'แชทเลย',
-    bgStart: '#06b6d4',
-    bgEnd: '#0e7490',
-    btnBg: '#ffffff',
-    btnColor: '#0e7490',
-    iconPath: (
-      <g>
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      </g>
-    ),
-  },
-];
+// Lucide icons
+const icons = {
+  bill: (
+    <g>
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <polyline points="10 9 9 9 8 9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </g>
+  ),
+  receipt: (
+    <g>
+      <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M16 8h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path d="M16 12h-8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path d="M16 16h-8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </g>
+  ),
+  user: (
+    <g>
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="12" cy="7" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
+    </g>
+  ),
+  book: (
+    <g>
+      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </g>
+  ),
+  alert: (
+    <g>
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+    </g>
+  ),
+  phone: (
+    <g>
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </g>
+  )
+};
 
 export async function GET(req: NextRequest) {
   try {
-    // Load Thai fonts
-    const fontUrl = 'https://github.com/googlefonts/noto-fonts/raw/main/hinted/ttf/NotoSansThai/NotoSansThai-Bold.ttf';
-    let fontData: ArrayBuffer | null = null;
-    let fontDataRegular: ArrayBuffer | null = null;
-    try {
-      const [boldRes, regularRes] = await Promise.all([
-        fetch(fontUrl),
-        fetch('https://github.com/googlefonts/noto-fonts/raw/main/hinted/ttf/NotoSansThai/NotoSansThai-Regular.ttf'),
-      ]);
-      fontData = await boldRes.arrayBuffer();
-      fontDataRegular = await regularRes.arrayBuffer();
-    } catch (e) {
-      console.error('Failed to load font', e);
-    }
-
     const W = 2500;
     const H = 1686;
     
-    // Grid settings — tight gaps like the reference
-    const PADDING_X = 30;
-    const PADDING_Y = 30;
+    // Grid gap & padding
     const GAP = 24;
-    const COLS = 3;
-    const ROWS = 2;
+    const P = 32; // Outer padding
     
-    const cardW = Math.floor((W - (PADDING_X * 2) - (GAP * (COLS - 1))) / COLS);
-    const cardH = Math.floor((H - (PADDING_Y * 2) - (GAP * (ROWS - 1))) / ROWS);
+    // Row heights
+    const R1_H = (H - GAP - P * 2) / 2; 
+    const R2_H = R1_H;
+    
+    // Col widths
+    // Row 1: 2 items (Item 1 is 2/3 width, Item 2 is 1/3 width)
+    const R1_W_TOTAL = W - P * 2 - GAP;
+    const R1_ITEM1_W = Math.floor((R1_W_TOTAL * 2) / 3);
+    const R1_ITEM2_W = R1_W_TOTAL - R1_ITEM1_W;
+    
+    // Row 2: 4 items (equal width)
+    const R2_W_TOTAL = W - P * 2 - GAP * 3;
+    const R2_ITEM_W = Math.floor(R2_W_TOTAL / 4);
 
     return new ImageResponse(
       (
@@ -139,157 +79,134 @@ export async function GET(req: NextRequest) {
             flexDirection: 'column',
             width: '100%',
             height: '100%',
-            fontFamily: 'NotoSansThai, sans-serif',
-            background: 'linear-gradient(180deg, #1e293b, #0f172a)',
+            backgroundColor: '#F5F5F7', // Apple Light Gray background
+            padding: `${P}px`,
+            gap: `${GAP}px`,
           }}
         >
-          {/* GRID */}
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              paddingLeft: PADDING_X,
-              paddingRight: PADDING_X,
-              paddingTop: PADDING_Y,
-              paddingBottom: PADDING_Y,
-              gap: GAP,
-              width: '100%',
-              height: '100%',
-            }}
-          >
-            {menuButtons.map((btn, i) => (
-              <div
-                key={i}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  width: cardW,
-                  height: cardH,
-                  borderRadius: 40,
-                  background: `linear-gradient(135deg, ${btn.bgStart}, ${btn.bgEnd})`,
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}
-              >
-                {/* LEFT SIDE: Number + Text + Button */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    padding: '45px 0 45px 45px',
-                    flex: 1,
-                  }}
-                >
-                  {/* Number Badge */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: 80,
-                      height: 80,
-                      borderRadius: 40,
-                      background: 'rgba(255,255,255,0.3)',
-                      fontSize: 48,
-                      fontWeight: 700,
-                      color: 'white',
-                    }}
-                  >
-                    {i + 1}
-                  </div>
-
-                  {/* Title & Subtitle */}
-                  <div style={{ display: 'flex', flexDirection: 'column', marginTop: 20 }}>
-                    <div style={{ fontSize: 80, fontWeight: 700, color: 'white' }}>
-                      {btn.label}
-                    </div>
-                    <div style={{ fontSize: 36, color: 'rgba(255,255,255,0.75)', marginTop: 8 }}>
-                      {btn.subtitle}
-                    </div>
-                  </div>
-
-                  {/* Action Button */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginTop: 20,
-                      background: btn.btnBg,
-                      padding: '20px 50px',
-                      borderRadius: 100,
-                      alignSelf: 'flex-start',
-                    }}
-                  >
-                    <span style={{ fontSize: 40, fontWeight: 700, color: btn.btnColor }}>
-                      {btn.actionText}
-                    </span>
-                  </div>
+          {/* ROW 1 */}
+          <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: R1_H, gap: `${GAP}px` }}>
+            
+            {/* ITEM 1: Check Bill (Hero Bento) */}
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                width: R1_ITEM1_W,
+                height: '100%',
+                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', // Emerald Green
+                borderRadius: '48px',
+                padding: '64px',
+                position: 'relative',
+                overflow: 'hidden',
+                boxShadow: '0 20px 40px rgba(16, 185, 129, 0.2)'
+              }}
+            >
+              {/* Decorative Circle */}
+              <div style={{ position: 'absolute', right: '-40px', top: '-40px', width: '400px', height: '400px', borderRadius: '200px', background: 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%)' }}></div>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', zIndex: 1, height: '100%', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', color: '#ffffff', marginBottom: '24px' }}>
+                  <svg width="80" height="80" viewBox="0 0 24 24">{icons.bill}</svg>
                 </div>
-
-                {/* RIGHT SIDE: Big Icon */}
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 300,
-                    paddingRight: 30,
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: 260,
-                      height: 260,
-                      borderRadius: 130,
-                      background: 'rgba(255,255,255,0.2)',
-                    }}
-                  >
-                    <svg width="150" height="150" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      {btn.iconPath}
-                    </svg>
+                <div style={{ fontSize: '100px', fontWeight: 'bold', color: '#ffffff', lineHeight: 1.1, letterSpacing: '-2px' }}>
+                  เช็คบิลค่าขยะ
+                </div>
+                <div style={{ fontSize: '48px', color: 'rgba(255,255,255,0.85)', marginTop: '16px' }}>
+                  ตรวจสอบยอดและชำระเงิน
+                </div>
+                
+                {/* Modern Pill Button inside */}
+                <div style={{ display: 'flex', marginTop: 'auto' }}>
+                  <div style={{ background: '#ffffff', color: '#059669', padding: '24px 48px', borderRadius: '100px', fontSize: '40px', fontWeight: 'bold', display: 'flex', alignItems: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
+                    กดที่นี่เพื่อเริ่มต้น
+                    <svg style={{ marginLeft: '16px' }} width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                   </div>
                 </div>
               </div>
-            ))}
+            </div>
+
+            {/* ITEM 2: Receipt */}
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                width: R1_ITEM2_W,
+                height: '100%',
+                background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)', // Blue
+                borderRadius: '48px',
+                padding: '64px',
+                justifyContent: 'space-between',
+                position: 'relative',
+                overflow: 'hidden',
+                boxShadow: '0 20px 40px rgba(37, 99, 235, 0.2)'
+              }}
+            >
+              <div style={{ display: 'flex', color: '#ffffff' }}>
+                <svg width="80" height="80" viewBox="0 0 24 24">{icons.receipt}</svg>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div style={{ fontSize: '72px', fontWeight: 'bold', color: '#ffffff', lineHeight: 1.1 }}>
+                  ใบเสร็จ
+                </div>
+                <div style={{ fontSize: '40px', color: 'rgba(255,255,255,0.85)', marginTop: '12px' }}>
+                  ประวัติชำระเงิน
+                </div>
+              </div>
+            </div>
+            
+          </div>
+
+          {/* ROW 2 */}
+          <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: R2_H, gap: `${GAP}px` }}>
+            
+            {/* ITEM 3: My Info */}
+            <div style={{ display: 'flex', flexDirection: 'column', width: R2_ITEM_W, height: '100%', background: '#ffffff', borderRadius: '48px', padding: '48px', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '140px', height: '140px', borderRadius: '70px', background: '#F3E8FF', color: '#9333EA', marginBottom: '32px' }}>
+                <svg width="70" height="70" viewBox="0 0 24 24">{icons.user}</svg>
+              </div>
+              <div style={{ fontSize: '44px', fontWeight: 'bold', color: '#111827' }}>ข้อมูลของฉัน</div>
+              <div style={{ fontSize: '32px', color: '#6B7280', marginTop: '12px', textAlign: 'center' }}>แก้ไขบ้านเลขที่</div>
+            </div>
+
+            {/* ITEM 4: How to use */}
+            <div style={{ display: 'flex', flexDirection: 'column', width: R2_ITEM_W, height: '100%', background: '#ffffff', borderRadius: '48px', padding: '48px', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '140px', height: '140px', borderRadius: '70px', background: '#FFEDD5', color: '#EA580C', marginBottom: '32px' }}>
+                <svg width="70" height="70" viewBox="0 0 24 24">{icons.book}</svg>
+              </div>
+              <div style={{ fontSize: '44px', fontWeight: 'bold', color: '#111827' }}>วิธีใช้งาน</div>
+              <div style={{ fontSize: '32px', color: '#6B7280', marginTop: '12px', textAlign: 'center' }}>ขั้นตอนจ่ายเงิน</div>
+            </div>
+
+            {/* ITEM 5: Report */}
+            <div style={{ display: 'flex', flexDirection: 'column', width: R2_ITEM_W, height: '100%', background: '#ffffff', borderRadius: '48px', padding: '48px', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '140px', height: '140px', borderRadius: '70px', background: '#FEE2E2', color: '#DC2626', marginBottom: '32px' }}>
+                <svg width="70" height="70" viewBox="0 0 24 24">{icons.alert}</svg>
+              </div>
+              <div style={{ fontSize: '44px', fontWeight: 'bold', color: '#111827' }}>แจ้งปัญหา</div>
+              <div style={{ fontSize: '32px', color: '#6B7280', marginTop: '12px', textAlign: 'center' }}>ขยะตกค้าง</div>
+            </div>
+
+            {/* ITEM 6: Contact */}
+            <div style={{ display: 'flex', flexDirection: 'column', width: R2_ITEM_W, height: '100%', background: '#ffffff', borderRadius: '48px', padding: '48px', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '140px', height: '140px', borderRadius: '70px', background: '#E0F2FE', color: '#0284C7', marginBottom: '32px' }}>
+                <svg width="70" height="70" viewBox="0 0 24 24">{icons.phone}</svg>
+              </div>
+              <div style={{ fontSize: '44px', fontWeight: 'bold', color: '#111827' }}>ติดต่อเรา</div>
+              <div style={{ fontSize: '32px', color: '#6B7280', marginTop: '12px', textAlign: 'center' }}>เจ้าหน้าที่เทศบาล</div>
+            </div>
+            
           </div>
         </div>
       ),
       {
         width: W,
         height: H,
-        fonts: [
-          ...(fontData
-            ? [
-                {
-                  name: 'NotoSansThai',
-                  data: fontData,
-                  style: 'normal' as const,
-                  weight: 700 as const,
-                },
-              ]
-            : []),
-          ...(fontDataRegular
-            ? [
-                {
-                  name: 'NotoSansThai',
-                  data: fontDataRegular,
-                  style: 'normal' as const,
-                  weight: 400 as const,
-                },
-              ]
-            : []),
-        ],
       }
     );
   } catch (e: any) {
     console.error(e);
-    return new Response(`Failed to generate image`, {
-      status: 500,
-    });
+    return new Response(`Failed to generate image`, { status: 500 });
   }
 }
+
