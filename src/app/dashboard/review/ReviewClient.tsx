@@ -77,28 +77,26 @@ export default function ReviewClient() {
 
           {/* Header Controls: View Mode & Refresh */}
           <div className="flex items-center gap-3 self-end lg:self-center">
-            {activeTab === "pending" && (
-              <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/60">
-                <button
-                  onClick={() => setViewMode("detailed")}
-                  aria-label="มุมมองละเอียด"
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                    viewMode === "detailed" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-800"
-                  }`}
-                >
-                  <List size={14} /> ละเอียด
-                </button>
-                <button
-                  onClick={() => setViewMode("grid")}
-                  aria-label="มุมมองการ์ด"
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                    viewMode === "grid" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-800"
-                  }`}
-                >
-                  <LayoutGrid size={14} /> การ์ด
-                </button>
-              </div>
-            )}
+            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/60">
+              <button
+                onClick={() => setViewMode("detailed")}
+                aria-label="มุมมองละเอียด"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  viewMode === "detailed" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                <List size={14} /> ละเอียด
+              </button>
+              <button
+                onClick={() => setViewMode("grid")}
+                aria-label="มุมมองการ์ด"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  viewMode === "grid" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                <LayoutGrid size={14} /> การ์ด
+              </button>
+            </div>
 
             <button
               onClick={() => mutate()}
@@ -172,11 +170,11 @@ export default function ReviewClient() {
 
         {/* 3. Master Content Body */}
         <div className="p-6 lg:p-8 bg-slate-50/30">
-          {/* Waiting View: Live Scanning Grid Cards */}
+          {/* Waiting View: Live Scanning Grid Cards or Table */}
           {activeTab === "waiting" && (
             <div>
               {isLoading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" : "space-y-3"}>
                   {Array.from({ length: 4 }).map((_, i) => (
                     <div key={i} className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs animate-pulse space-y-3">
                       <div className="h-4 bg-slate-200 rounded w-1/3"></div>
@@ -209,82 +207,135 @@ export default function ReviewClient() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {waiting.map((tx: any, index: number) => {
-                    const firstInv = tx.invoices?.[0];
-                    const totalInvoices = tx.invoices?.length || 0;
-                    return (
-                      <motion.div
-                        key={tx.id}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.2, delay: index * 0.05 }}
-                        className="bg-white rounded-2xl p-5 border border-amber-200/90 hover:border-amber-400 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden group"
-                      >
-                        <div className="absolute top-0 left-0 right-0 h-1 bg-amber-400"></div>
+                  {viewMode === "grid" ? (
+                    /* Grid Cards Mode */
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                      {waiting.map((tx: any, index: number) => {
+                        const firstInv = tx.invoices?.[0];
+                        const totalInvoices = tx.invoices?.length || 0;
+                        return (
+                          <motion.div
+                            key={tx.id}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.2, delay: index * 0.05 }}
+                            className="bg-white rounded-2xl p-5 border border-amber-200/90 hover:border-amber-400 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden group"
+                          >
+                            <div className="absolute top-0 left-0 right-0 h-1 bg-amber-400"></div>
 
-                        <div>
-                          {/* Card Top: House Badge & Status */}
-                          <div className="flex items-start justify-between gap-2 mb-3 pt-1">
-                            <div className="flex items-center gap-1.5">
-                              <span className="font-mono text-xs font-bold text-slate-900 bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200">
-                                {firstInv ? `บ้าน ${firstInv.houseNumber}` : `#${tx.id}`}
-                              </span>
-                              {totalInvoices > 1 && (
-                                <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded-md">
-                                  +{totalInvoices - 1} บิล
+                            <div>
+                              {/* Card Top: House Badge & Status */}
+                              <div className="flex items-start justify-between gap-2 mb-3 pt-1">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="font-mono text-xs font-bold text-slate-900 bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200">
+                                    {firstInv ? `บ้าน ${firstInv.houseNumber}` : `#${tx.id}`}
+                                  </span>
+                                  {totalInvoices > 1 && (
+                                    <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded-md">
+                                      +{totalInvoices - 1} บิล
+                                    </span>
+                                  )}
+                                </div>
+
+                                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                                  <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                                  </span>
+                                  สแกนจ่าย
                                 </span>
-                              )}
-                            </div>
-
-                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                              <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-                              </span>
-                              สแกนจ่าย
-                            </span>
-                          </div>
-
-                          {/* Owner & Invoice Month */}
-                          <div className="space-y-1 mb-4">
-                            <div className="font-bold text-slate-800 text-sm flex items-center gap-1.5 truncate">
-                              <User size={14} className="text-slate-400 shrink-0" />
-                              <span className="truncate">{firstInv?.ownerName || "ผู้ชำระเงิน"}</span>
-                            </div>
-                            
-                            {firstInv && (
-                              <div className="text-xs text-slate-500 flex items-center gap-1.5 truncate">
-                                <Calendar size={12} className="text-slate-400 shrink-0" />
-                                <span>งวด: {formatThaiMonth(firstInv.monthYear)}</span>
                               </div>
-                            )}
-                          </div>
-                        </div>
 
-                        {/* Card Bottom: Amount & Live Timer */}
-                        <div className="pt-3 border-t border-slate-100">
-                          <div className="flex items-center justify-between mb-3">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase">ยอดเงิน</span>
-                            <span className="font-mono font-bold text-lg text-amber-600">
-                              ฿{parseFloat(tx.amount || "0").toLocaleString("th-TH", { minimumFractionDigits: 2 })}
-                            </span>
-                          </div>
+                              {/* Owner & Invoice Month */}
+                              <div className="space-y-1 mb-4">
+                                <div className="font-bold text-slate-800 text-sm flex items-center gap-1.5 truncate">
+                                  <User size={14} className="text-slate-400 shrink-0" />
+                                  <span className="truncate">{firstInv?.ownerName || "ผู้ชำระเงิน"}</span>
+                                </div>
+                                
+                                {firstInv && (
+                                  <div className="text-xs text-slate-500 flex items-center gap-1.5 truncate">
+                                    <Calendar size={12} className="text-slate-400 shrink-0" />
+                                    <span>งวด: {formatThaiMonth(firstInv.monthYear)}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
 
-                          <div className="flex items-center justify-between text-xs text-amber-700 bg-amber-50/70 -mx-5 -mb-5 p-2.5 px-4 rounded-b-2xl border-t border-amber-100">
-                            <span className="flex items-center gap-1.5 font-semibold text-[11px]">
-                              <Loader2 size={12} className="animate-spin text-amber-500" />
-                              กำลังรอแนบสลิป
-                            </span>
-                            <span className="text-[11px] font-mono text-amber-600">
-                              {new Date(tx.createdAt).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                  </div>
+                            {/* Card Bottom: Amount & Live Timer */}
+                            <div className="pt-3 border-t border-slate-100">
+                              <div className="flex items-center justify-between mb-3">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase">ยอดเงิน</span>
+                                <span className="font-mono font-bold text-lg text-amber-600">
+                                  ฿{parseFloat(tx.amount || "0").toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center justify-between text-xs text-amber-700 bg-amber-50/70 -mx-5 -mb-5 p-2.5 px-4 rounded-b-2xl border-t border-amber-100">
+                                <span className="flex items-center gap-1.5 font-semibold text-[11px]">
+                                  <Loader2 size={12} className="animate-spin text-amber-500" />
+                                  กำลังรอแนบสลิป
+                                </span>
+                                <span className="text-[11px] font-mono text-amber-600">
+                                  {new Date(tx.createdAt).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                              </div>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    /* Detailed Table Mode */
+                    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs">
+                      <table className="w-full text-left border-collapse min-w-[700px]">
+                        <thead>
+                          <tr className="border-b border-slate-100 bg-slate-50/70 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                            <th className="px-5 py-3.5">รหัส</th>
+                            <th className="px-5 py-3.5">บ้านเลขที่</th>
+                            <th className="px-5 py-3.5">ชื่อผู้ชำระ</th>
+                            <th className="px-5 py-3.5">งวดบิล</th>
+                            <th className="px-5 py-3.5 text-right">ยอดเงิน</th>
+                            <th className="px-5 py-3.5 text-center">สถานะ</th>
+                            <th className="px-5 py-3.5 text-right">เวลา</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 text-sm">
+                          {waiting.map((tx: any) => {
+                            const firstInv = tx.invoices?.[0];
+                            const totalInvoices = tx.invoices?.length || 0;
+                            return (
+                              <tr key={tx.id} className="hover:bg-slate-50/80 transition-colors">
+                                <td className="px-5 py-3.5 font-mono text-xs font-bold text-slate-500">#{tx.id}</td>
+                                <td className="px-5 py-3.5 font-mono font-bold text-slate-900">
+                                  {firstInv ? firstInv.houseNumber : "-"}
+                                  {totalInvoices > 1 && (
+                                    <span className="ml-1.5 text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded-md">
+                                      +{totalInvoices - 1}
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="px-5 py-3.5 font-semibold text-slate-800">{firstInv?.ownerName || "ผู้ชำระเงิน"}</td>
+                                <td className="px-5 py-3.5 text-slate-600 text-xs">{firstInv ? formatThaiMonth(firstInv.monthYear) : "-"}</td>
+                                <td className="px-5 py-3.5 text-right font-mono font-bold text-amber-600">
+                                  ฿{parseFloat(tx.amount || "0").toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+                                </td>
+                                <td className="px-5 py-3.5 text-center">
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                                    <Loader2 size={11} className="animate-spin text-amber-500" />
+                                    กำลังรอแนบสลิป
+                                  </span>
+                                </td>
+                                <td className="px-5 py-3.5 text-right text-xs font-mono text-slate-500">
+                                  {new Date(tx.createdAt).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
