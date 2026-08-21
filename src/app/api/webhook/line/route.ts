@@ -635,6 +635,10 @@ export async function POST(request: Request) {
             continue;
           }
           
+          if (text === "พิมพ์ข้อความ" || text === "เปิดแป้นพิมพ์") {
+            await replyMessage(replyToken, "💬 คุณสามารถพิมพ์ข้อความที่ต้องการสอบถาม หรือส่งรูปสลิปโอนเงินเข้ามาในแชทนี้ได้เลยครับ เจ้าหน้าที่จะรีบตอบกลับโดยเร็วที่สุดครับ 🙏");
+            continue;
+          }
           if (text === "ติดต่อเจ้าหน้าที่") {
             await replyWithMessages(replyToken, [generateContactFlexMessage(appUrl)]);
             continue;

@@ -3,11 +3,11 @@ import { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
 
-// Rich Vector Illustrations (Scalable to 340px)
+// Rich Vector Illustrations for each card
 const cardIllustrations = {
   // 1. Bill Payment
   bill: (
-    <svg width="320" height="300" viewBox="0 0 220 220" fill="none">
+    <svg width="340" height="320" viewBox="0 0 220 220" fill="none">
       <circle cx="110" cy="110" r="95" fill="#ECFDF5" />
       <circle cx="110" cy="110" r="80" fill="#D1FAE5" />
       
@@ -42,7 +42,7 @@ const cardIllustrations = {
 
   // 2. Receipt
   receipt: (
-    <svg width="320" height="300" viewBox="0 0 220 220" fill="none">
+    <svg width="340" height="320" viewBox="0 0 220 220" fill="none">
       <circle cx="110" cy="110" r="95" fill="#EFF6FF" />
       <circle cx="110" cy="110" r="80" fill="#DBEAFE" />
       
@@ -72,7 +72,7 @@ const cardIllustrations = {
 
   // 3. House Registry
   house: (
-    <svg width="320" height="300" viewBox="0 0 220 220" fill="none">
+    <svg width="340" height="320" viewBox="0 0 220 220" fill="none">
       <circle cx="110" cy="110" r="95" fill="#F5F3FF" />
       <circle cx="110" cy="110" r="80" fill="#EDE9FE" />
       
@@ -98,7 +98,7 @@ const cardIllustrations = {
 
   // 4. User Guide
   guide: (
-    <svg width="320" height="300" viewBox="0 0 220 220" fill="none">
+    <svg width="340" height="320" viewBox="0 0 220 220" fill="none">
       <circle cx="110" cy="110" r="95" fill="#FFFBEB" />
       <circle cx="110" cy="110" r="80" fill="#FEF3C7" />
       
@@ -120,33 +120,9 @@ const cardIllustrations = {
     </svg>
   ),
 
-  // 5. Report Issue
-  report: (
-    <svg width="320" height="300" viewBox="0 0 220 220" fill="none">
-      <circle cx="110" cy="110" r="95" fill="#FFF1F2" />
-      <circle cx="110" cy="110" r="80" fill="#FFE4E6" />
-      
-      {/* Trash Bin */}
-      <rect x="50" y="115" width="48" height="60" rx="6" fill="#94A3B8" />
-      <rect x="45" y="108" width="58" height="8" rx="3" fill="#64748B" />
-      <path d="M58 108l10-18 15 6-5 12" fill="#CBD5E1" />
-      
-      {/* Big Alert Warning Triangle */}
-      <path d="M135 60l42 70a6 6 0 0 1-5 9h-84a6 6 0 0 1-5-9l42-70a6 6 0 0 1 10 0z" fill="#F43F5E" />
-      <path d="M135 72l32 54h-64l32-54z" fill="#FB7185" />
-      <line x1="135" y1="88" x2="135" y2="106" stroke="#FFFFFF" strokeWidth="5" strokeLinecap="round" />
-      <circle cx="135" cy="117" r="3.5" fill="#FFFFFF" />
-      
-      {/* Speech exclamation badge */}
-      <circle cx="75" cy="80" r="16" fill="#E11D48" />
-      <line x1="75" y1="73" x2="75" y2="82" stroke="#FFFFFF" strokeWidth="3.5" strokeLinecap="round" />
-      <circle cx="75" cy="88" r="2" fill="#FFFFFF" />
-    </svg>
-  ),
-
-  // 6. Contact Staff
+  // 5. Contact Staff
   support: (
-    <svg width="320" height="300" viewBox="0 0 220 220" fill="none">
+    <svg width="340" height="320" viewBox="0 0 220 220" fill="none">
       <circle cx="110" cy="110" r="95" fill="#ECFEFF" />
       <circle cx="110" cy="110" r="80" fill="#CFFAFE" />
       
@@ -167,51 +143,99 @@ const cardIllustrations = {
       <circle cx="162" cy="70" r="3" fill="#FFFFFF" />
       <circle cx="172" cy="70" r="3" fill="#FFFFFF" />
     </svg>
+  ),
+
+  // 6. Open Keyboard / Chat Input
+  keyboard: (
+    <svg width="340" height="320" viewBox="0 0 220 220" fill="none">
+      <circle cx="110" cy="110" r="95" fill="#F1F5F9" />
+      <circle cx="110" cy="110" r="80" fill="#E2E8F0" />
+      
+      {/* Keyboard Base */}
+      <rect x="40" y="70" width="140" height="88" rx="14" fill="#1E293B" />
+      <rect x="44" y="74" width="132" height="80" rx="10" fill="#334155" />
+      
+      {/* Keys Row 1 */}
+      <rect x="52" y="82" width="18" height="16" rx="4" fill="#FFFFFF" />
+      <rect x="74" y="82" width="18" height="16" rx="4" fill="#FFFFFF" />
+      <rect x="96" y="82" width="18" height="16" rx="4" fill="#FFFFFF" />
+      <rect x="118" y="82" width="18" height="16" rx="4" fill="#FFFFFF" />
+      <rect x="140" y="82" width="28" height="16" rx="4" fill="#94A3B8" />
+      
+      {/* Keys Row 2 */}
+      <rect x="52" y="102" width="22" height="16" rx="4" fill="#94A3B8" />
+      <rect x="78" y="102" width="18" height="16" rx="4" fill="#FFFFFF" />
+      <rect x="100" y="102" width="18" height="16" rx="4" fill="#FFFFFF" />
+      <rect x="122" y="102" width="18" height="16" rx="4" fill="#FFFFFF" />
+      <rect x="144" y="102" width="24" height="16" rx="4" fill="#0EA5E9" />
+      
+      {/* Spacebar Row 3 */}
+      <rect x="52" y="122" width="20" height="16" rx="4" fill="#94A3B8" />
+      <rect x="76" y="122" width="68" height="16" rx="4" fill="#FFFFFF" />
+      <rect x="148" y="122" width="20" height="16" rx="4" fill="#94A3B8" />
+      
+      {/* Floating Chat Bubble */}
+      <rect x="120" y="32" width="65" height="42" rx="12" fill="#0EA5E9" />
+      <path d="M135 74l-6 10v-10h6z" fill="#0EA5E9" />
+      <circle cx="140" cy="53" r="4" fill="#FFFFFF" />
+      <circle cx="152" cy="53" r="4" fill="#FFFFFF" />
+      <circle cx="164" cy="53" r="4" fill="#FFFFFF" />
+      
+      {/* Downward indicator arrow */}
+      <circle cx="110" cy="180" r="18" fill="#0EA5E9" />
+      <path d="M103 177l7 7 7-7" stroke="#FFFFFF" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   )
 };
 
 const menuList = [
   {
-    title: 'เช็คบิล / จ่ายเงิน',
-    btnText: 'เช็คบิลทันที',
-    btnBg: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-    btnShadow: '0 12px 28px rgba(16, 185, 129, 0.4)',
+    num: '01',
+    badgeBg: '#D1FAE5',
+    badgeColor: '#047857',
+    title: 'เช็คบิลค่าขยะ',
+    subtitle: 'ตรวจสอบยอด & ชำระเงิน',
     illustration: cardIllustrations.bill,
   },
   {
+    num: '02',
+    badgeBg: '#DBEAFE',
+    badgeColor: '#1D4ED8',
     title: 'ประวัติใบเสร็จ',
-    btnText: 'ดูใบเสร็จ',
-    btnBg: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
-    btnShadow: '0 12px 28px rgba(37, 99, 235, 0.4)',
+    subtitle: 'ดูสลิปและใบเสร็จย้อนหลัง',
     illustration: cardIllustrations.receipt,
   },
   {
+    num: '03',
+    badgeBg: '#EDE9FE',
+    badgeColor: '#6D28D9',
     title: 'ข้อมูลทะเบียนบ้าน',
-    btnText: 'ข้อมูลของฉัน',
-    btnBg: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
-    btnShadow: '0 12px 28px rgba(124, 58, 237, 0.4)',
+    subtitle: 'ตรวจสอบข้อมูลที่พักอาศัย',
     illustration: cardIllustrations.house,
   },
   {
+    num: '04',
+    badgeBg: '#FEF3C7',
+    badgeColor: '#B45309',
     title: 'คู่มือการใช้งาน',
-    btnText: 'วิธีใช้งาน',
-    btnBg: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
-    btnShadow: '0 12px 28px rgba(217, 119, 6, 0.4)',
+    subtitle: 'ขั้นตอนการใช้งานระบบ',
     illustration: cardIllustrations.guide,
   },
   {
-    title: 'แจ้งปัญหาขยะ',
-    btnText: 'แจ้งเรื่อง',
-    btnBg: 'linear-gradient(135deg, #F43F5E 0%, #E11D48 100%)',
-    btnShadow: '0 12px 28px rgba(225, 29, 72, 0.4)',
-    illustration: cardIllustrations.report,
+    num: '05',
+    badgeBg: '#CFFAFE',
+    badgeColor: '#0E7490',
+    title: 'ติดต่อเจ้าหน้าที่',
+    subtitle: 'สอบถามข้อมูลบริการ',
+    illustration: cardIllustrations.support,
   },
   {
-    title: 'ติดต่อเจ้าหน้าที่',
-    btnText: 'ติดต่อเรา',
-    btnBg: 'linear-gradient(135deg, #06B6D4 0%, #0891B2 100%)',
-    btnShadow: '0 12px 28px rgba(8, 145, 178, 0.4)',
-    illustration: cardIllustrations.support,
+    num: '06',
+    badgeBg: '#E2E8F0',
+    badgeColor: '#334155',
+    title: 'เปิดแป้นพิมพ์',
+    subtitle: 'กดเพื่อพิมพ์คุยกับแอดมิน ⬇️',
+    illustration: cardIllustrations.keyboard,
   },
 ];
 
@@ -234,7 +258,7 @@ export async function GET(req: NextRequest) {
             flexDirection: 'column',
             width: '100%',
             height: '100%',
-            backgroundColor: '#E2E8F0', // Sleek background contrast
+            backgroundColor: '#E2E8F0',
             padding: `${P}px`,
             gap: `${GAP}px`,
           }}
@@ -251,41 +275,46 @@ export async function GET(req: NextRequest) {
                   height: '100%',
                   backgroundColor: '#FFFFFF',
                   borderRadius: '44px',
-                  padding: '36px 32px 32px 32px',
+                  padding: '36px 36px 44px 36px',
                   boxShadow: '0 12px 36px rgba(15, 23, 42, 0.08)',
                   position: 'relative',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}
               >
+                {/* Top Row: Number Badge */}
+                <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-start' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '76px',
+                      height: '76px',
+                      borderRadius: '38px',
+                      background: item.badgeBg,
+                      color: item.badgeColor,
+                      fontSize: '38px',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    {item.num}
+                  </div>
+                </div>
+
                 {/* Central Large Vector Illustration */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 'auto 0' }}>
                   {item.illustration}
                 </div>
 
-                {/* Big Bold Thai Title */}
-                <div style={{ fontSize: '68px', fontWeight: 'bold', color: '#0F172A', textAlign: 'center', lineHeight: 1.15, marginTop: '8px' }}>
-                  {item.title}
-                </div>
-
-                {/* Massive Pill Action Button */}
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    background: item.btnBg,
-                    color: '#FFFFFF',
-                    borderRadius: '100px',
-                    padding: '24px 0',
-                    fontSize: '52px',
-                    fontWeight: 'bold',
-                    boxShadow: item.btnShadow,
-                    letterSpacing: '0.5px',
-                  }}
-                >
-                  {item.btnText}
+                {/* Big Bold Thai Title & Subtitle (No Bottom Pill Button) */}
+                <div style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center' }}>
+                  <div style={{ fontSize: '74px', fontWeight: 'bold', color: '#0F172A', textAlign: 'center', lineHeight: 1.15 }}>
+                    {item.title}
+                  </div>
+                  <div style={{ fontSize: '38px', color: '#64748B', textAlign: 'center', marginTop: '10px', lineHeight: 1.15 }}>
+                    {item.subtitle}
+                  </div>
                 </div>
               </div>
             ))}
@@ -303,41 +332,46 @@ export async function GET(req: NextRequest) {
                   height: '100%',
                   backgroundColor: '#FFFFFF',
                   borderRadius: '44px',
-                  padding: '36px 32px 32px 32px',
+                  padding: '36px 36px 44px 36px',
                   boxShadow: '0 12px 36px rgba(15, 23, 42, 0.08)',
                   position: 'relative',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}
               >
+                {/* Top Row: Number Badge */}
+                <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-start' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '76px',
+                      height: '76px',
+                      borderRadius: '38px',
+                      background: item.badgeBg,
+                      color: item.badgeColor,
+                      fontSize: '38px',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    {item.num}
+                  </div>
+                </div>
+
                 {/* Central Large Vector Illustration */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 'auto 0' }}>
                   {item.illustration}
                 </div>
 
-                {/* Big Bold Thai Title */}
-                <div style={{ fontSize: '68px', fontWeight: 'bold', color: '#0F172A', textAlign: 'center', lineHeight: 1.15, marginTop: '8px' }}>
-                  {item.title}
-                </div>
-
-                {/* Massive Pill Action Button */}
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    background: item.btnBg,
-                    color: '#FFFFFF',
-                    borderRadius: '100px',
-                    padding: '24px 0',
-                    fontSize: '52px',
-                    fontWeight: 'bold',
-                    boxShadow: item.btnShadow,
-                    letterSpacing: '0.5px',
-                  }}
-                >
-                  {item.btnText}
+                {/* Big Bold Thai Title & Subtitle (No Bottom Pill Button) */}
+                <div style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center' }}>
+                  <div style={{ fontSize: '74px', fontWeight: 'bold', color: '#0F172A', textAlign: 'center', lineHeight: 1.15 }}>
+                    {item.title}
+                  </div>
+                  <div style={{ fontSize: '38px', color: '#64748B', textAlign: 'center', marginTop: '10px', lineHeight: 1.15 }}>
+                    {item.subtitle}
+                  </div>
                 </div>
               </div>
             ))}
