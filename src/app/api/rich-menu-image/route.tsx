@@ -362,6 +362,27 @@ export async function GET(req: NextRequest) {
                       boxShadow: '0 16px 40px rgba(0,0,0,0.3)',
                     }}
                   >
+                    {/* Badge 04 */}
+                    <div style={{ display: 'flex', position: 'absolute', top: 36, left: 36, zIndex: 10 }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '180px',
+                          height: '180px',
+                          borderRadius: '56px',
+                          backgroundColor: item.badgeBg,
+                          border: `10px solid ${item.badgeBorder}`,
+                          color: item.badgeColor,
+                          fontSize: '96px',
+                          fontWeight: '900',
+                          boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+                        }}
+                      >
+                        {item.num}
+                      </div>
+                    </div>
                     {/* Hand Emoji pointing exactly to the bottom-left corner of the slot */}
                     <div style={{
                       display: 'flex',

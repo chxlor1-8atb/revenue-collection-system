@@ -1,4 +1,4 @@
-﻿export const LINE_API_URL = "https://api.line.me/v2/bot/message/reply";
+export const LINE_API_URL = "https://api.line.me/v2/bot/message/reply";
 export const LINE_PUSH_API_URL = "https://api.line.me/v2/bot/message/push";
 export const LINE_CONTENT_API_URL = "https://api-data.line.me/v2/bot/message";
 
@@ -102,7 +102,7 @@ export async function getMessageContent(messageId: string): Promise<Buffer | nul
 
   // Encode messageId because it may contain +, =, / characters
   const safeId = encodeURIComponent(messageId);
-  console.log('Fetching image content – messageId:', messageId);
+  console.log('Fetching image content � messageId:', messageId);
 
   const response = await fetch(`${LINE_CONTENT_API_URL}/${safeId}/content`, {
     headers: {
@@ -112,7 +112,7 @@ export async function getMessageContent(messageId: string): Promise<Buffer | nul
 
   if (!response.ok) {
     const errText = await response.text();
-    console.error(`Failed to fetch image from LINE – status ${response.status}: ${response.statusText}\nResponse body: ${errText}\nMessage ID used: ${messageId} (encoded: ${safeId})`);
+    console.error(`Failed to fetch image from LINE � status ${response.status}: ${response.statusText}\nResponse body: ${errText}\nMessage ID used: ${messageId} (encoded: ${safeId})`);
     return null;
   }
 
@@ -131,7 +131,7 @@ export function generateBillFlexMessage(
 ): any {
   return {
     type: "flex",
-    altText: `บิลค่าขยะประจำเดือน ${monthYearStr} ของบ้านเลขที่ ${houseNumber}`,
+    altText: `��Ť�Ң�л�Ш���͹ ${monthYearStr} �ͧ��ҹ�Ţ��� ${houseNumber}`,
     contents: {
       type: "bubble",
       size: "kilo",
@@ -149,7 +149,7 @@ export function generateBillFlexMessage(
         contents: [
           {
             type: "text",
-            text: "สแกน QR เพื่อชำระเงิน",
+            text: "�᡹ QR ���ͪ����Թ",
             weight: "bold",
             size: "xl",
             color: "#ffffff",
@@ -169,7 +169,7 @@ export function generateBillFlexMessage(
             contents: [
               {
                 type: "text",
-                text: "บ้านเลขที่",
+                text: "��ҹ�Ţ���",
                 color: "#888888",
                 size: "sm",
                 flex: 1
@@ -192,7 +192,7 @@ export function generateBillFlexMessage(
             contents: [
               {
                 type: "text",
-                text: "ประจำเดือน",
+                text: "��Ш���͹",
                 color: "#888888",
                 size: "sm",
                 flex: 1
@@ -219,14 +219,14 @@ export function generateBillFlexMessage(
             contents: [
               {
                 type: "text",
-                text: "ยอดที่ต้องชำระ",
+                text: "�ʹ����ͧ����",
                 color: "#888888",
                 size: "sm",
                 gravity: "center"
               },
               {
                 type: "text",
-                text: `฿${amount.toFixed(2)}`,
+                text: `�${amount.toFixed(2)}`,
                 color: "#dc2626",
                 size: "xl",
                 weight: "bold",
@@ -246,7 +246,7 @@ export function generateBillFlexMessage(
             type: "button",
             action: {
               type: "uri",
-              label: "คลิกเพื่อชำระเงิน",
+              label: "��ԡ���ͪ����Թ",
               uri: payUrl
             },
             style: "primary",
@@ -277,7 +277,7 @@ export function generateReceiptFlexMessage(
       type: "button",
       action: {
         type: "uri",
-        label: "ดูรูปสลิป",
+        label: "���ٻ��Ի",
         uri: slipUrl
       },
       style: "primary",
@@ -290,7 +290,7 @@ export function generateReceiptFlexMessage(
     type: "button",
     action: {
       type: "uri",
-      label: "ตรวจสอบประวัติบิลทั้งหมด",
+      label: "��Ǩ�ͺ����ѵԺ�ŷ�����",
       uri: receiptUrl
     },
     style: "secondary",
@@ -298,7 +298,7 @@ export function generateReceiptFlexMessage(
   });
   return {
     type: "flex",
-    altText: `ใบเสร็จรับเงินค่าขยะประจำเดือน ${monthYearStr} ของบ้านเลขที่ ${houseNumber}`,
+    altText: `������Ѻ�Թ��Ң�л�Ш���͹ ${monthYearStr} �ͧ��ҹ�Ţ��� ${houseNumber}`,
     contents: {
       type: "bubble",
       size: "kilo",
@@ -308,14 +308,14 @@ export function generateReceiptFlexMessage(
         contents: [
           {
             type: "text",
-            text: "รับชำระเงินเรียบร้อย",
+            text: "�Ѻ�����Թ���º����",
             weight: "bold",
             size: "xl",
             color: "#ffffff"
           },
           {
             type: "text",
-            text: "ขอบคุณที่ชำระค่าธรรมเนียม",
+            text: "�ͺ�س�����Ф�Ҹ�������",
             color: "#ffffffcc",
             size: "xs"
           }
@@ -333,7 +333,7 @@ export function generateReceiptFlexMessage(
             contents: [
               {
                 type: "text",
-                text: "บ้านเลขที่",
+                text: "��ҹ�Ţ���",
                 color: "#888888",
                 size: "sm",
                 flex: 1
@@ -356,7 +356,7 @@ export function generateReceiptFlexMessage(
             contents: [
               {
                 type: "text",
-                text: "ประจำเดือน",
+                text: "��Ш���͹",
                 color: "#888888",
                 size: "sm",
                 flex: 1
@@ -383,14 +383,14 @@ export function generateReceiptFlexMessage(
             contents: [
               {
                 type: "text",
-                text: "ยอดเงิน",
+                text: "�ʹ�Թ",
                 color: "#888888",
                 size: "sm",
                 gravity: "center"
               },
               {
                 type: "text",
-                text: `฿${amount.toFixed(2)}`,
+                text: `�${amount.toFixed(2)}`,
                 color: "#0ea5e9",
                 size: "xl",
                 weight: "bold",
@@ -405,7 +405,7 @@ export function generateReceiptFlexMessage(
             contents: [
               {
                 type: "text",
-                text: "เวลาที่ชำระ",
+                text: "���ҷ�����",
                 color: "#888888",
                 size: "sm",
                 flex: 1
@@ -441,7 +441,7 @@ export function generateDuplicateHouseSelectionFlexMessage(
 ): any {
   return {
     type: "flex",
-    altText: `พบบ้านเลขที่ซ้ำกัน กรุณาเลือกบ้านของคุณ`,
+    altText: `����ҹ�Ţ����ӡѹ ��س����͡��ҹ�ͧ�س`,
     contents: {
       type: "carousel",
       contents: houses.map(house => {
@@ -474,20 +474,20 @@ export function generateDuplicateHouseSelectionFlexMessage(
             contents: [
               {
                 type: "text",
-                text: "ชื่อเจ้าบ้าน",
+                text: "������Һ�ҹ",
                 color: "#888888",
                 size: "xs"
               },
               {
                 type: "text",
-                text: house.ownerName || "ไม่ระบุ",
+                text: house.ownerName || "����к�",
                 weight: "bold",
                 size: "sm",
                 wrap: true
               },
               {
                 type: "text",
-                text: "ถนน",
+                text: "���",
                 color: "#888888",
                 size: "xs",
                 margin: "md"
@@ -501,14 +501,14 @@ export function generateDuplicateHouseSelectionFlexMessage(
               },
               {
                 type: "text",
-                text: "ชุมชน/โซน",
+                text: "�����/⫹",
                 color: "#888888",
                 size: "xs",
                 margin: "md"
               },
               {
                 type: "text",
-                text: house.zone || "ไม่ระบุ",
+                text: house.zone || "����к�",
                 weight: "bold",
                 size: "sm",
                 wrap: true
@@ -524,9 +524,9 @@ export function generateDuplicateHouseSelectionFlexMessage(
                 type: "button",
                 action: {
                   type: "postback",
-                  label: "เลือกบ้านนี้",
+                  label: "���͡��ҹ���",
                   data: actionData,
-                  displayText: `เลือกบ้าน ${house.houseNumber} (${house.ownerName || 'ไม่ระบุ'})`
+                  displayText: `���͡��ҹ ${house.houseNumber} (${house.ownerName || '����к�'})`
                 },
                 style: "primary",
                 color: "#f59e0b"
@@ -550,7 +550,7 @@ export function generateSlipVerificationSuccessFlexMessage(
 ): any {
   return {
     type: "flex",
-    altText: `ตรวจสอบสลิปสำเร็จ ยอดเงิน ${amount} บาท`,
+    altText: `��Ǩ�ͺ��Ի����� �ʹ�Թ ${amount} �ҷ`,
     contents: {
       type: "bubble",
       size: "mega",
@@ -560,7 +560,7 @@ export function generateSlipVerificationSuccessFlexMessage(
         contents: [
           {
             type: "text",
-            text: "สลิปถูกต้อง",
+            text: "��Ի�١��ͧ",
             weight: "bold",
             color: "#ffffff",
             size: "xl"
@@ -589,7 +589,7 @@ export function generateSlipVerificationSuccessFlexMessage(
               },
               {
                 type: "text",
-                text: "บาท",
+                text: "�ҷ",
                 size: "sm",
                 color: "#888888",
                 gravity: "bottom",
@@ -610,7 +610,7 @@ export function generateSlipVerificationSuccessFlexMessage(
             contents: [
               {
                 type: "text",
-                text: "จาก",
+                text: "�ҡ",
                 color: "#aaaaaa",
                 size: "sm",
                 flex: 1
@@ -644,7 +644,7 @@ export function generateSlipVerificationSuccessFlexMessage(
             contents: [
               {
                 type: "text",
-                text: "ไปยัง",
+                text: "��ѧ",
                 color: "#aaaaaa",
                 size: "sm",
                 flex: 1
@@ -682,7 +682,7 @@ export function generateSlipVerificationSuccessFlexMessage(
             contents: [
               {
                 type: "text",
-                text: "วันเวลาตามสลิป",
+                text: "�ѹ���ҵ����Ի",
                 color: "#aaaaaa",
                 size: "xs"
               },
@@ -739,7 +739,7 @@ export function generateSlipErrorFlexMessage(
           },
           {
             type: "text",
-            text: "บาท",
+            text: "�ҷ",
             size: "sm",
             color: "#888888",
             gravity: "bottom",
@@ -760,7 +760,7 @@ export function generateSlipErrorFlexMessage(
         contents: [
           {
             type: "text",
-            text: "จาก",
+            text: "�ҡ",
             color: "#aaaaaa",
             size: "sm",
             flex: 1
@@ -794,7 +794,7 @@ export function generateSlipErrorFlexMessage(
         contents: [
           {
             type: "text",
-            text: "ไปยัง",
+            text: "��ѧ",
             color: "#aaaaaa",
             size: "sm",
             flex: 1
@@ -837,7 +837,7 @@ export function generateSlipErrorFlexMessage(
             contents: [
               {
                 type: "text",
-                text: "วันเวลาตามสลิป",
+                text: "�ѹ���ҵ����Ի",
                 color: "#aaaaaa",
                 size: "xs"
               },
@@ -859,7 +859,7 @@ export function generateSlipErrorFlexMessage(
     // If no data, just show a message
     bodyContents.push({
       type: "text",
-      text: "กรุณาลองใหม่อีกครั้ง",
+      text: "��س��ͧ�����ա����",
       align: "center",
       color: "#888888",
       size: "md",
@@ -913,14 +913,14 @@ export function generateSlipErrorFlexMessage(
             contents: [
               {
                 type: "text",
-                text: "ร้าน กองสาธารณสุข สาขา เทศบาลนางรอง",
+                text: "��ҹ �ͧ�Ҹ�ó�آ �Ң� �Ⱥ�Źҧ�ͧ",
                 color: "#0ea5e9",
                 size: "xxs",
                 wrap: true
               },
               {
                 type: "text",
-                text: "วันที่ส่งตรวจ " + new Date().toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }),
+                text: "�ѹ����觵�Ǩ " + new Date().toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }),
                 color: "#888888",
                 size: "xxs",
                 margin: "xs"
@@ -942,7 +942,7 @@ export function generateSlipErrorFlexMessage(
               },
               {
                 type: "text",
-                text: "บริการตรวจสอบสลิป",
+                text: "��ԡ�õ�Ǩ�ͺ��Ի",
                 color: "#aaaaaa",
                 size: "xxs",
                 align: "end"
@@ -961,7 +961,7 @@ export function generateSlipErrorFlexMessage(
 export function generateHowToUseFlexMessage(appUrl: string): any {
   return {
     type: "flex",
-    altText: "วิธีใช้งานระบบ",
+    altText: "�Ը���ҹ�к�",
     contents: {
       type: "bubble",
       size: "kilo",
@@ -978,7 +978,7 @@ export function generateHowToUseFlexMessage(appUrl: string): any {
 
               {
                 type: "text",
-                text: "วิธีใช้งาน", weight: "bold", size: "xl", color: "#111111"
+                text: "�Ը���ҹ", weight: "bold", size: "xl", color: "#111111"
               }
             ]
           },
@@ -995,8 +995,8 @@ export function generateHowToUseFlexMessage(appUrl: string): any {
                 layout: "vertical",
                 margin: "md",
                 contents: [
-                  { type: "text", text: "ผูกบัญชี", weight: "bold", size: "sm", color: "#111111" },
-                  { type: "text", text: "พิมพ์บ้านเลขที่ เช่น 124/4", size: "xs", color: "#888888", wrap: true }
+                  { type: "text", text: "�١�ѭ��", weight: "bold", size: "sm", color: "#111111" },
+                  { type: "text", text: "������ҹ�Ţ��� �� 124/4", size: "xs", color: "#888888", wrap: true }
                 ]
               }
             ]
@@ -1013,8 +1013,8 @@ export function generateHowToUseFlexMessage(appUrl: string): any {
                 layout: "vertical",
                 margin: "md",
                 contents: [
-                  { type: "text", text: "เช็คบิล", weight: "bold", size: "sm", color: "#111111" },
-                  { type: "text", text: "กดปุ่ม 'เช็คบิล' ด้านล่าง", size: "xs", color: "#888888", wrap: true }
+                  { type: "text", text: "�示��", weight: "bold", size: "sm", color: "#111111" },
+                  { type: "text", text: "������ '�示��' ��ҹ��ҧ", size: "xs", color: "#888888", wrap: true }
                 ]
               }
             ]
@@ -1031,8 +1031,8 @@ export function generateHowToUseFlexMessage(appUrl: string): any {
                 layout: "vertical",
                 margin: "md",
                 contents: [
-                  { type: "text", text: "ชำระเงิน", weight: "bold", size: "sm", color: "#111111" },
-                  { type: "text", text: "ส่งรูปสลิปเข้ามาในแชทนี้", size: "xs", color: "#888888", wrap: true }
+                  { type: "text", text: "�����Թ", weight: "bold", size: "sm", color: "#111111" },
+                  { type: "text", text: "���ٻ��Ի������᪷���", size: "xs", color: "#888888", wrap: true }
                 ]
               }
             ]
@@ -1050,7 +1050,7 @@ export function generateHowToUseFlexMessage(appUrl: string): any {
             style: "primary",
             color: "#f97316",
             height: "sm",
-            action: { type: "message", label: "ลองเช็คบิลเลย", text: "เช็คบิล" }
+            action: { type: "message", label: "�ͧ�示�����", text: "�示��" }
           }
         ]
       }
@@ -1061,7 +1061,7 @@ export function generateHowToUseFlexMessage(appUrl: string): any {
 export function generateReportProblemFlexMessage(appUrl: string): any {
   return {
     type: "flex",
-    altText: "แจ้งปัญหา",
+    altText: "�駻ѭ��",
     contents: {
       type: "bubble",
       size: "kilo",
@@ -1078,14 +1078,14 @@ export function generateReportProblemFlexMessage(appUrl: string): any {
 
               {
                 type: "text",
-                text: "แจ้งปัญหา", weight: "bold", size: "xl", color: "#111111"
+                text: "�駻ѭ��", weight: "bold", size: "xl", color: "#111111"
               }
             ]
           },
           { type: "separator", margin: "xl" },
           {
             type: "text",
-            text: "พบปัญหาเรื่องขยะแจ้งเราได้ทันที",
+            text: "���ѭ������ͧ����������ѹ��",
             size: "sm",
             weight: "bold",
             color: "#111111",
@@ -1094,7 +1094,7 @@ export function generateReportProblemFlexMessage(appUrl: string): any {
           },
           {
             type: "text",
-            text: "กรุณาพิมพ์รายละเอียดปัญหา พร้อมระบุ 'หมู่บ้าน/ชุมชน' และแนบรูปถ่ายสถานที่ ส่งเข้ามาในแชทนี้ได้เลยค่ะ",
+            text: "��سҾ������������´�ѭ�� ������к� '�����ҹ/�����' ���Ṻ�ٻ����ʶҹ��� ��������᪷�������¤��",
             size: "xs",
             color: "#666666",
             wrap: true,
@@ -1113,7 +1113,7 @@ export function generateReportProblemFlexMessage(appUrl: string): any {
             style: "primary",
             color: "#ef4444",
             height: "sm",
-            action: { type: "message", label: "รับทราบ", text: "รับทราบการแจ้งปัญหา" }
+            action: { type: "message", label: "�Ѻ��Һ", text: "�Ѻ��Һ����駻ѭ��" }
           }
         ]
       }
@@ -1124,7 +1124,7 @@ export function generateReportProblemFlexMessage(appUrl: string): any {
 export function generateContactFlexMessage(appUrl: string): any {
   return {
     type: "flex",
-    altText: "ติดต่อเจ้าหน้าที่",
+    altText: "�Դ������˹�ҷ��",
     contents: {
       type: "bubble",
       size: "kilo",
@@ -1140,8 +1140,8 @@ export function generateContactFlexMessage(appUrl: string): any {
             contents: [
 
               {
-                type: "box", layout: "vertical", contents: [{ type: "text", text: "ติดต่อเจ้าหน้าที่", weight: "bold", size: "xl", color: "#111111" },
-                  { type: "text", text: "เทศบาลเมืองนางรอง", size: "xs", color: "#888888" }
+                type: "box", layout: "vertical", contents: [{ type: "text", text: "�Դ������˹�ҷ��", weight: "bold", size: "xl", color: "#111111" },
+                  { type: "text", text: "�Ⱥ�����ͧ�ҧ�ͧ", size: "xs", color: "#888888" }
                 ]
               }
             ]
@@ -1152,7 +1152,7 @@ export function generateContactFlexMessage(appUrl: string): any {
             layout: "horizontal",
             margin: "lg",
             contents: [
-              { type: "text", text: "เบอร์โทร", color: "#888888", size: "sm", flex: 1 },
+              { type: "text", text: "������", color: "#888888", size: "sm", flex: 1 },
               { type: "text", text: "044-631-419", color: "#111111", size: "sm", weight: "bold", align: "end", flex: 2 }
             ]
           },
@@ -1161,8 +1161,8 @@ export function generateContactFlexMessage(appUrl: string): any {
             layout: "horizontal",
             margin: "md",
             contents: [
-              { type: "text", text: "เวลาทำการ", color: "#888888", size: "sm", flex: 1 },
-              { type: "text", text: "จ.-ศ. (08:30-16:30)", color: "#111111", size: "xs", weight: "bold", align: "end", flex: 2 }
+              { type: "text", text: "���ҷӡ��", color: "#888888", size: "sm", flex: 1 },
+              { type: "text", text: "�.-�. (08:30-16:30)", color: "#111111", size: "xs", weight: "bold", align: "end", flex: 2 }
             ]
           }
         ]
@@ -1178,7 +1178,7 @@ export function generateContactFlexMessage(appUrl: string): any {
             style: "primary",
             color: "#0ea5e9",
             height: "sm",
-            action: { type: "uri", label: "โทรเลย", uri: "tel:044631419" }
+            action: { type: "uri", label: "�����", uri: "tel:044631419" }
           }
         ]
       }
@@ -1189,7 +1189,7 @@ export function generateContactFlexMessage(appUrl: string): any {
 export function generateMyInfoFlexMessage(appUrl: string, house: any): any {
   return {
     type: "flex",
-    altText: "ข้อมูลบ้านของฉัน",
+    altText: "�����ź�ҹ�ͧ�ѹ",
     contents: {
       type: "bubble",
       size: "kilo",
@@ -1206,7 +1206,7 @@ export function generateMyInfoFlexMessage(appUrl: string, house: any): any {
 
               {
                 type: "text",
-                text: "ข้อมูลของฉัน", weight: "bold", size: "xl", color: "#111111"
+                text: "�����Ţͧ�ѹ", weight: "bold", size: "xl", color: "#111111"
               }
             ]
           },
@@ -1216,7 +1216,7 @@ export function generateMyInfoFlexMessage(appUrl: string, house: any): any {
             layout: "horizontal",
             margin: "lg",
             contents: [
-              { type: "text", text: "บ้านเลขที่", color: "#888888", size: "sm", flex: 1, gravity: "center" },
+              { type: "text", text: "��ҹ�Ţ���", color: "#888888", size: "sm", flex: 1, gravity: "center" },
               { type: "text", text: house.houseNumber, color: "#8b5cf6", size: "xl", weight: "bold", align: "end", flex: 2 }
             ]
           },
@@ -1225,7 +1225,7 @@ export function generateMyInfoFlexMessage(appUrl: string, house: any): any {
             layout: "horizontal",
             margin: "lg",
             contents: [
-              { type: "text", text: "เจ้าบ้าน", color: "#888888", size: "sm", flex: 1 },
+              { type: "text", text: "��Һ�ҹ", color: "#888888", size: "sm", flex: 1 },
               { type: "text", text: house.ownerName || "-", color: "#111111", size: "sm", weight: "bold", align: "end", flex: 2 }
             ]
           },
@@ -1234,7 +1234,7 @@ export function generateMyInfoFlexMessage(appUrl: string, house: any): any {
             layout: "horizontal",
             margin: "md",
             contents: [
-              { type: "text", text: "โซน", color: "#888888", size: "sm", flex: 1 },
+              { type: "text", text: "⫹", color: "#888888", size: "sm", flex: 1 },
               { type: "text", text: house.zone || "-", color: "#111111", size: "sm", weight: "bold", align: "end", flex: 2 }
             ]
           }
@@ -1251,7 +1251,7 @@ export function generateMyInfoFlexMessage(appUrl: string, house: any): any {
             style: "primary",
             color: "#8b5cf6",
             height: "sm",
-            action: { type: "message", label: "เช็คยอดค่าขยะ", text: "เช็คบิล" }
+            action: { type: "message", label: "���ʹ��Ң��", text: "�示��" }
           }
         ]
       }
@@ -1265,7 +1265,7 @@ export function generateMyInfoFlexMessage(appUrl: string, house: any): any {
 export function generateWelcomeFlexMessage() {
   return {
     type: "flex",
-    altText: "ยินดีต้อนรับสู่ระบบจัดเก็บรายได้",
+    altText: "�Թ�յ�͹�Ѻ����к��Ѵ�������",
     contents: {
       type: "bubble",
       size: "giga",
@@ -1276,7 +1276,7 @@ export function generateWelcomeFlexMessage() {
         contents: [
           {
             type: "text",
-            text: "ยินดีต้อนรับสู่ระบบ",
+            text: "�Թ�յ�͹�Ѻ����к�",
             weight: "bold",
             size: "xl",
             color: "#111827",
@@ -1284,7 +1284,7 @@ export function generateWelcomeFlexMessage() {
           },
           {
             type: "text",
-            text: "ระบบจัดเก็บรายได้อัตโนมัติ",
+            text: "�к��Ѵ��������ѵ��ѵ�",
             size: "sm",
             color: "#64748B",
             align: "center",
@@ -1305,14 +1305,14 @@ export function generateWelcomeFlexMessage() {
             contents: [
               {
                 type: "text",
-                text: "📌 วิธีการเริ่มต้นใช้งาน",
+                text: "?? �Ըա�����������ҹ",
                 weight: "bold",
                 size: "sm",
                 color: "#334155"
               },
               {
                 type: "text",
-                text: "กรุณาพิมพ์ \"บ้านเลขที่\" ของคุณ (เช่น 123/45) ส่งเข้ามาในแชทนี้ เพื่อทำการผูกบัญชีในครั้งแรก",
+                text: "��سҾ���� \"��ҹ�Ţ���\" �ͧ�س (�� 123/45) ��������᪷��� ���ͷӡ�ü١�ѭ��㹤����á",
                 size: "xs",
                 color: "#64748B",
                 wrap: true,
@@ -1322,7 +1322,7 @@ export function generateWelcomeFlexMessage() {
           },
           {
             type: "text",
-            text: "คู่มือเมนูด้านล่าง (Rich Menu)",
+            text: "���������ٴ�ҹ��ҧ (Rich Menu)",
             weight: "bold",
             color: "#111827",
             margin: "xl",
@@ -1341,11 +1341,11 @@ export function generateWelcomeFlexMessage() {
                 width: "28px",
                 height: "28px",
                 cornerRadius: "14px",
-                backgroundColor: "#F1F5F9",
+                backgroundColor: "#D1FAE5",
                 alignItems: "center",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "1", color: "#475569", weight: "bold", size: "xs", align: "center" }
+                  { type: "text", text: "1", color: "#047857", weight: "bold", size: "xs", align: "center" }
                 ]
               },
               {
@@ -1353,8 +1353,8 @@ export function generateWelcomeFlexMessage() {
                 layout: "vertical",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "เช็คบิล", weight: "bold", size: "sm", color: "#334155" },
-                  { type: "text", text: "ตรวจสอบยอดค้าง & สแกนจ่าย", size: "xs", color: "#64748B", wrap: true }
+                  { type: "text", text: "�示��", weight: "bold", size: "sm", color: "#334155" },
+                  { type: "text", text: "��Ǩ�ͺ�ʹ��ҧ & �᡹����", size: "xs", color: "#64748B", wrap: true }
                 ]
               }
             ]
@@ -1372,11 +1372,11 @@ export function generateWelcomeFlexMessage() {
                 width: "28px",
                 height: "28px",
                 cornerRadius: "14px",
-                backgroundColor: "#F1F5F9",
+                backgroundColor: "#DBEAFE",
                 alignItems: "center",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "2", color: "#475569", weight: "bold", size: "xs", align: "center" }
+                  { type: "text", text: "2", color: "#1D4ED8", weight: "bold", size: "xs", align: "center" }
                 ]
               },
               {
@@ -1384,8 +1384,8 @@ export function generateWelcomeFlexMessage() {
                 layout: "vertical",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "ใบเสร็จ", weight: "bold", size: "sm", color: "#334155" },
-                  { type: "text", text: "ประวัติการชำระเงินย้อนหลัง", size: "xs", color: "#64748B", wrap: true }
+                  { type: "text", text: "�����", weight: "bold", size: "sm", color: "#334155" },
+                  { type: "text", text: "����ѵԡ�ê����Թ��͹��ѧ", size: "xs", color: "#64748B", wrap: true }
                 ]
               }
             ]
@@ -1403,11 +1403,11 @@ export function generateWelcomeFlexMessage() {
                 width: "28px",
                 height: "28px",
                 cornerRadius: "14px",
-                backgroundColor: "#F1F5F9",
+                backgroundColor: "#EDE9FE",
                 alignItems: "center",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "3", color: "#475569", weight: "bold", size: "xs", align: "center" }
+                  { type: "text", text: "3", color: "#6D28D9", weight: "bold", size: "xs", align: "center" }
                 ]
               },
               {
@@ -1415,8 +1415,8 @@ export function generateWelcomeFlexMessage() {
                 layout: "vertical",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "ข้อมูลของฉัน", weight: "bold", size: "sm", color: "#334155" },
-                  { type: "text", text: "เช็คข้อมูลบ้านที่ลงทะเบียนไว้", size: "xs", color: "#64748B", wrap: true }
+                  { type: "text", text: "�����Ţͧ�ѹ", weight: "bold", size: "sm", color: "#334155" },
+                  { type: "text", text: "�礢����ź�ҹ���ŧ����¹���", size: "xs", color: "#64748B", wrap: true }
                 ]
               }
             ]
@@ -1434,11 +1434,11 @@ export function generateWelcomeFlexMessage() {
                 width: "28px",
                 height: "28px",
                 cornerRadius: "14px",
-                backgroundColor: "#F1F5F9",
+                backgroundColor: "#DCFCE7",
                 alignItems: "center",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "4", color: "#475569", weight: "bold", size: "xs", align: "center" }
+                  { type: "text", text: "4", color: "#047857", weight: "bold", size: "xs", align: "center" }
                 ]
               },
               {
@@ -1446,8 +1446,8 @@ export function generateWelcomeFlexMessage() {
                 layout: "vertical",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "เปิดแป้นพิมพ์", weight: "bold", size: "sm", color: "#334155" },
-                  { type: "text", text: "พิมพ์ข้อความถึงเจ้าหน้าที่", size: "xs", color: "#64748B", wrap: true }
+                  { type: "text", text: "�Դ�鹾����", weight: "bold", size: "sm", color: "#334155" },
+                  { type: "text", text: "������ͤ����֧���˹�ҷ��", size: "xs", color: "#64748B", wrap: true }
                 ]
               }
             ]
@@ -1465,11 +1465,11 @@ export function generateWelcomeFlexMessage() {
                 width: "28px",
                 height: "28px",
                 cornerRadius: "14px",
-                backgroundColor: "#F1F5F9",
+                backgroundColor: "#FEF3C7",
                 alignItems: "center",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "5", color: "#475569", weight: "bold", size: "xs", align: "center" }
+                  { type: "text", text: "5", color: "#B45309", weight: "bold", size: "xs", align: "center" }
                 ]
               },
               {
@@ -1477,8 +1477,8 @@ export function generateWelcomeFlexMessage() {
                 layout: "vertical",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "วิธีใช้งาน", weight: "bold", size: "sm", color: "#334155" },
-                  { type: "text", text: "ดูคู่มือการใช้งานระบบ", size: "xs", color: "#64748B", wrap: true }
+                  { type: "text", text: "�Ը���ҹ", weight: "bold", size: "sm", color: "#334155" },
+                  { type: "text", text: "�٤����͡����ҹ�к�", size: "xs", color: "#64748B", wrap: true }
                 ]
               }
             ]
@@ -1496,11 +1496,11 @@ export function generateWelcomeFlexMessage() {
                 width: "28px",
                 height: "28px",
                 cornerRadius: "14px",
-                backgroundColor: "#F1F5F9",
+                backgroundColor: "#ECFEFF",
                 alignItems: "center",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "6", color: "#475569", weight: "bold", size: "xs", align: "center" }
+                  { type: "text", text: "6", color: "#0E7490", weight: "bold", size: "xs", align: "center" }
                 ]
               },
               {
@@ -1508,8 +1508,8 @@ export function generateWelcomeFlexMessage() {
                 layout: "vertical",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "ติดต่อเจ้าหน้าที่", weight: "bold", size: "sm", color: "#334155" },
-                  { type: "text", text: "แจ้งปัญหาหรือสอบถามข้อมูล", size: "xs", color: "#64748B", wrap: true }
+                  { type: "text", text: "�Դ������˹�ҷ��", weight: "bold", size: "sm", color: "#334155" },
+                  { type: "text", text: "�駻ѭ�������ͺ���������", size: "xs", color: "#64748B", wrap: true }
                 ]
               }
             ]
@@ -1519,5 +1519,6 @@ export function generateWelcomeFlexMessage() {
     }
   };
 }
+
 
 
