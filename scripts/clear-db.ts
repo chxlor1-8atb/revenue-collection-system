@@ -3,7 +3,7 @@ config({ path: '.env.local' });
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { inArray } from 'drizzle-orm';
-import * as schema from './src/lib/schema';
+import * as schema from '../src/lib/schema';
 
 const sql = neon(process.env.DATABASE_URL!);
 const db = drizzle(sql, { schema });
