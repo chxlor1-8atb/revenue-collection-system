@@ -27,7 +27,8 @@ export default function HousesClient({
   initialPaymentStatus = "",
   initialSort = { key: "createdAt", dir: "desc" },
   limit = 10,
-  customFieldsSchema = []
+  customFieldsSchema = [],
+  paymentSummary = null,
 }: { 
   initialHouses: HouseData[];
   currentPage?: number;
@@ -39,6 +40,7 @@ export default function HousesClient({
   initialSort?: { key: string; dir: string };
   limit?: number;
   customFieldsSchema?: CustomField[];
+  paymentSummary?: { unpaidTotal: number; paidTotal: number; unpaidCount: number; paidCount: number } | null;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -361,11 +363,11 @@ export default function HousesClient({
               <CustomSelect
                 value={selectedPaymentStatus || ""}
                 onChange={setSelectedPaymentStatus}
-                placeholder="ทุกสถานะการชำระ"
+                placeholder="ทุกสถานะ"
                 options={[
-                  { value: "", label: "ทุกสถานะการชำระ" },
-                  { value: "unpaid", label: "⚠️ ค้างชำระ" },
-                  { value: "paid", label: "✅ ชำระครบแล้ว" },
+                  { value: "", label: "ทุกสถานะ" },
+                  { value: "unpaid", label: "· ค้างชำระ" },
+                  { value: "paid", label: "· ชำระครบแล้ว" },
                 ]}
               />
             </div>
@@ -376,6 +378,36 @@ export default function HousesClient({
             </span>
           </div>
         </div>
+
+        {/* Payment Summary Banner */}
+        {paymentSummary && selectedPaymentStatus === 'unpaid' && (
+          <div className="mx-6 my-3 px-4 py-3 rounded-xl bg-red-50 border border-red-100 flex flex-wrap items-center gap-x-6 gap-y-1">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-red-400 shrink-0"></span>
+              <span className="text-sm font-semibold text-red-700">ยอดรวมค้างชำระ</span>
+            </div>
+            <div className="flex items-center gap-4 ml-auto">
+              <span className="text-xs text-red-500">{paymentSummary.unpaidCount} บิล</span>
+              <span className="text-base font-bold text-red-700 tabular-nums">
+                {paymentSummary.unpaidTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท
+              </span>
+            </div>
+          </div>
+        )}
+        {paymentSummary && selectedPaymentStatus === 'paid' && (
+          <div className="mx-6 my-3 px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-100 flex flex-wrap items-center gap-x-6 gap-y-1">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+              <span className="text-sm font-semibold text-emerald-700">ยอดรวมชำระแล้ว</span>
+            </div>
+            <div className="flex items-center gap-4 ml-auto">
+              <span className="text-xs text-emerald-600">{paymentSummary.paidCount} บิล</span>
+              <span className="text-base font-bold text-emerald-700 tabular-nums">
+                {paymentSummary.paidTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท
+              </span>
+            </div>
+          </div>
+        )}
 
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[800px]">

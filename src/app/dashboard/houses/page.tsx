@@ -82,6 +82,27 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
     ];
   }
 
+  // When filtering by paymentStatus, also compute aggregate totals for the summary banner
+  let paymentSummary: { unpaidTotal: number; paidTotal: number; unpaidCount: number; paidCount: number } | null = null;
+  if (paymentStatus === 'unpaid' || paymentStatus === 'paid') {
+    const [unpaidResult, paidResult] = await Promise.all([
+      db.select({
+        total: sql<number>`COALESCE(SUM(${invoices.amount}::numeric), 0)`,
+        count: sql<number>`COUNT(*)`,
+      }).from(invoices).where(sql`${invoices.status} = 'unpaid' AND ${invoices.houseId} IN (SELECT id FROM ${houses} WHERE (${whereClause}))`),
+      db.select({
+        total: sql<number>`COALESCE(SUM(${invoices.amount}::numeric), 0)`,
+        count: sql<number>`COUNT(*)`,
+      }).from(invoices).where(sql`${invoices.status} = 'paid' AND ${invoices.houseId} IN (SELECT id FROM ${houses} WHERE (${whereClause}))`),
+    ]);
+    paymentSummary = {
+      unpaidTotal: Number(unpaidResult[0]?.total || 0),
+      unpaidCount: Number(unpaidResult[0]?.count || 0),
+      paidTotal: Number(paidResult[0]?.total || 0),
+      paidCount: Number(paidResult[0]?.count || 0),
+    };
+  }
+
   return (
     <div className="pb-12 space-y-6">
       <HousesClient 
@@ -95,6 +116,7 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
         initialSort={{ key: sort, dir }}
         limit={limit}
         customFieldsSchema={customFieldsSchema}
+        paymentSummary={paymentSummary}
       />
     </div>
   );
