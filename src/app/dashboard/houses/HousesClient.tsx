@@ -55,7 +55,16 @@ export default function HousesClient({
   const [isImporting, setIsImporting] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [isPending, startTransition] = useTransition();
-  
+
+  const displayFields = useMemo(() => {
+    const fields = customFieldsSchema.filter(f => !f.isHidden);
+    const amountField = fields.find(f => f.id === 'defaultBillingAmount');
+    if (amountField) {
+      return [...fields.filter(f => f.id !== 'defaultBillingAmount'), amountField];
+    }
+    return fields;
+  }, [customFieldsSchema]);
+
   // QR Code Modal State
   const [qrModal, setQrModal] = useState<{ isOpen: boolean; houseNumber: string; url: string; qrDataUrl: string } | null>(null);
 
@@ -345,7 +354,8 @@ export default function HousesClient({
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
               <tr className="border-b border-slate-100">
-                {customFieldsSchema.filter(f => !f.isHidden).map(field => (
+                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-16 text-center">ลำดับ</th>
+                {displayFields.map(field => (
                   <th key={field.id} className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider ${field.isSystem && (field.id === 'houseNumber' || field.id === 'ownerName') ? 'cursor-pointer text-slate-500 hover:text-slate-800 transition-colors' : 'text-slate-400'}`} onClick={() => {
                     if (field.id === 'houseNumber' || field.id === 'ownerName') handleSort(field.id);
                   }}>
@@ -372,7 +382,10 @@ export default function HousesClient({
                     transition={{ duration: 0.2 }}
                     className="hover:bg-slate-50/50 transition-colors group"
                   >
-                  {customFieldsSchema.filter(f => !f.isHidden).map(field => {
+                  <td className="px-6 py-4 text-slate-400 font-medium text-sm text-center">
+                    {(currentPage - 1) * limit + index + 1}
+                  </td>
+                  {displayFields.map(field => {
                     let val = "-";
                     if (field.isSystem) {
                       val = (house as any)[field.id] || "-";
