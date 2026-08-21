@@ -1,5 +1,5 @@
-﻿import { NextResponse } from "next/server";
-import { generateBillFlexMessage, generateSlipErrorFlexMessage, generateSlipVerificationSuccessFlexMessage, replyMessage, replyWithMessages, safeReplyOrPush, getMessageContent, generateReceiptFlexMessage, generateDuplicateHouseSelectionFlexMessage, generateHowToUseFlexMessage, generateReportProblemFlexMessage, generateContactFlexMessage, generateMyInfoFlexMessage } from "@/lib/line";
+import { NextResponse } from "next/server";
+import { generateBillFlexMessage, generateSlipErrorFlexMessage, generateSlipVerificationSuccessFlexMessage, replyMessage, replyWithMessages, safeReplyOrPush, getMessageContent, generateReceiptFlexMessage, generateDuplicateHouseSelectionFlexMessage, generateHowToUseFlexMessage, generateReportProblemFlexMessage, generateContactFlexMessage, generateMyInfoFlexMessage, generateWelcomeFlexMessage } from "@/lib/line";
 import { db } from "@/lib/db";
 import { lineMessages, houses, invoices, transactions } from "@/lib/schema";
 import { eq, and, desc, gte, inArray } from "drizzle-orm";
@@ -115,7 +115,12 @@ export async function POST(request: Request) {
     }
 
     for (const event of body.events) {
-      if (event.type === "message") {
+      if (event.type === "follow") {
+        const replyToken = event.replyToken;
+        if (replyToken) {
+          await replyWithMessages(replyToken, [generateWelcomeFlexMessage()]);
+        }
+      } else if (event.type === "message") {
         const userId = event.source.userId;
         const replyToken = event.replyToken;
 

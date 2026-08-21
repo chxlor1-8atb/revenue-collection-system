@@ -1261,3 +1261,255 @@ export function generateMyInfoFlexMessage(appUrl: string, house: any): any {
 
 
 
+
+export function generateWelcomeFlexMessage() {
+  return {
+    type: "flex",
+    altText: "ยินดีต้อนรับสู่ระบบจัดเก็บรายได้",
+    contents: {
+      type: "bubble",
+      size: "giga",
+      header: {
+        type: "box",
+        layout: "vertical",
+        backgroundColor: "#10B981",
+        paddingAll: "24px",
+        contents: [
+          {
+            type: "text",
+            text: "ยินดีต้อนรับ 💚",
+            color: "#FFFFFF",
+            weight: "bold",
+            size: "xl",
+            align: "center"
+          },
+          {
+            type: "text",
+            text: "ระบบจัดเก็บรายได้อัตโนมัติ",
+            color: "#D1FAE5",
+            size: "sm",
+            align: "center",
+            margin: "md"
+          }
+        ]
+      },
+      body: {
+        type: "box",
+        layout: "vertical",
+        paddingAll: "24px",
+        spacing: "md",
+        contents: [
+          {
+            type: "text",
+            text: "กรุณาพิมพ์ \"บ้านเลขที่\" ของคุณ",
+            weight: "bold",
+            size: "md",
+            color: "#0F172A",
+            align: "center"
+          },
+          {
+            type: "text",
+            text: "เช่น 123/45 เพื่อผูกบัญชีในครั้งแรก",
+            size: "sm",
+            color: "#64748B",
+            align: "center",
+            margin: "sm"
+          },
+          {
+            type: "separator",
+            margin: "xl"
+          },
+          {
+            type: "text",
+            text: "คำอธิบายเมนู (Rich Menu)",
+            weight: "bold",
+            color: "#0F172A",
+            margin: "xl",
+            size: "sm"
+          },
+          {
+            type: "box",
+            layout: "horizontal",
+            margin: "lg",
+            spacing: "sm",
+            contents: [
+              {
+                type: "box",
+                layout: "vertical",
+                width: "36px",
+                height: "36px",
+                cornerRadius: "18px",
+                backgroundColor: "#D1FAE5",
+                alignItems: "center",
+                justifyContent: "center",
+                contents: [
+                  { type: "text", text: "1", color: "#059669", weight: "bold", size: "sm", align: "center" }
+                ]
+              },
+              {
+                type: "box",
+                layout: "vertical",
+                justifyContent: "center",
+                contents: [
+                  { type: "text", text: "เช็คบิล", weight: "bold", size: "sm", color: "#334155" },
+                  { type: "text", text: "ตรวจสอบยอดค้าง & สแกนจ่าย", size: "xs", color: "#64748B", wrap: true }
+                ]
+              }
+            ]
+          },
+          {
+            type: "box",
+            layout: "horizontal",
+            margin: "md",
+            spacing: "sm",
+            contents: [
+              {
+                type: "box",
+                layout: "vertical",
+                width: "36px",
+                height: "36px",
+                cornerRadius: "18px",
+                backgroundColor: "#DBEAFE",
+                alignItems: "center",
+                justifyContent: "center",
+                contents: [
+                  { type: "text", text: "2", color: "#2563EB", weight: "bold", size: "sm", align: "center" }
+                ]
+              },
+              {
+                type: "box",
+                layout: "vertical",
+                justifyContent: "center",
+                contents: [
+                  { type: "text", text: "ใบเสร็จ", weight: "bold", size: "sm", color: "#334155" },
+                  { type: "text", text: "ประวัติการชำระเงินย้อนหลัง", size: "xs", color: "#64748B", wrap: true }
+                ]
+              }
+            ]
+          },
+          {
+            type: "box",
+            layout: "horizontal",
+            margin: "md",
+            spacing: "sm",
+            contents: [
+              {
+                type: "box",
+                layout: "vertical",
+                width: "36px",
+                height: "36px",
+                cornerRadius: "18px",
+                backgroundColor: "#EDE9FE",
+                alignItems: "center",
+                justifyContent: "center",
+                contents: [
+                  { type: "text", text: "3", color: "#7C3AED", weight: "bold", size: "sm", align: "center" }
+                ]
+              },
+              {
+                type: "box",
+                layout: "vertical",
+                justifyContent: "center",
+                contents: [
+                  { type: "text", text: "ข้อมูลของฉัน", weight: "bold", size: "sm", color: "#334155" },
+                  { type: "text", text: "เช็คข้อมูลบ้านที่ลงทะเบียนไว้", size: "xs", color: "#64748B", wrap: true }
+                ]
+              }
+            ]
+          },
+          {
+            type: "box",
+            layout: "horizontal",
+            margin: "md",
+            spacing: "sm",
+            contents: [
+              {
+                type: "box",
+                layout: "vertical",
+                width: "36px",
+                height: "36px",
+                cornerRadius: "18px",
+                backgroundColor: "#F3F4F6",
+                alignItems: "center",
+                justifyContent: "center",
+                contents: [
+                  { type: "text", text: "4", color: "#4B5563", weight: "bold", size: "sm", align: "center" }
+                ]
+              },
+              {
+                type: "box",
+                layout: "vertical",
+                justifyContent: "center",
+                contents: [
+                  { type: "text", text: "เปิดแป้นพิมพ์", weight: "bold", size: "sm", color: "#334155" },
+                  { type: "text", text: "พิมพ์ข้อความถึงเจ้าหน้าที่", size: "xs", color: "#64748B", wrap: true }
+                ]
+              }
+            ]
+          },
+          {
+            type: "box",
+            layout: "horizontal",
+            margin: "md",
+            spacing: "sm",
+            contents: [
+              {
+                type: "box",
+                layout: "vertical",
+                width: "36px",
+                height: "36px",
+                cornerRadius: "18px",
+                backgroundColor: "#FEF3C7",
+                alignItems: "center",
+                justifyContent: "center",
+                contents: [
+                  { type: "text", text: "5", color: "#D97706", weight: "bold", size: "sm", align: "center" }
+                ]
+              },
+              {
+                type: "box",
+                layout: "vertical",
+                justifyContent: "center",
+                contents: [
+                  { type: "text", text: "วิธีใช้งาน", weight: "bold", size: "sm", color: "#334155" },
+                  { type: "text", text: "ดูคู่มือการใช้งานระบบ", size: "xs", color: "#64748B", wrap: true }
+                ]
+              }
+            ]
+          },
+          {
+            type: "box",
+            layout: "horizontal",
+            margin: "md",
+            spacing: "sm",
+            contents: [
+              {
+                type: "box",
+                layout: "vertical",
+                width: "36px",
+                height: "36px",
+                cornerRadius: "18px",
+                backgroundColor: "#ECFEFF",
+                alignItems: "center",
+                justifyContent: "center",
+                contents: [
+                  { type: "text", text: "6", color: "#0891B2", weight: "bold", size: "sm", align: "center" }
+                ]
+              },
+              {
+                type: "box",
+                layout: "vertical",
+                justifyContent: "center",
+                contents: [
+                  { type: "text", text: "ติดต่อเจ้าหน้าที่", weight: "bold", size: "sm", color: "#334155" },
+                  { type: "text", text: "แจ้งปัญหาหรือสอบถามข้อมูล", size: "xs", color: "#64748B", wrap: true }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  };
+}
+
