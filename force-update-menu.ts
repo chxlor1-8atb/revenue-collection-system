@@ -1,6 +1,7 @@
 import { messagingApi } from '@line/bot-sdk';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import sharp from 'sharp';
 dotenv.config({ path: '.env.local' });
 
 const client = new messagingApi.MessagingApiClient({ channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN as string });
@@ -37,8 +38,10 @@ async function run() {
     console.log('Downloading image from Localhost...');
     const res = await fetch('http://localhost:3000/api/rich-menu-image');
     const arrayBuffer = await res.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const imageBlob = new Blob([buffer], { type: 'image/jpeg' });
+    const pngBuffer = Buffer.from(arrayBuffer);
+    const jpegBuffer = await sharp(pngBuffer).jpeg({ quality: 60 }).toBuffer();
+    console.log('Size after compression:', jpegBuffer.length / 1024, 'KB');
+    const imageBlob = new Blob([jpegBuffer], { type: 'image/jpeg' });
     
     console.log('Uploading image to LINE...');
     await blobClient.setRichMenuImage(richMenuId, imageBlob);

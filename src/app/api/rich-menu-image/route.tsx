@@ -1,4 +1,4 @@
-﻿import { ImageResponse } from 'next/og';
+import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
@@ -62,14 +62,14 @@ export async function GET(req: NextRequest) {
     const R2_H = R1_H;
     
     // Col widths
-    // Row 1: 2 items (Item 1 is 2/3 width, Item 2 is 1/3 width)
     const R1_W_TOTAL = W - P * 2 - GAP;
     const R1_ITEM1_W = Math.floor((R1_W_TOTAL * 2) / 3);
     const R1_ITEM2_W = R1_W_TOTAL - R1_ITEM1_W;
     
-    // Row 2: 4 items (equal width)
     const R2_W_TOTAL = W - P * 2 - GAP * 3;
     const R2_ITEM_W = Math.floor(R2_W_TOTAL / 4);
+
+    const baseUrl = req.nextUrl.origin;
 
     return new ImageResponse(
       (
@@ -79,7 +79,7 @@ export async function GET(req: NextRequest) {
             flexDirection: 'column',
             width: '100%',
             height: '100%',
-            backgroundColor: '#F5F5F7', // Apple Light Gray background
+            backgroundColor: '#000000', // Black background to contrast the beautiful images
             padding: `${P}px`,
             gap: `${GAP}px`,
           }}
@@ -87,38 +87,33 @@ export async function GET(req: NextRequest) {
           {/* ROW 1 */}
           <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: R1_H, gap: `${GAP}px` }}>
             
-            {/* ITEM 1: Check Bill (Hero Bento) */}
+            {/* ITEM 1: Check Bill */}
             <div
               style={{
                 display: 'flex',
                 flexDirection: 'column',
                 width: R1_ITEM1_W,
                 height: '100%',
-                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', // Emerald Green
                 borderRadius: '48px',
-                padding: '64px',
                 position: 'relative',
                 overflow: 'hidden',
-                boxShadow: '0 20px 40px rgba(16, 185, 129, 0.2)'
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4)'
               }}
             >
-              {/* Decorative Circle */}
-              <div style={{ position: 'absolute', right: '-40px', top: '-40px', width: '400px', height: '400px', borderRadius: '200px', background: 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%)' }}></div>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', zIndex: 1, height: '100%', justifyContent: 'center' }}>
+              <img src={`${baseUrl}/bento/bg_green.jpg`} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', padding: '64px', justifyContent: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', color: '#ffffff', marginBottom: '24px' }}>
                   <svg width="80" height="80" viewBox="0 0 24 24">{icons.bill}</svg>
                 </div>
-                <div style={{ fontSize: '100px', fontWeight: 'bold', color: '#ffffff', lineHeight: 1.1, letterSpacing: '-2px' }}>
+                <div style={{ fontSize: '100px', fontWeight: 'bold', color: '#ffffff', lineHeight: 1.1, letterSpacing: '-2px', textShadow: '0 4px 10px rgba(0,0,0,0.2)' }}>
                   เช็คบิลค่าขยะ
                 </div>
-                <div style={{ fontSize: '48px', color: 'rgba(255,255,255,0.85)', marginTop: '16px' }}>
+                <div style={{ fontSize: '48px', color: 'rgba(255,255,255,0.9)', marginTop: '16px', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
                   ตรวจสอบยอดและชำระเงิน
                 </div>
                 
-                {/* Modern Pill Button inside */}
                 <div style={{ display: 'flex', marginTop: 'auto' }}>
-                  <div style={{ background: '#ffffff', color: '#059669', padding: '24px 48px', borderRadius: '100px', fontSize: '40px', fontWeight: 'bold', display: 'flex', alignItems: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.2)', color: '#ffffff', padding: '24px 48px', borderRadius: '100px', fontSize: '40px', fontWeight: 'bold', display: 'flex', alignItems: 'center', border: '2px solid rgba(255,255,255,0.4)', backdropFilter: 'blur(10px)' }}>
                     กดที่นี่เพื่อเริ่มต้น
                     <svg style={{ marginLeft: '16px' }} width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                   </div>
@@ -133,24 +128,25 @@ export async function GET(req: NextRequest) {
                 flexDirection: 'column',
                 width: R1_ITEM2_W,
                 height: '100%',
-                background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)', // Blue
                 borderRadius: '48px',
-                padding: '64px',
                 justifyContent: 'space-between',
                 position: 'relative',
                 overflow: 'hidden',
-                boxShadow: '0 20px 40px rgba(37, 99, 235, 0.2)'
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4)'
               }}
             >
-              <div style={{ display: 'flex', color: '#ffffff' }}>
-                <svg width="80" height="80" viewBox="0 0 24 24">{icons.receipt}</svg>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <div style={{ fontSize: '72px', fontWeight: 'bold', color: '#ffffff', lineHeight: 1.1 }}>
-                  ใบเสร็จ
+              <img src={`${baseUrl}/bento/bg_blue.jpg`} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', padding: '64px', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', color: '#ffffff' }}>
+                  <svg width="80" height="80" viewBox="0 0 24 24">{icons.receipt}</svg>
                 </div>
-                <div style={{ fontSize: '40px', color: 'rgba(255,255,255,0.85)', marginTop: '12px' }}>
-                  ประวัติชำระเงิน
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ fontSize: '72px', fontWeight: 'bold', color: '#ffffff', lineHeight: 1.1, textShadow: '0 4px 10px rgba(0,0,0,0.2)' }}>
+                    ใบเสร็จ
+                  </div>
+                  <div style={{ fontSize: '40px', color: 'rgba(255,255,255,0.9)', marginTop: '12px', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+                    ประวัติชำระเงิน
+                  </div>
                 </div>
               </div>
             </div>
@@ -161,39 +157,51 @@ export async function GET(req: NextRequest) {
           <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: R2_H, gap: `${GAP}px` }}>
             
             {/* ITEM 3: My Info */}
-            <div style={{ display: 'flex', flexDirection: 'column', width: R2_ITEM_W, height: '100%', background: '#ffffff', borderRadius: '48px', padding: '48px', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '140px', height: '140px', borderRadius: '70px', background: '#F3E8FF', color: '#9333EA', marginBottom: '32px' }}>
-                <svg width="70" height="70" viewBox="0 0 24 24">{icons.user}</svg>
+            <div style={{ display: 'flex', flexDirection: 'column', width: R2_ITEM_W, height: '100%', borderRadius: '48px', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.4)' }}>
+              <img src={`${baseUrl}/bento/bg_purple.jpg`} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', padding: '48px', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '140px', height: '140px', borderRadius: '70px', background: 'rgba(255,255,255,0.2)', border: '2px solid rgba(255,255,255,0.3)', color: '#ffffff', marginBottom: '32px' }}>
+                  <svg width="70" height="70" viewBox="0 0 24 24">{icons.user}</svg>
+                </div>
+                <div style={{ fontSize: '44px', fontWeight: 'bold', color: '#ffffff', textShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>ข้อมูลของฉัน</div>
+                <div style={{ fontSize: '32px', color: 'rgba(255,255,255,0.9)', marginTop: '12px', textAlign: 'center', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>แก้ไขบ้านเลขที่</div>
               </div>
-              <div style={{ fontSize: '44px', fontWeight: 'bold', color: '#111827' }}>ข้อมูลของฉัน</div>
-              <div style={{ fontSize: '32px', color: '#6B7280', marginTop: '12px', textAlign: 'center' }}>แก้ไขบ้านเลขที่</div>
             </div>
 
             {/* ITEM 4: How to use */}
-            <div style={{ display: 'flex', flexDirection: 'column', width: R2_ITEM_W, height: '100%', background: '#ffffff', borderRadius: '48px', padding: '48px', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '140px', height: '140px', borderRadius: '70px', background: '#FFEDD5', color: '#EA580C', marginBottom: '32px' }}>
-                <svg width="70" height="70" viewBox="0 0 24 24">{icons.book}</svg>
+            <div style={{ display: 'flex', flexDirection: 'column', width: R2_ITEM_W, height: '100%', borderRadius: '48px', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.4)' }}>
+              <img src={`${baseUrl}/bento/bg_orange.jpg`} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', padding: '48px', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '140px', height: '140px', borderRadius: '70px', background: 'rgba(255,255,255,0.2)', border: '2px solid rgba(255,255,255,0.3)', color: '#ffffff', marginBottom: '32px' }}>
+                  <svg width="70" height="70" viewBox="0 0 24 24">{icons.book}</svg>
+                </div>
+                <div style={{ fontSize: '44px', fontWeight: 'bold', color: '#ffffff', textShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>วิธีใช้งาน</div>
+                <div style={{ fontSize: '32px', color: 'rgba(255,255,255,0.9)', marginTop: '12px', textAlign: 'center', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>ขั้นตอนจ่ายเงิน</div>
               </div>
-              <div style={{ fontSize: '44px', fontWeight: 'bold', color: '#111827' }}>วิธีใช้งาน</div>
-              <div style={{ fontSize: '32px', color: '#6B7280', marginTop: '12px', textAlign: 'center' }}>ขั้นตอนจ่ายเงิน</div>
             </div>
 
             {/* ITEM 5: Report */}
-            <div style={{ display: 'flex', flexDirection: 'column', width: R2_ITEM_W, height: '100%', background: '#ffffff', borderRadius: '48px', padding: '48px', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '140px', height: '140px', borderRadius: '70px', background: '#FEE2E2', color: '#DC2626', marginBottom: '32px' }}>
-                <svg width="70" height="70" viewBox="0 0 24 24">{icons.alert}</svg>
+            <div style={{ display: 'flex', flexDirection: 'column', width: R2_ITEM_W, height: '100%', borderRadius: '48px', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.4)' }}>
+              <img src={`${baseUrl}/bento/bg_red.jpg`} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', padding: '48px', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '140px', height: '140px', borderRadius: '70px', background: 'rgba(255,255,255,0.2)', border: '2px solid rgba(255,255,255,0.3)', color: '#ffffff', marginBottom: '32px' }}>
+                  <svg width="70" height="70" viewBox="0 0 24 24">{icons.alert}</svg>
+                </div>
+                <div style={{ fontSize: '44px', fontWeight: 'bold', color: '#ffffff', textShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>แจ้งปัญหา</div>
+                <div style={{ fontSize: '32px', color: 'rgba(255,255,255,0.9)', marginTop: '12px', textAlign: 'center', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>ขยะตกค้าง</div>
               </div>
-              <div style={{ fontSize: '44px', fontWeight: 'bold', color: '#111827' }}>แจ้งปัญหา</div>
-              <div style={{ fontSize: '32px', color: '#6B7280', marginTop: '12px', textAlign: 'center' }}>ขยะตกค้าง</div>
             </div>
 
             {/* ITEM 6: Contact */}
-            <div style={{ display: 'flex', flexDirection: 'column', width: R2_ITEM_W, height: '100%', background: '#ffffff', borderRadius: '48px', padding: '48px', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '140px', height: '140px', borderRadius: '70px', background: '#E0F2FE', color: '#0284C7', marginBottom: '32px' }}>
-                <svg width="70" height="70" viewBox="0 0 24 24">{icons.phone}</svg>
+            <div style={{ display: 'flex', flexDirection: 'column', width: R2_ITEM_W, height: '100%', borderRadius: '48px', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.4)' }}>
+              <img src={`${baseUrl}/bento/bg_lightblue.jpg`} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', padding: '48px', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '140px', height: '140px', borderRadius: '70px', background: 'rgba(255,255,255,0.2)', border: '2px solid rgba(255,255,255,0.3)', color: '#ffffff', marginBottom: '32px' }}>
+                  <svg width="70" height="70" viewBox="0 0 24 24">{icons.phone}</svg>
+                </div>
+                <div style={{ fontSize: '44px', fontWeight: 'bold', color: '#ffffff', textShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>ติดต่อเรา</div>
+                <div style={{ fontSize: '32px', color: 'rgba(255,255,255,0.9)', marginTop: '12px', textAlign: 'center', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>เจ้าหน้าที่เทศบาล</div>
               </div>
-              <div style={{ fontSize: '44px', fontWeight: 'bold', color: '#111827' }}>ติดต่อเรา</div>
-              <div style={{ fontSize: '32px', color: '#6B7280', marginTop: '12px', textAlign: 'center' }}>เจ้าหน้าที่เทศบาล</div>
             </div>
             
           </div>
@@ -209,4 +217,3 @@ export async function GET(req: NextRequest) {
     return new Response(`Failed to generate image`, { status: 500 });
   }
 }
-
