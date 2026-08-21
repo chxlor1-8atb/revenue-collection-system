@@ -290,7 +290,7 @@ export default function HousesClient({
             className="flex items-center gap-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 rounded-xl text-xs font-semibold transition-colors shadow-sm"
           >
             <Download size={14} />
-            ส่งออก CSV
+            ส่งออก Excel (XLSX)
           </a>
 
           <button
