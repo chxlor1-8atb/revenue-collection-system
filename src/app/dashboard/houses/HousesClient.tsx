@@ -488,7 +488,7 @@ export default function HousesClient({
         </div>
         
         {/* Pagination Footer */}
-        <div className="rounded-b-[32px] overflow-hidden bg-white">
+        <div className="rounded-b-[32px] bg-white overflow-visible">
           <TablePagination
             currentPage={currentPage}
             totalPages={totalPages}
