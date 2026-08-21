@@ -72,8 +72,28 @@ export default function HousesClient({
   // QR Code Modal State
   const [qrModal, setQrModal] = useState<{ isOpen: boolean; houseNumber: string; url: string; qrDataUrl: string } | null>(null);
 
-  // View Mode: 'table' or 'grid'
-  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
+  // View Mode: 'table' or 'grid' with localStorage persistence
+  const [viewMode, setViewModeState] = useState<"table" | "grid">("table");
+
+  useEffect(() => {
+    try {
+      const savedMode = localStorage.getItem("houses_view_mode");
+      if (savedMode === "table" || savedMode === "grid") {
+        setViewModeState(savedMode);
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, []);
+
+  const setViewMode = (mode: "table" | "grid") => {
+    setViewModeState(mode);
+    try {
+      localStorage.setItem("houses_view_mode", mode);
+    } catch (e) {
+      // ignore
+    }
+  };
 
   // Slide-over Quick Preview House State
   const [previewHouse, setPreviewHouse] = useState<HouseData | null>(null);
