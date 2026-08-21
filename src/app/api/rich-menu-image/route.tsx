@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
 
-// High-Detail Scalable Vector Illustrations (Rendered at 420x380)
+// High-Detail Scalable Vector Illustrations
 const cardIllustrations = {
   // 1. Bill Payment
   bill: (
@@ -99,7 +99,55 @@ const cardIllustrations = {
     </svg>
   ),
 
-  // 4. User Guide
+  // 4. Open Keyboard (Hand/Finger Pointing Down to Bottom-Left Corner)
+  keyboard: (
+    <svg width="420" height="370" viewBox="0 0 220 220" fill="none">
+      {/* Outer target aura */}
+      <circle cx="110" cy="110" r="96" fill="#F0FDF4" />
+      <circle cx="110" cy="110" r="82" fill="#DCFCE7" />
+      
+      {/* Mini Keyboard preview bar at the top */}
+      <rect x="38" y="44" width="144" height="50" rx="12" fill="#1E293B" />
+      <rect x="42" y="48" width="136" height="42" rx="9" fill="#334155" />
+      {/* Keyboard keys */}
+      <rect x="48" y="53" width="14" height="12" rx="3" fill="#FFFFFF" />
+      <rect x="66" y="53" width="14" height="12" rx="3" fill="#FFFFFF" />
+      <rect x="84" y="53" width="14" height="12" rx="3" fill="#FFFFFF" />
+      <rect x="102" y="53" width="14" height="12" rx="3" fill="#FFFFFF" />
+      <rect x="120" y="53" width="14" height="12" rx="3" fill="#FFFFFF" />
+      <rect x="138" y="53" width="34" height="12" rx="3" fill="#10B981" />
+      <rect x="54" y="70" width="88" height="14" rx="4" fill="#FFFFFF" />
+      <rect x="146" y="70" width="26" height="14" rx="4" fill="#94A3B8" />
+
+      {/* Target focus ring at bottom-left */}
+      <circle cx="68" cy="180" r="32" fill="#10B981" opacity="0.25" />
+      <circle cx="68" cy="180" r="22" fill="#10B981" opacity="0.45" />
+      <circle cx="68" cy="180" r="12" fill="#10B981" />
+
+      {/* Hand Sleeve & Wrist */}
+      <path d="M148 95l32 30-18 16-30-30z" fill="#0284C7" />
+      
+      {/* Hand Palm */}
+      <path d="M115 110l30 25c6 5 7 15 2 21l-4 5c-5 6-15 7-21 2l-22-18 15-35z" fill="#FDBA74" />
+      
+      {/* Folded fingers (Knuckles) */}
+      <circle cx="132" cy="144" r="10" fill="#FB923C" />
+      <circle cx="122" cy="154" r="10" fill="#FB923C" />
+      <circle cx="110" cy="160" r="9" fill="#EA580C" />
+      
+      {/* Big 3D Extended Index Finger Pointing Down-Left */}
+      <path d="M125 118l-45 48c-4 5-11 5-16 1s-5-11-1-16l42-45 20 12z" fill="#FDBA74" />
+      {/* Fingernail */}
+      <ellipse cx="69" cy="173" rx="5" ry="7" transform="rotate(-40 69 173)" fill="#FED7AA" />
+
+      {/* High-visibility Dynamic Down-Left Arrow */}
+      <path d="M50 142l-14 24m0 0l22 2m-22-2l-2-22" stroke="#EF4444" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="36" cy="130" r="5" fill="#F59E0B" />
+      <circle cx="185" cy="160" r="6" fill="#F59E0B" />
+    </svg>
+  ),
+
+  // 5. User Guide
   guide: (
     <svg width="420" height="370" viewBox="0 0 220 220" fill="none">
       <circle cx="110" cy="110" r="96" fill="#FFFBEB" />
@@ -128,7 +176,7 @@ const cardIllustrations = {
     </svg>
   ),
 
-  // 5. Contact Staff
+  // 6. Contact Staff
   support: (
     <svg width="420" height="370" viewBox="0 0 220 220" fill="none">
       <circle cx="110" cy="110" r="96" fill="#ECFEFF" />
@@ -157,48 +205,6 @@ const cardIllustrations = {
       <circle cx="63" cy="82" r="3" fill="#FFFFFF" />
     </svg>
   ),
-
-  // 6. Open Keyboard / Chat Input
-  keyboard: (
-    <svg width="420" height="370" viewBox="0 0 220 220" fill="none">
-      <circle cx="110" cy="110" r="96" fill="#F1F5F9" />
-      <circle cx="110" cy="110" r="82" fill="#E2E8F0" />
-      
-      {/* Keyboard Base */}
-      <rect x="36" y="68" width="148" height="92" rx="16" fill="#1E293B" />
-      <rect x="41" y="73" width="138" height="82" rx="12" fill="#334155" />
-      
-      {/* Keys Row 1 */}
-      <rect x="49" y="81" width="20" height="17" rx="4.5" fill="#FFFFFF" />
-      <rect x="73" y="81" width="20" height="17" rx="4.5" fill="#FFFFFF" />
-      <rect x="97" y="81" width="20" height="17" rx="4.5" fill="#FFFFFF" />
-      <rect x="121" y="81" width="20" height="17" rx="4.5" fill="#FFFFFF" />
-      <rect x="145" y="81" width="26" height="17" rx="4.5" fill="#94A3B8" />
-      
-      {/* Keys Row 2 */}
-      <rect x="49" y="102" width="24" height="17" rx="4.5" fill="#94A3B8" />
-      <rect x="77" y="102" width="20" height="17" rx="4.5" fill="#FFFFFF" />
-      <rect x="101" y="102" width="20" height="17" rx="4.5" fill="#FFFFFF" />
-      <rect x="125" y="102" width="20" height="17" rx="4.5" fill="#FFFFFF" />
-      <rect x="149" y="102" width="22" height="17" rx="4.5" fill="#0EA5E9" />
-      
-      {/* Spacebar Row 3 */}
-      <rect x="49" y="123" width="22" height="17" rx="4.5" fill="#94A3B8" />
-      <rect x="75" y="123" width="70" height="17" rx="4.5" fill="#FFFFFF" />
-      <rect x="149" y="123" width="22" height="17" rx="4.5" fill="#94A3B8" />
-      
-      {/* Floating Chat Bubble */}
-      <rect x="120" y="28" width="70" height="44" rx="14" fill="#0EA5E9" />
-      <path d="M136 72l-7 11v-11h7z" fill="#0EA5E9" />
-      <circle cx="142" cy="50" r="4.5" fill="#FFFFFF" />
-      <circle cx="155" cy="50" r="4.5" fill="#FFFFFF" />
-      <circle cx="168" cy="50" r="4.5" fill="#FFFFFF" />
-      
-      {/* Downward indicator arrow */}
-      <circle cx="110" cy="182" r="20" fill="#0EA5E9" />
-      <path d="M102 178l8 8 8-8" stroke="#FFFFFF" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
 };
 
 const menuList = [
@@ -231,6 +237,15 @@ const menuList = [
   },
   {
     num: '04',
+    badgeBg: '#DCFCE7',
+    badgeBorder: '#10B981',
+    badgeColor: '#047857',
+    title: 'เปิดแป้นพิมพ์',
+    subtitle: 'กดปุ่มที่มุมซ้ายล่างนี้ ⬇️',
+    illustration: cardIllustrations.keyboard,
+  },
+  {
+    num: '05',
     badgeBg: '#FEF3C7',
     badgeBorder: '#F59E0B',
     badgeColor: '#B45309',
@@ -239,22 +254,13 @@ const menuList = [
     illustration: cardIllustrations.guide,
   },
   {
-    num: '05',
+    num: '06',
     badgeBg: '#CFFAFE',
     badgeBorder: '#06B6D4',
     badgeColor: '#0E7490',
     title: 'ติดต่อเจ้าหน้าที่',
     subtitle: 'สอบถามข้อมูลบริการ 24 ชม.',
     illustration: cardIllustrations.support,
-  },
-  {
-    num: '06',
-    badgeBg: '#E2E8F0',
-    badgeBorder: '#64748B',
-    badgeColor: '#1E293B',
-    title: 'เปิดแป้นพิมพ์',
-    subtitle: 'กดเพื่อพิมพ์คุยกับแอดมิน ⬇️',
-    illustration: cardIllustrations.keyboard,
   },
 ];
 
@@ -263,12 +269,11 @@ export async function GET(req: NextRequest) {
     const W = 2500;
     const H = 1686;
     
-    // Minimal outer padding & gap for maximum card area
     const GAP = 16;
     const P = 16;
     
-    const CARD_W = Math.floor((W - P * 2 - GAP * 2) / 3); // 813px
-    const CARD_H = Math.floor((H - P * 2 - GAP) / 2);     // 819px
+    const CARD_W = Math.floor((W - P * 2 - GAP * 2) / 3);
+    const CARD_H = Math.floor((H - P * 2 - GAP) / 2);
 
     return new ImageResponse(
       (
@@ -278,12 +283,12 @@ export async function GET(req: NextRequest) {
             flexDirection: 'column',
             width: '100%',
             height: '100%',
-            backgroundColor: '#CBD5E1', // Clean subtle contrast
+            backgroundColor: '#CBD5E1',
             padding: `${P}px`,
             gap: `${GAP}px`,
           }}
         >
-          {/* Row 1 */}
+          {/* Row 1: 01, 02, 03 */}
           <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: CARD_H, gap: `${GAP}px` }}>
             {menuList.slice(0, 3).map((item, idx) => (
               <div
@@ -303,7 +308,7 @@ export async function GET(req: NextRequest) {
                   justifyContent: 'space-between',
                 }}
               >
-                {/* Top Row: Extra Large Number Badge */}
+                {/* Top Row: Number Badge */}
                 <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-start' }}>
                   <div
                     style={{
@@ -342,7 +347,7 @@ export async function GET(req: NextRequest) {
             ))}
           </div>
 
-          {/* Row 2 */}
+          {/* Row 2: 04 (Keyboard at Bottom-Left), 05 (Guide), 06 (Support) */}
           <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: CARD_H, gap: `${GAP}px` }}>
             {menuList.slice(3, 6).map((item, idx) => (
               <div
@@ -352,17 +357,17 @@ export async function GET(req: NextRequest) {
                   flexDirection: 'column',
                   width: CARD_W,
                   height: '100%',
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: item.num === '04' ? '#F0FDF4' : '#FFFFFF', // Special subtle tint for slot 04
                   borderRadius: '48px',
                   padding: '28px 24px 36px 24px',
-                  boxShadow: '0 16px 40px rgba(15, 23, 42, 0.09)',
-                  border: '2px solid rgba(255, 255, 255, 0.9)',
+                  boxShadow: item.num === '04' ? '0 16px 40px rgba(16, 185, 129, 0.15)' : '0 16px 40px rgba(15, 23, 42, 0.09)',
+                  border: item.num === '04' ? '3px solid #10B981' : '2px solid rgba(255, 255, 255, 0.9)',
                   position: 'relative',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}
               >
-                {/* Top Row: Extra Large Number Badge */}
+                {/* Top Row: Number Badge */}
                 <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-start' }}>
                   <div
                     style={{
@@ -390,10 +395,10 @@ export async function GET(req: NextRequest) {
 
                 {/* Extra Large Thai Title & Subtitle */}
                 <div style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center' }}>
-                  <div style={{ fontSize: '86px', fontWeight: 'bold', color: '#0F172A', textAlign: 'center', lineHeight: 1.1, letterSpacing: '-0.5px' }}>
+                  <div style={{ fontSize: '86px', fontWeight: 'bold', color: item.num === '04' ? '#047857' : '#0F172A', textAlign: 'center', lineHeight: 1.1, letterSpacing: '-0.5px' }}>
                     {item.title}
                   </div>
-                  <div style={{ fontSize: '42px', fontWeight: 600, color: '#64748B', textAlign: 'center', marginTop: '12px', lineHeight: 1.15 }}>
+                  <div style={{ fontSize: '42px', fontWeight: 600, color: item.num === '04' ? '#059669' : '#64748B', textAlign: 'center', marginTop: '12px', lineHeight: 1.15 }}>
                     {item.subtitle}
                   </div>
                 </div>
