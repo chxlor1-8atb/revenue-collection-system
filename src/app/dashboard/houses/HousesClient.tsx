@@ -310,9 +310,9 @@ export default function HousesClient({
       )}
 
       {/* Main Card Container */}
-      <div className="bg-white rounded-[32px] shadow-sm border border-slate-100 flex flex-col">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col">
         {/* Toolbar: Search */}
-        <div className="p-8 lg:p-10 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4 rounded-t-[32px] bg-white relative z-20">
+        <div className="p-5 lg:p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4 rounded-t-2xl bg-white relative z-20">
           <div className="flex flex-col sm:flex-row w-full gap-4 z-20">
             <div className="relative w-full sm:w-80">
               <SearchAutocomplete 
@@ -346,7 +346,7 @@ export default function HousesClient({
             <thead>
               <tr className="border-b border-slate-100">
                 {customFieldsSchema.filter(f => !f.isHidden).map(field => (
-                  <th key={field.id} className={`px-4 py-3 text-[length:11px] font-semibold uppercase tracking-wider ${field.isSystem && (field.id === 'houseNumber' || field.id === 'ownerName') ? 'cursor-pointer text-slate-500 hover:text-slate-800 transition-colors' : 'text-slate-400'}`} onClick={() => {
+                  <th key={field.id} className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider ${field.isSystem && (field.id === 'houseNumber' || field.id === 'ownerName') ? 'cursor-pointer text-slate-500 hover:text-slate-800 transition-colors' : 'text-slate-400'}`} onClick={() => {
                     if (field.id === 'houseNumber' || field.id === 'ownerName') handleSort(field.id);
                   }}>
                     <div className="flex items-center gap-1.5">
@@ -357,8 +357,8 @@ export default function HousesClient({
                     </div>
                   </th>
                 ))}
-                <th className="px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider">บัญชี</th>
-                <th className="px-4 py-3 text-[length:11px] font-semibold text-slate-400 uppercase tracking-wider text-right">จัดการ</th>
+                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">บัญชี</th>
+                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">จัดการ</th>
               </tr>
             </thead>
             <tbody className={`divide-y divide-slate-50 text-slate-700 transition-opacity duration-200 ${isPending ? 'opacity-50' : 'opacity-100'}`}>
@@ -381,35 +381,35 @@ export default function HousesClient({
                     }
                     
                     if (field.id === 'houseNumber') {
-                      return <td key={field.id} className="px-4 py-4 font-mono font-bold text-slate-800 text-[length:13px]">{val}</td>;
+                      return <td key={field.id} className="px-6 py-4 font-mono font-bold text-slate-800 text-sm">{val}</td>;
                     }
                     if (field.id === 'ownerName') {
-                      return <td key={field.id} className="px-4 py-4 font-semibold text-[length:13px]">{val}</td>;
+                      return <td key={field.id} className="px-6 py-4 font-bold text-slate-800 text-sm">{val}</td>;
                     }
-                    return <td key={field.id} className="px-4 py-4 text-slate-500 text-[length:13px]">{val}</td>;
+                    return <td key={field.id} className="px-6 py-4 text-slate-600 font-medium text-sm">{val}</td>;
                   })}
-                  <td className="px-4 py-4">
+                  <td className="px-6 py-4">
                     <Link 
                       href={`/dashboard/houses/${house.id}`} 
-                      className="inline-flex items-center gap-1.5 px-3 py-1 text-[length:11px] font-bold text-[#5B58F2] bg-[#EEF0FF] hover:bg-[#E0E4FF] rounded-full transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-[#5B58F2] bg-[#EEF0FF] hover:bg-[#D5D9FF] rounded-lg transition-colors border border-[#D5D9FF]"
                     >
                       ดูบิลชำระ
                     </Link>
                   </td>
-                  <td className="px-4 py-4 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                                            <button
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
                         onClick={() => setConfirmCashHouse({ id: house.id!, houseNumber: house.houseNumber })}
                         className="p-2 text-slate-400 hover:text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors"
                         title="รับชำระเงินสด (ทั้งหมด)"
                       >
-                        <Banknote size={14} />
+                        <Banknote size={16} />
                       </button>
                       <button onClick={() => openQrModal(house)}
                         className="p-2 text-slate-400 hover:text-[#5B58F2] hover:bg-slate-100 rounded-lg transition-colors"
                         title="QR Code & ลิงก์ชำระเงิน"
                       >
-                        <QrCode size={14} />
+                        <QrCode size={16} />
                       </button>
                       <button
                         onClick={() => {
@@ -421,36 +421,36 @@ export default function HousesClient({
                             isManual: true
                           });
                         }}
-                        className="p-2 text-slate-400 hover:text-amber-500 hover:bg-slate-100 rounded-lg transition-colors"
+                        className="p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-colors"
                         title="สร้างบิลค้างชำระ (แมนนวล)"
                       >
-                        <FilePlus size={14} />
+                        <FilePlus size={16} />
                       </button>
                       {(house as any).lineUserId ? (
                         <button
                           onClick={() => setConfirmLineHouse({ id: house.id!, houseNumber: house.houseNumber })}
                           disabled={sendingLine === house.id}
-                          className="p-2 text-[#00B900] opacity-80 hover:opacity-100 hover:bg-slate-100 rounded-lg transition-colors"
+                          className="p-2 text-[#00B900] hover:text-[#00B900] hover:bg-emerald-50 rounded-lg transition-colors"
                           title="ส่งแจ้งเตือนบิลค้างชำระผ่าน LINE"
                         >
-                          {sendingLine === house.id ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                          {sendingLine === house.id ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                         </button>
                       ) : (
-                         <div className="w-[30px]" />
+                         <div className="w-[32px]" />
                       )}
                       <button
                         onClick={() => handleEdit(house)}
                         className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-slate-100 rounded-lg transition-colors"
                         title="แก้ไขข้อมูลบ้าน"
                       >
-                        <Edit2 size={14} />
+                        <Edit2 size={16} />
                       </button>
                       <button
                         onClick={() => confirmDelete(house.id!, house.houseNumber)}
                         className="p-2 text-slate-400 hover:text-red-500 hover:bg-slate-100 rounded-lg transition-colors"
                         title="ลบข้อมูลบ้าน"
                       >
-                        <Trash2 size={14} />
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </td>
