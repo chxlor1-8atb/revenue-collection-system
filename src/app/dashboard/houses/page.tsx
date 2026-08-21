@@ -21,7 +21,12 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
       ilike(houses.houseNumber, `%${q}%`),
       ilike(houses.ownerName, `%${q}%`),
       sql`${houses.ownerName} % ${q}`,
-      sql`${houses.houseNumber} % ${q}`
+      sql`${houses.houseNumber} % ${q}`,
+      ilike(houses.moo, `%${q}%`),
+      ilike(houses.soi, `%${q}%`),
+      ilike(houses.road, `%${q}%`),
+      ilike(houses.zone, `%${q}%`),
+      sql`CAST(${houses.customFields} AS TEXT) ILIKE ${`%${q}%`}`
     ));
   }
   if (zone) {

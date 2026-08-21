@@ -318,7 +318,7 @@ export default function HousesClient({
               <SearchAutocomplete 
                 value={searchQuery}
                 onChange={setSearchQuery}
-                placeholder="ค้นหาบ้านหรือชื่อเจ้าของ..."
+                placeholder="ค้นหาจากทุกข้อมูล (บ้านเลขที่, ชื่อ, หมู่, เบอร์โทร...)"
                 className="w-full sm:w-80 focus:w-full sm:focus:w-80 !bg-slate-50 border-transparent focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none text-sm rounded-xl"
               />
             </div>
