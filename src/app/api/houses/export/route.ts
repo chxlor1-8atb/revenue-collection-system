@@ -13,20 +13,14 @@ const OFFICIAL_ZONES = [
   "ป่าตาเส็ง", "ป่ารักน้ำ", "ดอนแสลงพันธ์", "โคกหลวงพ่อ"
 ];
 
-const MONTH_COLS = [
-  { header: "ต.ค.68", key: "2025-10" },
-  { header: "พ.ย.68", key: "2025-11" },
-  { header: "ธ.ค.68", key: "2025-12" },
-  { header: "ม.ค.69", key: "2026-01" },
-  { header: "ก.พ.69", key: "2026-02" },
-  { header: "มี.ค.69", key: "2026-03" },
-  { header: "เม.ย.69", key: "2026-04" },
-  { header: "พ.ค.69", key: "2026-05" },
-  { header: "มิ.ย.69", key: "2026-06" },
-  { header: "ก.ค.69", key: "2026-07" },
-  { header: "ส.ค.69", key: "2026-08" },
-  { header: "ก.ย.69", key: "2026-09" },
-];
+function formatThaiShortMonth(monthYear: string) {
+  const [yearStr, monthStr] = monthYear.split("-");
+  const monthNum = parseInt(monthStr, 10);
+  const yearNum = parseInt(yearStr, 10);
+  const thaiMonths = ["", "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+  const shortYear = (yearNum + 543).toString().slice(-2);
+  return `${thaiMonths[monthNum] || monthStr}${shortYear}`;
+}
 
 export async function GET() {
   try {
@@ -34,6 +28,23 @@ export async function GET() {
       db.select().from(houses).orderBy(asc(houses.houseNumber)),
       db.select().from(invoices)
     ]);
+
+    // Standard fiscal year 2569 (Oct 2568 - Sep 2569)
+    const defaultFiscalMonths = [
+      "2025-10", "2025-11", "2025-12",
+      "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06",
+      "2026-07", "2026-08", "2026-09"
+    ];
+
+    // Collect all unique months from DB and default fiscal year, sorted chronologically
+    const allUniqueMonths = Array.from(
+      new Set([...defaultFiscalMonths, ...allInvoices.map(inv => inv.monthYear)])
+    ).filter(m => /^\d{4}-\d{2}$/.test(m)).sort();
+
+    const monthCols = allUniqueMonths.map(m => ({
+      key: m,
+      header: formatThaiShortMonth(m)
+    }));
 
     // Map invoices by houseId and monthYear
     const invoiceMap: Record<number, Record<string, any>> = {};
@@ -69,32 +80,21 @@ export async function GET() {
       const zoneHouses = housesByZone[zone];
       const ws = workbook.addWorksheet(zone);
 
-      // Column widths (identical to template)
+      // Dynamic column widths
       ws.columns = [
         { width: 6.0 },   // 1: ลำดับ
         { width: 28.0 },  // 2: ชื่อ - สกุล
         { width: 11.0 },  // 3: บ้านเลขที่
         { width: 22.0 },  // 4: ถนน/ซอย
-        { width: 6.5 },   // 5: ต.ค.68
-        { width: 6.5 },   // 6: พ.ย.68
-        { width: 6.5 },   // 7: ธ.ค.68
-        { width: 6.5 },   // 8: ม.ค.69
-        { width: 6.5 },   // 9: ก.พ.69
-        { width: 6.5 },   // 10: มี.ค.69
-        { width: 6.5 },   // 11: เม.ย.69
-        { width: 6.5 },   // 12: พ.ค.69
-        { width: 6.5 },   // 13: มิ.ย.69
-        { width: 6.5 },   // 14: ก.ค.69
-        { width: 6.5 },   // 15: ส.ค.69
-        { width: 6.5 },   // 16: ก.ย.69
-        { width: 9.0 },   // 17: รวม
+        ...monthCols.map(() => ({ width: 6.5 })), // Month cols
+        { width: 9.0 },   // รวม
       ];
 
       // Row 1: Header Row
       const headerRow = ws.getRow(1);
       const headers = [
         "ลำดับ", "ชื่อ - สกุล", "บ้านเลขที่", "ถนน/ซอย",
-        ...MONTH_COLS.map(m => m.header),
+        ...monthCols.map(m => m.header),
         "รวม"
       ];
 
@@ -103,7 +103,7 @@ export async function GET() {
         cell.value = text;
         cell.font = {
           name: "TH Sarabun New",
-          size: colIdx >= 4 && colIdx <= 15 ? 14 : 16,
+          size: colIdx >= 4 && colIdx < headers.length - 1 ? 14 : 16,
           bold: true,
           color: { argb: "FF000000" }
         };
@@ -150,10 +150,10 @@ export async function GET() {
         cell4.font = { name: "TH Sarabun New", size: 16, color: { argb: "FF000000" } };
         cell4.border = thinBorder;
 
-        // Col 5-16: Month columns
+        // Month columns (Col 5 to 5 + monthCols.length - 1)
         const houseInvs = invoiceMap[house.id] || {};
         let totalPaidAmount = 0;
-        MONTH_COLS.forEach((m, mIdx) => {
+        monthCols.forEach((m, mIdx) => {
           const cellM = mainRow.getCell(5 + mIdx);
           const inv = houseInvs[m.key];
           if (inv && inv.status === "paid") {
@@ -161,23 +161,24 @@ export async function GET() {
             cellM.value = amt;
             totalPaidAmount += amt;
           } else {
-            cellM.value = null;
+            cellM.value = null; // อันไหนไม่มี ให้ว่างไว้
           }
           cellM.font = { name: "TH Sarabun New", size: 16, color: { argb: "FF000000" } };
           cellM.alignment = { horizontal: "center", vertical: "middle" };
           cellM.border = thinBorder;
         });
 
-        // Col 17: รวม
-        const cell17 = mainRow.getCell(17);
-        cell17.value = totalPaidAmount > 0 ? totalPaidAmount : null;
-        cell17.font = { name: "TH Sarabun New", size: 16, color: { argb: "FF000000" } };
-        cell17.alignment = { horizontal: "center", vertical: "middle" };
-        cell17.border = thinBorder;
+        // Col รวม
+        const totalColIdx = 5 + monthCols.length;
+        const cellTotal = mainRow.getCell(totalColIdx);
+        cellTotal.value = totalPaidAmount > 0 ? totalPaidAmount : null;
+        cellTotal.font = { name: "TH Sarabun New", size: 16, color: { argb: "FF000000" } };
+        cellTotal.alignment = { horizontal: "center", vertical: "middle" };
+        cellTotal.border = thinBorder;
 
-        // Sub-row (Blank row with borders)
+        // Sub-row (Blank row with borders for notes/signatures)
         const subRow = ws.getRow(rowIdx + 1);
-        for (let c = 1; c <= 17; c++) {
+        for (let c = 1; c <= totalColIdx; c++) {
           const subCell = subRow.getCell(c);
           subCell.value = null;
           subCell.font = { name: "TH Sarabun New", size: 16, color: { argb: "FF000000" } };
