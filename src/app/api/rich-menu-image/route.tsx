@@ -3,187 +3,200 @@ import { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
 
-// Rich Vector Illustrations for each card
+// High-Detail Scalable Vector Illustrations (Rendered at 420x380)
 const cardIllustrations = {
   // 1. Bill Payment
   bill: (
-    <svg width="340" height="320" viewBox="0 0 220 220" fill="none">
-      <circle cx="110" cy="110" r="95" fill="#ECFDF5" />
-      <circle cx="110" cy="110" r="80" fill="#D1FAE5" />
+    <svg width="420" height="370" viewBox="0 0 220 220" fill="none">
+      <circle cx="110" cy="110" r="96" fill="#ECFDF5" />
+      <circle cx="110" cy="110" r="82" fill="#D1FAE5" />
       
       {/* Trash Bin */}
-      <rect x="135" y="105" width="55" height="70" rx="8" fill="#10B981" />
-      <rect x="130" y="98" width="65" height="10" rx="4" fill="#059669" />
-      <rect x="150" y="92" width="25" height="7" rx="3" fill="#047857" />
+      <rect x="135" y="105" width="56" height="72" rx="10" fill="#10B981" />
+      <rect x="130" y="97" width="66" height="11" rx="5" fill="#059669" />
+      <rect x="150" y="90" width="26" height="8" rx="4" fill="#047857" />
       <path d="M152 125l6-6 6 6m0 0l-3 6m3-6h-8m-3 16l-6-6 6-6m0 0l3-6m-3 6h8" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
       
       {/* Phone Body */}
-      <rect x="50" y="45" width="90" height="140" rx="16" fill="#1E293B" />
-      <rect x="55" y="55" width="80" height="120" rx="10" fill="#FFFFFF" />
+      <rect x="48" y="42" width="94" height="146" rx="18" fill="#1E293B" />
+      <rect x="53" y="52" width="84" height="126" rx="12" fill="#FFFFFF" />
       
       {/* Phone Screen: QR Code Box */}
-      <rect x="68" y="70" width="54" height="54" rx="8" fill="#F0FDF4" stroke="#10B981" strokeWidth="2" />
-      <rect x="75" y="77" width="16" height="16" rx="3" fill="#10B981" />
-      <rect x="99" y="77" width="16" height="16" rx="3" fill="#10B981" />
-      <rect x="75" y="101" width="16" height="16" rx="3" fill="#10B981" />
-      <rect x="99" y="101" width="8" height="8" fill="#059669" />
-      <rect x="107" y="109" width="8" height="8" fill="#059669" />
+      <rect x="66" y="66" width="58" height="58" rx="10" fill="#F0FDF4" stroke="#10B981" strokeWidth="2.5" />
+      <rect x="73" y="73" width="18" height="18" rx="4" fill="#10B981" />
+      <rect x="99" y="73" width="18" height="18" rx="4" fill="#10B981" />
+      <rect x="73" y="99" width="18" height="18" rx="4" fill="#10B981" />
+      <rect x="99" y="99" width="9" height="9" fill="#059669" />
+      <rect x="108" y="108" width="9" height="9" fill="#059669" />
       
       {/* Scan line */}
-      <line x1="68" y1="97" x2="122" y2="97" stroke="#34D399" strokeWidth="3" strokeLinecap="round" />
+      <line x1="66" y1="95" x2="124" y2="95" stroke="#34D399" strokeWidth="3.5" strokeLinecap="round" />
       
       {/* Coins */}
-      <circle cx="45" cy="160" r="18" fill="#FBBF24" stroke="#F59E0B" strokeWidth="3" />
-      <circle cx="45" cy="160" r="12" fill="#FDE68A" />
-      <circle cx="70" cy="175" r="15" fill="#F59E0B" stroke="#D97706" strokeWidth="2" />
-      <circle cx="70" cy="175" r="10" fill="#FDE68A" />
+      <circle cx="42" cy="162" r="20" fill="#FBBF24" stroke="#F59E0B" strokeWidth="3.5" />
+      <circle cx="42" cy="162" r="14" fill="#FDE68A" />
+      <circle cx="68" cy="178" r="16" fill="#F59E0B" stroke="#D97706" strokeWidth="2.5" />
+      <circle cx="68" cy="178" r="11" fill="#FDE68A" />
     </svg>
   ),
 
   // 2. Receipt
   receipt: (
-    <svg width="340" height="320" viewBox="0 0 220 220" fill="none">
-      <circle cx="110" cy="110" r="95" fill="#EFF6FF" />
-      <circle cx="110" cy="110" r="80" fill="#DBEAFE" />
+    <svg width="420" height="370" viewBox="0 0 220 220" fill="none">
+      <circle cx="110" cy="110" r="96" fill="#EFF6FF" />
+      <circle cx="110" cy="110" r="82" fill="#DBEAFE" />
       
       {/* Phone Base */}
-      <rect x="65" y="45" width="90" height="140" rx="16" fill="#1E293B" />
-      <rect x="70" y="55" width="80" height="120" rx="10" fill="#3B82F6" />
+      <rect x="64" y="42" width="94" height="146" rx="18" fill="#1E293B" />
+      <rect x="69" y="52" width="84" height="126" rx="12" fill="#3B82F6" />
       
       {/* Receipt Paper Floating Out */}
-      <path d="M78 40h64v100l-8-5-8 5-8-5-8 5-8-5-8 5-8-5-8 5V40z" fill="#FFFFFF" />
+      <path d="M76 38h68v104l-8.5-5-8.5 5-8.5-5-8.5 5-8.5-5-8.5 5-8.5-5-8.5 5V38z" fill="#FFFFFF" />
       
       {/* Green Success Badge */}
-      <circle cx="110" cy="68" r="16" fill="#10B981" />
-      <path d="M103 68l5 5 10-10" stroke="#FFFFFF" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="110" cy="66" r="18" fill="#10B981" />
+      <path d="M102 66l6 6 11-11" stroke="#FFFFFF" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
       
       {/* Receipt lines */}
-      <rect x="90" y="94" width="40" height="5" rx="2" fill="#93C5FD" />
-      <rect x="88" y="105" width="44" height="4" rx="2" fill="#E2E8F0" />
-      <rect x="88" y="114" width="44" height="4" rx="2" fill="#E2E8F0" />
+      <rect x="88" y="93" width="44" height="6" rx="3" fill="#93C5FD" />
+      <rect x="86" y="105" width="48" height="4.5" rx="2" fill="#CBD5E1" />
+      <rect x="86" y="115" width="48" height="4.5" rx="2" fill="#CBD5E1" />
+      <rect x="86" y="125" width="30" height="4.5" rx="2" fill="#CBD5E1" />
       
       {/* Floating Card */}
-      <rect x="125" y="125" width="65" height="42" rx="8" fill="#2563EB" stroke="#FFFFFF" strokeWidth="2.5" />
-      <rect x="133" y="136" width="14" height="10" rx="2" fill="#FBBF24" />
-      <circle cx="172" cy="153" r="6" fill="#EF4444" opacity="0.9" />
-      <circle cx="164" cy="153" r="6" fill="#F59E0B" opacity="0.9" />
+      <rect x="124" y="125" width="70" height="46" rx="9" fill="#2563EB" stroke="#FFFFFF" strokeWidth="3" />
+      <rect x="133" y="137" width="16" height="11" rx="2.5" fill="#FBBF24" />
+      <circle cx="176" cy="156" r="7" fill="#EF4444" opacity="0.9" />
+      <circle cx="167" cy="156" r="7" fill="#F59E0B" opacity="0.9" />
     </svg>
   ),
 
   // 3. House Registry
   house: (
-    <svg width="340" height="320" viewBox="0 0 220 220" fill="none">
-      <circle cx="110" cy="110" r="95" fill="#F5F3FF" />
-      <circle cx="110" cy="110" r="80" fill="#EDE9FE" />
+    <svg width="420" height="370" viewBox="0 0 220 220" fill="none">
+      <circle cx="110" cy="110" r="96" fill="#F5F3FF" />
+      <circle cx="110" cy="110" r="82" fill="#EDE9FE" />
       
       {/* House Body */}
-      <path d="M60 115l50-35 50 35v55a6 6 0 0 1-6 6H66a6 6 0 0 1-6-6v-55z" fill="#8B5CF6" />
-      <path d="M54 118l56-40 56 40" stroke="#6D28D9" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
-      <rect x="140" y="80" width="12" height="22" fill="#6D28D9" rx="2" />
+      <path d="M58 114l52-36 52 36v58a6 6 0 0 1-6 6H64a6 6 0 0 1-6-6v-58z" fill="#8B5CF6" />
+      <path d="M52 117l58-42 58 42" stroke="#6D28D9" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="142" y="78" width="14" height="24" fill="#6D28D9" rx="3" />
       
-      <rect x="96" y="136" width="28" height="40" rx="4" fill="#FFFFFF" />
-      <rect x="74" y="128" width="16" height="16" rx="3" fill="#DDD6FE" />
-      <rect x="130" y="128" width="16" height="16" rx="3" fill="#DDD6FE" />
+      {/* House Door & Windows */}
+      <rect x="95" y="134" width="30" height="44" rx="5" fill="#FFFFFF" />
+      <rect x="72" y="126" width="18" height="18" rx="4" fill="#DDD6FE" />
+      <rect x="130" y="126" width="18" height="18" rx="4" fill="#DDD6FE" />
       
       {/* Location Pin */}
-      <path d="M155 50c-11 0-20 9-20 20 0 15 20 32 20 32s20-17 20-32c0-11-9-20-20-20z" fill="#EC4899" />
-      <circle cx="155" cy="70" r="7" fill="#FFFFFF" />
+      <path d="M158 48c-12 0-22 10-22 22 0 16 22 34 22 34s22-18 22-34c0-12-10-22-22-22z" fill="#EC4899" />
+      <circle cx="158" cy="70" r="8" fill="#FFFFFF" />
       
-      {/* Document Icon on Left */}
-      <rect x="35" y="120" width="30" height="40" rx="4" fill="#FFFFFF" stroke="#8B5CF6" strokeWidth="2" />
-      <line x1="42" y1="130" x2="58" y2="130" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round" />
-      <line x1="42" y1="138" x2="58" y2="138" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round" />
+      {/* Document Icon */}
+      <rect x="32" y="118" width="34" height="44" rx="5" fill="#FFFFFF" stroke="#8B5CF6" strokeWidth="2.5" />
+      <line x1="40" y1="129" x2="58" y2="129" stroke="#8B5CF6" strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="40" y1="138" x2="58" y2="138" stroke="#8B5CF6" strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="40" y1="147" x2="51" y2="147" stroke="#8B5CF6" strokeWidth="2.5" strokeLinecap="round" />
     </svg>
   ),
 
   // 4. User Guide
   guide: (
-    <svg width="340" height="320" viewBox="0 0 220 220" fill="none">
-      <circle cx="110" cy="110" r="95" fill="#FFFBEB" />
-      <circle cx="110" cy="110" r="80" fill="#FEF3C7" />
+    <svg width="420" height="370" viewBox="0 0 220 220" fill="none">
+      <circle cx="110" cy="110" r="96" fill="#FFFBEB" />
+      <circle cx="110" cy="110" r="82" fill="#FEF3C7" />
       
-      <path d="M50 115c18-8 40-6 60 5 20-11 42-13 60-5v55c-18-8-40-6-60 5-20-11-42-13-60-5v-55z" fill="#F59E0B" />
-      <path d="M54 110c17-8 38-6 56 4v55c-18-10-39-12-56-4v-55z" fill="#FFFFFF" />
-      <path d="M166 110c-17-8-38-6-56 4v55c18-10 39-12 56-4v-55z" fill="#FFFFFF" />
+      {/* Open Book */}
+      <path d="M48 114c19-8 42-6 62 5 20-11 43-13 62-5v58c-19-8-42-6-62 5-20-11-43-13-62-5v-58z" fill="#F59E0B" />
+      <path d="M52 108c18-8 40-6 58 4v58c-18-10-40-12-58-4v-58z" fill="#FFFFFF" />
+      <path d="M168 108c-18-8-40-6-58 4v58c18-10 40-12 58-4v-58z" fill="#FFFFFF" />
       
-      <line x1="64" y1="124" x2="98" y2="120" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round" />
-      <line x1="64" y1="134" x2="98" y2="130" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round" />
+      <line x1="62" y1="123" x2="98" y2="119" stroke="#FCD34D" strokeWidth="3.5" strokeLinecap="round" />
+      <line x1="62" y1="134" x2="98" y2="130" stroke="#FCD34D" strokeWidth="3.5" strokeLinecap="round" />
+      <line x1="62" y1="145" x2="88" y2="141" stroke="#FCD34D" strokeWidth="3.5" strokeLinecap="round" />
       
-      <line x1="122" y1="120" x2="156" y2="124" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round" />
-      <line x1="122" y1="130" x2="156" y2="134" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round" />
+      <line x1="122" y1="119" x2="158" y2="123" stroke="#FCD34D" strokeWidth="3.5" strokeLinecap="round" />
+      <line x1="122" y1="130" x2="158" y2="134" stroke="#FCD34D" strokeWidth="3.5" strokeLinecap="round" />
+      <line x1="122" y1="141" x2="148" y2="145" stroke="#FCD34D" strokeWidth="3.5" strokeLinecap="round" />
       
       {/* Floating Lightbulb */}
-      <circle cx="110" cy="65" r="22" fill="#FBBF24" />
-      <path d="M102 85h16v6h-16z" fill="#D97706" rx="2" />
-      <path d="M105 60a6 6 0 0 1 10 0c0 4-5 6-5 9" stroke="#78350F" strokeWidth="2.5" strokeLinecap="round" />
-      <line x1="110" y1="35" x2="110" y2="40" stroke="#F59E0B" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="110" cy="62" r="24" fill="#FBBF24" />
+      <path d="M101 84h18v7h-18z" fill="#D97706" rx="2.5" />
+      <path d="M105 57a6 6 0 0 1 10 0c0 4-5 6-5 9" stroke="#78350F" strokeWidth="3" strokeLinecap="round" />
+      <line x1="110" y1="30" x2="110" y2="35" stroke="#F59E0B" strokeWidth="3.5" strokeLinecap="round" />
+      <line x1="78" y1="46" x2="84" y2="51" stroke="#F59E0B" strokeWidth="3.5" strokeLinecap="round" />
+      <line x1="142" y1="46" x2="136" y2="51" stroke="#F59E0B" strokeWidth="3.5" strokeLinecap="round" />
     </svg>
   ),
 
   // 5. Contact Staff
   support: (
-    <svg width="340" height="320" viewBox="0 0 220 220" fill="none">
-      <circle cx="110" cy="110" r="95" fill="#ECFEFF" />
-      <circle cx="110" cy="110" r="80" fill="#CFFAFE" />
+    <svg width="420" height="370" viewBox="0 0 220 220" fill="none">
+      <circle cx="110" cy="110" r="96" fill="#ECFEFF" />
+      <circle cx="110" cy="110" r="82" fill="#CFFAFE" />
       
-      <path d="M68 180c0-23 19-42 42-42s42 19 42 42v2H68v-2z" fill="#0891B2" />
-      <circle cx="110" cy="108" r="28" fill="#FDBA74" />
-      <path d="M82 105c0-16 12-28 28-28s28 12 28 28c0 4-1 8-2 10-6-14-16-16-26-16s-20 2-26 16c-1-2-2-6-2-10z" fill="#1E293B" />
+      <path d="M66 182c0-24 20-44 44-44s44 20 44 44v2H66v-2z" fill="#0891B2" />
+      <circle cx="110" cy="106" r="30" fill="#FDBA74" />
+      <path d="M80 103c0-17 13-30 30-30s30 13 30 30c0 4-1 9-2 11-6-15-17-17-28-17s-22 2-28 17c-1-2-2-7-2-11z" fill="#1E293B" />
       
       {/* Headset */}
-      <path d="M80 108c0-17 13-30 30-30s30 13 30 30" stroke="#0284C7" strokeWidth="5" fill="none" strokeLinecap="round" />
-      <rect x="76" y="100" width="8" height="16" rx="4" fill="#0369A1" />
-      <rect x="136" y="100" width="8" height="16" rx="4" fill="#0369A1" />
-      <path d="M138 116v8c0 4-4 8-8 8h-10" stroke="#0369A1" strokeWidth="3" fill="none" strokeLinecap="round" />
-      <circle cx="118" cy="132" r="4" fill="#0284C7" />
+      <path d="M78 106c0-18 14-32 32-32s32 14 32 32" stroke="#0284C7" strokeWidth="5.5" fill="none" strokeLinecap="round" />
+      <rect x="73" y="97" width="9" height="18" rx="4.5" fill="#0369A1" />
+      <rect x="138" y="97" width="9" height="18" rx="4.5" fill="#0369A1" />
+      <path d="M140 114v9c0 5-4 9-9 9h-11" stroke="#0369A1" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+      <circle cx="118" cy="132" r="4.5" fill="#0284C7" />
       
       {/* Chat Bubbles */}
-      <rect x="140" y="55" width="45" height="30" rx="10" fill="#22C55E" />
-      <circle cx="152" cy="70" r="3" fill="#FFFFFF" />
-      <circle cx="162" cy="70" r="3" fill="#FFFFFF" />
-      <circle cx="172" cy="70" r="3" fill="#FFFFFF" />
+      <rect x="138" y="52" width="48" height="32" rx="11" fill="#22C55E" />
+      <circle cx="150" cy="68" r="3.5" fill="#FFFFFF" />
+      <circle cx="162" cy="68" r="3.5" fill="#FFFFFF" />
+      <circle cx="174" cy="68" r="3.5" fill="#FFFFFF" />
+      
+      <rect x="32" y="68" width="44" height="28" rx="9" fill="#3B82F6" />
+      <circle cx="45" cy="82" r="3" fill="#FFFFFF" />
+      <circle cx="54" cy="82" r="3" fill="#FFFFFF" />
+      <circle cx="63" cy="82" r="3" fill="#FFFFFF" />
     </svg>
   ),
 
   // 6. Open Keyboard / Chat Input
   keyboard: (
-    <svg width="340" height="320" viewBox="0 0 220 220" fill="none">
-      <circle cx="110" cy="110" r="95" fill="#F1F5F9" />
-      <circle cx="110" cy="110" r="80" fill="#E2E8F0" />
+    <svg width="420" height="370" viewBox="0 0 220 220" fill="none">
+      <circle cx="110" cy="110" r="96" fill="#F1F5F9" />
+      <circle cx="110" cy="110" r="82" fill="#E2E8F0" />
       
       {/* Keyboard Base */}
-      <rect x="40" y="70" width="140" height="88" rx="14" fill="#1E293B" />
-      <rect x="44" y="74" width="132" height="80" rx="10" fill="#334155" />
+      <rect x="36" y="68" width="148" height="92" rx="16" fill="#1E293B" />
+      <rect x="41" y="73" width="138" height="82" rx="12" fill="#334155" />
       
       {/* Keys Row 1 */}
-      <rect x="52" y="82" width="18" height="16" rx="4" fill="#FFFFFF" />
-      <rect x="74" y="82" width="18" height="16" rx="4" fill="#FFFFFF" />
-      <rect x="96" y="82" width="18" height="16" rx="4" fill="#FFFFFF" />
-      <rect x="118" y="82" width="18" height="16" rx="4" fill="#FFFFFF" />
-      <rect x="140" y="82" width="28" height="16" rx="4" fill="#94A3B8" />
+      <rect x="49" y="81" width="20" height="17" rx="4.5" fill="#FFFFFF" />
+      <rect x="73" y="81" width="20" height="17" rx="4.5" fill="#FFFFFF" />
+      <rect x="97" y="81" width="20" height="17" rx="4.5" fill="#FFFFFF" />
+      <rect x="121" y="81" width="20" height="17" rx="4.5" fill="#FFFFFF" />
+      <rect x="145" y="81" width="26" height="17" rx="4.5" fill="#94A3B8" />
       
       {/* Keys Row 2 */}
-      <rect x="52" y="102" width="22" height="16" rx="4" fill="#94A3B8" />
-      <rect x="78" y="102" width="18" height="16" rx="4" fill="#FFFFFF" />
-      <rect x="100" y="102" width="18" height="16" rx="4" fill="#FFFFFF" />
-      <rect x="122" y="102" width="18" height="16" rx="4" fill="#FFFFFF" />
-      <rect x="144" y="102" width="24" height="16" rx="4" fill="#0EA5E9" />
+      <rect x="49" y="102" width="24" height="17" rx="4.5" fill="#94A3B8" />
+      <rect x="77" y="102" width="20" height="17" rx="4.5" fill="#FFFFFF" />
+      <rect x="101" y="102" width="20" height="17" rx="4.5" fill="#FFFFFF" />
+      <rect x="125" y="102" width="20" height="17" rx="4.5" fill="#FFFFFF" />
+      <rect x="149" y="102" width="22" height="17" rx="4.5" fill="#0EA5E9" />
       
       {/* Spacebar Row 3 */}
-      <rect x="52" y="122" width="20" height="16" rx="4" fill="#94A3B8" />
-      <rect x="76" y="122" width="68" height="16" rx="4" fill="#FFFFFF" />
-      <rect x="148" y="122" width="20" height="16" rx="4" fill="#94A3B8" />
+      <rect x="49" y="123" width="22" height="17" rx="4.5" fill="#94A3B8" />
+      <rect x="75" y="123" width="70" height="17" rx="4.5" fill="#FFFFFF" />
+      <rect x="149" y="123" width="22" height="17" rx="4.5" fill="#94A3B8" />
       
       {/* Floating Chat Bubble */}
-      <rect x="120" y="32" width="65" height="42" rx="12" fill="#0EA5E9" />
-      <path d="M135 74l-6 10v-10h6z" fill="#0EA5E9" />
-      <circle cx="140" cy="53" r="4" fill="#FFFFFF" />
-      <circle cx="152" cy="53" r="4" fill="#FFFFFF" />
-      <circle cx="164" cy="53" r="4" fill="#FFFFFF" />
+      <rect x="120" y="28" width="70" height="44" rx="14" fill="#0EA5E9" />
+      <path d="M136 72l-7 11v-11h7z" fill="#0EA5E9" />
+      <circle cx="142" cy="50" r="4.5" fill="#FFFFFF" />
+      <circle cx="155" cy="50" r="4.5" fill="#FFFFFF" />
+      <circle cx="168" cy="50" r="4.5" fill="#FFFFFF" />
       
       {/* Downward indicator arrow */}
-      <circle cx="110" cy="180" r="18" fill="#0EA5E9" />
-      <path d="M103 177l7 7 7-7" stroke="#FFFFFF" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="110" cy="182" r="20" fill="#0EA5E9" />
+      <path d="M102 178l8 8 8-8" stroke="#FFFFFF" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 };
@@ -192,22 +205,25 @@ const menuList = [
   {
     num: '01',
     badgeBg: '#D1FAE5',
+    badgeBorder: '#10B981',
     badgeColor: '#047857',
     title: 'เช็คบิลค่าขยะ',
-    subtitle: 'ตรวจสอบยอด & ชำระเงิน',
+    subtitle: 'ตรวจสอบยอด & สแกน QR',
     illustration: cardIllustrations.bill,
   },
   {
     num: '02',
     badgeBg: '#DBEAFE',
+    badgeBorder: '#3B82F6',
     badgeColor: '#1D4ED8',
     title: 'ประวัติใบเสร็จ',
-    subtitle: 'ดูสลิปและใบเสร็จย้อนหลัง',
+    subtitle: 'ดูสลิป & ยอดชำระย้อนหลัง',
     illustration: cardIllustrations.receipt,
   },
   {
     num: '03',
     badgeBg: '#EDE9FE',
+    badgeBorder: '#8B5CF6',
     badgeColor: '#6D28D9',
     title: 'ข้อมูลทะเบียนบ้าน',
     subtitle: 'ตรวจสอบข้อมูลที่พักอาศัย',
@@ -216,23 +232,26 @@ const menuList = [
   {
     num: '04',
     badgeBg: '#FEF3C7',
+    badgeBorder: '#F59E0B',
     badgeColor: '#B45309',
     title: 'คู่มือการใช้งาน',
-    subtitle: 'ขั้นตอนการใช้งานระบบ',
+    subtitle: 'ขั้นตอนการจ่ายเงิน & ใช้งาน',
     illustration: cardIllustrations.guide,
   },
   {
     num: '05',
     badgeBg: '#CFFAFE',
+    badgeBorder: '#06B6D4',
     badgeColor: '#0E7490',
     title: 'ติดต่อเจ้าหน้าที่',
-    subtitle: 'สอบถามข้อมูลบริการ',
+    subtitle: 'สอบถามข้อมูลบริการ 24 ชม.',
     illustration: cardIllustrations.support,
   },
   {
     num: '06',
     badgeBg: '#E2E8F0',
-    badgeColor: '#334155',
+    badgeBorder: '#64748B',
+    badgeColor: '#1E293B',
     title: 'เปิดแป้นพิมพ์',
     subtitle: 'กดเพื่อพิมพ์คุยกับแอดมิน ⬇️',
     illustration: cardIllustrations.keyboard,
@@ -244,11 +263,12 @@ export async function GET(req: NextRequest) {
     const W = 2500;
     const H = 1686;
     
-    const GAP = 20;
-    const P = 24;
+    // Minimal outer padding & gap for maximum card area
+    const GAP = 16;
+    const P = 16;
     
-    const CARD_W = Math.floor((W - P * 2 - GAP * 2) / 3);
-    const CARD_H = Math.floor((H - P * 2 - GAP) / 2);
+    const CARD_W = Math.floor((W - P * 2 - GAP * 2) / 3); // 813px
+    const CARD_H = Math.floor((H - P * 2 - GAP) / 2);     // 819px
 
     return new ImageResponse(
       (
@@ -258,7 +278,7 @@ export async function GET(req: NextRequest) {
             flexDirection: 'column',
             width: '100%',
             height: '100%',
-            backgroundColor: '#E2E8F0',
+            backgroundColor: '#CBD5E1', // Clean subtle contrast
             padding: `${P}px`,
             gap: `${GAP}px`,
           }}
@@ -274,27 +294,29 @@ export async function GET(req: NextRequest) {
                   width: CARD_W,
                   height: '100%',
                   backgroundColor: '#FFFFFF',
-                  borderRadius: '44px',
-                  padding: '36px 36px 44px 36px',
-                  boxShadow: '0 12px 36px rgba(15, 23, 42, 0.08)',
+                  borderRadius: '48px',
+                  padding: '28px 24px 36px 24px',
+                  boxShadow: '0 16px 40px rgba(15, 23, 42, 0.09)',
+                  border: '2px solid rgba(255, 255, 255, 0.9)',
                   position: 'relative',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}
               >
-                {/* Top Row: Number Badge */}
+                {/* Top Row: Extra Large Number Badge */}
                 <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-start' }}>
                   <div
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      width: '76px',
-                      height: '76px',
-                      borderRadius: '38px',
+                      width: '92px',
+                      height: '92px',
+                      borderRadius: '46px',
                       background: item.badgeBg,
+                      border: `3px solid ${item.badgeBorder}`,
                       color: item.badgeColor,
-                      fontSize: '38px',
+                      fontSize: '46px',
                       fontWeight: 'bold',
                     }}
                   >
@@ -302,17 +324,17 @@ export async function GET(req: NextRequest) {
                   </div>
                 </div>
 
-                {/* Central Large Vector Illustration */}
+                {/* Central Massive Vector Illustration */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 'auto 0' }}>
                   {item.illustration}
                 </div>
 
-                {/* Big Bold Thai Title & Subtitle (No Bottom Pill Button) */}
+                {/* Extra Large Thai Title & Subtitle */}
                 <div style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center' }}>
-                  <div style={{ fontSize: '74px', fontWeight: 'bold', color: '#0F172A', textAlign: 'center', lineHeight: 1.15 }}>
+                  <div style={{ fontSize: '86px', fontWeight: 'bold', color: '#0F172A', textAlign: 'center', lineHeight: 1.1, letterSpacing: '-0.5px' }}>
                     {item.title}
                   </div>
-                  <div style={{ fontSize: '38px', color: '#64748B', textAlign: 'center', marginTop: '10px', lineHeight: 1.15 }}>
+                  <div style={{ fontSize: '42px', fontWeight: 600, color: '#64748B', textAlign: 'center', marginTop: '12px', lineHeight: 1.15 }}>
                     {item.subtitle}
                   </div>
                 </div>
@@ -331,27 +353,29 @@ export async function GET(req: NextRequest) {
                   width: CARD_W,
                   height: '100%',
                   backgroundColor: '#FFFFFF',
-                  borderRadius: '44px',
-                  padding: '36px 36px 44px 36px',
-                  boxShadow: '0 12px 36px rgba(15, 23, 42, 0.08)',
+                  borderRadius: '48px',
+                  padding: '28px 24px 36px 24px',
+                  boxShadow: '0 16px 40px rgba(15, 23, 42, 0.09)',
+                  border: '2px solid rgba(255, 255, 255, 0.9)',
                   position: 'relative',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}
               >
-                {/* Top Row: Number Badge */}
+                {/* Top Row: Extra Large Number Badge */}
                 <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-start' }}>
                   <div
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      width: '76px',
-                      height: '76px',
-                      borderRadius: '38px',
+                      width: '92px',
+                      height: '92px',
+                      borderRadius: '46px',
                       background: item.badgeBg,
+                      border: `3px solid ${item.badgeBorder}`,
                       color: item.badgeColor,
-                      fontSize: '38px',
+                      fontSize: '46px',
                       fontWeight: 'bold',
                     }}
                   >
@@ -359,17 +383,17 @@ export async function GET(req: NextRequest) {
                   </div>
                 </div>
 
-                {/* Central Large Vector Illustration */}
+                {/* Central Massive Vector Illustration */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 'auto 0' }}>
                   {item.illustration}
                 </div>
 
-                {/* Big Bold Thai Title & Subtitle (No Bottom Pill Button) */}
+                {/* Extra Large Thai Title & Subtitle */}
                 <div style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center' }}>
-                  <div style={{ fontSize: '74px', fontWeight: 'bold', color: '#0F172A', textAlign: 'center', lineHeight: 1.15 }}>
+                  <div style={{ fontSize: '86px', fontWeight: 'bold', color: '#0F172A', textAlign: 'center', lineHeight: 1.1, letterSpacing: '-0.5px' }}>
                     {item.title}
                   </div>
-                  <div style={{ fontSize: '38px', color: '#64748B', textAlign: 'center', marginTop: '10px', lineHeight: 1.15 }}>
+                  <div style={{ fontSize: '42px', fontWeight: 600, color: '#64748B', textAlign: 'center', marginTop: '12px', lineHeight: 1.15 }}>
                     {item.subtitle}
                   </div>
                 </div>
