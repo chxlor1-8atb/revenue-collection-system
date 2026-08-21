@@ -367,7 +367,6 @@ export default function HousesClient({
                     </div>
                   </th>
                 ))}
-                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">บัญชี</th>
                 <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">จัดการ</th>
               </tr>
             </thead>
@@ -401,7 +400,7 @@ export default function HousesClient({
                     }
                     return <td key={field.id} className="px-6 py-4 text-slate-600 font-medium text-sm">{val}</td>;
                   })}
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-right">
                     <Link 
                       href={`/dashboard/houses/${house.id}`} 
                       className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-[#5B58F2] bg-[#EEF0FF] hover:bg-[#D5D9FF] rounded-lg transition-colors border border-[#D5D9FF]"
