@@ -1265,7 +1265,7 @@ export function generateMyInfoFlexMessage(appUrl: string, house: any): any {
 export function generateWelcomeFlexMessage() {
   return {
     type: "flex",
-    altText: "�Թ�յ�͹�Ѻ����к��Ѵ�������",
+    altText: "ยินดีต้อนรับสู่ระบบจัดเก็บรายได้",
     contents: {
       type: "bubble",
       size: "giga",
@@ -1276,7 +1276,7 @@ export function generateWelcomeFlexMessage() {
         contents: [
           {
             type: "text",
-            text: "�Թ�յ�͹�Ѻ����к�",
+            text: "ยินดีต้อนรับสู่ระบบ",
             weight: "bold",
             size: "xl",
             color: "#111827",
@@ -1284,7 +1284,7 @@ export function generateWelcomeFlexMessage() {
           },
           {
             type: "text",
-            text: "�к��Ѵ��������ѵ��ѵ�",
+            text: "ระบบจัดเก็บรายได้อัตโนมัติ",
             size: "sm",
             color: "#64748B",
             align: "center",
@@ -1305,14 +1305,14 @@ export function generateWelcomeFlexMessage() {
             contents: [
               {
                 type: "text",
-                text: "?? �Ըա�����������ҹ",
+                text: "📌 วิธีการเริ่มต้นใช้งาน",
                 weight: "bold",
                 size: "sm",
                 color: "#334155"
               },
               {
                 type: "text",
-                text: "��سҾ���� \"��ҹ�Ţ���\" �ͧ�س (�� 123/45) ��������᪷��� ���ͷӡ�ü١�ѭ��㹤����á",
+                text: "กรุณาพิมพ์ \"บ้านเลขที่\" ของคุณ (เช่น 123/45) ส่งเข้ามาในแชทนี้ เพื่อทำการผูกบัญชีในครั้งแรก",
                 size: "xs",
                 color: "#64748B",
                 wrap: true,
@@ -1322,7 +1322,7 @@ export function generateWelcomeFlexMessage() {
           },
           {
             type: "text",
-            text: "���������ٴ�ҹ��ҧ (Rich Menu)",
+            text: "คู่มือเมนูด้านล่าง (Rich Menu)",
             weight: "bold",
             color: "#111827",
             margin: "xl",
@@ -1353,8 +1353,8 @@ export function generateWelcomeFlexMessage() {
                 layout: "vertical",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "�示��", weight: "bold", size: "sm", color: "#334155" },
-                  { type: "text", text: "��Ǩ�ͺ�ʹ��ҧ & �᡹����", size: "xs", color: "#64748B", wrap: true }
+                  { type: "text", text: "เช็คบิล", weight: "bold", size: "sm", color: "#334155" },
+                  { type: "text", text: "ตรวจสอบยอดค้าง & สแกนจ่าย", size: "xs", color: "#64748B", wrap: true }
                 ]
               }
             ]
@@ -1384,8 +1384,8 @@ export function generateWelcomeFlexMessage() {
                 layout: "vertical",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "�����", weight: "bold", size: "sm", color: "#334155" },
-                  { type: "text", text: "����ѵԡ�ê����Թ��͹��ѧ", size: "xs", color: "#64748B", wrap: true }
+                  { type: "text", text: "ใบเสร็จ", weight: "bold", size: "sm", color: "#334155" },
+                  { type: "text", text: "ประวัติการชำระเงินย้อนหลัง", size: "xs", color: "#64748B", wrap: true }
                 ]
               }
             ]
@@ -1415,8 +1415,8 @@ export function generateWelcomeFlexMessage() {
                 layout: "vertical",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "�����Ţͧ�ѹ", weight: "bold", size: "sm", color: "#334155" },
-                  { type: "text", text: "�礢����ź�ҹ���ŧ����¹���", size: "xs", color: "#64748B", wrap: true }
+                  { type: "text", text: "ข้อมูลของฉัน", weight: "bold", size: "sm", color: "#334155" },
+                  { type: "text", text: "เช็คข้อมูลบ้านที่ลงทะเบียนไว้", size: "xs", color: "#64748B", wrap: true }
                 ]
               }
             ]
@@ -1446,8 +1446,8 @@ export function generateWelcomeFlexMessage() {
                 layout: "vertical",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "�Դ�鹾����", weight: "bold", size: "sm", color: "#334155" },
-                  { type: "text", text: "������ͤ����֧���˹�ҷ��", size: "xs", color: "#64748B", wrap: true }
+                  { type: "text", text: "เปิดแป้นพิมพ์", weight: "bold", size: "sm", color: "#334155" },
+                  { type: "text", text: "พิมพ์ข้อความถึงเจ้าหน้าที่", size: "xs", color: "#64748B", wrap: true }
                 ]
               }
             ]
@@ -1477,8 +1477,8 @@ export function generateWelcomeFlexMessage() {
                 layout: "vertical",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "�Ը���ҹ", weight: "bold", size: "sm", color: "#334155" },
-                  { type: "text", text: "�٤����͡����ҹ�к�", size: "xs", color: "#64748B", wrap: true }
+                  { type: "text", text: "วิธีใช้งาน", weight: "bold", size: "sm", color: "#334155" },
+                  { type: "text", text: "ดูคู่มือการใช้งานระบบ", size: "xs", color: "#64748B", wrap: true }
                 ]
               }
             ]
@@ -1508,8 +1508,8 @@ export function generateWelcomeFlexMessage() {
                 layout: "vertical",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "�Դ������˹�ҷ��", weight: "bold", size: "sm", color: "#334155" },
-                  { type: "text", text: "�駻ѭ�������ͺ���������", size: "xs", color: "#64748B", wrap: true }
+                  { type: "text", text: "ติดต่อเจ้าหน้าที่", weight: "bold", size: "sm", color: "#334155" },
+                  { type: "text", text: "แจ้งปัญหาหรือสอบถามข้อมูล", size: "xs", color: "#64748B", wrap: true }
                 ]
               }
             ]
@@ -1519,6 +1519,3 @@ export function generateWelcomeFlexMessage() {
     }
   };
 }
-
-
-
