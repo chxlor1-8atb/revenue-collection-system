@@ -1051,7 +1051,7 @@ export function generateHowToUseFlexMessage(appUrl: string): any {
         type: "box",
         layout: "vertical",
         paddingAll: "20px",
-        paddingTop: "0px",
+        paddingTop: "none",
         contents: [
           {
             type: "button",
@@ -1122,7 +1122,7 @@ export function generateReportProblemFlexMessage(appUrl: string): any {
         type: "box",
         layout: "vertical",
         paddingAll: "20px",
-        paddingTop: "0px",
+        paddingTop: "none",
         contents: [
           {
             type: "button",
@@ -1195,7 +1195,7 @@ export function generateContactFlexMessage(appUrl: string): any {
         type: "box",
         layout: "vertical",
         paddingAll: "20px",
-        paddingTop: "0px",
+        paddingTop: "none",
         contents: [
           {
             type: "button",
@@ -1276,7 +1276,7 @@ export function generateMyInfoFlexMessage(appUrl: string, house: any): any {
         type: "box",
         layout: "vertical",
         paddingAll: "20px",
-        paddingTop: "0px",
+        paddingTop: "none",
         contents: [
           {
             type: "button",
@@ -1290,4 +1290,5 @@ export function generateMyInfoFlexMessage(appUrl: string, house: any): any {
     }
   };
 }
+
 
