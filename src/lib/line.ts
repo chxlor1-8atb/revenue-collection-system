@@ -975,18 +975,10 @@ export function generateHowToUseFlexMessage(appUrl: string): any {
             layout: "horizontal",
             alignItems: "center",
             contents: [
-              {
-                type: "image",
-                url: `${appUrl}/api/icons/book?color=f97316`,
-                size: "3xl", flex: 0
-              },
+
               {
                 type: "text",
-                text: "วิธีใช้งาน",
-                weight: "bold",
-                size: "xl",
-                color: "#111111",
-                margin: "lg"
+                text: "วิธีใช้งาน", weight: "bold", size: "xl", color: "#111111"
               }
             ]
           },
@@ -1083,18 +1075,10 @@ export function generateReportProblemFlexMessage(appUrl: string): any {
             layout: "horizontal",
             alignItems: "center",
             contents: [
-              {
-                type: "image",
-                url: `${appUrl}/api/icons/alert?color=ef4444`,
-                size: "3xl", flex: 0
-              },
+
               {
                 type: "text",
-                text: "แจ้งปัญหา",
-                weight: "bold",
-                size: "xl",
-                color: "#111111",
-                margin: "lg"
+                text: "แจ้งปัญหา", weight: "bold", size: "xl", color: "#111111"
               }
             ]
           },
@@ -1154,17 +1138,9 @@ export function generateContactFlexMessage(appUrl: string): any {
             layout: "horizontal",
             alignItems: "center",
             contents: [
+
               {
-                type: "image",
-                url: `${appUrl}/api/icons/phone?color=0ea5e9`,
-                size: "3xl", flex: 0
-              },
-              {
-                type: "box",
-                layout: "vertical",
-                margin: "lg",
-                contents: [
-                  { type: "text", text: "ติดต่อเจ้าหน้าที่", weight: "bold", size: "xl", color: "#111111" },
+                type: "box", layout: "vertical", contents: [{ type: "text", text: "ติดต่อเจ้าหน้าที่", weight: "bold", size: "xl", color: "#111111" },
                   { type: "text", text: "เทศบาลเมืองนางรอง", size: "xs", color: "#888888" }
                 ]
               }
@@ -1227,18 +1203,10 @@ export function generateMyInfoFlexMessage(appUrl: string, house: any): any {
             layout: "horizontal",
             alignItems: "center",
             contents: [
-              {
-                type: "image",
-                url: `${appUrl}/api/icons/home?color=8b5cf6`,
-                size: "3xl", flex: 0
-              },
+
               {
                 type: "text",
-                text: "ข้อมูลของฉัน",
-                weight: "bold",
-                size: "xl",
-                color: "#111111",
-                margin: "lg"
+                text: "ข้อมูลของฉัน", weight: "bold", size: "xl", color: "#111111"
               }
             ]
           },
