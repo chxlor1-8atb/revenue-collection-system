@@ -24,6 +24,7 @@ export default function HousesClient({
   totalHouses = 0,
   initialSearch = "",
   initialZone = "",
+  initialPaymentStatus = "",
   initialSort = { key: "createdAt", dir: "desc" },
   limit = 10,
   customFieldsSchema = []
@@ -34,6 +35,7 @@ export default function HousesClient({
   totalHouses?: number;
   initialSearch?: string;
   initialZone?: string;
+  initialPaymentStatus?: string;
   initialSort?: { key: string; dir: string };
   limit?: number;
   customFieldsSchema?: CustomField[];
@@ -78,28 +80,38 @@ export default function HousesClient({
   // Search & Sort State
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [selectedZone, setSelectedZone] = useState(initialZone);
+  const [selectedPaymentStatus, setSelectedPaymentStatus] = useState(initialPaymentStatus);
   const [sortConfig, setSortConfig] = useState(initialSort);
 
   // Zone Filter Effect
   useEffect(() => {
     if (selectedZone !== initialZone) {
       startTransition(() => {
-        updateUrlParams(1, searchQuery, sortConfig.key, sortConfig.dir, limit, selectedZone || "");
+        updateUrlParams(1, searchQuery, sortConfig.key, sortConfig.dir, limit, selectedZone || "", selectedPaymentStatus || "");
       });
     }
   }, [selectedZone]);
+
+  // Payment Status Filter Effect
+  useEffect(() => {
+    if (selectedPaymentStatus !== initialPaymentStatus) {
+      startTransition(() => {
+        updateUrlParams(1, searchQuery, sortConfig.key, sortConfig.dir, limit, selectedZone || "", selectedPaymentStatus || "");
+      });
+    }
+  }, [selectedPaymentStatus]);
 
   // Debounced Search
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchQuery !== initialSearch) {
-        updateUrlParams(1, searchQuery, sortConfig.key, sortConfig.dir, limit, selectedZone || "");
+        updateUrlParams(1, searchQuery, sortConfig.key, sortConfig.dir, limit, selectedZone || "", selectedPaymentStatus || "");
       }
     }, 300);
     return () => clearTimeout(timer);
   }, [searchQuery, initialSearch, sortConfig]);
 
-  const updateUrlParams = (page: number, q: string, sortKey: string, sortDir: string, newLimit: number, newZone: string) => {
+  const updateUrlParams = (page: number, q: string, sortKey: string, sortDir: string, newLimit: number, newZone: string, newPaymentStatus: string) => {
     startTransition(() => {
       const params = new URLSearchParams(searchParams.toString());
       if (page > 1) params.set('page', page.toString());
@@ -120,6 +132,9 @@ export default function HousesClient({
       if (newZone) params.set('zone', newZone);
       else params.delete('zone');
 
+      if (newPaymentStatus) params.set('paymentStatus', newPaymentStatus);
+      else params.delete('paymentStatus');
+
       router.push(`${pathname}?${params.toString()}`);
     });
   };
@@ -127,12 +142,12 @@ export default function HousesClient({
   const handleSort = (key: string) => {
     const newDir = sortConfig.key === key && sortConfig.dir === 'asc' ? 'desc' : 'asc';
     setSortConfig({ key, dir: newDir });
-    updateUrlParams(currentPage, searchQuery, key, newDir, limit, selectedZone || "");
+    updateUrlParams(currentPage, searchQuery, key, newDir, limit, selectedZone || "", selectedPaymentStatus || "");
   };
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
-      updateUrlParams(newPage, searchQuery, sortConfig.key, sortConfig.dir, limit, selectedZone || "");
+      updateUrlParams(newPage, searchQuery, sortConfig.key, sortConfig.dir, limit, selectedZone || "", selectedPaymentStatus || "");
     }
   };
 
@@ -320,18 +335,18 @@ export default function HousesClient({
 
       {/* Main Card Container */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col">
-        {/* Toolbar: Search */}
-        <div className="p-5 lg:p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4 rounded-t-2xl bg-white relative z-20">
-          <div className="flex flex-col sm:flex-row w-full gap-4 z-20">
-            <div className="relative w-full sm:w-80">
+        {/* Toolbar: Search & Filters */}
+        <div className="p-5 lg:p-6 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 rounded-t-2xl bg-white relative z-20">
+          <div className="flex flex-col sm:flex-row flex-wrap w-full lg:w-auto gap-3 z-20">
+            <div className="relative w-full sm:w-72">
               <SearchAutocomplete 
                 value={searchQuery}
                 onChange={setSearchQuery}
                 placeholder="ค้นหาจากทุกข้อมูล (บ้านเลขที่, ชื่อ, หมู่, เบอร์โทร...)"
-                className="w-full sm:w-80 focus:w-full sm:focus:w-80 !bg-slate-50 border-transparent focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none text-sm rounded-xl"
+                className="w-full sm:w-72 focus:w-full sm:focus:w-72 !bg-slate-50 border-transparent focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none text-sm rounded-xl"
               />
             </div>
-            <div className="w-full sm:w-56 z-10">
+            <div className="w-full sm:w-52 z-10">
               <CustomSelect
                 value={selectedZone || ""}
                 onChange={setSelectedZone}
@@ -342,10 +357,22 @@ export default function HousesClient({
                 ]}
               />
             </div>
+            <div className="w-full sm:w-48 z-10">
+              <CustomSelect
+                value={selectedPaymentStatus || ""}
+                onChange={setSelectedPaymentStatus}
+                placeholder="ทุกสถานะการชำระ"
+                options={[
+                  { value: "", label: "ทุกสถานะการชำระ" },
+                  { value: "unpaid", label: "⚠️ ค้างชำระ" },
+                  { value: "paid", label: "✅ ชำระครบแล้ว" },
+                ]}
+              />
+            </div>
           </div>
-          <div className="text-[length:13px] text-slate-400 font-medium z-10 flex gap-4">
+          <div className="text-[length:13px] text-slate-400 font-medium z-10 flex gap-4 shrink-0 self-end lg:self-center">
             <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ทั้งหมด {totalHouses}
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ทั้งหมด {totalHouses} หลัง
             </span>
           </div>
         </div>
@@ -436,7 +463,7 @@ export default function HousesClient({
             totalItems={totalHouses}
             itemsPerPage={limit}
             onPageChange={handlePageChange}
-            onLimitChange={(newLimit) => updateUrlParams(1, searchQuery, sortConfig.key, sortConfig.dir, newLimit, selectedZone || "")}
+            onLimitChange={(newLimit) => updateUrlParams(1, searchQuery, sortConfig.key, sortConfig.dir, newLimit, selectedZone || "", selectedPaymentStatus || "")}
           />
         </div>
       </div>

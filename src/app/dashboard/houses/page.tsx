@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { houses, systemSettings } from "@/lib/schema";
+import { houses, invoices, systemSettings } from "@/lib/schema";
 import { desc, asc, ilike, or, and, eq, sql } from "drizzle-orm";
 import HousesClient from "./HousesClient";
 
@@ -12,6 +12,7 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
   const sort = typeof searchParams.sort === 'string' ? searchParams.sort : 'createdAt';
   const dir = typeof searchParams.dir === 'string' ? searchParams.dir : 'desc';
   const zone = typeof searchParams.zone === 'string' ? searchParams.zone : '';
+  const paymentStatus = typeof searchParams.paymentStatus === 'string' ? searchParams.paymentStatus : '';
 
   let whereClause = undefined;
   
@@ -31,6 +32,19 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
   }
   if (zone) {
     conditions.push(eq(houses.zone, zone));
+  }
+  if (paymentStatus === 'unpaid') {
+    conditions.push(sql`EXISTS (
+      SELECT 1 FROM ${invoices} 
+      WHERE ${invoices.houseId} = ${houses.id} 
+      AND ${invoices.status} = 'unpaid'
+    )`);
+  } else if (paymentStatus === 'paid') {
+    conditions.push(sql`NOT EXISTS (
+      SELECT 1 FROM ${invoices} 
+      WHERE ${invoices.houseId} = ${houses.id} 
+      AND ${invoices.status} = 'unpaid'
+    )`);
   }
 
   if (conditions.length > 0) {
@@ -77,6 +91,7 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
         totalHouses={total} 
         initialSearch={q}
         initialZone={zone}
+        initialPaymentStatus={paymentStatus}
         initialSort={{ key: sort, dir }}
         limit={limit}
         customFieldsSchema={customFieldsSchema}
