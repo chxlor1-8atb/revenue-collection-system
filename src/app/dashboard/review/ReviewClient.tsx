@@ -174,19 +174,7 @@ export default function ReviewClient() {
         <div className="p-6 lg:p-8 bg-slate-50/30">
           {/* Waiting View: Live Scanning Grid Cards */}
           {activeTab === "waiting" && (
-            <div className="space-y-4">
-              <div className="bg-amber-50/90 rounded-2xl border border-amber-200/80 p-4 lg:p-5 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 border border-amber-200">
-                    <QrCode size={20} />
-                  </div>
-                  <div>
-                    <h2 className="text-sm font-bold text-amber-950">ผู้ใช้งานกำลังสแกนจ่าย QR Code ({waiting.length} รายการ)</h2>
-                    <p className="text-xs text-amber-700 mt-0.5">ระบบจะตรวจจับและอัปเดตสลิปเข้ามาในระบบอัตโนมัติทันทีที่แนบ</p>
-                  </div>
-                </div>
-              </div>
-              
+            <div>
               {isLoading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {Array.from({ length: 4 }).map((_, i) => (
@@ -198,17 +186,30 @@ export default function ReviewClient() {
                   ))}
                 </div>
               ) : waiting.length === 0 ? (
-                <div className="bg-white rounded-2xl border border-slate-200/80 p-12 text-center flex flex-col items-center justify-center shadow-2xs">
-                  <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center mb-3 border border-amber-100 text-amber-500">
-                    <QrCode size={28} />
+                <div className="bg-white rounded-2xl border border-slate-200/80 p-16 text-center flex flex-col items-center justify-center shadow-2xs">
+                  <div className="w-18 h-18 bg-amber-50 rounded-3xl flex items-center justify-center mb-4 border border-amber-100 text-amber-500 shadow-xs">
+                    <QrCode size={34} />
                   </div>
-                  <h3 className="font-bold text-slate-800 text-base">ไม่มีผู้ใช้งานกำลังสแกนจ่ายในขณะนี้</h3>
-                  <p className="text-xs text-slate-500 mt-1 max-w-sm">
-                    เมื่อมีผู้ใช้เปิดหน้า QR Code ชำระเงิน รายการจะปรากฏที่นี่แบบเรียลไทม์
+                  <h3 className="font-bold text-slate-800 text-base mb-1">ไม่มีผู้ใช้งานกำลังสแกนจ่ายในขณะนี้</h3>
+                  <p className="text-xs text-slate-500 max-w-sm">
+                    เมื่อมีผู้ใช้เปิดหน้า QR Code ชำระเงิน รายการจะตรวจจับและปรากฏที่นี่แบบเรียลไทม์อัตโนมัติ
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <div className="space-y-4">
+                  <div className="bg-amber-50/90 rounded-2xl border border-amber-200/80 p-4 lg:p-5 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 border border-amber-200">
+                        <QrCode size={20} />
+                      </div>
+                      <div>
+                        <h2 className="text-sm font-bold text-amber-950">ผู้ใช้งานกำลังสแกนจ่าย QR Code ({waiting.length} รายการ)</h2>
+                        <p className="text-xs text-amber-700 mt-0.5">ระบบจะตรวจจับและอัปเดตสลิปเข้ามาในระบบอัตโนมัติทันทีที่แนบ</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {waiting.map((tx: any, index: number) => {
                     const firstInv = tx.invoices?.[0];
                     const totalInvoices = tx.invoices?.length || 0;
@@ -283,6 +284,7 @@ export default function ReviewClient() {
                       </motion.div>
                     );
                   })}
+                  </div>
                 </div>
               )}
             </div>
