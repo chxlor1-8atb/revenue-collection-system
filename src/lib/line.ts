@@ -1269,61 +1269,62 @@ export function generateWelcomeFlexMessage() {
     contents: {
       type: "bubble",
       size: "giga",
-      header: {
+      body: {
         type: "box",
         layout: "vertical",
-        backgroundColor: "#10B981",
-        paddingAll: "24px",
+        paddingAll: "32px",
         contents: [
           {
             type: "text",
-            text: "ยินดีต้อนรับ 💚",
-            color: "#FFFFFF",
+            text: "ยินดีต้อนรับสู่ระบบ",
             weight: "bold",
             size: "xl",
+            color: "#111827",
             align: "center"
           },
           {
             type: "text",
             text: "ระบบจัดเก็บรายได้อัตโนมัติ",
-            color: "#D1FAE5",
-            size: "sm",
-            align: "center",
-            margin: "md"
-          }
-        ]
-      },
-      body: {
-        type: "box",
-        layout: "vertical",
-        paddingAll: "24px",
-        spacing: "md",
-        contents: [
-          {
-            type: "text",
-            text: "กรุณาพิมพ์ \"บ้านเลขที่\" ของคุณ",
-            weight: "bold",
-            size: "md",
-            color: "#0F172A",
-            align: "center"
-          },
-          {
-            type: "text",
-            text: "เช่น 123/45 เพื่อผูกบัญชีในครั้งแรก",
             size: "sm",
             color: "#64748B",
             align: "center",
-            margin: "sm"
+            margin: "md"
           },
           {
             type: "separator",
-            margin: "xl"
+            margin: "xl",
+            color: "#F1F5F9"
+          },
+          {
+            type: "box",
+            layout: "vertical",
+            margin: "xl",
+            backgroundColor: "#F8FAFC",
+            paddingAll: "16px",
+            cornerRadius: "8px",
+            contents: [
+              {
+                type: "text",
+                text: "📌 วิธีการเริ่มต้นใช้งาน",
+                weight: "bold",
+                size: "sm",
+                color: "#334155"
+              },
+              {
+                type: "text",
+                text: "กรุณาพิมพ์ \"บ้านเลขที่\" ของคุณ (เช่น 123/45) ส่งเข้ามาในแชทนี้ เพื่อทำการผูกบัญชีในครั้งแรก",
+                size: "xs",
+                color: "#64748B",
+                wrap: true,
+                margin: "md"
+              }
+            ]
           },
           {
             type: "text",
-            text: "คำอธิบายเมนู (Rich Menu)",
+            text: "คู่มือเมนูด้านล่าง (Rich Menu)",
             weight: "bold",
-            color: "#0F172A",
+            color: "#111827",
             margin: "xl",
             size: "sm"
           },
@@ -1331,19 +1332,20 @@ export function generateWelcomeFlexMessage() {
             type: "box",
             layout: "horizontal",
             margin: "lg",
-            spacing: "sm",
+            spacing: "md",
+            alignItems: "center",
             contents: [
               {
                 type: "box",
                 layout: "vertical",
-                width: "36px",
-                height: "36px",
-                cornerRadius: "18px",
-                backgroundColor: "#D1FAE5",
+                width: "28px",
+                height: "28px",
+                cornerRadius: "14px",
+                backgroundColor: "#F1F5F9",
                 alignItems: "center",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "1", color: "#059669", weight: "bold", size: "sm", align: "center" }
+                  { type: "text", text: "1", color: "#475569", weight: "bold", size: "xs", align: "center" }
                 ]
               },
               {
@@ -1361,19 +1363,20 @@ export function generateWelcomeFlexMessage() {
             type: "box",
             layout: "horizontal",
             margin: "md",
-            spacing: "sm",
+            spacing: "md",
+            alignItems: "center",
             contents: [
               {
                 type: "box",
                 layout: "vertical",
-                width: "36px",
-                height: "36px",
-                cornerRadius: "18px",
-                backgroundColor: "#DBEAFE",
+                width: "28px",
+                height: "28px",
+                cornerRadius: "14px",
+                backgroundColor: "#F1F5F9",
                 alignItems: "center",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "2", color: "#2563EB", weight: "bold", size: "sm", align: "center" }
+                  { type: "text", text: "2", color: "#475569", weight: "bold", size: "xs", align: "center" }
                 ]
               },
               {
@@ -1391,19 +1394,20 @@ export function generateWelcomeFlexMessage() {
             type: "box",
             layout: "horizontal",
             margin: "md",
-            spacing: "sm",
+            spacing: "md",
+            alignItems: "center",
             contents: [
               {
                 type: "box",
                 layout: "vertical",
-                width: "36px",
-                height: "36px",
-                cornerRadius: "18px",
-                backgroundColor: "#EDE9FE",
+                width: "28px",
+                height: "28px",
+                cornerRadius: "14px",
+                backgroundColor: "#F1F5F9",
                 alignItems: "center",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "3", color: "#7C3AED", weight: "bold", size: "sm", align: "center" }
+                  { type: "text", text: "3", color: "#475569", weight: "bold", size: "xs", align: "center" }
                 ]
               },
               {
@@ -1421,19 +1425,20 @@ export function generateWelcomeFlexMessage() {
             type: "box",
             layout: "horizontal",
             margin: "md",
-            spacing: "sm",
+            spacing: "md",
+            alignItems: "center",
             contents: [
               {
                 type: "box",
                 layout: "vertical",
-                width: "36px",
-                height: "36px",
-                cornerRadius: "18px",
-                backgroundColor: "#F3F4F6",
+                width: "28px",
+                height: "28px",
+                cornerRadius: "14px",
+                backgroundColor: "#F1F5F9",
                 alignItems: "center",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "4", color: "#4B5563", weight: "bold", size: "sm", align: "center" }
+                  { type: "text", text: "4", color: "#475569", weight: "bold", size: "xs", align: "center" }
                 ]
               },
               {
@@ -1451,19 +1456,20 @@ export function generateWelcomeFlexMessage() {
             type: "box",
             layout: "horizontal",
             margin: "md",
-            spacing: "sm",
+            spacing: "md",
+            alignItems: "center",
             contents: [
               {
                 type: "box",
                 layout: "vertical",
-                width: "36px",
-                height: "36px",
-                cornerRadius: "18px",
-                backgroundColor: "#FEF3C7",
+                width: "28px",
+                height: "28px",
+                cornerRadius: "14px",
+                backgroundColor: "#F1F5F9",
                 alignItems: "center",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "5", color: "#D97706", weight: "bold", size: "sm", align: "center" }
+                  { type: "text", text: "5", color: "#475569", weight: "bold", size: "xs", align: "center" }
                 ]
               },
               {
@@ -1481,19 +1487,20 @@ export function generateWelcomeFlexMessage() {
             type: "box",
             layout: "horizontal",
             margin: "md",
-            spacing: "sm",
+            spacing: "md",
+            alignItems: "center",
             contents: [
               {
                 type: "box",
                 layout: "vertical",
-                width: "36px",
-                height: "36px",
-                cornerRadius: "18px",
-                backgroundColor: "#ECFEFF",
+                width: "28px",
+                height: "28px",
+                cornerRadius: "14px",
+                backgroundColor: "#F1F5F9",
                 alignItems: "center",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "6", color: "#0891B2", weight: "bold", size: "sm", align: "center" }
+                  { type: "text", text: "6", color: "#475569", weight: "bold", size: "xs", align: "center" }
                 ]
               },
               {
@@ -1512,4 +1519,5 @@ export function generateWelcomeFlexMessage() {
     }
   };
 }
+
 
