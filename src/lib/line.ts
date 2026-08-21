@@ -1,4 +1,4 @@
-export const LINE_API_URL = "https://api.line.me/v2/bot/message/reply";
+﻿export const LINE_API_URL = "https://api.line.me/v2/bot/message/reply";
 export const LINE_PUSH_API_URL = "https://api.line.me/v2/bot/message/push";
 export const LINE_CONTENT_API_URL = "https://api-data.line.me/v2/bot/message";
 
@@ -986,7 +986,7 @@ export function generateHowToUseFlexMessage(appUrl: string): any {
                 weight: "bold",
                 size: "xl",
                 color: "#111111",
-                marginLeft: "lg"
+                margin: "lg"
               }
             ]
           },
@@ -1001,7 +1001,7 @@ export function generateHowToUseFlexMessage(appUrl: string): any {
               {
                 type: "box",
                 layout: "vertical",
-                marginLeft: "md",
+                margin: "md",
                 contents: [
                   { type: "text", text: "ผูกบัญชี", weight: "bold", size: "sm", color: "#111111" },
                   { type: "text", text: "พิมพ์บ้านเลขที่ เช่น 124/4", size: "xs", color: "#888888", wrap: true }
@@ -1019,7 +1019,7 @@ export function generateHowToUseFlexMessage(appUrl: string): any {
               {
                 type: "box",
                 layout: "vertical",
-                marginLeft: "md",
+                margin: "md",
                 contents: [
                   { type: "text", text: "เช็คบิล", weight: "bold", size: "sm", color: "#111111" },
                   { type: "text", text: "กดปุ่ม 'เช็คบิล' ด้านล่าง", size: "xs", color: "#888888", wrap: true }
@@ -1037,7 +1037,7 @@ export function generateHowToUseFlexMessage(appUrl: string): any {
               {
                 type: "box",
                 layout: "vertical",
-                marginLeft: "md",
+                margin: "md",
                 contents: [
                   { type: "text", text: "ชำระเงิน", weight: "bold", size: "sm", color: "#111111" },
                   { type: "text", text: "ส่งรูปสลิปเข้ามาในแชทนี้", size: "xs", color: "#888888", wrap: true }
@@ -1094,7 +1094,7 @@ export function generateReportProblemFlexMessage(appUrl: string): any {
                 weight: "bold",
                 size: "xl",
                 color: "#111111",
-                marginLeft: "lg"
+                margin: "lg"
               }
             ]
           },
@@ -1162,7 +1162,7 @@ export function generateContactFlexMessage(appUrl: string): any {
               {
                 type: "box",
                 layout: "vertical",
-                marginLeft: "lg",
+                margin: "lg",
                 contents: [
                   { type: "text", text: "ติดต่อเจ้าหน้าที่", weight: "bold", size: "xl", color: "#111111" },
                   { type: "text", text: "เทศบาลเมืองนางรอง", size: "xs", color: "#888888" }
@@ -1238,7 +1238,7 @@ export function generateMyInfoFlexMessage(appUrl: string, house: any): any {
                 weight: "bold",
                 size: "xl",
                 color: "#111111",
-                marginLeft: "lg"
+                margin: "lg"
               }
             ]
           },
@@ -1290,3 +1290,4 @@ export function generateMyInfoFlexMessage(appUrl: string, house: any): any {
     }
   };
 }
+
