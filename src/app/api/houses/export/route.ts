@@ -75,9 +75,10 @@ export async function GET() {
       housesByZone[z].push(h);
     });
 
-    // Generate sheet for each zone
+    // Generate sheet for each zone (skip empty zones)
     for (const zone of Object.keys(housesByZone)) {
       const zoneHouses = housesByZone[zone];
+      if (zoneHouses.length === 0) continue; // ข้ามชุมชนที่ไม่มีบ้าน
       const ws = workbook.addWorksheet(zone);
 
       // Dynamic column widths
