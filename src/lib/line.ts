@@ -955,137 +955,110 @@ export function generateSlipErrorFlexMessage(
   };
 }
 
-// --- New Flex Messages for Menus ---
 
-export function generateHowToUseFlexMessage(): any {
+// --- New Clean Minimal Flex Messages for Menus ---
+
+export function generateHowToUseFlexMessage(appUrl: string): any {
   return {
     type: "flex",
-    altText: "วิธีใช้งานระบบชำระค่าขยะ",
+    altText: "วิธีใช้งานระบบ",
     contents: {
       type: "bubble",
-      size: "mega",
-      header: {
-        type: "box",
-        layout: "vertical",
-        contents: [
-          {
-            type: "text",
-            text: "วิธีใช้งานระบบ",
-            weight: "bold",
-            color: "#ffffff",
-            size: "xl"
-          }
-        ],
-        backgroundColor: "#0ea5e9",
-        paddingAll: "15px",
-        paddingTop: "19px",
-        paddingBottom: "16px"
-      },
+      size: "kilo",
       body: {
         type: "box",
         layout: "vertical",
+        paddingAll: "25px",
         contents: [
           {
             type: "box",
-            layout: "vertical",
-            backgroundColor: "#111111",
-            paddingAll: "10px",
-            cornerRadius: "md",
-            margin: "sm",
+            layout: "horizontal",
+            alignItems: "center",
             contents: [
               {
+                type: "icon",
+                url: `${appUrl}/api/icons/book?color=f97316`,
+                size: "3xl"
+              },
+              {
                 type: "text",
-                text: "3 ขั้นตอนง่ายๆ ในการใช้งาน",
-                color: "#ffffff",
-                size: "sm",
+                text: "วิธีใช้งาน",
                 weight: "bold",
-                align: "center"
+                size: "xl",
+                color: "#111111",
+                marginLeft: "lg"
+              }
+            ]
+          },
+          { type: "separator", margin: "xl" },
+          {
+            type: "box",
+            layout: "horizontal",
+            margin: "lg",
+            alignItems: "flex-start",
+            contents: [
+              { type: "text", text: "1", color: "#f97316", weight: "bold", size: "lg", flex: 0 },
+              {
+                type: "box",
+                layout: "vertical",
+                marginLeft: "md",
+                contents: [
+                  { type: "text", text: "ผูกบัญชี", weight: "bold", size: "sm", color: "#111111" },
+                  { type: "text", text: "พิมพ์บ้านเลขที่ เช่น 124/4", size: "xs", color: "#888888", wrap: true }
+                ]
               }
             ]
           },
           {
             type: "box",
-            layout: "vertical",
-            margin: "xl",
-            spacing: "sm",
+            layout: "horizontal",
+            margin: "lg",
+            alignItems: "flex-start",
             contents: [
+              { type: "text", text: "2", color: "#f97316", weight: "bold", size: "lg", flex: 0 },
               {
-                type: "text",
-                text: "1. ผูกบัญชีบ้าน",
-                weight: "bold",
-                size: "md",
-                color: "#111111"
-              },
-              {
-                type: "text",
-                text: "พิมพ์ 'บ้านเลขที่' ของคุณ (เช่น 124/4) ส่งเข้ามาในแชท",
-                size: "sm",
-                color: "#666666",
-                wrap: true
+                type: "box",
+                layout: "vertical",
+                marginLeft: "md",
+                contents: [
+                  { type: "text", text: "เช็คบิล", weight: "bold", size: "sm", color: "#111111" },
+                  { type: "text", text: "กดปุ่ม 'เช็คบิล' ด้านล่าง", size: "xs", color: "#888888", wrap: true }
+                ]
               }
             ]
           },
           {
             type: "box",
-            layout: "vertical",
-            margin: "xl",
-            spacing: "sm",
+            layout: "horizontal",
+            margin: "lg",
+            alignItems: "flex-start",
             contents: [
+              { type: "text", text: "3", color: "#f97316", weight: "bold", size: "lg", flex: 0 },
               {
-                type: "text",
-                text: "2. เช็คบิลค้างชำระ",
-                weight: "bold",
-                size: "md",
-                color: "#111111"
-              },
-              {
-                type: "text",
-                text: "กดปุ่ม 'เช็คบิล' ที่เมนูด้านล่าง ระบบจะแสดงยอดที่ต้องจ่าย",
-                size: "sm",
-                color: "#666666",
-                wrap: true
-              }
-            ]
-          },
-          {
-            type: "box",
-            layout: "vertical",
-            margin: "xl",
-            spacing: "sm",
-            contents: [
-              {
-                type: "text",
-                text: "3. ชำระเงิน",
-                weight: "bold",
-                size: "md",
-                color: "#111111"
-              },
-              {
-                type: "text",
-                text: "กดปุ่มชำระเงินเพื่อสแกน QR Code จากนั้นส่งรูป 'สลิป' กลับมาในแชทนี้ ระบบจะตัดยอดให้อัตโนมัติ",
-                size: "sm",
-                color: "#666666",
-                wrap: true
+                type: "box",
+                layout: "vertical",
+                marginLeft: "md",
+                contents: [
+                  { type: "text", text: "ชำระเงิน", weight: "bold", size: "sm", color: "#111111" },
+                  { type: "text", text: "ส่งรูปสลิปเข้ามาในแชทนี้", size: "xs", color: "#888888", wrap: true }
+                ]
               }
             ]
           }
-        ],
-        paddingAll: "20px"
+        ]
       },
       footer: {
         type: "box",
         layout: "vertical",
         paddingAll: "20px",
+        paddingTop: "0px",
         contents: [
           {
             type: "button",
             style: "primary",
-            color: "#059669",
-            action: {
-              type: "message",
-              label: "ลองเช็คบิลเลย",
-              text: "เช็คบิล"
-            }
+            color: "#f97316",
+            height: "sm",
+            action: { type: "message", label: "ลองเช็คบิลเลย", text: "เช็คบิล" }
           }
         ]
       }
@@ -1093,234 +1066,143 @@ export function generateHowToUseFlexMessage(): any {
   };
 }
 
-export function generateReportProblemFlexMessage(): any {
+export function generateReportProblemFlexMessage(appUrl: string): any {
   return {
     type: "flex",
-    altText: "แจ้งปัญหาเรื่องการเก็บขยะ",
+    altText: "แจ้งปัญหา",
     contents: {
       type: "bubble",
-      size: "mega",
-      header: {
-        type: "box",
-        layout: "vertical",
-        contents: [
-          {
-            type: "text",
-            text: "แจ้งปัญหา",
-            weight: "bold",
-            color: "#ffffff",
-            size: "xl"
-          }
-        ],
-        backgroundColor: "#ef4444",
-        paddingAll: "15px",
-        paddingTop: "19px",
-        paddingBottom: "16px"
-      },
+      size: "kilo",
       body: {
         type: "box",
         layout: "vertical",
+        paddingAll: "25px",
         contents: [
           {
             type: "box",
-            layout: "vertical",
-            backgroundColor: "#111111",
-            paddingAll: "10px",
-            cornerRadius: "md",
-            margin: "sm",
+            layout: "horizontal",
+            alignItems: "center",
             contents: [
               {
+                type: "icon",
+                url: `${appUrl}/api/icons/alert?color=ef4444`,
+                size: "3xl"
+              },
+              {
                 type: "text",
-                text: "พบปัญหาเรื่องขยะ แจ้งเราได้ทันที",
-                color: "#ffffff",
-                size: "sm",
+                text: "แจ้งปัญหา",
                 weight: "bold",
-                align: "center"
+                size: "xl",
+                color: "#111111",
+                marginLeft: "lg"
               }
             ]
           },
+          { type: "separator", margin: "xl" },
           {
             type: "text",
-            text: "หากท่านพบปัญหาเรื่องการเก็บขยะ (เช่น รถไม่มาเก็บ, ถังขยะชำรุด)",
+            text: "พบปัญหาเรื่องขยะแจ้งเราได้ทันที",
             size: "sm",
-            color: "#111111",
-            wrap: true,
-            margin: "xl"
-          },
-          {
-            type: "box",
-            layout: "vertical",
-            margin: "xl",
-            spacing: "sm",
-            contents: [
-              {
-                type: "text",
-                text: "สิ่งที่ต้องเตรียม:",
-                weight: "bold",
-                size: "md",
-                color: "#111111"
-              },
-              {
-                type: "text",
-                text: "• รายละเอียดปัญหา",
-                size: "sm",
-                color: "#666666",
-                wrap: true
-              },
-              {
-                type: "text",
-                text: "• หมู่บ้าน/ชุมชน",
-                size: "sm",
-                color: "#666666",
-                wrap: true
-              },
-              {
-                type: "text",
-                text: "• รูปถ่ายสถานที่",
-                size: "sm",
-                color: "#666666",
-                wrap: true
-              }
-            ]
-          },
-          {
-            type: "text",
-            text: "พิมพ์ส่งเข้ามาในแชทนี้ได้เลย เจ้าหน้าที่จะรีบตรวจสอบและแก้ไขให้โดยเร็วที่สุดค่ะ 🙏",
-            size: "sm",
-            color: "#ef4444",
-            wrap: true,
             weight: "bold",
-            margin: "xl"
+            color: "#111111",
+            margin: "lg",
+            wrap: true
+          },
+          {
+            type: "text",
+            text: "กรุณาพิมพ์รายละเอียดปัญหา พร้อมระบุ 'หมู่บ้าน/ชุมชน' และแนบรูปถ่ายสถานที่ ส่งเข้ามาในแชทนี้ได้เลยค่ะ",
+            size: "xs",
+            color: "#666666",
+            wrap: true,
+            margin: "md"
           }
-        ],
-        paddingAll: "20px"
+        ]
+      },
+      footer: {
+        type: "box",
+        layout: "vertical",
+        paddingAll: "20px",
+        paddingTop: "0px",
+        contents: [
+          {
+            type: "button",
+            style: "primary",
+            color: "#ef4444",
+            height: "sm",
+            action: { type: "message", label: "รับทราบ", text: "รับทราบการแจ้งปัญหา" }
+          }
+        ]
       }
     }
   };
 }
 
-export function generateContactFlexMessage(): any {
+export function generateContactFlexMessage(appUrl: string): any {
   return {
     type: "flex",
     altText: "ติดต่อเจ้าหน้าที่",
     contents: {
       type: "bubble",
-      size: "mega",
-      header: {
-        type: "box",
-        layout: "vertical",
-        contents: [
-          {
-            type: "text",
-            text: "ติดต่อเจ้าหน้าที่",
-            weight: "bold",
-            color: "#ffffff",
-            size: "xl"
-          }
-        ],
-        backgroundColor: "#f97316",
-        paddingAll: "15px",
-        paddingTop: "19px",
-        paddingBottom: "16px"
-      },
+      size: "kilo",
       body: {
         type: "box",
         layout: "vertical",
+        paddingAll: "25px",
         contents: [
           {
             type: "box",
-            layout: "vertical",
-            backgroundColor: "#111111",
-            paddingAll: "10px",
-            cornerRadius: "md",
-            margin: "sm",
-            contents: [
-              {
-                type: "text",
-                text: "กองสาธารณสุขและสิ่งแวดล้อม",
-                color: "#ffffff",
-                size: "sm",
-                weight: "bold",
-                align: "center"
-              }
-            ]
-          },
-          {
-            type: "text",
-            text: "เทศบาลเมืองนางรอง",
-            size: "xl",
-            weight: "bold",
-            color: "#111111",
-            align: "center",
-            margin: "xl"
-          },
-          {
-            type: "separator",
-            margin: "xl"
-          },
-          {
-            type: "box",
             layout: "horizontal",
-            margin: "xl",
+            alignItems: "center",
             contents: [
               {
-                type: "text",
-                text: "เบอร์โทรศัพท์",
-                color: "#888888",
-                size: "sm",
-                flex: 2
+                type: "icon",
+                url: `${appUrl}/api/icons/phone?color=0ea5e9`,
+                size: "3xl"
               },
               {
-                type: "text",
-                text: "044-631-419",
-                color: "#111111",
-                size: "sm",
-                weight: "bold",
-                flex: 3,
-                align: "end"
+                type: "box",
+                layout: "vertical",
+                marginLeft: "lg",
+                contents: [
+                  { type: "text", text: "ติดต่อเจ้าหน้าที่", weight: "bold", size: "xl", color: "#111111" },
+                  { type: "text", text: "เทศบาลเมืองนางรอง", size: "xs", color: "#888888" }
+                ]
               }
             ]
           },
+          { type: "separator", margin: "xl" },
           {
             type: "box",
             layout: "horizontal",
             margin: "lg",
             contents: [
-              {
-                type: "text",
-                text: "เวลาทำการ",
-                color: "#888888",
-                size: "sm",
-                flex: 2
-              },
-              {
-                type: "text",
-                text: "จันทร์-ศุกร์ (08:30-16:30)",
-                color: "#111111",
-                size: "xs",
-                weight: "bold",
-                flex: 3,
-                align: "end"
-              }
+              { type: "text", text: "เบอร์โทร", color: "#888888", size: "sm", flex: 1 },
+              { type: "text", text: "044-631-419", color: "#111111", size: "sm", weight: "bold", align: "end", flex: 2 }
+            ]
+          },
+          {
+            type: "box",
+            layout: "horizontal",
+            margin: "md",
+            contents: [
+              { type: "text", text: "เวลาทำการ", color: "#888888", size: "sm", flex: 1 },
+              { type: "text", text: "จ.-ศ. (08:30-16:30)", color: "#111111", size: "xs", weight: "bold", align: "end", flex: 2 }
             ]
           }
-        ],
-        paddingAll: "20px"
+        ]
       },
       footer: {
         type: "box",
         layout: "vertical",
         paddingAll: "20px",
+        paddingTop: "0px",
         contents: [
           {
             type: "button",
             style: "primary",
-            color: "#059669",
-            action: {
-              type: "uri",
-              label: "โทรติดต่อเจ้าหน้าที่",
-              uri: "tel:044631419"
-            }
+            color: "#0ea5e9",
+            height: "sm",
+            action: { type: "uri", label: "โทรเลย", uri: "tel:044631419" }
           }
         ]
       }
@@ -1328,101 +1210,46 @@ export function generateContactFlexMessage(): any {
   };
 }
 
-export function generateMyInfoFlexMessage(house: any): any {
+export function generateMyInfoFlexMessage(appUrl: string, house: any): any {
   return {
     type: "flex",
-    altText: "ข้อมูลของฉัน",
+    altText: "ข้อมูลบ้านของฉัน",
     contents: {
       type: "bubble",
-      size: "mega",
-      header: {
-        type: "box",
-        layout: "vertical",
-        contents: [
-          {
-            type: "text",
-            text: "ข้อมูลบ้านของคุณ",
-            weight: "bold",
-            color: "#ffffff",
-            size: "xl"
-          }
-        ],
-        backgroundColor: "#8b5cf6",
-        paddingAll: "15px",
-        paddingTop: "19px",
-        paddingBottom: "16px"
-      },
+      size: "kilo",
       body: {
         type: "box",
         layout: "vertical",
+        paddingAll: "25px",
         contents: [
           {
             type: "box",
-            layout: "vertical",
-            backgroundColor: "#111111",
-            paddingAll: "10px",
-            cornerRadius: "md",
-            margin: "sm",
-            contents: [
-              {
-                type: "text",
-                text: "ผูกบัญชีสำเร็จ ใช้งานได้เต็มรูปแบบ",
-                color: "#ffffff",
-                size: "sm",
-                weight: "bold",
-                align: "center"
-              }
-            ]
-          },
-          {
-            type: "box",
             layout: "horizontal",
-            margin: "xxl",
+            alignItems: "center",
             contents: [
               {
-                type: "text",
-                text: "บ้านเลขที่",
-                color: "#888888",
-                size: "md",
-                gravity: "center",
-                flex: 1
+                type: "icon",
+                url: `${appUrl}/api/icons/home?color=8b5cf6`,
+                size: "3xl"
               },
               {
                 type: "text",
-                text: house.houseNumber,
-                color: "#8b5cf6",
-                size: "3xl",
+                text: "ข้อมูลของฉัน",
                 weight: "bold",
-                align: "end",
-                flex: 2
-              }
-            ]
-          },
-          {
-            type: "separator",
-            margin: "xl"
-          },
-          {
-            type: "box",
-            layout: "horizontal",
-            margin: "xl",
-            contents: [
-              {
-                type: "text",
-                text: "ชื่อเจ้าบ้าน",
-                color: "#888888",
-                size: "sm",
-                flex: 1
-              },
-              {
-                type: "text",
-                text: house.ownerName || "ไม่ระบุ",
+                size: "xl",
                 color: "#111111",
-                size: "sm",
-                weight: "bold",
-                align: "end",
-                flex: 2
+                marginLeft: "lg"
               }
+            ]
+          },
+          { type: "separator", margin: "xl" },
+          {
+            type: "box",
+            layout: "horizontal",
+            margin: "lg",
+            contents: [
+              { type: "text", text: "บ้านเลขที่", color: "#888888", size: "sm", flex: 1, gravity: "center" },
+              { type: "text", text: house.houseNumber, color: "#8b5cf6", size: "xl", weight: "bold", align: "end", flex: 2 }
             ]
           },
           {
@@ -1430,81 +1257,33 @@ export function generateMyInfoFlexMessage(house: any): any {
             layout: "horizontal",
             margin: "lg",
             contents: [
-              {
-                type: "text",
-                text: "ถนน",
-                color: "#888888",
-                size: "sm",
-                flex: 1
-              },
-              {
-                type: "text",
-                text: house.road || "-",
-                color: "#111111",
-                size: "sm",
-                weight: "bold",
-                align: "end",
-                flex: 2
-              }
+              { type: "text", text: "เจ้าบ้าน", color: "#888888", size: "sm", flex: 1 },
+              { type: "text", text: house.ownerName || "-", color: "#111111", size: "sm", weight: "bold", align: "end", flex: 2 }
             ]
           },
           {
             type: "box",
             layout: "horizontal",
-            margin: "lg",
+            margin: "md",
             contents: [
-              {
-                type: "text",
-                text: "ชุมชน/โซน",
-                color: "#888888",
-                size: "sm",
-                flex: 1
-              },
-              {
-                type: "text",
-                text: house.zone || "ไม่ระบุ",
-                color: "#111111",
-                size: "sm",
-                weight: "bold",
-                align: "end",
-                flex: 2
-              }
-            ]
-          },
-          {
-            type: "box",
-            layout: "vertical",
-            margin: "xxl",
-            backgroundColor: "#f3f4f6",
-            paddingAll: "10px",
-            cornerRadius: "md",
-            contents: [
-              {
-                type: "text",
-                text: "💡 หากต้องการเปลี่ยนบ้านที่ผูกไว้ สามารถพิมพ์ \"บ้านเลขที่ใหม่\" ส่งเข้ามาในแชทได้เลยค่ะ",
-                size: "xs",
-                color: "#6b7280",
-                wrap: true
-              }
+              { type: "text", text: "โซน", color: "#888888", size: "sm", flex: 1 },
+              { type: "text", text: house.zone || "-", color: "#111111", size: "sm", weight: "bold", align: "end", flex: 2 }
             ]
           }
-        ],
-        paddingAll: "20px"
+        ]
       },
       footer: {
         type: "box",
         layout: "vertical",
         paddingAll: "20px",
+        paddingTop: "0px",
         contents: [
           {
             type: "button",
             style: "primary",
-            color: "#059669",
-            action: {
-              type: "message",
-              label: "เช็คยอดค่าขยะ",
-              text: "เช็คบิล"
-            }
+            color: "#8b5cf6",
+            height: "sm",
+            action: { type: "message", label: "เช็คยอดค่าขยะ", text: "เช็คบิล" }
           }
         ]
       }

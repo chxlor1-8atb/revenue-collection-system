@@ -626,17 +626,17 @@ export async function POST(request: Request) {
             continue;
           }
           if (text === "วิธีใช้งาน") {
-            await replyWithMessages(replyToken, [generateHowToUseFlexMessage()]);
+            await replyWithMessages(replyToken, [generateHowToUseFlexMessage(appUrl)]);
             continue;
           }
           
           if (text === "แจ้งปัญหา") {
-            await replyWithMessages(replyToken, [generateReportProblemFlexMessage()]);
+            await replyWithMessages(replyToken, [generateReportProblemFlexMessage(appUrl)]);
             continue;
           }
           
           if (text === "ติดต่อเจ้าหน้าที่") {
-            await replyWithMessages(replyToken, [generateContactFlexMessage()]);
+            await replyWithMessages(replyToken, [generateContactFlexMessage(appUrl)]);
             continue;
           }
 
@@ -647,7 +647,7 @@ export async function POST(request: Request) {
               continue;
             }
             const house = houseList[0];
-            await replyWithMessages(replyToken, [generateMyInfoFlexMessage(house)]);
+            await replyWithMessages(replyToken, [generateMyInfoFlexMessage(appUrl, house)]);
             continue;
           }
 
