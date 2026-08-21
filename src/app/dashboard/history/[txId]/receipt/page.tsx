@@ -87,6 +87,9 @@ export default async function ReceiptPage({ params }: { params: Promise<{ txId: 
             <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">รายละเอียดผู้โอน</h3>
             <p className="text-slate-800 font-medium">{senderName}</p>
             <p className="text-slate-600 text-sm">ช่องทาง: {paidVia}</p>
+            {tx.slipRefId && (
+              <p className="text-slate-500 text-xs font-mono mt-1">Ref Code: {tx.slipRefId}</p>
+            )}
           </div>
         </div>
 

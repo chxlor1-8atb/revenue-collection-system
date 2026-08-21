@@ -84,26 +84,29 @@ export async function GET(req: NextRequest) {
         ));
       
       const houseIds = matchedHouses.map(h => h.id);
+      let matchedInvoicesTxIds: number[] = [];
 
-      if (houseIds.length === 0) {
-        // If no houses match, return empty
-        return isExport ? new NextResponse("\uFEFF", { headers: { "Content-Type": "text/csv; charset=utf-8" } }) 
-                        : NextResponse.json({ data: [], totalCount: 0, totalAmount: 0 });
+      if (houseIds.length > 0) {
+        const matchedInvoices = await db.select({ transactionId: invoices.transactionId })
+          .from(invoices)
+          .where(and(inArray(invoices.houseId, houseIds), sql`${invoices.transactionId} IS NOT NULL`));
+        matchedInvoicesTxIds = Array.from(new Set(matchedInvoices.map(i => i.transactionId as number)));
       }
 
-      // Find transactions for these houses
-      const matchedInvoices = await db.select({ transactionId: invoices.transactionId })
-        .from(invoices)
-        .where(and(inArray(invoices.houseId, houseIds), sql`${invoices.transactionId} IS NOT NULL`));
+      // Search by house info OR directly by slipRefId (Ref code) / payerNote
+      const directSearchConditions = [
+        ilike(transactions.slipRefId, `%${search}%`),
+        ilike(transactions.payerNote, `%${search}%`),
+      ];
 
-      matchingTxIds = Array.from(new Set(matchedInvoices.map(i => i.transactionId as number)));
-
-      if (matchingTxIds.length === 0) {
-         return isExport ? new NextResponse("\uFEFF", { headers: { "Content-Type": "text/csv; charset=utf-8" } }) 
-                        : NextResponse.json({ data: [], totalCount: 0, totalAmount: 0 });
+      if (matchedInvoicesTxIds.length > 0) {
+        conditions.push(or(
+          inArray(transactions.id, matchedInvoicesTxIds),
+          ...directSearchConditions
+        ));
+      } else {
+        conditions.push(or(...directSearchConditions));
       }
-
-      conditions.push(inArray(transactions.id, matchingTxIds));
     }
 
     // First pass to get total count and total amount
