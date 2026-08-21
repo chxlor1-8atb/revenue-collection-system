@@ -50,6 +50,8 @@ export default function CustomSelect({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
+        aria-label={selectedOption ? selectedOption.label : placeholder}
+        aria-expanded={isOpen}
         className={`w-full flex items-center justify-between ${icon ? 'pl-10 pr-3' : 'px-3'} h-[42px] bg-white border ${
           isOpen ? 'border-[#5B58F2] ring-2 ring-[#5B58F2]/20' : 'border-slate-200 hover:border-slate-300'
         } rounded-[12px] shadow-none focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 transition-all ${

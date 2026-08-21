@@ -100,26 +100,32 @@ export default function DatePicker({
   return (
     <div className="relative" ref={containerRef}>
       <div 
+        role="button"
+        tabIndex={0}
+        aria-label={`เลือกวันที่ (${displayValue})`}
+        aria-expanded={isOpen}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); !disabled && setIsOpen(!isOpen); } }}
         className={`w-full flex items-center justify-between px-3 h-[42px] bg-white border border-slate-200 rounded-[12px] focus-within:ring-2 focus-within:ring-[#5B58F2]/20 focus-within:border-[#5B58F2] transition-all ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-50' : 'hover:border-slate-300 cursor-pointer'}`}
         onClick={() => !disabled && setIsOpen(!isOpen)}
       >
-        <span className={`text-sm truncate mr-2 ${parsedDate ? 'text-slate-800 font-medium' : 'text-slate-400'}`}>
+        <span className={`text-sm truncate mr-2 ${parsedDate ? 'text-slate-800 font-medium' : 'text-slate-500'}`}>
           {displayValue}
         </span>
         
-        <div className="flex items-center gap-1 text-slate-400 shrink-0">
+        <div className="flex items-center gap-1 text-slate-500 shrink-0">
           {value && !disabled && (
-            <div 
-              role="button"
+            <button 
+              type="button"
               onClick={(e) => { 
                 e.stopPropagation(); 
                 onChange(""); 
               }}
-              className="p-1 hover:text-slate-600 hover:bg-slate-100 rounded transition-colors"
+              aria-label="ล้างวันที่ที่เลือก"
+              className="p-1 hover:text-slate-700 hover:bg-slate-100 rounded transition-colors"
               title="ล้างข้อมูล"
             >
               <X size={14} />
-            </div>
+            </button>
           )}
           <CalendarIcon size={14} />
         </div>
@@ -138,6 +144,7 @@ export default function DatePicker({
               <button 
                 type="button"
                 onClick={handlePrevMonth}
+                aria-label="เดือนก่อนหน้า"
                 className="p-1 rounded-full hover:bg-slate-200 text-slate-600 transition-colors"
               >
                 <ChevronLeft size={16} />
@@ -148,6 +155,7 @@ export default function DatePicker({
               <button 
                 type="button"
                 onClick={handleNextMonth}
+                aria-label="เดือนถัดไป"
                 className="p-1 rounded-full hover:bg-slate-200 text-slate-600 transition-colors"
               >
                 <ChevronRight size={16} />

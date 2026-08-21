@@ -70,24 +70,32 @@ export default function TopNav({ userName, settings }: { userName: string, setti
           <div className="flex items-center gap-3 shrink-0">
             <button 
               onClick={() => setIsSettingsOpen(true)}
-              className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 hover:text-slate-700 transition-colors"
+              aria-label="ตั้งค่าระบบ"
+              className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-colors"
             >
               <Settings size={18} strokeWidth={1.5} />
             </button>
-            <button className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 hover:text-slate-700 transition-colors relative">
+            <button 
+              aria-label="การแจ้งเตือน"
+              className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-colors relative"
+            >
               <Bell size={18} strokeWidth={1.5} />
               <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
             </button>
             
-            <div className="flex items-center gap-2 cursor-pointer ml-1 relative group" onClick={() => setShowLogoutConfirm(true)}>
-              <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden border-2 border-white shadow-sm flex items-center justify-center font-bold text-slate-500 uppercase text-xs">
+            <button 
+              aria-label={`ข้อมูลผู้ใช้และออกจากระบบ (${userName})`}
+              className="flex items-center gap-2 cursor-pointer ml-1 relative group bg-transparent border-none p-0" 
+              onClick={() => setShowLogoutConfirm(true)}
+            >
+              <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden border-2 border-white shadow-sm flex items-center justify-center font-bold text-slate-600 uppercase text-xs">
                 {userName.substring(0,2)}
               </div>
               {/* Tooltip for logout */}
               <div className="absolute top-full right-0 mt-2 bg-[#0F172A] text-white text-xs px-3 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">
                 ออกจากระบบ ({userName})
               </div>
-            </div>
+            </button>
           </div>
         </div>
       

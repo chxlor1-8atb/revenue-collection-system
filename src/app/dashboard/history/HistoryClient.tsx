@@ -155,7 +155,7 @@ export default function HistoryClient() {
         {/* Filters Row */}
         <div className="flex flex-wrap gap-2 items-end w-full sm:w-auto">
           <div className="flex-1 min-w-[110px]">
-            <label className="block text-[length:10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">สถานะ</label>
+            <label className="block text-[length:10px] font-semibold text-slate-600 mb-1 uppercase tracking-wider">สถานะ</label>
             <CustomSelect
               value={status}
               onChange={(val) => { setStatus(val); setPage(1); }}
@@ -168,7 +168,7 @@ export default function HistoryClient() {
           </div>
 
           <div className="flex-1 min-w-[110px]">
-            <label className="block text-[length:10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">ช่องทาง</label>
+            <label className="block text-[length:10px] font-semibold text-slate-600 mb-1 uppercase tracking-wider">ช่องทาง</label>
             <CustomSelect
               value={channel}
               onChange={(val) => { setChannel(val); setPage(1); }}
@@ -181,7 +181,7 @@ export default function HistoryClient() {
           </div>
 
           <div className="flex-1 min-w-[130px]">
-            <label className="block text-[length:10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">เดือนที่ชำระ</label>
+            <label className="block text-[length:10px] font-semibold text-slate-600 mb-1 uppercase tracking-wider">เดือนที่ชำระ</label>
             <MonthPicker
               value={monthYear}
               onChange={(val) => { setMonthYear(val); setPage(1); }}
@@ -194,7 +194,7 @@ export default function HistoryClient() {
         {/* Date Pickers & Export */}
         <div className="flex flex-1 sm:flex-none flex-wrap sm:flex-nowrap gap-2 items-end sm:justify-end shrink-0">
           <div className="flex-1 min-w-[130px] sm:w-[150px] md:w-[150px]">
-            <label className="block text-[length:10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">จากวันที่</label>
+            <label className="block text-[length:10px] font-semibold text-slate-600 mb-1 uppercase tracking-wider">จากวันที่</label>
             <DatePicker
               value={startDate}
               onChange={(val) => { setStartDate(val); setPage(1); }}
@@ -202,7 +202,7 @@ export default function HistoryClient() {
             />
           </div>
           <div className="flex-1 min-w-[130px] sm:w-[150px] md:w-[150px]">
-            <label className="block text-[length:10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">ถึงวันที่</label>
+            <label className="block text-[length:10px] font-semibold text-slate-600 mb-1 uppercase tracking-wider">ถึงวันที่</label>
             <DatePicker
               value={endDate}
               onChange={(val) => { setEndDate(val); setPage(1); }}

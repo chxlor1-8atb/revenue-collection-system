@@ -372,9 +372,9 @@ export default function HousesClient({
               />
             </div>
           </div>
-          <div className="text-[length:13px] text-slate-400 font-medium z-10 flex gap-4 shrink-0 self-end lg:self-center">
+          <div className="text-[length:13px] text-slate-500 font-medium z-10 flex gap-4 shrink-0 self-end lg:self-center">
             <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ทั้งหมด {totalHouses} หลัง
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> ทั้งหมด {totalHouses} หลัง
             </span>
           </div>
         </div>
@@ -383,12 +383,12 @@ export default function HousesClient({
         {paymentSummary && selectedPaymentStatus === 'unpaid' && (
           <div className="mx-6 my-3 px-4 py-3 rounded-xl bg-red-50 border border-red-100 flex flex-wrap items-center gap-x-6 gap-y-1">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-red-400 shrink-0"></span>
-              <span className="text-sm font-semibold text-red-700">ยอดรวมค้างชำระ</span>
+              <span className="w-2 h-2 rounded-full bg-red-500 shrink-0"></span>
+              <span className="text-sm font-semibold text-red-800">ยอดรวมค้างชำระ</span>
             </div>
             <div className="flex items-center gap-4 ml-auto">
-              <span className="text-xs text-red-500">{paymentSummary.unpaidCount} บิล</span>
-              <span className="text-base font-bold text-red-700 tabular-nums">
+              <span className="text-xs text-red-700 font-medium">{paymentSummary.unpaidCount} บิล</span>
+              <span className="text-base font-bold text-red-800 tabular-nums">
                 {paymentSummary.unpaidTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท
               </span>
             </div>
@@ -397,12 +397,12 @@ export default function HousesClient({
         {paymentSummary && selectedPaymentStatus === 'paid' && (
           <div className="mx-6 my-3 px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-100 flex flex-wrap items-center gap-x-6 gap-y-1">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
-              <span className="text-sm font-semibold text-emerald-700">ยอดรวมชำระแล้ว</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+              <span className="text-sm font-semibold text-emerald-800">ยอดรวมชำระแล้ว</span>
             </div>
             <div className="flex items-center gap-4 ml-auto">
-              <span className="text-xs text-emerald-600">{paymentSummary.paidCount} บิล</span>
-              <span className="text-base font-bold text-emerald-700 tabular-nums">
+              <span className="text-xs text-emerald-700 font-medium">{paymentSummary.paidCount} บิล</span>
+              <span className="text-base font-bold text-emerald-800 tabular-nums">
                 {paymentSummary.paidTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท
               </span>
             </div>
@@ -413,20 +413,33 @@ export default function HousesClient({
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
               <tr className="border-b border-slate-100">
-                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-16 text-center">ลำดับ</th>
+                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-16 text-center">ลำดับ</th>
                 {displayFields.map(field => (
-                  <th key={field.id} className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider ${field.isSystem && (field.id === 'houseNumber' || field.id === 'ownerName') ? 'cursor-pointer text-slate-500 hover:text-slate-800 transition-colors' : 'text-slate-400'}`} onClick={() => {
-                    if (field.id === 'houseNumber' || field.id === 'ownerName') handleSort(field.id);
-                  }}>
+                  <th 
+                    key={field.id} 
+                    className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider ${field.isSystem && (field.id === 'houseNumber' || field.id === 'ownerName') ? 'cursor-pointer text-slate-600 hover:text-slate-900 transition-colors' : 'text-slate-500'}`} 
+                    onClick={() => {
+                      if (field.id === 'houseNumber' || field.id === 'ownerName') handleSort(field.id);
+                    }}
+                    role={field.isSystem && (field.id === 'houseNumber' || field.id === 'ownerName') ? 'button' : undefined}
+                    tabIndex={field.isSystem && (field.id === 'houseNumber' || field.id === 'ownerName') ? 0 : undefined}
+                    aria-label={field.isSystem && (field.id === 'houseNumber' || field.id === 'ownerName') ? `เรียงตาม ${field.name}` : undefined}
+                    onKeyDown={(e) => {
+                      if ((e.key === 'Enter' || e.key === ' ') && (field.id === 'houseNumber' || field.id === 'ownerName')) {
+                        e.preventDefault();
+                        handleSort(field.id);
+                      }
+                    }}
+                  >
                     <div className="flex items-center gap-1.5">
                       {field.name}
                       {(field.id === 'houseNumber' || field.id === 'ownerName') && (
-                        <ArrowUpDown size={12} className={sortConfig.key === field.id ? 'text-[#5B58F2]' : 'opacity-30'} />
+                        <ArrowUpDown size={12} className={sortConfig.key === field.id ? 'text-[#5B58F2]' : 'opacity-40'} />
                       )}
                     </div>
                   </th>
                 ))}
-                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">จัดการ</th>
+                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">จัดการ</th>
               </tr>
             </thead>
             <tbody className={`divide-y divide-slate-50 text-slate-700 transition-opacity duration-200 ${isPending ? 'opacity-50' : 'opacity-100'}`}>

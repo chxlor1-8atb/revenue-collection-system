@@ -72,6 +72,7 @@ export default function SlipModalButton({ imageUrl, buttonStyle = "history", chi
                       <button 
                         className="text-white/90 hover:text-white transition-all bg-black/60 hover:bg-black/80 shadow-lg p-2 rounded-full ring-1 ring-white/20 backdrop-blur-md hover:scale-110 flex items-center justify-center" 
                         onClick={() => setIsOpen(false)}
+                        aria-label="ปิดหน้าต่างรูปสลิป"
                         title="ปิด"
                       >
                          <X size={20} />
@@ -79,6 +80,7 @@ export default function SlipModalButton({ imageUrl, buttonStyle = "history", chi
                       <button 
                         className="text-white/90 hover:text-white transition-all bg-black/60 hover:bg-black/80 shadow-lg p-2 rounded-full ring-1 ring-white/20 backdrop-blur-md hover:scale-110 flex items-center justify-center" 
                         onClick={handleDownload}
+                        aria-label="ดาวน์โหลดรูปภาพสลิป"
                         title="ดาวน์โหลดภาพ"
                       >
                          <Download size={20} />

@@ -61,10 +61,12 @@ export default function MonthPicker({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
+        aria-label={`เลือกเดือนและปี (${displayValue})`}
+        aria-expanded={isOpen}
         className={buttonClassName || `w-full flex items-center justify-between px-4 py-3 bg-white border border-slate-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 ${colorTheme === 'blue' ? 'focus:ring-[#5B58F2] focus:border-[#5B58F2]' : 'focus:ring-emerald-500 focus:border-emerald-500'} ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-50' : 'hover:border-slate-400'}`}
       >
         <span className="text-[13px] text-slate-700">{displayValue}</span>
-        <CalendarIcon size={16} className="text-slate-400" />
+        <CalendarIcon size={16} className="text-slate-500" />
       </button>
 
       <AnimatePresence>
@@ -83,6 +85,7 @@ export default function MonthPicker({
               <button 
                 type="button"
                 onClick={() => setViewYear(y => y - 1)}
+                aria-label="ปีก่อนหน้า"
                 className="p-1 rounded-full hover:bg-slate-200 text-slate-600 transition-colors"
               >
                 <ChevronLeft size={18} />
@@ -93,6 +96,7 @@ export default function MonthPicker({
               <button 
                 type="button"
                 onClick={() => setViewYear(y => y + 1)}
+                aria-label="ปีถัดไป"
                 className="p-1 rounded-full hover:bg-slate-200 text-slate-600 transition-colors"
               >
                 <ChevronRight size={18} />

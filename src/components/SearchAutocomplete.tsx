@@ -83,6 +83,7 @@ export default function SearchAutocomplete({ value, onChange, onSelect, onSubmit
       <input
         type="text"
         placeholder={placeholder}
+        aria-label={placeholder}
         value={value}
         onChange={(e) => { onChange(e.target.value); setIsOpen(true); }}
         onKeyDown={handleKeyDown}

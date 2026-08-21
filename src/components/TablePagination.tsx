@@ -113,14 +113,16 @@ export default function TablePagination({
         <button
           onClick={() => onPageChange(1)}
           disabled={currentPage <= 1}
-          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+          aria-label="หน้าแรกสุด"
+          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
         >
           <ChevronsLeft size={16} />
         </button>
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage <= 1}
-          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors mr-1"
+          aria-label="หน้าก่อนหน้า"
+          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors mr-1"
         >
           <ChevronLeft size={16} />
         </button>
@@ -137,7 +139,8 @@ export default function TablePagination({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= safeTotalPages}
-          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors ml-1"
+          aria-label="หน้าถัดไป"
+          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors ml-1"
         >
           <ChevronRight size={16} />
         </button>
@@ -145,7 +148,8 @@ export default function TablePagination({
           <button
             onClick={() => onPageChange(safeTotalPages)}
             disabled={currentPage >= safeTotalPages}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+            aria-label="หน้าสุดท้าย"
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
           >
             <ChevronsRight size={16} />
           </button>
@@ -163,10 +167,12 @@ export default function TablePagination({
               value={jumpPage}
               onChange={(e) => setJumpPage(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleJump()}
+              aria-label="ระบุเลขหน้าเพื่อกระโดดไป"
               className="w-10 h-7 text-center border border-slate-300 rounded text-slate-700 focus:outline-none focus:border-emerald-500"
             />
             <button 
               onClick={handleJump}
+              aria-label="ไปที่หน้าที่ระบุ"
               className="w-7 h-7 flex items-center justify-center bg-[#1F2E22]/10 hover:bg-[#1F2E22]/20 text-[#1F2E22] rounded transition-colors"
             >
               <ArrowRight size={14} />
@@ -182,6 +188,7 @@ export default function TablePagination({
               <button
                 type="button"
                 onClick={() => setIsLimitOpen(!isLimitOpen)}
+                aria-label={`เลือกจำนวนรายการต่อหน้า (ปัจจุบัน ${itemsPerPage} รายการ)`}
                 className="flex items-center gap-1 font-semibold text-[#1F2E22] hover:text-[#2A3E2E] transition-colors focus:outline-none"
               >
                 {itemsPerPage}
