@@ -310,15 +310,15 @@ export async function GET(req: NextRequest) {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      width: '140px',
-                      height: '140px',
-                      borderRadius: '44px',
+                      width: '180px',
+                      height: '180px',
+                      borderRadius: '56px',
                       backgroundColor: item.badgeBg,
-                      border: `8px solid ${item.badgeBorder}`,
+                      border: `10px solid ${item.badgeBorder}`,
                       color: item.badgeColor,
-                      fontSize: '72px',
+                      fontSize: '96px',
                       fontWeight: '900',
-                      boxShadow: '0 16px 32px rgba(0,0,0,0.12)',
+                      boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
                     }}
                   >
                     {item.num}
@@ -326,16 +326,16 @@ export async function GET(req: NextRequest) {
                 </div>
 
                 {/* Central Massive Vector Illustration */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 'auto 0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 'auto 0', transform: 'scale(1.25)' }}>
                   {item.illustration}
                 </div>
 
                 {/* Extra Large Thai Title & Subtitle */}
                 <div style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center' }}>
-                  <div style={{ fontSize: '86px', fontWeight: 'bold', color: '#0F172A', textAlign: 'center', lineHeight: 1.1, letterSpacing: '-0.5px' }}>
+                  <div style={{ fontSize: '100px', fontWeight: '900', color: '#0F172A', textAlign: 'center', lineHeight: 1.1, letterSpacing: '-0.5px' }}>
                     {item.title}
                   </div>
-                  <div style={{ fontSize: '42px', fontWeight: 600, color: '#64748B', textAlign: 'center', marginTop: '12px', lineHeight: 1.15 }}>
+                  <div style={{ fontSize: '48px', fontWeight: 600, color: '#64748B', textAlign: 'center', marginTop: '16px', lineHeight: 1.15 }}>
                     {item.subtitle}
                   </div>
                 </div>
@@ -379,15 +379,15 @@ export async function GET(req: NextRequest) {
                       display: 'flex',
                       flexDirection: 'column',
                       position: 'absolute',
-                      right: 60,
-                      top: 140,
+                      right: 50,
+                      top: 120,
                       alignItems: 'center',
                       gap: '0px'
                     }}>
-                      <span style={{ fontSize: '110px', fontWeight: '900', color: '#FFFFFF' }}>พิมพ์ใน</span>
-                      <span style={{ fontSize: '110px', fontWeight: '900', color: '#FFFFFF' }}>แชท</span>
-                      <span style={{ fontSize: '140px', fontWeight: '900', color: '#FCD34D', marginTop: '20px' }}>จิ้ม</span>
-                      <span style={{ fontSize: '140px', fontWeight: '900', color: '#FCD34D' }}>มุมนี้</span>
+                      <span style={{ fontSize: '96px', fontWeight: '900', color: '#FFFFFF', lineHeight: 1.3 }}>พิมพ์ใน</span>
+                      <span style={{ fontSize: '96px', fontWeight: '900', color: '#FFFFFF', lineHeight: 1.3 }}>แชท</span>
+                      <span style={{ fontSize: '130px', fontWeight: '900', color: '#FCD34D', marginTop: '16px', lineHeight: 1.3 }}>จิ้ม</span>
+                      <span style={{ fontSize: '130px', fontWeight: '900', color: '#FCD34D', lineHeight: 1.3 }}>มุมนี้</span>
                     </div>
                   </div>
                 );
@@ -418,15 +418,15 @@ export async function GET(req: NextRequest) {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: '140px',
-                        height: '140px',
-                        borderRadius: '44px',
+                        width: '180px',
+                        height: '180px',
+                        borderRadius: '56px',
                         backgroundColor: item.badgeBg,
-                        border: `8px solid ${item.badgeBorder}`,
+                        border: `10px solid ${item.badgeBorder}`,
                         color: item.badgeColor,
-                        fontSize: '72px',
+                        fontSize: '96px',
                         fontWeight: '900',
-                        boxShadow: '0 16px 32px rgba(0,0,0,0.12)',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
                       }}
                     >
                       {item.num}
@@ -434,16 +434,16 @@ export async function GET(req: NextRequest) {
                   </div>
 
                   {/* Central Massive Vector Illustration */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 'auto 0' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 'auto 0', transform: 'scale(1.25)' }}>
                     {item.illustration}
                   </div>
 
                   {/* Extra Large Thai Title & Subtitle */}
                   <div style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center' }}>
-                    <div style={{ fontSize: '86px', fontWeight: 'bold', color: '#0F172A', textAlign: 'center', lineHeight: 1.1, letterSpacing: '-0.5px' }}>
+                    <div style={{ fontSize: '100px', fontWeight: '900', color: '#0F172A', textAlign: 'center', lineHeight: 1.1, letterSpacing: '-0.5px' }}>
                       {item.title}
                     </div>
-                    <div style={{ fontSize: '42px', fontWeight: 600, color: '#64748B', textAlign: 'center', marginTop: '12px', lineHeight: 1.15 }}>
+                    <div style={{ fontSize: '48px', fontWeight: 600, color: '#64748B', textAlign: 'center', marginTop: '16px', lineHeight: 1.15 }}>
                       {item.subtitle}
                     </div>
                   </div>
