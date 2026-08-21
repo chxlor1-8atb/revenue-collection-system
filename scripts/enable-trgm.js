@@ -1,0 +1,1 @@
+const { neon } = require("@neondatabase/serverless"); require("dotenv").config({ path: ".env.local" }); async function run() { const sql = neon(process.env.DATABASE_URL); await sql`CREATE EXTENSION IF NOT EXISTS pg_trgm;`; console.log("pg_trgm enabled!"); } run();

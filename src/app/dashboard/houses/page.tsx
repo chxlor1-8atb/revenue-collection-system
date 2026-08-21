@@ -19,7 +19,9 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
   if (q) {
     conditions.push(or(
       ilike(houses.houseNumber, `%${q}%`),
-      ilike(houses.ownerName, `%${q}%`)
+      ilike(houses.ownerName, `%${q}%`),
+      sql`${houses.ownerName} % ${q}`,
+      sql`${houses.houseNumber} % ${q}`
     ));
   }
   if (zone) {

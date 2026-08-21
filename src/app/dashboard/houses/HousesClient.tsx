@@ -86,7 +86,7 @@ export default function HousesClient({
       if (searchQuery !== initialSearch) {
         updateUrlParams(1, searchQuery, sortConfig.key, sortConfig.dir, limit, selectedZone || "");
       }
-    }, 500);
+    }, 300);
     return () => clearTimeout(timer);
   }, [searchQuery, initialSearch, sortConfig]);
 
@@ -107,6 +107,9 @@ export default function HousesClient({
 
       if (newLimit !== 10) params.set('limit', newLimit.toString());
       else params.delete('limit');
+
+      if (newZone) params.set('zone', newZone);
+      else params.delete('zone');
 
       router.push(`${pathname}?${params.toString()}`);
     });
