@@ -374,20 +374,29 @@ export async function GET(req: NextRequest) {
                       👇
                     </div>
                     
-                    {/* Big Stacked Yellow Text */}
+                    {/* Playful Sticker Text */}
                     <div style={{
                       display: 'flex',
                       flexDirection: 'column',
                       position: 'absolute',
-                      right: 50,
-                      top: 120,
+                      right: 40,
+                      top: 80,
                       alignItems: 'center',
-                      gap: '0px'
+                      gap: '16px'
                     }}>
-                      <span style={{ fontSize: '96px', fontWeight: '900', color: '#FFFFFF', lineHeight: 1.3 }}>พิมพ์ใน</span>
-                      <span style={{ fontSize: '96px', fontWeight: '900', color: '#FFFFFF', lineHeight: 1.3 }}>แชท</span>
-                      <span style={{ fontSize: '130px', fontWeight: '900', color: '#FCD34D', marginTop: '16px', lineHeight: 1.3 }}>จิ้ม</span>
-                      <span style={{ fontSize: '130px', fontWeight: '900', color: '#FCD34D', lineHeight: 1.3 }}>มุมนี้</span>
+                      <div style={{ display: 'flex', backgroundColor: '#EC4899', padding: '12px 40px', borderRadius: '50px', transform: 'rotate(-4deg)', boxShadow: '0 8px 16px rgba(236,72,153,0.4)' }}>
+                        <span style={{ fontSize: '80px', fontWeight: '900', color: '#FFFFFF', lineHeight: 1.2 }}>พิมพ์ใน</span>
+                      </div>
+                      <div style={{ display: 'flex', backgroundColor: '#EC4899', padding: '12px 40px', borderRadius: '50px', transform: 'rotate(-4deg)', boxShadow: '0 8px 16px rgba(236,72,153,0.4)' }}>
+                        <span style={{ fontSize: '80px', fontWeight: '900', color: '#FFFFFF', lineHeight: 1.2 }}>แชท</span>
+                      </div>
+                      
+                      <div style={{ display: 'flex', backgroundColor: '#FCD34D', padding: '16px 50px', borderRadius: '60px', transform: 'rotate(3deg)', marginTop: '20px', boxShadow: '0 12px 24px rgba(252,211,77,0.4)' }}>
+                        <span style={{ fontSize: '110px', fontWeight: '900', color: '#111827', lineHeight: 1.2 }}>จิ้ม</span>
+                      </div>
+                      <div style={{ display: 'flex', backgroundColor: '#FCD34D', padding: '16px 50px', borderRadius: '60px', transform: 'rotate(3deg)', boxShadow: '0 12px 24px rgba(252,211,77,0.4)' }}>
+                        <span style={{ fontSize: '110px', fontWeight: '900', color: '#111827', lineHeight: 1.2 }}>มุมนี้</span>
+                      </div>
                     </div>
                   </div>
                 );
