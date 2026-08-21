@@ -135,16 +135,57 @@ export function generateBillFlexMessage(
     contents: {
       type: "bubble",
       size: "kilo",
-      body: {
+      header: {
         type: "box",
         layout: "vertical",
+        backgroundColor: "#059669",
+        paddingAll: "12px",
         contents: [
           {
             type: "text",
-            text: "บิลค่าขยะ",
+            text: "ชำระค่าขยะ",
             weight: "bold",
-            size: "lg",
-            color: "#059669"
+            color: "#ffffff",
+            size: "md",
+            align: "center"
+          }
+        ]
+      },
+      hero: {
+        type: "image",
+        url: qrUrl,
+        size: "full",
+        aspectRatio: "1:1",
+        aspectMode: "fit",
+        backgroundColor: "#ffffff"
+      },
+      body: {
+        type: "box",
+        layout: "vertical",
+        paddingAll: "16px",
+        spacing: "sm",
+        contents: [
+          {
+            type: "box",
+            layout: "horizontal",
+            contents: [
+              {
+                type: "text",
+                text: "บ้านเลขที่",
+                color: "#64748B",
+                size: "xs",
+                flex: 1
+              },
+              {
+                type: "text",
+                text: houseNumber,
+                color: "#111827",
+                size: "sm",
+                weight: "bold",
+                align: "end",
+                flex: 2
+              }
+            ]
           },
           {
             type: "box",
@@ -152,100 +193,73 @@ export function generateBillFlexMessage(
             contents: [
               {
                 type: "text",
-                text: `บ้าน ${houseNumber}`,
-                color: "#888888",
+                text: "ประจำเดือน",
+                color: "#64748B",
                 size: "xs",
                 flex: 1
               },
               {
                 type: "text",
                 text: monthYearStr,
-                color: "#888888",
-                size: "xs",
+                color: "#111827",
+                size: "sm",
+                weight: "bold",
                 align: "end",
-                flex: 1
+                flex: 2
               }
-            ],
-            margin: "sm"
+            ]
           },
           {
             type: "separator",
-            margin: "lg"
-          },
-          {
-            type: "box",
-            layout: "vertical",
-            contents: [
-              {
-                type: "image",
-                url: qrUrl,
-                size: "xl",
-                aspectRatio: "1:1",
-                aspectMode: "fit"
-              }
-            ],
-            margin: "lg",
-            paddingStart: "40px",
-            paddingEnd: "40px"
-          },
-          {
-            type: "text",
-            text: "สแกน QR เพื่อชำระเงิน",
-            color: "#888888",
-            size: "xs",
-            align: "center",
-            margin: "sm"
-          },
-          {
-            type: "separator",
-            margin: "lg"
+            margin: "md"
           },
           {
             type: "box",
             layout: "horizontal",
+            margin: "sm",
             contents: [
               {
                 type: "text",
                 text: "ยอดชำระ",
-                color: "#888888",
-                size: "sm",
+                color: "#64748B",
+                size: "xs",
                 gravity: "center"
               },
               {
                 type: "text",
                 text: `฿${amount.toFixed(2)}`,
-                color: "#dc2626",
-                size: "xl",
+                color: "#DC2626",
+                size: "lg",
                 weight: "bold",
                 align: "end"
               }
-            ],
-            margin: "lg"
+            ]
           }
-        ],
-        paddingAll: "20px"
+        ]
       },
       footer: {
         type: "box",
         layout: "vertical",
+        paddingAll: "16px",
+        paddingTop: "0px",
         contents: [
           {
             type: "button",
             action: {
               type: "uri",
-              label: "คลิกเพื่อชำระเงิน",
+              label: "บันทึก / ชำระเงิน",
               uri: payUrl
             },
             style: "primary",
             color: "#059669",
-            margin: "sm"
+            height: "sm"
           }
-        ],
-        paddingAll: "20px"
+        ]
       }
     }
   };
 }
+
 
 export function generateReceiptFlexMessage(
   houseNumber: string, 
