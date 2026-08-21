@@ -406,67 +406,10 @@ export default function HousesClient({
                       href={`/dashboard/houses/${house.id}`} 
                       className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-[#5B58F2] bg-[#EEF0FF] hover:bg-[#D5D9FF] rounded-lg transition-colors border border-[#D5D9FF]"
                     >
-                      ดูบิลชำระ
+                      ดูข้อมูล / จัดการ
                     </Link>
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <button
-                        onClick={() => setConfirmCashHouse({ id: house.id!, houseNumber: house.houseNumber })}
-                        className="p-2 text-slate-400 hover:text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors"
-                        title="รับชำระเงินสด (ทั้งหมด)"
-                      >
-                        <Banknote size={16} />
-                      </button>
-                      <button onClick={() => openQrModal(house)}
-                        className="p-2 text-slate-400 hover:text-[#5B58F2] hover:bg-slate-100 rounded-lg transition-colors"
-                        title="QR Code & ลิงก์ชำระเงิน"
-                      >
-                        <QrCode size={16} />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setInitialBillPrompt({
-                            isOpen: true,
-                            houseId: house.id!,
-                            monthYear: new Date().toISOString().slice(0, 7),
-                            amount: house.defaultBillingAmount || "20.00",
-                            isManual: true
-                          });
-                        }}
-                        className="p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-colors"
-                        title="สร้างบิลค้างชำระ (แมนนวล)"
-                      >
-                        <FilePlus size={16} />
-                      </button>
-                      {(house as any).lineUserId ? (
-                        <button
-                          onClick={() => setConfirmLineHouse({ id: house.id!, houseNumber: house.houseNumber })}
-                          disabled={sendingLine === house.id}
-                          className="p-2 text-[#00B900] hover:text-[#00B900] hover:bg-emerald-50 rounded-lg transition-colors"
-                          title="ส่งแจ้งเตือนบิลค้างชำระผ่าน LINE"
-                        >
-                          {sendingLine === house.id ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-                        </button>
-                      ) : (
-                         <div className="w-[32px]" />
-                      )}
-                      <button
-                        onClick={() => handleEdit(house)}
-                        className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-slate-100 rounded-lg transition-colors"
-                        title="แก้ไขข้อมูลบ้าน"
-                      >
-                        <Edit2 size={16} />
-                      </button>
-                      <button
-                        onClick={() => confirmDelete(house.id!, house.houseNumber)}
-                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-slate-100 rounded-lg transition-colors"
-                        title="ลบข้อมูลบ้าน"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
+                  
                 </motion.tr>
                 ))}
               </AnimatePresence>

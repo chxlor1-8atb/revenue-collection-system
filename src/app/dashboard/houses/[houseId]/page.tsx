@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowLeft, Home, User, MapPin, ExternalLink, Receipt, CheckCircle2, Clock, AlertCircle, Phone, Info, MessageCircle, Banknote, CalendarDays } from "lucide-react";
 import SlipModalButton from "@/components/SlipModalButton";
 import CashPaymentButton from "./CashPaymentButton";
+import HouseActionsClient from "./HouseActionsClient";
 
 export const dynamic = "force-dynamic";
 
@@ -77,14 +78,17 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
             บ้านเลขที่ {house.houseNumber}
           </h1>
         </div>
-        <a 
-          href={`/house/${house.id}`} 
-          target="_blank" 
-          rel="noreferrer" 
-          className="inline-flex items-center gap-2 text-white bg-emerald-600 hover:bg-emerald-700 px-5 py-2.5 rounded-xl text-sm font-medium transition-colors shadow-sm"
-        >
-          เปิดหน้าเว็บของลูกบ้าน <ExternalLink size={16} />
-        </a>
+        <div className="flex flex-col sm:flex-row items-center gap-3">
+          <HouseActionsClient house={house as any} customFieldsSchema={schema} />
+          <a 
+            href={`/house/${house.id}`} 
+            target="_blank" 
+            rel="noreferrer" 
+            className="inline-flex items-center gap-2 text-white bg-emerald-600 hover:bg-emerald-700 px-5 py-2.5 rounded-xl text-sm font-medium transition-colors shadow-sm"
+          >
+            เปิดหน้าเว็บลูกบ้าน <ExternalLink size={16} />
+          </a>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
