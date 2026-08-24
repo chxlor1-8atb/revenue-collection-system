@@ -46,49 +46,81 @@ export default function TopNav({ userName, settings }: { userName: string, setti
 
   return (
     <>
-      <header className="border-b border-slate-100 bg-white rounded-t-[32px] px-4 sm:px-6 md:px-8 lg:px-12 py-4 sm:py-5 relative z-40">
-        <div className="max-w-[1400px] mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <div className="flex items-center justify-center w-8 h-8 bg-[#5B58F2] rounded-full text-white shadow-sm">
-              <Trash2 size={16} strokeWidth={2.5} />
+      <header className="border-b border-slate-100 bg-white rounded-t-[32px] px-4 sm:px-6 md:px-8 lg:px-12 py-3.5 sm:py-5 relative z-40">
+        <div className="max-w-[1400px] mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4">
+          
+          {/* Top Bar Row (Brand on Left, User Actions on Right for Mobile) */}
+          <div className="flex items-center justify-between w-full md:w-auto">
+            <div className="flex items-center gap-2.5">
+              <div className="flex items-center justify-center w-8 h-8 bg-[#5B58F2] rounded-full text-white shadow-sm shrink-0">
+                <Trash2 size={16} strokeWidth={2.5} />
+              </div>
+              <span className="font-sans font-bold text-[#0F172A] tracking-tight text-lg md:text-xl">ระบบจัดเก็บค่าขยะ</span>
             </div>
-            <span className="font-sans font-bold text-[#0F172A] tracking-tight text-xl mr-6">ระบบจัดเก็บค่าขยะ</span>
+
+            {/* Mobile-only User Actions on Top Right */}
+            <div className="flex md:hidden items-center gap-1.5 shrink-0">
+              <button 
+                onClick={() => setIsSettingsOpen(true)}
+                aria-label="ตั้งค่าระบบ"
+                className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-colors"
+              >
+                <Settings size={15} strokeWidth={1.5} />
+              </button>
+              <button 
+                aria-label="การแจ้งเตือน"
+                className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-colors relative"
+              >
+                <Bell size={15} strokeWidth={1.5} />
+                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full border border-white"></span>
+              </button>
+              <button 
+                aria-label={`ข้อมูลผู้ใช้ (${userName})`}
+                className="flex items-center cursor-pointer ml-0.5" 
+                onClick={() => setShowLogoutConfirm(true)}
+              >
+                <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden border-2 border-white shadow-xs flex items-center justify-center font-bold text-slate-600 uppercase text-[10px]">
+                  {userName.substring(0,2)}
+                </div>
+              </button>
+            </div>
           </div>
 
-          <nav className="flex-1 overflow-x-auto w-full md:w-auto flex justify-start md:justify-center no-scrollbar pb-1 sm:pb-0">
-            <ul className="flex items-center gap-1.5 sm:gap-2 px-1 py-1">
+          {/* Navigation Bar: Segmented App Dock on Mobile, Pill Bar on Desktop */}
+          <nav className="w-full md:w-auto overflow-x-auto no-scrollbar">
+            <ul className="flex items-center justify-between md:justify-center gap-1 sm:gap-1.5 md:gap-2 bg-slate-100/70 md:bg-transparent p-1 md:p-0 rounded-2xl border border-slate-200/60 md:border-transparent">
               {navItems.map((item) => {
                 const isActive = pathname === item.href;
                 const IconComponent = item.icon;
                 return (
-                  <li key={item.href}>
+                  <li key={item.href} className="flex-1 md:flex-initial flex justify-center">
                     <Link
                       href={item.href}
                       prefetch={true}
-                      className={`relative flex items-center justify-center gap-2 p-2 sm:px-4 md:px-5 sm:py-2.5 rounded-2xl sm:rounded-full text-sm font-semibold transition-all whitespace-nowrap ${
+                      className={`relative flex items-center justify-center gap-2 w-full md:w-auto h-10 md:h-auto px-1.5 sm:px-4 md:px-5 py-1.5 md:py-2.5 rounded-xl md:rounded-full text-sm font-semibold transition-all whitespace-nowrap ${
                         isActive 
-                          ? "text-[#5B58F2] bg-[#EEF0FF] border border-[#D5D9FF] shadow-xs shadow-[#5B58F2]/10" 
-                          : "text-slate-500 hover:text-slate-900 hover:bg-slate-50/80 border border-transparent"
+                          ? "text-[#5B58F2] bg-white md:bg-[#EEF0FF] border border-slate-200/80 md:border-[#D5D9FF] shadow-xs shadow-[#5B58F2]/10" 
+                          : "text-slate-500 hover:text-slate-900 hover:bg-white/60 md:hover:bg-slate-50/80 border border-transparent"
                       }`}
                       title={item.name}
                       aria-label={item.name}
                     >
-                      <div className="w-8 h-8 flex items-center justify-center shrink-0">
+                      <div className="w-7 h-7 flex items-center justify-center shrink-0">
                         {item.lottieSrc ? (
-                          <LottieIcon src={item.lottieSrc} size={item.lottieSize || 34} loop autoplay />
+                          <LottieIcon src={item.lottieSrc} size={item.lottieSize || 30} loop autoplay />
                         ) : item.imageSrc ? (
                           /* eslint-disable-next-line @next/next/no-img-element */
                           <img 
                             src={item.imageSrc} 
                             alt={item.name} 
-                            style={{ width: item.imageSize || 32, height: item.imageSize || 32 }}
+                            style={{ width: item.imageSize || 28, height: item.imageSize || 28 }}
                             className="object-contain shrink-0" 
                           />
                         ) : (
-                          <IconComponent size={22} className={`shrink-0 ${isActive ? "text-[#5B58F2]" : "text-slate-600"}`} />
+                          <IconComponent size={20} className={`shrink-0 ${isActive ? "text-[#5B58F2]" : "text-slate-600"}`} />
                         )}
                       </div>
-                      <span className="hidden sm:inline">{item.name}</span>
+                      <span className="hidden md:inline">{item.name}</span>
                     </Link>
                   </li>
                 );
@@ -96,8 +128,8 @@ export default function TopNav({ userName, settings }: { userName: string, setti
             </ul>
           </nav>
 
-          {/* Right User Actions */}
-          <div className="flex items-center gap-3 shrink-0">
+          {/* Desktop-only Right User Actions */}
+          <div className="hidden md:flex items-center gap-3 shrink-0">
             <button 
               onClick={() => setIsSettingsOpen(true)}
               aria-label="ตั้งค่าระบบ"
