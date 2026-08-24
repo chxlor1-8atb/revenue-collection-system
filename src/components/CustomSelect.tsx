@@ -44,7 +44,7 @@ export default function CustomSelect({
   const selectedOption = options.find((opt) => opt.value === value);
 
   return (
-    <div className="relative" ref={containerRef}>
+    <div className={`relative ${isOpen ? 'z-[60]' : 'z-0'}`} ref={containerRef}>
       {name && <input type="hidden" name={name} value={value} />}
       <button
         type="button"

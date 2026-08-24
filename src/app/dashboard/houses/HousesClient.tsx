@@ -447,7 +447,7 @@ export default function HousesClient({
                 className="w-full sm:w-80 focus:w-full sm:focus:w-80 !bg-white hover:!bg-slate-50 border-slate-200 focus:!bg-white focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none text-sm rounded-xl transition-all"
               />
             </div>
-            <div className="w-full sm:w-48 z-10">
+            <div className="w-full sm:w-48">
               <CustomSelect
                 value={selectedZone || ""}
                 onChange={setSelectedZone}
@@ -459,7 +459,7 @@ export default function HousesClient({
                 ]}
               />
             </div>
-            <div className="w-full sm:w-40 z-10">
+            <div className="w-full sm:w-40">
               <CustomSelect
                 value={selectedPaymentStatus || ""}
                 onChange={setSelectedPaymentStatus}
