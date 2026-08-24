@@ -528,38 +528,34 @@ export default function HousesClient({
           </div>
         )}
 
-        {/* Payment Summary Banner */}
+        {/* Payment Summary Banner (Compact Pill) */}
         {paymentSummary && selectedPaymentStatus === 'unpaid' && (
-          <div className="mx-6 my-4 p-4 rounded-2xl bg-red-50/90 border border-red-200/80 flex flex-wrap items-center gap-x-6 gap-y-2">
-            <div className="flex items-center gap-2.5">
-              <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div>
-              <span className="text-sm font-bold text-red-900">สรุปยอดบ้านที่ค้างชำระ</span>
+          <div className="mx-6 my-2 inline-flex items-center gap-3 px-3.5 py-1.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-900 w-fit">
+            <div className="flex items-center gap-1.5 font-bold">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0"></span>
+              <span>ค้างชำระ:</span>
             </div>
-            <div className="flex items-center gap-6 ml-auto">
-              <span className="text-xs font-semibold text-red-700 bg-red-100 px-2.5 py-1 rounded-lg">
-                {paymentSummary.unpaidCount} บิล
-              </span>
-              <span className="text-lg font-bold font-mono text-red-800 tabular-nums">
-                ฿{paymentSummary.unpaidTotal.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </span>
-            </div>
+            <span className="font-semibold bg-red-100/80 text-red-700 px-2 py-0.5 rounded-md text-[11px]">
+              {paymentSummary.unpaidCount} บิล
+            </span>
+            <span className="font-bold font-mono text-red-800 tabular-nums text-sm">
+              ฿{paymentSummary.unpaidTotal.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
           </div>
         )}
 
         {paymentSummary && selectedPaymentStatus === 'paid' && (
-          <div className="mx-6 my-4 p-4 rounded-2xl bg-emerald-50/90 border border-emerald-200/80 flex flex-wrap items-center gap-x-6 gap-y-2">
-            <div className="flex items-center gap-2.5">
-              <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-              <span className="text-sm font-bold text-emerald-900">สรุปยอดบ้านที่ชำระครบแล้ว</span>
+          <div className="mx-6 my-2 inline-flex items-center gap-3 px-3.5 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 w-fit">
+            <div className="flex items-center gap-1.5 font-bold">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+              <span>ชำระครบแล้ว:</span>
             </div>
-            <div className="flex items-center gap-6 ml-auto">
-              <span className="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-lg">
-                {paymentSummary.paidCount} บิล
-              </span>
-              <span className="text-lg font-bold font-mono text-emerald-800 tabular-nums">
-                ฿{paymentSummary.paidTotal.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </span>
-            </div>
+            <span className="font-semibold bg-emerald-100/80 text-emerald-700 px-2 py-0.5 rounded-md text-[11px]">
+              {paymentSummary.paidCount} บิล
+            </span>
+            <span className="font-bold font-mono text-emerald-800 tabular-nums text-sm">
+              ฿{paymentSummary.paidTotal.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
           </div>
         )}
 
