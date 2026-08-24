@@ -27,6 +27,8 @@ export async function GET(req: NextRequest) {
     const status = url.searchParams.get("status") || "verified";
     const channel = url.searchParams.get("channel") || "all";
     const monthYear = url.searchParams.get("monthYear") || "";
+    const sortBy = url.searchParams.get("sortBy") || "paidAt";
+    const sortOrder = url.searchParams.get("sortOrder") || "desc";
 
     // Build conditions
     const conditions = [];
@@ -80,11 +82,25 @@ export async function GET(req: NextRequest) {
 
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
+    // Sorting expression
+    let orderExpr;
+    if (sortBy === "amount") {
+      orderExpr = sortOrder === "asc" ? sql`${transactions.amount}::numeric ASC` : sql`${transactions.amount}::numeric DESC`;
+    } else if (sortBy === "id") {
+      orderExpr = sortOrder === "asc" ? sql`${transactions.id} ASC` : sql`${transactions.id} DESC`;
+    } else if (sortBy === "houseNumber") {
+      orderExpr = sortOrder === "asc" 
+        ? sql`(SELECT ${houses.houseNumber} FROM ${invoices} JOIN ${houses} ON ${invoices.houseId} = ${houses.id} WHERE ${invoices.transactionId} = ${transactions.id} LIMIT 1) ASC`
+        : sql`(SELECT ${houses.houseNumber} FROM ${invoices} JOIN ${houses} ON ${invoices.houseId} = ${houses.id} WHERE ${invoices.transactionId} = ${transactions.id} LIMIT 1) DESC`;
+    } else {
+      orderExpr = sortOrder === "asc" ? sql`${transactions.paidAt} ASC` : sql`${transactions.paidAt} DESC`;
+    }
+
     // Fast concurrent aggregation & pagination query
     const pagedTxsQuery = db.select()
       .from(transactions)
       .where(whereClause)
-      .orderBy(desc(transactions.paidAt));
+      .orderBy(orderExpr);
 
     if (!isExport) {
       pagedTxsQuery.limit(limit).offset((page - 1) * limit);
@@ -136,13 +152,14 @@ export async function GET(req: NextRequest) {
           months: txInvoices.map(inv => inv.monthYear),
           paidVia: tx.verifiedBy === "line_bot" ? "LINE Bot" : tx.verifiedBy === "admin_cash" ? "เงินสด (หน้าเคาน์เตอร์)" : lineData ? "LINE Bot" : "เว็บไซต์",
           senderName: lineData?.senderName || null,
+          verifiedBy: tx.verifiedBy || (lineData ? "line_bot" : "ระบบ"),
         };
       });
     }
 
     if (isExport) {
       // Create CSV
-      const header = ["รหัสทำรายการ", "วันที่ชำระ", "สถานะ", "บ้านเลขที่", "ชื่อเจ้าบ้าน", "รอบเดือน", "ช่องทาง", "ผู้โอน", "ยอดเงิน"];
+      const header = ["รหัสทำรายการ", "วันที่ชำระ", "สถานะ", "บ้านเลขที่", "ชื่อเจ้าบ้าน", "รอบเดือน", "ช่องทาง", "ผู้โอน", "ยอดเงิน", "ผู้ตรวจสอบ"];
       const rows = historyItems.map(item => [
         item.id,
         item.paidAt ? new Date(item.paidAt).toLocaleString("th-TH") : "",
@@ -152,7 +169,8 @@ export async function GET(req: NextRequest) {
         item.months.map((m: string) => formatThaiMonth(m)).join(", "),
         item.paidVia,
         item.senderName || "",
-        item.amount
+        item.amount,
+        item.verifiedBy === "line_bot" ? "ระบบอัตโนมัติ" : item.verifiedBy || "เจ้าหน้าที่"
       ]);
 
       const csvContent = [
