@@ -712,7 +712,7 @@ export default function HousesClient({
                           <span className="truncate">{house.ownerName}</span>
                         </div>
                         <div className="text-xs text-slate-500 flex items-center gap-1.5">
-                          <MapPin size={13} className="text-slate-400 shrink-0" />
+                          <MapPin size={13} className="text-red-600 shrink-0" />
                           <span className="truncate">
                             {[
                               house.zone && `ชุมชน${house.zone}`,
