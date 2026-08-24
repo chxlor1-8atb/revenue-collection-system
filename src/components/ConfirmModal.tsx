@@ -38,22 +38,22 @@ export default function ConfirmModal({
       onClick={handleCancel}
     >
       <div 
-        className="bg-white rounded-[16px] shadow-2xl w-full max-w-[500px] px-8 py-10 animate-in zoom-in-95 duration-150 relative font-sans"
+        className="bg-white rounded-[16px] shadow-2xl w-full max-w-[500px] px-8 py-7 sm:py-8 animate-in zoom-in-95 duration-150 relative font-sans"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Title */}
-        <h3 className="text-[24px] font-bold text-center text-black mb-4 tracking-tight">
+        <h3 className="text-[24px] font-bold text-center text-black mb-3 tracking-tight">
           {title}
         </h3>
         
         {/* Description */}
-        <div className="text-center text-black font-medium mb-8 text-[17px] leading-snug px-2">
+        <div className="text-center text-black font-medium mb-5 text-[17px] leading-snug px-2">
           {description}
         </div>
 
         {/* Warning Box */}
         {warningText ? (
-          <div className="bg-[#FFF0E6] py-4 px-4 rounded-r-[6px] rounded-l-none border-l-[6px] border-[#FF5B35] mb-10 w-full text-left">
+          <div className="bg-[#FFF0E6] py-3.5 px-4 rounded-r-[6px] rounded-l-none border-l-[6px] border-[#FF5B35] mb-6 w-full text-left">
             <div className="flex items-start gap-3">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 mt-0.5">
                 <path d="M12 2L1 21H23L12 2ZM12 18C11.4477 18 11 17.5523 11 17C11 16.4477 11.4477 16 12 16C12.5523 16 13 16.4477 13 17C13 17.5523 12.5523 18 12 18ZM13 14H11V10H13V14Z" fill="#89290B"/>
@@ -71,13 +71,13 @@ export default function ConfirmModal({
         ) : null}
 
         {/* Action Buttons Row */}
-        <div className="flex items-center justify-between w-full">
+        <div className="flex items-center justify-between w-full mt-2">
           {/* Cancel Button (Red) */}
           <button
             type="button"
             onClick={handleCancel}
             disabled={isLoading}
-            className="px-8 py-3 bg-[#DC2626] hover:bg-[#B91C1C] text-white font-semibold rounded-[2px] text-[16px] transition-colors cursor-pointer disabled:opacity-50 text-center min-w-[140px]"
+            className="px-8 py-2.5 bg-[#DC2626] hover:bg-[#B91C1C] text-white font-semibold rounded-[2px] text-[16px] transition-colors cursor-pointer disabled:opacity-50 text-center min-w-[140px]"
           >
             {cancelText}
           </button>
@@ -87,7 +87,7 @@ export default function ConfirmModal({
             type="button"
             onClick={onConfirm}
             disabled={isLoading}
-            className="px-8 py-3 bg-white hover:bg-emerald-50 text-[#10B981] border border-[#10B981] font-semibold rounded-[2px] text-[16px] transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 text-center min-w-[140px]"
+            className="px-8 py-2.5 bg-white hover:bg-emerald-50 text-[#10B981] border border-[#10B981] font-semibold rounded-[2px] text-[16px] transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 text-center min-w-[140px]"
           >
             {isLoading ? (
               <span className="w-5 h-5 border-2 border-[#10B981] border-t-transparent rounded-full animate-spin shrink-0"></span>
