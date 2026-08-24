@@ -652,14 +652,21 @@ export default function HistoryClient() {
                           <span className="flex items-center gap-1 text-slate-400">
                             <Shield size={11} /> ผู้ตรวจ:
                           </span>
-                          <span className={`font-medium px-2 py-0.5 rounded-md ${
+                          <span className={`inline-flex items-center gap-1.5 font-medium px-2.5 py-0.5 rounded-lg ${
                             item.verifiedBy === "line_bot"
                               ? "bg-purple-50 text-purple-700"
                               : item.verifiedBy === "admin_cash"
                               ? "bg-amber-50 text-amber-700"
                               : "bg-slate-100 text-slate-700"
                           }`}>
-                            {item.verifiedBy === "line_bot" ? "🤖 อัตโนมัติ (LINE)" : item.verifiedBy || "เจ้าหน้าที่"}
+                            {item.verifiedBy === "line_bot" ? (
+                              <>
+                                <img src="/robot.png" alt="Robot" className="w-3.5 h-3.5 object-contain shrink-0" />
+                                <span>อัตโนมัติ (LINE)</span>
+                              </>
+                            ) : (
+                              item.verifiedBy || "เจ้าหน้าที่"
+                            )}
                           </span>
                         </div>
                       </div>
@@ -886,14 +893,21 @@ export default function HistoryClient() {
 
                           {/* Verified By (Audit Trail) */}
                           <td className="px-4 py-3.5 text-center">
-                            <span className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md ${
+                            <span className={`inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-0.5 rounded-full border ${
                               item.verifiedBy === "line_bot"
-                                ? "bg-purple-50 text-purple-700 border border-purple-200/60"
+                                ? "bg-purple-50 text-purple-700 border-purple-200/60"
                                 : item.verifiedBy === "admin_cash"
-                                ? "bg-amber-50 text-amber-700 border border-amber-200/60"
+                                ? "bg-amber-50 text-amber-700 border-amber-200/60"
                                 : "bg-slate-100 text-slate-700 border border-slate-200"
                             }`}>
-                              {item.verifiedBy === "line_bot" ? "🤖 อัตโนมัติ" : item.verifiedBy || "เจ้าหน้าที่"}
+                              {item.verifiedBy === "line_bot" ? (
+                                <>
+                                  <img src="/robot.png" alt="Robot" className="w-3.5 h-3.5 object-contain shrink-0" />
+                                  <span>อัตโนมัติ</span>
+                                </>
+                              ) : (
+                                item.verifiedBy || "เจ้าหน้าที่"
+                              )}
                             </span>
                           </td>
 
