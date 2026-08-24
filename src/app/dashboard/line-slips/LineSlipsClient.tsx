@@ -505,14 +505,6 @@ export default function LineSlipsClient({
                     <Zap size={11} /> จับคู่อัตโนมัติ
                   </button>
                   <button
-                    onClick={() => setFilterType("verified")}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1 cursor-pointer ${
-                      filterType === "verified" ? "bg-emerald-600 text-white shadow-2xs" : "bg-white border border-slate-200 text-emerald-700 hover:bg-emerald-50"
-                    }`}
-                  >
-                    <CheckCircle2 size={11} /> สลิปแท้
-                  </button>
-                  <button
                     onClick={() => setFilterType("no_house")}
                     className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1 cursor-pointer ${
                       filterType === "no_house" ? "bg-amber-600 text-white shadow-2xs" : "bg-white border border-slate-200 text-amber-700 hover:bg-amber-50"
