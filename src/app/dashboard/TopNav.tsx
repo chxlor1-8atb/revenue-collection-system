@@ -3,7 +3,18 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { Settings, Bell, Trash2 } from "lucide-react";
+import { 
+  Settings, 
+  Bell, 
+  Trash2, 
+  LayoutDashboard, 
+  Home, 
+  CheckCircle2, 
+  Receipt, 
+  Users, 
+  Smartphone, 
+  Folder 
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import SettingsForm from "./settings/SettingsForm";
 import ConfirmModal from "@/components/ConfirmModal";
@@ -23,18 +34,18 @@ export default function TopNav({ userName, settings }: { userName: string, setti
   }, []);
 
   const navItems = [
-    { name: "ภาพรวม", href: "/dashboard" },
-    { name: "จัดการบ้าน", href: "/dashboard/houses" },
-    { name: "รายการตรวจสอบ", href: "/dashboard/review" },
-    { name: "ประวัติชำระ", href: "/dashboard/history" },
-    { name: "ผู้ใช้งาน", href: "/dashboard/users" },
-    { name: "สลิป LINE", href: "/dashboard/line-slips" },
-    { name: "คลังไฟล์", href: "/dashboard/blob" },
+    { name: "ภาพรวม", href: "/dashboard", icon: LayoutDashboard },
+    { name: "จัดการบ้าน", href: "/dashboard/houses", icon: Home },
+    { name: "รายการตรวจสอบ", href: "/dashboard/review", icon: CheckCircle2 },
+    { name: "ประวัติชำระ", href: "/dashboard/history", icon: Receipt },
+    { name: "ผู้ใช้งาน", href: "/dashboard/users", icon: Users },
+    { name: "สลิป LINE", href: "/dashboard/line-slips", icon: Smartphone },
+    { name: "คลังไฟล์", href: "/dashboard/blob", icon: Folder },
   ];
 
   return (
     <>
-      <header className="border-b border-slate-100 bg-white rounded-t-[32px] px-6 md:px-8 lg:px-12 py-5 relative z-40">
+      <header className="border-b border-slate-100 bg-white rounded-t-[32px] px-4 sm:px-6 md:px-8 lg:px-12 py-4 sm:py-5 relative z-40">
         <div className="max-w-[1400px] mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 w-full md:w-auto">
             <div className="flex items-center justify-center w-8 h-8 bg-[#5B58F2] rounded-full text-white shadow-sm">
@@ -43,22 +54,26 @@ export default function TopNav({ userName, settings }: { userName: string, setti
             <span className="font-sans font-bold text-[#0F172A] tracking-tight text-xl mr-6">ระบบจัดเก็บค่าขยะ</span>
           </div>
 
-          <nav className="flex-1 overflow-x-auto w-full md:w-auto flex justify-start md:justify-center no-scrollbar pb-2 sm:pb-0">
-            <ul className="flex items-center gap-2 px-1 py-1">
+          <nav className="flex-1 overflow-x-auto w-full md:w-auto flex justify-start md:justify-center no-scrollbar pb-1 sm:pb-0">
+            <ul className="flex items-center gap-1.5 sm:gap-2 px-1 py-1">
               {navItems.map((item) => {
                 const isActive = pathname === item.href;
+                const IconComponent = item.icon;
                 return (
                   <li key={item.href}>
                     <Link
                       href={item.href}
                       prefetch={true}
-                      className={`relative flex items-center justify-center px-5 py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
+                      className={`relative flex items-center justify-center gap-2 p-2 sm:px-5 sm:py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
                         isActive 
                           ? "text-white bg-[#1A1A1A] shadow-md" 
                           : "text-slate-500 hover:text-slate-900 hover:bg-slate-50 border border-transparent"
                       }`}
+                      title={item.name}
+                      aria-label={item.name}
                     >
-                      {item.name}
+                      <IconComponent size={18} className="shrink-0" />
+                      <span className="hidden sm:inline">{item.name}</span>
                     </Link>
                   </li>
                 );
