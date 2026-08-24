@@ -278,101 +278,109 @@ export default function LineSlipsClient({
                 {slips.map((slip) => (
                   <div 
                     key={slip.id} 
-                    className="bg-white border border-slate-200/90 hover:border-[#5B58F2]/40 rounded-2xl p-5 flex flex-col justify-between shadow-2xs hover:shadow-md transition-all relative overflow-hidden group"
+                    className="bg-white border border-slate-200/90 hover:border-[#5B58F2]/40 rounded-3xl overflow-hidden flex flex-col justify-between shadow-2xs hover:shadow-md transition-all group"
                   >
-                    <div>
-                      {/* Top: Thumbnail & Status */}
-                      <div className="flex items-start justify-between gap-3 mb-3.5">
-                        <div className="relative">
-                          {slip.imageUrl ? (
+                    {/* Top: Large Slip Visual Showcase / Cover */}
+                    <div className="relative h-48 sm:h-52 bg-slate-900 overflow-hidden group/img">
+                      {slip.imageUrl ? (
+                        <>
+                          {/* Blurred background fill */}
+                          <img 
+                            src={slip.imageUrl} 
+                            alt="Slip background" 
+                            className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-40" 
+                          />
+                          {/* Sharp full slip image */}
+                          <img 
+                            src={slip.imageUrl} 
+                            alt="Slip" 
+                            className="relative w-full h-full object-contain p-2 group-hover/img:scale-105 transition-transform duration-300" 
+                          />
+                          {/* Hover zoom overlay */}
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
                             <SlipModalButton imageUrl={slip.imageUrl}>
-                              <div className="relative group/thumb">
-                                <img 
-                                  src={slip.imageUrl} 
-                                  alt="Slip" 
-                                  className="w-14 h-14 object-cover rounded-xl border border-slate-200/80 cursor-pointer shadow-2xs group-hover/thumb:brightness-90 transition-all" 
-                                />
-                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/thumb:opacity-100 transition-opacity bg-black/30 rounded-xl text-white">
-                                  <Eye size={16} />
-                                </div>
-                              </div>
+                              <span className="px-3.5 py-1.5 bg-white/95 text-slate-900 rounded-xl text-xs font-bold shadow-lg flex items-center gap-1.5 cursor-pointer hover:scale-105 transition-transform backdrop-blur-sm">
+                                <Eye size={14} /> ขยายดูสลิป
+                              </span>
                             </SlipModalButton>
-                          ) : (
-                            <div className="w-14 h-14 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400">
-                              <FileText size={20} />
-                            </div>
-                          )}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-1.5 bg-slate-100">
+                          <FileText size={28} />
+                          <span className="text-xs">ไม่มีรูปสลิป</span>
                         </div>
+                      )}
 
-                        <div className="flex flex-col items-end gap-1">
-                          {activeTab === "verified" ? (
-                            <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[10px] font-bold px-2.5 py-0.5 rounded-full">
-                              <CheckCircle2 size={11} /> ยืนยันสำเร็จ
-                            </span>
-                          ) : slip.isVerified ? (
-                            <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[10px] font-bold px-2.5 py-0.5 rounded-full">
-                              <CheckCircle2 size={11} /> สลิปแท้
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200/60 text-[10px] font-bold px-2.5 py-0.5 rounded-full">
-                              <Clock size={11} /> รอตรวจสอบ
-                            </span>
-                          )}
+                      {/* Floating Badges on Image */}
+                      <div className="absolute top-3 left-3 right-3 flex items-start justify-between gap-2 pointer-events-none">
+                        <span className="font-mono text-[11px] font-bold text-slate-700 bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-xl shadow-2xs border border-white/60">
+                          {slip.createdAt ? new Date(slip.createdAt).toLocaleString("th-TH", {
+                            day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"
+                          }) : "-"}
+                        </span>
 
-                          <span className="font-mono text-[11px] text-slate-400">
-                            {slip.createdAt ? new Date(slip.createdAt).toLocaleString("th-TH", {
-                              day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"
-                            }) : "-"}
+                        {activeTab === "verified" ? (
+                          <span className="inline-flex items-center gap-1 bg-emerald-600/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-xl shadow-2xs backdrop-blur-md">
+                            <CheckCircle2 size={11} /> ยืนยันสำเร็จ
                           </span>
-                        </div>
+                        ) : slip.isVerified ? (
+                          <span className="inline-flex items-center gap-1 bg-emerald-600/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-xl shadow-2xs backdrop-blur-md">
+                            <CheckCircle2 size={11} /> สลิปแท้
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 bg-amber-500/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-xl shadow-2xs backdrop-blur-md">
+                            <Clock size={11} /> รอตรวจสอบ
+                          </span>
+                        )}
                       </div>
+                    </div>
 
-                      {/* Middle: Amount & Sender Info */}
-                      <div className="space-y-1.5 mb-4">
-                        <div className="flex items-baseline gap-1">
-                          <span className="font-mono text-xl font-bold text-slate-900">
+                    {/* Bottom: Details & Action */}
+                    <div className="p-4 sm:p-5 flex flex-col justify-between flex-1 bg-white space-y-4">
+                      <div className="space-y-2">
+                        <div className="flex items-baseline justify-between gap-2">
+                          <span className="font-mono text-2xl font-bold text-slate-900 tracking-tight">
                             ฿{parseFloat(slip.amount || "0").toLocaleString("th-TH", { minimumFractionDigits: 2 })}
                           </span>
-                        </div>
-                        
-                        <div className="text-xs text-slate-600 flex items-center gap-1.5 truncate">
-                          <User size={13} className="text-slate-400 shrink-0" />
-                          <span className="truncate">{slip.senderName || "ไม่ระบุชื่อผู้โอน"}</span>
-                        </div>
-
-                        <div className="pt-1">
+                          
                           {slip.houseNumber ? (
-                            <span className="inline-flex items-center gap-1 bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200 text-slate-900 text-xs shadow-2xs">
+                            <span className="inline-flex items-center gap-1 bg-slate-100 px-3 py-1 rounded-xl border border-slate-200 text-slate-900 text-xs shadow-2xs">
                               <span className="font-sans text-[11px] text-slate-500 font-medium">บ้าน</span>
                               <span className="font-mono font-bold">{slip.houseNumber}</span>
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200/60 px-2 py-0.5 rounded-lg text-[11px] font-medium">
-                              <AlertCircle size={11} /> ยังไม่ระบุบ้านเลขที่
+                            <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200/60 px-2.5 py-1 rounded-xl text-[11px] font-semibold">
+                              <AlertCircle size={12} /> ยังไม่ระบุบ้าน
                             </span>
                           )}
                         </div>
-                      </div>
-                    </div>
 
-                    {/* Bottom Actions */}
-                    {activeTab === "pending" && (
-                      <div className="flex gap-2 pt-3 border-t border-slate-100">
-                        <button
-                          onClick={() => openMatchModal(slip)}
-                          className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-[#5B58F2] hover:bg-[#4A47D1] text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-[#5B58F2]/20 cursor-pointer"
-                        >
-                          <Link2 size={13} /> จับคู่ / อนุมัติ
-                        </button>
-                        <button
-                          onClick={() => handleRejectClick(slip.id)}
-                          className="flex items-center justify-center px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
-                          title="ปฏิเสธสลิป"
-                        >
-                          <Ban size={13} />
-                        </button>
+                        <div className="text-xs text-slate-600 flex items-center gap-1.5 truncate pt-0.5">
+                          <User size={14} className="text-slate-400 shrink-0" />
+                          <span className="truncate font-medium">{slip.senderName || "ไม่ระบุชื่อผู้โอน"}</span>
+                        </div>
                       </div>
-                    )}
+
+                      {/* Actions */}
+                      {activeTab === "pending" && (
+                        <div className="flex gap-2 pt-3 border-t border-slate-100">
+                          <button
+                            onClick={() => openMatchModal(slip)}
+                            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-[#5B58F2] hover:bg-[#4A47D1] text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-[#5B58F2]/20 cursor-pointer"
+                          >
+                            <Link2 size={14} /> จับคู่ / อนุมัติ
+                          </button>
+                          <button
+                            onClick={() => handleRejectClick(slip.id)}
+                            className="flex items-center justify-center px-3.5 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+                            title="ปฏิเสธสลิป"
+                          >
+                            <Ban size={14} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
