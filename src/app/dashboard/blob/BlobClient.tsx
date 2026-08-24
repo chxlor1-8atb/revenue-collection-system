@@ -536,8 +536,8 @@ export default function BlobClient({
 
       {/* Unified Master Container */}
       <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col font-sans">
-        {/* 1. Header Section */}
-        <div className="p-6 lg:p-7 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
+        {/* 1. Header Section (Desktop only - mobile goes straight to gauge & actionable tools) */}
+        <div className="hidden sm:flex p-6 lg:p-7 border-b border-slate-100 flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
           <div className="flex items-center gap-4">
             <LottieIcon src="/icons/icons8-folder.json" size={48} className="shrink-0" loop autoplay />
             <div>
@@ -557,7 +557,7 @@ export default function BlobClient({
                   {usagePercentage > 90 ? 'พื้นที่ใกล้เต็ม' : usagePercentage > 75 ? 'ใช้งานปานกลาง' : 'พื้นที่พร้อมใช้งาน'}
                 </span>
               </div>
-              <p className="text-slate-500 text-sm mt-0.5 hidden sm:block">
+              <p className="text-slate-500 text-sm mt-0.5">
                 ตรวจสอบสถิติการใช้งาน จัดการรูปภาพสลิป และทำความสะอาดไฟล์คลาวด์
               </p>
             </div>
@@ -594,7 +594,42 @@ export default function BlobClient({
         </div>
 
         {/* 2. Storage Gauge & Analytics Strip */}
-        <div className="p-5 lg:p-6 bg-slate-50/40 border-b border-slate-100 space-y-4">
+        <div className="p-4 sm:p-5 lg:p-6 bg-slate-50/40 border-b border-slate-100 space-y-4">
+          {/* Mobile Quick Action Buttons (Visible only on mobile) */}
+          <div className="flex sm:hidden items-center justify-between gap-2 pb-1">
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-sm text-slate-900">พื้นที่จัดเก็บ</span>
+              <span className="bg-[#EEF0FF] text-[#5B58F2] text-[11px] font-bold px-2 py-0.5 rounded-full">
+                {files.length} ไฟล์
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => setIsUploadOpen(true)}
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#5B58F2] text-white rounded-xl text-xs font-bold shadow-xs"
+              >
+                <Upload size={12} />
+                <span>อัปโหลด</span>
+              </button>
+              <button
+                onClick={exportBlobCsv}
+                disabled={filteredAndSortedFiles.length === 0}
+                className="p-1.5 bg-white border border-slate-200 text-slate-700 rounded-xl text-xs font-semibold shadow-xs"
+                title="ส่งออก CSV"
+              >
+                <Download size={13} />
+              </button>
+              <button
+                onClick={() => fetchFiles(false)}
+                disabled={loading && !cursor}
+                className="p-1.5 bg-white border border-slate-200 text-slate-700 rounded-xl text-xs font-semibold shadow-xs"
+                title="รีเฟรช"
+              >
+                <RefreshCw size={13} className={loading && !cursor ? 'animate-spin text-[#5B58F2]' : ''} />
+              </button>
+            </div>
+          </div>
+
           {/* Storage Bar & Summary */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="space-y-1 w-full sm:w-auto">
