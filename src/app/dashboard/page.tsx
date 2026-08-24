@@ -167,92 +167,137 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-10 pb-12 font-sans">
       
-      {/* 4 Stat Cards matching LoopAI style */}
-      <StaggerContainer className="flex flex-wrap lg:flex-nowrap gap-3 xl:gap-5">
+      {/* 4 Stat KPI Cards */}
+      <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-5">
         
         {/* Card 1: Verified Revenue */}
-        <StaggerItem className="bg-white rounded-[24px] xl:rounded-[32px] p-5 xl:p-7 border border-slate-100/80 flex flex-col min-h-[140px] xl:min-h-[160px] w-full sm:w-fit lg:flex-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-          <div className="flex items-start justify-between gap-3 xl:gap-6 mb-4 xl:mb-6">
-            <div className="flex items-center gap-2.5 xl:gap-3 shrink-0">
-              <div className="w-10 h-10 xl:w-12 xl:h-12 rounded-xl xl:rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100/50">
-                <Banknote size={20} strokeWidth={2} className="xl:w-6 xl:h-6" />
+        <StaggerItem className="bg-white rounded-3xl p-5 xl:p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between min-h-[155px]">
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-500/20">
+                <Banknote size={22} strokeWidth={2} />
               </div>
-              <span className="text-slate-800 font-bold tracking-tight text-base xl:text-lg whitespace-nowrap">ยอดรับชำระแล้ว</span>
+              <div>
+                <span className="text-slate-800 font-bold text-sm xl:text-base tracking-tight block">ยอดรับชำระแล้ว</span>
+                <span className="text-[11px] text-slate-400 font-medium">รวมทุกช่องทาง</span>
+              </div>
             </div>
-            <span className="bg-emerald-50 text-emerald-600 px-2 py-0.5 xl:px-2.5 xl:py-1 rounded-full text-[10px] xl:text-[11px] font-bold border border-emerald-100 whitespace-nowrap">
+            <span className="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full text-[11px] font-bold border border-emerald-200/80 whitespace-nowrap">
               ปี {currentYear + 543}: ฿{currentYearRevenue.toLocaleString("th-TH", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </span>
           </div>
-          <div className="mt-auto flex items-end justify-between gap-3 xl:gap-6">
-            <div className="text-[26px] xl:text-[32px] font-bold text-slate-900 tracking-tight leading-none shrink-0 whitespace-nowrap">
-              <span className="text-base xl:text-[20px] font-semibold text-slate-400 mr-1">฿</span>
-              {totalVerifiedRevenue.toLocaleString("th-TH", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+
+          <div className="mt-auto pt-2.5 border-t border-slate-100 flex items-end justify-between gap-2">
+            <div>
+              <div className="text-2xl xl:text-3xl font-extrabold text-slate-900 tracking-tight leading-none">
+                <span className="text-lg xl:text-xl font-bold text-slate-400 mr-1">฿</span>
+                {totalVerifiedRevenue.toLocaleString("th-TH", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              </div>
             </div>
-            <span className="text-[11px] xl:text-[13px] text-slate-400 font-medium whitespace-nowrap">จากยอดชำระสำเร็จทั้งหมด</span>
+            <span className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              สำเร็จทั้งหมด
+            </span>
           </div>
         </StaggerItem>
 
         {/* Card 2: Houses with Unpaid Invoices */}
-        <StaggerItem className="bg-white rounded-[24px] xl:rounded-[32px] p-5 xl:p-7 border border-slate-100/80 flex flex-col min-h-[140px] xl:min-h-[160px] w-full sm:w-fit lg:flex-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-          <div className="flex items-start justify-between gap-3 xl:gap-6 mb-4 xl:mb-6">
-            <div className="flex items-center gap-2.5 xl:gap-3 shrink-0">
-              <div className="w-10 h-10 xl:w-12 xl:h-12 rounded-xl xl:rounded-2xl bg-red-50 text-red-600 flex items-center justify-center shrink-0 border border-red-100/50">
-                <Home size={20} strokeWidth={2} className="xl:w-6 xl:h-6" />
+        <StaggerItem className="bg-white rounded-3xl p-5 xl:p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between min-h-[155px]">
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0 border border-rose-500/20">
+                <Home size={22} strokeWidth={2} />
               </div>
-              <span className="text-slate-800 font-bold tracking-tight text-base xl:text-lg whitespace-nowrap">บ้านที่ค้างชำระ</span>
+              <div>
+                <span className="text-slate-800 font-bold text-sm xl:text-base tracking-tight block">บ้านที่ค้างชำระ</span>
+                <span className="text-[11px] text-slate-400 font-medium">รอติดตามการจ่าย</span>
+              </div>
             </div>
-            <span className="bg-red-50 text-red-600 px-2.5 py-1 rounded-full text-[11px] font-bold border border-red-100 whitespace-nowrap">
+            <span className="bg-rose-50 text-rose-700 px-2.5 py-1 rounded-full text-[11px] font-bold border border-rose-200/80 whitespace-nowrap">
               ต้องติดตาม
             </span>
           </div>
-          <div className="mt-auto flex items-end justify-between gap-3 xl:gap-6">
-            <div className="text-[26px] xl:text-[32px] font-bold text-slate-900 tracking-tight leading-none shrink-0 whitespace-nowrap">
-              {housesWithUnpaidCount}
-            </div>
-            <span className="text-[11px] xl:text-[13px] text-slate-400 font-medium whitespace-nowrap">จากทั้งหมด {totalHousesCount} หลัง</span>
-          </div>
-        </StaggerItem>
 
-        <StaggerItem className="bg-white rounded-[24px] xl:rounded-[32px] p-5 xl:p-7 border border-slate-100/80 flex flex-col min-h-[140px] xl:min-h-[160px] w-full sm:w-fit lg:flex-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-          <div className="flex items-start justify-between gap-3 xl:gap-6 mb-4 xl:mb-6">
-            <div className="flex items-center gap-2.5 xl:gap-3 shrink-0">
-              <div className="w-10 h-10 xl:w-12 xl:h-12 rounded-xl xl:rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100/50">
-                <Clock size={20} strokeWidth={2} className="xl:w-6 xl:h-6" />
-              </div>
-              <span className="text-slate-800 font-bold tracking-tight text-base xl:text-lg whitespace-nowrap">รอยืนยันสลิป</span>
+          <div className="mt-auto pt-2.5 border-t border-slate-100 flex items-end justify-between gap-2">
+            <div className="text-2xl xl:text-3xl font-extrabold text-slate-900 tracking-tight leading-none">
+              {housesWithUnpaidCount} <span className="text-sm font-semibold text-slate-400">หลัง</span>
             </div>
-            <span className="bg-amber-50 text-amber-600 px-2.5 py-1 rounded-full text-[11px] font-bold border border-amber-100 whitespace-nowrap">
-              รอดำเนินการ
-            </span>
-          </div>
-          <div className="mt-auto flex items-end justify-between gap-3 xl:gap-6">
-            <div className="text-[26px] xl:text-[32px] font-bold text-slate-900 tracking-tight leading-none shrink-0 whitespace-nowrap">
-              {waitingForReviewCount}
-            </div>
-            <Link href="/dashboard/review" className="text-[11px] xl:text-[13px] text-[#5B58F2] font-semibold hover:underline whitespace-nowrap">
-              ไปที่รายการตรวจสอบ <ChevronRight size={12} strokeWidth={3} />
+            <Link 
+              href="/dashboard/houses?status=unpaid"
+              className="text-[11px] text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-0.5 hover:underline"
+            >
+              <span>จากทั้งหมด {totalHousesCount} หลัง</span>
+              <ChevronRight size={12} strokeWidth={2.5} />
             </Link>
           </div>
         </StaggerItem>
 
-        <StaggerItem className="bg-white rounded-[24px] xl:rounded-[32px] p-5 xl:p-7 border border-slate-100/80 flex flex-col min-h-[140px] xl:min-h-[160px] w-full sm:w-fit lg:flex-1 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-          <div className="flex items-start justify-between gap-3 xl:gap-6 mb-4 xl:mb-6">
-            <div className="flex items-center gap-2.5 xl:gap-3 shrink-0">
-              <div className="w-10 h-10 xl:w-12 xl:h-12 rounded-xl xl:rounded-2xl bg-[#EEF0FF] text-[#5B58F2] flex items-center justify-center shrink-0 border border-[#5B58F2]/20">
-                <Smartphone size={20} strokeWidth={2} className="xl:w-6 xl:h-6" />
+        {/* Card 3: Waiting For Review */}
+        <StaggerItem className="bg-white rounded-3xl p-5 xl:p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between min-h-[155px]">
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0 border border-amber-500/20">
+                <Clock size={22} strokeWidth={2} />
               </div>
-              <span className="text-slate-800 font-bold tracking-tight text-base xl:text-lg whitespace-nowrap">แจ้งผ่าน LINE</span>
+              <div>
+                <span className="text-slate-800 font-bold text-sm xl:text-base tracking-tight block">รอยืนยันสลิป</span>
+                <span className="text-[11px] text-slate-400 font-medium">สลิปจากเว็บไซต์</span>
+              </div>
             </div>
-            <span className="bg-[#EEF0FF] text-[#5B58F2] px-2.5 py-1 rounded-full text-[11px] font-bold border border-[#5B58F2]/20 whitespace-nowrap">
-              รายการใหม่
+            <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap ${
+              waitingForReviewCount > 0 
+                ? 'bg-amber-50 text-amber-700 border border-amber-200/80' 
+                : 'bg-slate-100 text-slate-600 border border-slate-200'
+            }`}>
+              {waitingForReviewCount > 0 ? 'รอดำเนินการ' : 'เรียบร้อย'}
             </span>
           </div>
-          <div className="mt-auto flex items-end justify-between gap-3 xl:gap-6">
-            <div className="text-[26px] xl:text-[32px] font-bold text-slate-900 tracking-tight leading-none shrink-0 whitespace-nowrap">
-              {pendingLineSlipsCount}
+
+          <div className="mt-auto pt-2.5 border-t border-slate-100 flex items-end justify-between gap-2">
+            <div className="text-2xl xl:text-3xl font-extrabold text-slate-900 tracking-tight leading-none">
+              {waitingForReviewCount} <span className="text-sm font-semibold text-slate-400">รายการ</span>
             </div>
-            <Link href="/dashboard/line-slips" className="text-[11px] xl:text-[13px] text-[#5B58F2] font-semibold hover:underline whitespace-nowrap">
-              จัดการข้อความ <ChevronRight size={12} strokeWidth={3} />
+            <Link 
+              href="/dashboard/review" 
+              className="text-[11px] text-[#5B58F2] hover:text-[#4A47D1] font-bold flex items-center gap-0.5 hover:underline"
+            >
+              <span>ไปตรวจสลิป</span>
+              <ChevronRight size={12} strokeWidth={2.5} />
+            </Link>
+          </div>
+        </StaggerItem>
+
+        {/* Card 4: LINE Slips */}
+        <StaggerItem className="bg-white rounded-3xl p-5 xl:p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between min-h-[155px]">
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-[#EEF0FF] text-[#5B58F2] flex items-center justify-center shrink-0 border border-[#D5D9FF]">
+                <Smartphone size={22} strokeWidth={2} />
+              </div>
+              <div>
+                <span className="text-slate-800 font-bold text-sm xl:text-base tracking-tight block">แจ้งผ่าน LINE</span>
+                <span className="text-[11px] text-slate-400 font-medium">สลิปจาก LINE Bot</span>
+              </div>
+            </div>
+            <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap ${
+              pendingLineSlipsCount > 0 
+                ? 'bg-[#EEF0FF] text-[#5B58F2] border border-[#D5D9FF]' 
+                : 'bg-slate-100 text-slate-600 border border-slate-200'
+            }`}>
+              {pendingLineSlipsCount > 0 ? `${pendingLineSlipsCount} สลิปใหม่` : 'เรียบร้อย'}
+            </span>
+          </div>
+
+          <div className="mt-auto pt-2.5 border-t border-slate-100 flex items-end justify-between gap-2">
+            <div className="text-2xl xl:text-3xl font-extrabold text-slate-900 tracking-tight leading-none">
+              {pendingLineSlipsCount} <span className="text-sm font-semibold text-slate-400">รายการ</span>
+            </div>
+            <Link 
+              href="/dashboard/line-slips" 
+              className="text-[11px] text-[#5B58F2] hover:text-[#4A47D1] font-bold flex items-center gap-0.5 hover:underline"
+            >
+              <span>จัดการสลิป</span>
+              <ChevronRight size={12} strokeWidth={2.5} />
             </Link>
           </div>
         </StaggerItem>
@@ -271,8 +316,8 @@ export default async function DashboardPage() {
           />
 
           {settings?.autoBillingDay && (
-            <div className="bg-[#1F2E22] rounded-[32px] p-6 lg:p-8 text-white shadow-lg relative overflow-hidden mt-6 xl:mt-8">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+            <div className="bg-slate-900 rounded-[32px] p-6 lg:p-8 text-white shadow-lg relative overflow-hidden mt-6 xl:mt-8 border border-slate-800">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[#5B58F2] opacity-10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
               
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
                 <div className="flex items-start gap-4">
