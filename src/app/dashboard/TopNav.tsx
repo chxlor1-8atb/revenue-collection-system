@@ -65,15 +65,15 @@ export default function TopNav({ userName, settings }: { userName: string, setti
                     <Link
                       href={item.href}
                       prefetch={true}
-                      className={`relative flex items-center justify-center gap-2 p-2 sm:px-4 md:px-5 sm:py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
+                      className={`relative flex items-center justify-center gap-2 p-2 sm:px-4 md:px-5 sm:py-2.5 rounded-2xl sm:rounded-full text-sm font-semibold transition-all whitespace-nowrap ${
                         isActive 
-                          ? "text-white bg-[#1A1A1A] shadow-md" 
-                          : "text-slate-500 hover:text-slate-900 hover:bg-slate-50 border border-transparent"
+                          ? "text-[#5B58F2] bg-[#EEF0FF] border border-[#D5D9FF] shadow-xs shadow-[#5B58F2]/10" 
+                          : "text-slate-500 hover:text-slate-900 hover:bg-slate-50/80 border border-transparent"
                       }`}
                       title={item.name}
                       aria-label={item.name}
                     >
-                      <div className={`w-8 h-8 flex items-center justify-center shrink-0 ${isActive && (item.lottieSrc || item.imageSrc) ? "brightness-0 invert" : ""}`}>
+                      <div className="w-8 h-8 flex items-center justify-center shrink-0">
                         {item.lottieSrc ? (
                           <LottieIcon src={item.lottieSrc} size={item.lottieSize || 34} loop autoplay />
                         ) : item.imageSrc ? (
@@ -85,7 +85,7 @@ export default function TopNav({ userName, settings }: { userName: string, setti
                             className="object-contain shrink-0" 
                           />
                         ) : (
-                          <IconComponent size={22} className="shrink-0" />
+                          <IconComponent size={22} className={`shrink-0 ${isActive ? "text-[#5B58F2]" : "text-slate-600"}`} />
                         )}
                       </div>
                       <span className="hidden sm:inline">{item.name}</span>
