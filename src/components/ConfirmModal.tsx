@@ -42,12 +42,9 @@ export default function ConfirmModal({
 
   const resolvedVariant = variant || (isDanger ? "danger" : "success");
 
-  // Button styles: Red for danger/delete, Green for success/confirm, Indigo for primary
-  const confirmBtnStyles = resolvedVariant === "danger"
-    ? "bg-[#DC2626] hover:bg-[#B91C1C] text-white border border-[#DC2626] shadow-sm shadow-red-500/20"
-    : resolvedVariant === "primary"
-    ? "bg-[#5B58F2] hover:bg-[#4A47D1] text-white border border-[#5B58F2] shadow-sm shadow-[#5B58F2]/20"
-    : "bg-[#10B981] hover:bg-[#059669] text-white border border-[#10B981] shadow-sm shadow-emerald-500/20";
+  // Cancel button is Red (#DC2626), Confirm button is Green (#10B981)
+  const cancelBtnStyles = "bg-[#DC2626] hover:bg-[#B91C1C] text-white border border-[#DC2626] shadow-sm shadow-red-500/20";
+  const confirmBtnStyles = "bg-[#10B981] hover:bg-[#059669] text-white border border-[#10B981] shadow-sm shadow-emerald-500/20";
 
   return (
     <div 
@@ -83,22 +80,22 @@ export default function ConfirmModal({
 
         {/* Action Buttons Row */}
         <div className="flex items-center justify-between gap-4 pt-1 w-full">
-          {/* Cancel Button (Dark Solid Navy/Charcoal) */}
+          {/* Cancel Button (Red Color - สีแดง) */}
           <button
             type="button"
             onClick={handleCancel}
             disabled={isLoading}
-            className="px-6 py-2.5 bg-[#112022] hover:bg-[#1E3033] text-white font-bold rounded-lg text-sm transition-all shadow-sm cursor-pointer disabled:opacity-50 text-center min-w-[120px]"
+            className={`px-6 py-2.5 ${cancelBtnStyles} font-bold rounded-lg text-sm transition-all cursor-pointer disabled:opacity-50 text-center min-w-[120px]`}
           >
             {cancelText}
           </button>
 
-          {/* Confirm Button (Red for Delete / Green for Confirm) */}
+          {/* Confirm Button (Green Color - สีเขียว) */}
           <button
             type="button"
             onClick={onConfirm}
             disabled={isLoading}
-            className={`px-6 py-2.5 ${confirmBtnStyles} font-bold rounded-lg text-sm transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 min-w-[120px] text-center`}
+            className={`px-6 py-2.5 ${confirmBtnStyles} font-bold rounded-lg text-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 min-w-[120px] text-center`}
           >
             {isLoading ? (
               <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0"></span>
