@@ -21,7 +21,14 @@ export async function GET(request: Request) {
       size: blob.size,
       uploadedAt: blob.uploadedAt,
     }));
-    return NextResponse.json({ blobs, hasMore: result.hasMore, cursor: result.cursor });
+    return NextResponse.json(
+      { blobs, hasMore: result.hasMore, cursor: result.cursor },
+      {
+        headers: {
+          'Cache-Control': 'private, max-age=15, stale-while-revalidate=60',
+        },
+      }
+    );
   } catch (error) {
     console.error('Blob list error:', error);
     return NextResponse.json({ error: 'Failed to list blobs' }, { status: 500 });

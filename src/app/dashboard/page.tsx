@@ -4,7 +4,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { transactions, invoices, houses, lineMessages, systemSettings } from "@/lib/schema";
 import { CalendarClock, BellRing } from "lucide-react";
-import { eq, desc, inArray, or } from "drizzle-orm";
+import { eq, desc, inArray, or, and, sql } from "drizzle-orm";
 import RevenueChart from "./RevenueChart";
 import { StaggerContainer, StaggerItem } from "@/components/animations/Stagger";
 import { 
@@ -14,14 +14,14 @@ import {
   Smartphone, 
   CheckCircle2, 
   ArrowRight, 
-  Calendar,
-  AlertCircle,
-  FileCheck,
-  ChevronRight,
-  ChevronDown,
-  TrendingUp,
-  User,
-  ExternalLink
+  Calendar, 
+  AlertCircle, 
+  FileCheck, 
+  ChevronRight, 
+  ChevronDown, 
+  TrendingUp, 
+  User, 
+  ExternalLink 
 } from "lucide-react";
 
 function formatThaiMonth(monthYear: string) {
@@ -39,72 +39,90 @@ function formatThaiMonth(monthYear: string) {
 }
 
 export default async function DashboardPage() {
-  // 1. Total verified revenue (sum of amount from transactions where slipStatus='verified')
-  const verifiedTxs = await db
-    .select({ 
-      amount: transactions.amount,
-      paidAt: transactions.paidAt,
-      createdAt: transactions.createdAt
-    })
-    .from(transactions)
-    .where(eq(transactions.slipStatus, "verified"));
-
-  const [settings] = await db.select().from(systemSettings).limit(1);
   const currentYear = new Date().getFullYear();
-  let currentYearRevenue = 0;
 
-  const totalVerifiedRevenue = verifiedTxs.reduce((sum, tx) => {
-    const val = parseFloat(tx.amount || "0");
-    const amount = isNaN(val) ? 0 : val;
-    
-    const txDate = tx.paidAt || tx.createdAt;
-    if (txDate && new Date(txDate).getFullYear() === currentYear) {
-      currentYearRevenue += amount;
-    }
-    
-    return sum + amount;
-  }, 0);
+  // High-performance concurrent queries: Execute all metrics in parallel with SQL aggregation
+  const [
+    totalRevenueResult,
+    yearRevenueResult,
+    settingsResult,
+    unpaidHousesResult,
+    totalHousesResult,
+    reviewTxsResult,
+    pendingLineSlipsResult,
+    recentVerifiedTxs,
+    chartTxs
+  ] = await Promise.all([
+    // 1. Total verified revenue
+    db.select({
+      total: sql<string>`COALESCE(SUM(${transactions.amount}::numeric), 0)`
+    }).from(transactions).where(eq(transactions.slipStatus, "verified")),
 
-  // 2. Number of houses with unpaid invoices
-  const unpaidInvoicesList = await db
-    .select({ houseId: invoices.houseId })
-    .from(invoices)
-    .where(eq(invoices.status, "unpaid"));
+    // 2. Current year verified revenue
+    db.select({
+      total: sql<string>`COALESCE(SUM(${transactions.amount}::numeric), 0)`
+    }).from(transactions).where(
+      and(
+        eq(transactions.slipStatus, "verified"),
+        sql`EXTRACT(YEAR FROM COALESCE(${transactions.paidAt}, ${transactions.createdAt})) = ${currentYear}`
+      )
+    ),
 
-  const housesWithUnpaidCount = new Set(unpaidInvoicesList.map((inv) => inv.houseId)).size;
+    // 3. System settings
+    db.select().from(systemSettings).limit(1),
 
-  const totalHousesResult = await db.select({ id: houses.id }).from(houses);
-  const totalHousesCount = totalHousesResult.length;
+    // 4. Number of houses with unpaid invoices
+    db.select({
+      count: sql<number>`COUNT(DISTINCT ${invoices.houseId})`
+    }).from(invoices).where(eq(invoices.status, "unpaid")),
 
-  // 3. Number of transactions waiting for review (slipStatus='pending')
-  const reviewTxs = await db
-    .select({ id: transactions.id })
-    .from(transactions)
-    .where(eq(transactions.slipStatus, "pending"));
+    // 5. Total registered houses count
+    db.select({
+      count: sql<number>`COUNT(*)`
+    }).from(houses),
 
-  const waitingForReviewCount = reviewTxs.length;
+    // 6. Number of transactions waiting for review
+    db.select({
+      count: sql<number>`COUNT(*)`
+    }).from(transactions).where(eq(transactions.slipStatus, "pending")),
 
-  // 4. Number of LINE slips pending (from lineMessages where status='pending')
-  const pendingLineSlipsList = await db
-    .select({ id: lineMessages.id })
-    .from(lineMessages)
-    .where(eq(lineMessages.status, "pending"));
+    // 7. Number of LINE slips pending
+    db.select({
+      count: sql<number>`COUNT(*)`
+    }).from(lineMessages).where(eq(lineMessages.status, "pending")),
 
-  const pendingLineSlipsCount = pendingLineSlipsList.length;
-
-  // 5. Recent 5 verified transactions (with house number if available via invoices join)
-  const recentVerifiedTxs = await db
-    .select({
+    // 8. Recent 5 verified transactions
+    db.select({
       id: transactions.id,
       amount: transactions.amount,
       paidAt: transactions.paidAt,
       createdAt: transactions.createdAt,
       verifiedBy: transactions.verifiedBy,
     })
-    .from(transactions)
-    .where(eq(transactions.slipStatus, "verified"))
-    .orderBy(desc(transactions.paidAt), desc(transactions.createdAt))
-    .limit(5);
+      .from(transactions)
+      .where(eq(transactions.slipStatus, "verified"))
+      .orderBy(desc(transactions.paidAt), desc(transactions.createdAt))
+      .limit(5),
+
+    // 9. Chart transactions (up to 2000 recent)
+    db.select({
+      amount: transactions.amount,
+      paidAt: transactions.paidAt,
+      createdAt: transactions.createdAt,
+    })
+      .from(transactions)
+      .where(eq(transactions.slipStatus, "verified"))
+      .orderBy(desc(transactions.paidAt), desc(transactions.createdAt))
+      .limit(2000)
+  ]);
+
+  const totalVerifiedRevenue = parseFloat(totalRevenueResult[0]?.total || "0");
+  const currentYearRevenue = parseFloat(yearRevenueResult[0]?.total || "0");
+  const settings = settingsResult[0];
+  const housesWithUnpaidCount = Number(unpaidHousesResult[0]?.count || 0);
+  const totalHousesCount = Number(totalHousesResult[0]?.count || 0);
+  const waitingForReviewCount = Number(reviewTxsResult[0]?.count || 0);
+  const pendingLineSlipsCount = Number(pendingLineSlipsResult[0]?.count || 0);
 
   let recentTransactions: Array<{
     id: number;
@@ -309,7 +327,7 @@ export default async function DashboardPage() {
         {/* Left Column (Real Graph Area) */}
         <StaggerItem className="xl:col-span-2">
           <RevenueChart 
-            transactions={verifiedTxs.map(tx => ({
+            transactions={chartTxs.map(tx => ({
               amount: tx.amount,
               date: (tx.paidAt || tx.createdAt)?.toISOString() || null
             }))} 

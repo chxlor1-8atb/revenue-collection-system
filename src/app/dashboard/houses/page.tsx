@@ -101,15 +101,19 @@ export default async function HousesPage(props: { searchParams: Promise<{ [key: 
   // When filtering by paymentStatus, also compute aggregate totals for the summary banner
   let paymentSummary: { unpaidTotal: number; paidTotal: number; unpaidCount: number; paidCount: number } | null = null;
   if (paymentStatus === 'unpaid' || paymentStatus === 'paid') {
+    const houseFilter = whereClause 
+      ? sql`AND ${invoices.houseId} IN (SELECT id FROM ${houses} WHERE ${whereClause})`
+      : sql``;
+
     const [unpaidResult, paidResult] = await Promise.all([
       db.select({
         total: sql<number>`COALESCE(SUM(${invoices.amount}::numeric), 0)`,
         count: sql<number>`COUNT(*)`,
-      }).from(invoices).where(sql`${invoices.status} = 'unpaid' AND ${invoices.houseId} IN (SELECT id FROM ${houses} WHERE (${whereClause}))`),
+      }).from(invoices).where(sql`${invoices.status} = 'unpaid' ${houseFilter}`),
       db.select({
         total: sql<number>`COALESCE(SUM(${invoices.amount}::numeric), 0)`,
         count: sql<number>`COUNT(*)`,
-      }).from(invoices).where(sql`${invoices.status} = 'paid' AND ${invoices.houseId} IN (SELECT id FROM ${houses} WHERE (${whereClause}))`),
+      }).from(invoices).where(sql`${invoices.status} = 'paid' ${houseFilter}`),
     ]);
     paymentSummary = {
       unpaidTotal: Number(unpaidResult[0]?.total || 0),
