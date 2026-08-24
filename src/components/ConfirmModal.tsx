@@ -82,15 +82,15 @@ export default function ConfirmModal({
             {cancelText}
           </button>
 
-          {/* Confirm Button (White with Black Border) */}
+          {/* Confirm Button (White with Green Border) */}
           <button
             type="button"
             onClick={onConfirm}
             disabled={isLoading}
-            className="px-8 py-3 bg-white hover:bg-gray-50 text-black border border-black font-semibold rounded-[2px] text-[16px] transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 text-center min-w-[140px]"
+            className="px-8 py-3 bg-white hover:bg-emerald-50 text-[#10B981] border border-[#10B981] font-semibold rounded-[2px] text-[16px] transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 text-center min-w-[140px]"
           >
             {isLoading ? (
-              <span className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin shrink-0"></span>
+              <span className="w-5 h-5 border-2 border-[#10B981] border-t-transparent rounded-full animate-spin shrink-0"></span>
             ) : null}
             <span>{confirmText}</span>
           </button>
