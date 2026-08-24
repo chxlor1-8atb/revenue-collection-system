@@ -73,8 +73,8 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
             <ArrowLeft size={16} /> กลับไปหน้ารวมบ้าน
           </Link>
           <h1 className="font-bold text-3xl text-slate-800 flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#5B58F2] to-[#7E7BFF] flex items-center justify-center text-white shadow-md shadow-[#5B58F2]/25 shrink-0 overflow-hidden">
-              <LottieIcon src="/icons/icons8-home.json" size={26} className="brightness-0 invert" loop autoplay />
+            <div className="w-14 h-14 rounded-2xl bg-slate-900 flex items-center justify-center text-white shadow-md shadow-slate-900/20 shrink-0 overflow-hidden border border-slate-800">
+              <LottieIcon src="/icons/icons8-home.json" size={32} className="brightness-0 invert" loop autoplay />
             </div>
             บ้านเลขที่ {house.houseNumber}
           </h1>
