@@ -18,6 +18,7 @@ import {
 import { useState, useEffect } from "react";
 import SettingsForm from "./settings/SettingsForm";
 import ConfirmModal from "@/components/ConfirmModal";
+import LottieIcon from "@/components/LottieIcon";
 
 export default function TopNav({ userName, settings }: { userName: string, settings?: any }) {
   const pathname = usePathname();
@@ -35,12 +36,12 @@ export default function TopNav({ userName, settings }: { userName: string, setti
 
   const navItems = [
     { name: "ภาพรวม", href: "/dashboard", icon: LayoutDashboard },
-    { name: "จัดการบ้าน", href: "/dashboard/houses", icon: Home },
-    { name: "รายการตรวจสอบ", href: "/dashboard/review", icon: CheckCircle2 },
+    { name: "จัดการบ้าน", href: "/dashboard/houses", icon: Home, lottieSrc: "/icons/icons8-home.json" },
+    { name: "รายการตรวจสอบ", href: "/dashboard/review", icon: CheckCircle2, lottieSrc: "/icons/icons8-document.json" },
     { name: "ประวัติชำระ", href: "/dashboard/history", icon: Receipt },
     { name: "ผู้ใช้งาน", href: "/dashboard/users", icon: Users },
     { name: "สลิป LINE", href: "/dashboard/line-slips", icon: Smartphone },
-    { name: "คลังไฟล์", href: "/dashboard/blob", icon: Folder },
+    { name: "คลังไฟล์", href: "/dashboard/blob", icon: Folder, lottieSrc: "/icons/icons8-folder.json" },
   ];
 
   return (
@@ -64,7 +65,7 @@ export default function TopNav({ userName, settings }: { userName: string, setti
                     <Link
                       href={item.href}
                       prefetch={true}
-                      className={`relative flex items-center justify-center gap-2 p-2 sm:px-5 sm:py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
+                      className={`relative flex items-center justify-center gap-2 p-2.5 sm:px-5 sm:py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
                         isActive 
                           ? "text-white bg-[#1A1A1A] shadow-md" 
                           : "text-slate-500 hover:text-slate-900 hover:bg-slate-50 border border-transparent"
@@ -72,7 +73,13 @@ export default function TopNav({ userName, settings }: { userName: string, setti
                       title={item.name}
                       aria-label={item.name}
                     >
-                      <IconComponent size={18} className="shrink-0" />
+                      {item.lottieSrc ? (
+                        <div className={`w-[22px] h-[22px] flex items-center justify-center shrink-0 ${isActive ? "brightness-0 invert" : "opacity-80"}`}>
+                          <LottieIcon src={item.lottieSrc} size={22} loop autoplay />
+                        </div>
+                      ) : (
+                        <IconComponent size={18} className="shrink-0" />
+                      )}
                       <span className="hidden sm:inline">{item.name}</span>
                     </Link>
                   </li>
