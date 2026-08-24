@@ -664,23 +664,23 @@ export default function BlobClient({
             />
           </div>
 
-          {/* 4 Quick Stat Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-1">
-            <div className="p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
-              <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">จำนวนไฟล์ในระบบ</div>
-              <div className="text-base font-bold text-slate-800 mt-0.5">{files.length.toLocaleString()} ไฟล์</div>
+          {/* 4 Compact Stat Badges */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 pt-0.5">
+            <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-white border border-slate-200/70 shadow-2xs">
+              <span className="text-[11px] font-medium text-slate-500">จำนวนไฟล์</span>
+              <span className="text-xs sm:text-sm font-bold text-slate-800">{files.length.toLocaleString()} ไฟล์</span>
             </div>
-            <div className="p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
-              <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">ขนาดเฉลี่ยต่อรูป</div>
-              <div className="text-base font-bold text-slate-800 mt-0.5">{loading && files.length === 0 ? '—' : formatSize(averageFileSize)}</div>
+            <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-white border border-slate-200/70 shadow-2xs">
+              <span className="text-[11px] font-medium text-slate-500">ขนาดเฉลี่ย</span>
+              <span className="text-xs sm:text-sm font-bold text-slate-800">{loading && files.length === 0 ? '—' : formatSize(averageFileSize)}</span>
             </div>
-            <div className="p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
-              <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">รองรับสลิปได้อีก</div>
-              <div className="text-base font-bold text-emerald-600 mt-0.5">~{loading && files.length === 0 ? '—' : estimatedRemainingImages.toLocaleString()} รูป</div>
+            <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-white border border-slate-200/70 shadow-2xs">
+              <span className="text-[11px] font-medium text-slate-500">รองรับเพิ่ม</span>
+              <span className="text-xs sm:text-sm font-bold text-emerald-600">~{loading && files.length === 0 ? '—' : estimatedRemainingImages.toLocaleString()} รูป</span>
             </div>
-            <div className="p-3 rounded-xl bg-[#EEF0FF]/60 border border-[#D5D9FF] shadow-2xs">
-              <div className="text-[11px] font-semibold text-[#5B58F2] uppercase tracking-wider">เลือกรายการอยู่</div>
-              <div className="text-base font-bold text-[#5B58F2] mt-0.5">{selectedUrls.size} ไฟล์</div>
+            <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-[#EEF0FF]/60 border border-[#D5D9FF] shadow-2xs">
+              <span className="text-[11px] font-medium text-[#5B58F2]">เลือกอยู่</span>
+              <span className="text-xs sm:text-sm font-bold text-[#5B58F2]">{selectedUrls.size} ไฟล์</span>
             </div>
           </div>
         </div>
