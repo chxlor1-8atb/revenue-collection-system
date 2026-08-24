@@ -729,8 +729,13 @@ export default function HousesClient({
                     <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                       <div>
                         <div className="text-[10px] uppercase font-bold text-slate-400">อัตราค่าบริการ</div>
-                        <div className="font-mono font-bold text-emerald-700 text-sm">
-                          ฿{parseFloat(house.defaultBillingAmount || "20").toLocaleString("th-TH", { minimumFractionDigits: 2 })}/เดือน
+                        <div className="flex items-baseline gap-1 mt-0.5">
+                          <span className="font-mono font-bold text-emerald-700 text-sm">
+                            ฿{parseFloat(house.defaultBillingAmount || "20").toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+                          </span>
+                          <span className="font-sans text-xs font-normal text-slate-400">
+                            / เดือน
+                          </span>
                         </div>
                       </div>
 
