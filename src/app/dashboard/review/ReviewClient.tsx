@@ -6,6 +6,7 @@ import SlipReviewForm from "./SlipReviewForm";
 import { FileSignature, Loader2, QrCode, CheckCircle2, Clock, Sparkles, RefreshCw, Layers, LayoutGrid, List, User, MapPin, ExternalLink, Calendar } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import LottieIcon from "@/components/LottieIcon";
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -57,9 +58,7 @@ export default function ReviewClient() {
         {/* 1. Header Section */}
         <div className="p-6 lg:p-7 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#5B58F2] to-[#7E7BFF] flex items-center justify-center text-white shadow-md shadow-[#5B58F2]/25 shrink-0">
-              <FileSignature size={24} />
-            </div>
+            <LottieIcon src="/icons/icons8-document.json" size={54} className="shrink-0" loop autoplay />
             <div>
               <h1 className="text-xl lg:text-2xl font-bold text-slate-900 tracking-tight">รายการตรวจสอบสลิป</h1>
               <p className="text-slate-500 text-sm mt-0.5">ตรวจสอบและยืนยันยอดเงินที่ผู้ใช้งานโอนผ่าน QR Code</p>
