@@ -369,8 +369,8 @@ export default function LineSlipsClient({
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col font-sans mb-8">
         
         {/* Header & Tabs */}
-        <div className="p-6 lg:p-7 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
-          <div className="flex items-center gap-4">
+        <div className="p-4 sm:p-6 lg:p-7 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
+          <div className="hidden sm:flex items-center gap-4">
             <AnimatedLineIcon size={64} variant="black" />
             <div>
               <div className="flex items-center gap-2.5">

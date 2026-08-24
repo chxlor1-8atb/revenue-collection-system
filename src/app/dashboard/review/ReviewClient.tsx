@@ -55,8 +55,8 @@ export default function ReviewClient() {
       {/* Unified Master Container */}
       <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col">
         
-        {/* 1. Header Section */}
-        <div className="p-6 lg:p-7 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
+        {/* 1. Header Section (Desktop only - mobile goes straight to tabs & slips) */}
+        <div className="hidden sm:flex p-6 lg:p-7 border-b border-slate-100 flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
           <div className="flex items-center gap-4">
             <LottieIcon src="/icons/icons8-document.json" size={54} className="shrink-0" loop autoplay />
             <div>

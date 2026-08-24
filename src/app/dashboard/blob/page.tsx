@@ -335,8 +335,8 @@ export default function BlobManagementPage() {
 
   return (
     <div className="max-w-7xl mx-auto pb-16 space-y-6">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Top Header (Desktop only - mobile goes straight to storage analytics & files) */}
+      <div className="hidden sm:flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3.5 mb-1">
             <LottieIcon src="/icons/icons8-folder.json" size={48} className="shrink-0" loop autoplay />

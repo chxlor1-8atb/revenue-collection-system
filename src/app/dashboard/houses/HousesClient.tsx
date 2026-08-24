@@ -346,8 +346,8 @@ export default function HousesClient({
 
       {/* Unified Master Card Container */}
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200/80 flex flex-col overflow-hidden">
-        {/* 1. Header Section */}
-        <div className="p-6 lg:p-7 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
+        {/* 1. Header Section (Desktop only - mobile goes straight to actionable tools) */}
+        <div className="hidden sm:flex p-6 lg:p-7 border-b border-slate-100 flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
           <div className="flex items-center gap-4">
             <LottieIcon src="/icons/icons8-home.json" size={52} className="shrink-0" loop autoplay />
             <div>
@@ -414,7 +414,30 @@ export default function HousesClient({
         </div>
 
         {/* 2. Toolbar: Search, Filters & View Toggle */}
-        <div className="p-5 lg:p-6 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-slate-50/60 relative z-20">
+        <div className="p-4 sm:p-5 lg:p-6 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 sm:gap-4 bg-slate-50/60 relative z-20">
+          {/* Mobile Quick Action Bar */}
+          <div className="flex sm:hidden items-center justify-between w-full gap-2 pb-2 border-b border-slate-200/60">
+            <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#5B58F2]"></span>
+              จัดการบ้าน ({totalHouses} หลัง)
+            </span>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={handleAdd}
+                className="h-8 flex items-center gap-1 bg-[#5B58F2] text-white px-2.5 rounded-lg text-xs font-semibold shadow-xs"
+              >
+                <Plus size={14} strokeWidth={2.5} /> เพิ่มบ้าน
+              </button>
+              <button
+                onClick={() => setShowSettings(true)}
+                aria-label="ตั้งค่าฟิลด์เพิ่มเติม"
+                className="h-8 w-8 flex items-center justify-center bg-white border border-slate-200 text-slate-600 rounded-lg"
+              >
+                <Settings size={14} />
+              </button>
+            </div>
+          </div>
+
           <div className="flex flex-col sm:flex-row flex-wrap w-full lg:w-auto gap-3 items-center z-20">
             <div className="relative w-full sm:w-80">
               <SearchAutocomplete 
