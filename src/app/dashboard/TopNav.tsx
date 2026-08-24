@@ -35,30 +35,38 @@ export default function TopNav({ userName, settings }: { userName: string, setti
     return () => window.removeEventListener("keydown", handleEsc);
   }, []);
 
-  // Poll for pending review items & play chime if count increases
+  // Visibility-aware smart poller for pending review items & audio alert
   useEffect(() => {
     let lastCount = 0;
     const checkReviews = async () => {
+      // Skip network call if browser tab is hidden/backgrounded
+      if (typeof document !== 'undefined' && document.visibilityState !== 'visible') {
+        return;
+      }
+
       try {
         const res = await fetch('/api/transactions/review');
         if (res.ok) {
           const data = await res.json();
           const count = (data.pending?.length || 0) + (data.waiting?.length || 0);
           if (count > lastCount && lastCount > 0) {
-            // Play gentle chime
+            // Play gentle chime safely
             try {
-              const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-              const osc = ctx.createOscillator();
-              const gain = ctx.createGain();
-              osc.type = "sine";
-              osc.frequency.setValueAtTime(587.33, ctx.currentTime);
-              osc.frequency.setValueAtTime(880, ctx.currentTime + 0.12);
-              gain.gain.setValueAtTime(0.08, ctx.currentTime);
-              gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
-              osc.connect(gain);
-              gain.connect(ctx.destination);
-              osc.start();
-              osc.stop(ctx.currentTime + 0.35);
+              const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+              if (AudioContextClass) {
+                const ctx = new AudioContextClass();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+                osc.frequency.setValueAtTime(880, ctx.currentTime + 0.12);
+                gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.35);
+              }
             } catch (e) {
               // ignore audio errors
             }
@@ -73,7 +81,19 @@ export default function TopNav({ userName, settings }: { userName: string, setti
 
     checkReviews();
     const interval = setInterval(checkReviews, 30000); // every 30s
-    return () => clearInterval(interval);
+    
+    // Immediately check when user tabs back into the app
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        checkReviews();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, []);
 
   const navItems = [

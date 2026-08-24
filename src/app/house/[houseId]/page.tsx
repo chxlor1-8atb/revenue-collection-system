@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { houses, invoices, transactions } from "@/lib/schema";
-import { eq, asc, desc, and, inArray, gte } from "drizzle-orm";
+import { eq, asc, desc, and, inArray, gte, sql } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import InvoiceSelectionForm from "@/components/InvoiceSelectionForm";
 import Link from "next/link";
@@ -13,9 +13,30 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
     notFound();
   }
 
-  const [result, houseInvoices] = await Promise.all([
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  const [result, houseInvoices, recentTransactions] = await Promise.all([
     db.select().from(houses).where(eq(houses.id, houseId)).limit(1),
-    db.select().from(invoices).where(eq(invoices.houseId, houseId)).orderBy(asc(invoices.monthYear))
+    db.select().from(invoices).where(eq(invoices.houseId, houseId)).orderBy(asc(invoices.monthYear)),
+    db.select({
+      id: transactions.id,
+      amount: transactions.amount,
+      paidAt: transactions.paidAt,
+      createdAt: transactions.createdAt,
+      verifiedBy: transactions.verifiedBy,
+      slipStatus: transactions.slipStatus,
+    })
+      .from(transactions)
+      .where(
+        and(
+          eq(transactions.slipStatus, 'verified'),
+          sql`EXISTS (SELECT 1 FROM ${invoices} WHERE ${invoices.transactionId} = ${transactions.id} AND ${invoices.houseId} = ${houseId})`,
+          gte(transactions.paidAt, thirtyDaysAgo)
+        )
+      )
+      .orderBy(desc(transactions.paidAt))
+      .limit(10)
   ]);
 
   if (result.length === 0) {
@@ -23,28 +44,6 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
   }
 
   const house = result[0];
-  
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  
-  const txIds = houseInvoices.filter(inv => inv.transactionId).map(inv => inv.transactionId) as number[];
-  const uniqueTxIds = [...new Set(txIds)];
-  
-  let recentTransactions: any[] = [];
-  if (uniqueTxIds.length > 0) {
-    // @ts-ignore
-    recentTransactions = await db.select()
-      .from(transactions)
-      .where(
-        and(
-          inArray(transactions.id, uniqueTxIds),
-          eq(transactions.slipStatus, 'verified'),
-          // @ts-ignore
-          gte(transactions.paidAt, thirtyDaysAgo)
-        )
-      )
-      .orderBy(desc(transactions.paidAt));
-  }
 
   const formatThaiDate = (date: Date) => {
     if (!date) return "";
@@ -182,7 +181,7 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
                   <div key={tx.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
                     <div>
                       <p className="text-sm font-medium text-slate-700">
-                        {formatThaiDate(new Date(tx.paidAt))}
+                        {formatThaiDate(new Date(tx.paidAt || tx.createdAt || new Date()))}
                       </p>
                       <p className="text-xs text-slate-500 mt-0.5">
                         ผ่าน {tx.verifiedBy === 'line_bot_auto' ? 'ระบบอัตโนมัติ' : tx.verifiedBy === 'line_bot' ? 'LINE Bot' : 'เจ้าหน้าที่'}

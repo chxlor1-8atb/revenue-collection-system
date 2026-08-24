@@ -45,7 +45,17 @@ export async function POST(request: Request) {
     const folder = (formData.get('folder') as string) || 'line-slips';
 
     if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+      return NextResponse.json({ error: 'ไม่พบไฟล์ที่ต้องการอัปโหลด' }, { status: 400 });
+    }
+
+    // Maximum 10MB limit
+    if (file.size > 10 * 1024 * 1024) {
+      return NextResponse.json({ error: 'ขนาดไฟล์เกินกำหนด (สูงสุดไม่เกิน 10 MB)' }, { status: 400 });
+    }
+
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+    if (file.type && !allowedMimeTypes.includes(file.type.toLowerCase())) {
+      return NextResponse.json({ error: 'อนุญาตเฉพาะไฟล์รูปภาพ (JPG, PNG, WEBP) เท่านั้น' }, { status: 400 });
     }
 
     const cleanName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
