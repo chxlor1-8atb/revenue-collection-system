@@ -532,19 +532,20 @@ export default function HistoryClient() {
           ) : viewMode === "grid" ? (
             /* Grid Cards Mode */
             <div>
-              {/* Select All Bar in Grid View */}
-              <div className="flex items-center justify-between mb-4 bg-white px-4 py-2.5 rounded-2xl border border-slate-200 shadow-2xs">
-                <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer select-none">
+              {/* Compact Select All in Grid View */}
+              <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                <label className="inline-flex items-center gap-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 px-3.5 py-1.5 rounded-xl border border-slate-200/90 shadow-2xs cursor-pointer select-none transition-colors">
                   <input
                     type="checkbox"
                     checked={isAllCurrentPageSelected}
                     onChange={handleSelectAllCurrentPage}
                     className="w-4 h-4 rounded text-[#5B58F2] focus:ring-[#5B58F2] border-slate-300 cursor-pointer"
                   />
-                  <span>เลือกทั้งหมดในหน้านี้ ({data.filter(d => d.slipStatus !== "voided").length} รายการ)</span>
+                  <span>เลือกทั้งหมด ({data.filter(d => d.slipStatus !== "voided").length})</span>
                 </label>
+
                 {selectedIds.length > 0 && (
-                  <span className="text-xs font-semibold text-[#5B58F2]">
+                  <span className="text-xs font-semibold text-[#5B58F2] bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-100">
                     เลือกแล้ว {selectedIds.length} รายการ
                   </span>
                 )}
