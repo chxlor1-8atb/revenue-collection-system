@@ -95,36 +95,39 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
 
-    // 1. Update Transaction Status
-    await db.update(transactions)
-      .set({ 
-        slipStatus: status,
-        verifiedBy: session.user?.name || "admin",
-        lockKey: null
-      })
-      .where(eq(transactions.id, transactionId));
+    // Execute updates atomically inside a transaction
+    await db.transaction(async (tx) => {
+      // 1. Update Transaction Status
+      await tx.update(transactions)
+        .set({ 
+          slipStatus: status,
+          verifiedBy: session.user?.name || "admin",
+          lockKey: null
+        })
+        .where(eq(transactions.id, transactionId));
 
-    // 2. Update Related Invoices Status
-    // If slip is verified -> 'paid'. If rejected -> 'unpaid' (and clear transactionId so it can be paid again)
-    if (status === 'verified') {
-      await db.update(invoices)
-        .set({ status: 'paid' })
-        .where(eq(invoices.transactionId, transactionId));
-    } else {
-      // Delete any pending_advance invoices
-      await db.delete(invoices)
-        .where(
-          and(
-            eq(invoices.transactionId, transactionId),
-            eq(invoices.status, 'pending_advance')
-          )
-        );
+      // 2. Update Related Invoices Status
+      // If slip is verified -> 'paid'. If rejected -> 'unpaid' (and clear transactionId so it can be paid again)
+      if (status === 'verified') {
+        await tx.update(invoices)
+          .set({ status: 'paid' })
+          .where(eq(invoices.transactionId, transactionId));
+      } else {
+        // Delete any pending_advance invoices
+        await tx.delete(invoices)
+          .where(
+            and(
+              eq(invoices.transactionId, transactionId),
+              eq(invoices.status, 'pending_advance')
+            )
+          );
 
-      // Unlink regular invoices
-      await db.update(invoices)
-        .set({ status: 'unpaid', transactionId: null })
-        .where(eq(invoices.transactionId, transactionId));
-    }
+        // Unlink regular invoices
+        await tx.update(invoices)
+          .set({ status: 'unpaid', transactionId: null })
+          .where(eq(invoices.transactionId, transactionId));
+      }
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

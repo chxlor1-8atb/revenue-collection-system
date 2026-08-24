@@ -1,8 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
 
-export const runtime = 'edge';
-
 // High-Detail Scalable Vector Illustrations
 const cardIllustrations = {
   // 1. Bill Payment

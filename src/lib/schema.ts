@@ -1,4 +1,4 @@
-import { pgTable, serial, text, boolean, timestamp, integer, numeric, date, uniqueIndex, jsonb } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, boolean, timestamp, integer, numeric, date, uniqueIndex, index, jsonb } from 'drizzle-orm/pg-core';
 
 export const systemSettings = pgTable('system_settings', {
   id: serial('id').primaryKey(),
@@ -25,7 +25,11 @@ export const houses = pgTable('houses', {
   customFields: jsonb('custom_fields').default('{}'), // เก็บข้อมูล custom fields ในรูปแบบ JSON (key-value)
   lineUserId: text('line_user_id'), // LINE User ID for pushing notifications
   createdAt: timestamp('created_at').defaultNow(),
-});
+}, (table) => [
+  index('idx_houses_number').on(table.houseNumber),
+  index('idx_houses_zone').on(table.zone),
+  index('idx_houses_line_user').on(table.lineUserId),
+]);
 
 export const transactions = pgTable('transactions', {
   id: serial('id').primaryKey(),
@@ -43,7 +47,9 @@ export const transactions = pgTable('transactions', {
   notifiedAt: timestamp('notified_at'),
   verifiedBy: text('verified_by'),
   lockKey: text('lock_key').unique(),
-});
+}, (table) => [
+  index('idx_transactions_status_paid').on(table.slipStatus, table.paidAt),
+]);
 
 export const invoices = pgTable('invoices', {
   id: serial('id').primaryKey(),
@@ -57,7 +63,11 @@ export const invoices = pgTable('invoices', {
   transactionId: integer('transaction_id').references(() => transactions.id), // Link to the payment if any
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-});
+}, (table) => [
+  index('idx_invoices_house_status').on(table.houseId, table.status),
+  index('idx_invoices_month_year').on(table.monthYear),
+  index('idx_invoices_tx_id').on(table.transactionId),
+]);
 
 export const adminUsers = pgTable('admin_users', {
   id: serial('id').primaryKey(),
@@ -83,5 +93,8 @@ export const lineMessages = pgTable('line_messages', {
   status: text('status').notNull().default('pending'), // 'pending', 'processed', 'rejected', 'verified_auto'
   transactionId: integer('transaction_id').references(() => transactions.id),
   createdAt: timestamp('created_at').defaultNow(),
-});
+}, (table) => [
+  index('idx_line_msgs_status').on(table.status),
+  index('idx_line_msgs_user').on(table.lineUserId),
+]);
 

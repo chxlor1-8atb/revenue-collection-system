@@ -24,6 +24,17 @@ export const maxDuration = 300; // 5 minutes max for cron
 
 export async function GET(req: Request) {
   try {
+    // 0. Verify Cron Authorization if CRON_SECRET is configured
+    const authHeader = req.headers.get('authorization');
+    const cronSecret = process.env.CRON_SECRET;
+    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+      const url = new URL(req.url);
+      const queryKey = url.searchParams.get('key');
+      if (queryKey !== cronSecret) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+    }
+
     // 1. Get settings
     const [settings] = await db.select().from(systemSettings).limit(1);
     if (!settings || !settings.autoBillingDay) {
