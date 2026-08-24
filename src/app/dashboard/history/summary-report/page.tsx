@@ -105,6 +105,7 @@ export default async function SummaryReportPage(props: {
       amount: invoices.amount,
       houseNumber: houses.houseNumber,
       ownerName: houses.ownerName,
+      zone: houses.zone,
     })
       .from(invoices)
       .innerJoin(houses, eq(invoices.houseId, houses.id))
@@ -142,6 +143,7 @@ export default async function SummaryReportPage(props: {
         invoices: txInvoices,
         houseNumber: txInvoices[0]?.houseNumber || "ไม่ระบุ",
         ownerName: txInvoices[0]?.ownerName || "ไม่ระบุ",
+        zone: txInvoices[0]?.zone || "ไม่ระบุชุมชน",
         months: txInvoices.map((inv) => inv.monthYear),
         paidVia: isLine ? "LINE Bot" : isCash ? "เงินสด (เคาน์เตอร์)" : "เว็บไซต์",
         senderName: lineData?.senderName || null,
@@ -152,6 +154,18 @@ export default async function SummaryReportPage(props: {
 
   const totalAmount = totalLineAmount + totalWebAmount + totalCashAmount;
   const totalCount = reportItems.length;
+
+  // Community breakdown
+  const zoneSummaryMap = new Map<string, { count: number; amount: number }>();
+  reportItems.forEach(item => {
+    const z = item.zone || "ไม่ระบุชุมชน";
+    const cur = zoneSummaryMap.get(z) || { count: 0, amount: 0 };
+    zoneSummaryMap.set(z, {
+      count: cur.count + 1,
+      amount: cur.amount + parseFloat(item.amount || "0")
+    });
+  });
+  const zoneSummaryList = Array.from(zoneSummaryMap.entries()).sort((a, b) => b[1].amount - a[1].amount);
 
   return (
     <div className="min-h-screen bg-slate-200 py-8 font-sans print:bg-white print:py-0 print:m-0">
@@ -317,6 +331,28 @@ export default async function SummaryReportPage(props: {
             </tbody>
           </table>
         </div>
+
+        {/* Community Breakdown Section (if any records exist) */}
+        {zoneSummaryList.length > 1 && (
+          <div className="mb-8 border border-slate-300 rounded-xl overflow-hidden">
+            <div className="bg-slate-100 px-3 py-2 border-b border-slate-300 font-bold text-xs text-slate-800">
+              📊 สรุปยอดการจัดเก็บแยกตามชุมชน / หมู่บ้าน
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 divide-x divide-y divide-slate-200 text-xs">
+              {zoneSummaryList.map(([zoneName, stat]) => (
+                <div key={zoneName} className="p-2.5 bg-white flex justify-between items-center">
+                  <div>
+                    <span className="font-semibold text-slate-800 block">{zoneName}</span>
+                    <span className="text-[10px] text-slate-400">{stat.count} รายการ</span>
+                  </div>
+                  <div className="font-mono font-bold text-slate-900 text-right">
+                    ฿{stat.amount.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* 3-Official Signatures Section */}
         <div className="grid grid-cols-3 gap-6 mt-12 pt-6 border-t border-slate-300 text-center">

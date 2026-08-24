@@ -1,23 +1,23 @@
 {
-  "name": "เทศบาลเมืองนางรอง",
-  "short_name": "จ่ายค่าขยะ",
-  "description": "ระบบจัดเก็บรายได้ออนไลน์ เทศบาลเมืองนางรอง",
-  "start_url": "/",
+  "name": "ระบบจัดเก็บค่าธรรมเนียมขยะ เทศบาลเมืองนางรอง",
+  "short_name": "ค่าขยะเทศบาล",
+  "description": "ระบบจัดเก็บค่าธรรมเนียมขยะและตรวจสอบสลิปออนไลน์ เทศบาลเมืองนางรอง",
+  "start_url": "/dashboard",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "portrait-primary",
   "background_color": "#F8FAFC",
-  "theme_color": "#F8FAFC",
+  "theme_color": "#5B58F2",
   "icons": [
     {
-      "src": "/icons/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "src": "/mainiconweb.jpg",
+      "sizes": "192x192 512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "src": "/icon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
     }
   ]
 }

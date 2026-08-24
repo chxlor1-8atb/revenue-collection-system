@@ -324,6 +324,23 @@ export default function HousesClient({
     updateUrlParams(1, "", sortConfig.key, sortConfig.dir, limit, "", "");
   };
 
+  const downloadCsvTemplate = () => {
+    const headers = ["houseNumber", "ownerName", "zone", "moo", "soi", "road", "defaultBillingAmount"];
+    const rows = [
+      ["101/1", "นายสมชาย ใจดี", "หนองรี", "1", "ซอยร่วมใจ", "ประชาร่วมมิตร", "20.00"],
+      ["101/2", "นางสมศรี มีสุข", "วัดกลาง", "2", "ซอยสุขใจ", "เทศบาล 1", "20.00"],
+    ];
+    const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "ตัวอย่างไฟล์นำเข้าบ้าน_template.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="font-sans pb-12 space-y-4">
       {error && (
@@ -374,16 +391,26 @@ export default function HousesClient({
               onClick={() => fileInputRef.current?.click()}
               disabled={isImporting}
               aria-label="นำเข้าข้อมูลจากไฟล์ CSV"
-              className="h-10 flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 px-3.5 rounded-xl text-xs font-semibold transition-all shadow-xs disabled:opacity-50"
+              className="h-10 flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 px-3.5 rounded-xl text-xs font-semibold transition-all shadow-xs disabled:opacity-50 cursor-pointer"
             >
               <Upload size={15} className="text-slate-500" />
               {isImporting ? 'กำลังนำเข้า...' : 'นำเข้า CSV'}
+            </button>
+
+            <button
+              onClick={downloadCsvTemplate}
+              aria-label="ดาวน์โหลดไฟล์ตัวอย่าง CSV"
+              className="h-10 flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 px-3.5 rounded-xl text-xs font-semibold transition-all shadow-xs cursor-pointer"
+              title="ดาวน์โหลดไฟล์ต้นแบบสำหรับกรอกข้อมูล"
+            >
+              <FileText size={15} className="text-slate-500" />
+              เทมเพลต CSV
             </button>
             
             <a
               href="/api/houses/export"
               aria-label="ส่งออกข้อมูลเป็นไฟล์ Excel"
-              className="h-10 flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 px-3.5 rounded-xl text-xs font-semibold transition-all shadow-xs"
+              className="h-10 flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 px-3.5 rounded-xl text-xs font-semibold transition-all shadow-xs cursor-pointer"
             >
               <Download size={15} className="text-slate-500" />
               ส่งออก Excel
