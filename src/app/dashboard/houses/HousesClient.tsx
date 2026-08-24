@@ -348,10 +348,8 @@ export default function HousesClient({
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200/80 flex flex-col overflow-hidden">
         {/* 1. Header Section */}
         <div className="p-6 lg:p-7 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-slate-900 flex items-center justify-center text-white shadow-md shadow-slate-900/20 shrink-0 overflow-hidden border border-slate-800">
-              <LottieIcon src="/icons/icons8-home.json" size={32} className="brightness-0 invert" loop autoplay />
-            </div>
+          <div className="flex items-center gap-3">
+            <LottieIcon src="/icons/icons8-home.json" size={40} className="shrink-0" loop autoplay />
             <div>
               <div className="flex items-center gap-2.5">
                 <h1 className="font-bold text-2xl text-slate-900 tracking-tight">จัดการข้อมูลบ้าน</h1>
