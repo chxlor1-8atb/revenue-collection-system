@@ -290,7 +290,7 @@ export default function HistoryClient() {
         {/* 1. Header Section */}
         <div className="p-6 lg:p-7 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
           <div className="flex items-center gap-4">
-            <LottieIcon src="/icons/Receipt.json" size={68} className="shrink-0" loop autoplay />
+            <LottieIcon src="/icons/Receipt.json" size={88} className="shrink-0" loop autoplay />
             <div>
               <div className="flex items-center gap-2.5 flex-wrap">
                 <h1 className="font-bold text-2xl text-slate-900 tracking-tight">ประวัติการรับชำระเงิน</h1>
