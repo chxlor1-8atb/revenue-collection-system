@@ -450,16 +450,6 @@ export default function HousesClient({
               />
             </div>
 
-            {hasActiveFilters && (
-              <button
-                onClick={handleResetFilters}
-                aria-label="ล้างตัวกรองทั้งหมด"
-                className="h-[42px] px-3.5 flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all"
-              >
-                <RotateCcw size={13} />
-                ล้างตัวกรอง
-              </button>
-            )}
           </div>
 
           <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
@@ -494,68 +484,69 @@ export default function HousesClient({
           </div>
         </div>
 
-        {/* Active Filter Chips */}
-        {hasActiveFilters && (
-          <div className="px-6 py-2.5 bg-slate-50/80 border-b border-slate-100 flex flex-wrap items-center gap-2 text-xs">
-            <span className="text-slate-500 font-semibold">ตัวกรอง:</span>
-            {searchQuery && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-slate-700 font-medium">
-                <span>"{searchQuery}"</span>
-                <button onClick={() => setSearchQuery("")} className="hover:text-red-500 ml-1">
-                  <X size={12} />
+        {/* Unified Active Filters & Summary Row */}
+        {(hasActiveFilters || (paymentSummary && selectedPaymentStatus)) && (
+          <div className="px-6 py-2.5 bg-slate-50/80 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+            {/* Active Filter Chips */}
+            {hasActiveFilters ? (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-slate-400 font-medium">ตัวกรอง:</span>
+                {searchQuery && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-200 rounded-full font-medium text-slate-700 shadow-2xs">
+                    <span>"{searchQuery}"</span>
+                    <button onClick={() => setSearchQuery("")} className="hover:text-red-500 cursor-pointer"><X size={12} /></button>
+                  </span>
+                )}
+                {selectedZone && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#EEF0FF] border border-[#D5D9FF] rounded-full text-[#5B58F2] font-semibold shadow-2xs">
+                    <MapPin size={12} />
+                    <span>ชุมชน{selectedZone}</span>
+                    <button onClick={() => setSelectedZone("")} className="hover:text-red-500 cursor-pointer"><X size={12} /></button>
+                  </span>
+                )}
+                {selectedPaymentStatus && (
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-semibold shadow-2xs ${
+                    selectedPaymentStatus === 'unpaid' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                  }`}>
+                    <span>{selectedPaymentStatus === 'unpaid' ? 'ค้างชำระ' : 'ชำระครบแล้ว'}</span>
+                    <button onClick={() => setSelectedPaymentStatus("")} className="hover:text-red-500 cursor-pointer"><X size={12} /></button>
+                  </span>
+                )}
+                <button
+                  onClick={handleResetFilters}
+                  className="text-[#5B58F2] hover:underline font-semibold ml-1 cursor-pointer"
+                >
+                  ล้างทั้งหมด
                 </button>
-              </span>
-            )}
-            {selectedZone && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#EEF0FF] border border-[#D5D9FF] rounded-lg text-[#5B58F2] font-semibold">
-                <MapPin size={12} />
-                <span>ชุมชน{selectedZone}</span>
-                <button onClick={() => setSelectedZone("")} className="hover:text-red-500 ml-1">
-                  <X size={12} />
-                </button>
-              </span>
-            )}
-            {selectedPaymentStatus && (
-              <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg font-semibold ${
-                selectedPaymentStatus === 'unpaid' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-              }`}>
-                <span>{selectedPaymentStatus === 'unpaid' ? 'ค้างชำระ' : 'ชำระครบแล้ว'}</span>
-                <button onClick={() => setSelectedPaymentStatus("")} className="hover:text-red-500 ml-1">
-                  <X size={12} />
-                </button>
-              </span>
-            )}
-          </div>
-        )}
+              </div>
+            ) : <div />}
 
-        {/* Payment Summary Banner (Compact Pill) */}
-        {paymentSummary && selectedPaymentStatus === 'unpaid' && (
-          <div className="mx-6 my-2 inline-flex items-center gap-3 px-3.5 py-1.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-900 w-fit">
-            <div className="flex items-center gap-1.5 font-bold">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0"></span>
-              <span>ค้างชำระ:</span>
-            </div>
-            <span className="font-semibold bg-red-100/80 text-red-700 px-2 py-0.5 rounded-md text-[11px]">
-              {paymentSummary.unpaidCount} บิล
-            </span>
-            <span className="font-bold font-mono text-red-800 tabular-nums text-sm">
-              ฿{paymentSummary.unpaidTotal.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </span>
-          </div>
-        )}
+            {/* Payment Summary Pill */}
+            {paymentSummary && selectedPaymentStatus === 'unpaid' && (
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-200 text-xs text-red-900 shadow-2xs">
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0"></span>
+                <span className="font-bold">ค้างชำระรวม:</span>
+                <span className="font-semibold bg-red-100 text-red-700 px-1.5 py-0.5 rounded text-[11px]">
+                  {paymentSummary.unpaidCount} บิล
+                </span>
+                <span className="font-bold font-mono text-red-800 tabular-nums">
+                  ฿{paymentSummary.unpaidTotal.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+              </div>
+            )}
 
-        {paymentSummary && selectedPaymentStatus === 'paid' && (
-          <div className="mx-6 my-2 inline-flex items-center gap-3 px-3.5 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 w-fit">
-            <div className="flex items-center gap-1.5 font-bold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
-              <span>ชำระครบแล้ว:</span>
-            </div>
-            <span className="font-semibold bg-emerald-100/80 text-emerald-700 px-2 py-0.5 rounded-md text-[11px]">
-              {paymentSummary.paidCount} บิล
-            </span>
-            <span className="font-bold font-mono text-emerald-800 tabular-nums text-sm">
-              ฿{paymentSummary.paidTotal.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </span>
+            {paymentSummary && selectedPaymentStatus === 'paid' && (
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 shadow-2xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                <span className="font-bold">ชำระครบรวม:</span>
+                <span className="font-semibold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded text-[11px]">
+                  {paymentSummary.paidCount} บิล
+                </span>
+                <span className="font-bold font-mono text-emerald-800 tabular-nums">
+                  ฿{paymentSummary.paidTotal.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+              </div>
+            )}
           </div>
         )}
 
