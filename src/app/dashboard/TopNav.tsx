@@ -51,14 +51,17 @@ export default function TopNav({ userName, settings }: { userName: string, setti
           
           {/* Top Bar Row (Brand on Left, User Actions on Right for Mobile) */}
           <div className="flex items-center justify-between w-full md:w-auto shrink-0">
-            <div className="flex items-center gap-2 lg:gap-2.5">
-              <div className="flex items-center justify-center w-7 h-7 lg:w-8 lg:h-8 bg-[#5B58F2] rounded-full text-white shadow-sm shrink-0">
-                <Trash2 size={15} strokeWidth={2.5} />
-              </div>
-              <span className="font-sans font-bold text-[#0F172A] tracking-tight text-base sm:text-lg lg:text-xl whitespace-nowrap">
+            <Link href="/dashboard" className="flex items-center gap-2.5 lg:gap-3 group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/icons/mainiconweb.png"
+                alt="ระบบจัดเก็บค่าขยะ"
+                className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 lg:w-13 lg:h-13 object-contain shrink-0 drop-shadow-xs transition-transform duration-200 group-hover:scale-105"
+              />
+              <span className="hidden sm:inline font-sans font-bold text-[#0F172A] tracking-tight text-base sm:text-lg lg:text-xl whitespace-nowrap">
                 ระบบจัดเก็บค่าขยะ
               </span>
-            </div>
+            </Link>
 
             {/* Mobile-only User Actions on Top Right */}
             <div className="flex md:hidden items-center gap-1.5 shrink-0">
