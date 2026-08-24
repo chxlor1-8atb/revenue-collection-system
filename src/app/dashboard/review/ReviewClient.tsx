@@ -64,34 +64,10 @@ export default function ReviewClient() {
               <p className="text-slate-500 text-sm mt-0.5">ตรวจสอบและยืนยันยอดเงินที่ผู้ใช้งานโอนผ่าน QR Code</p>
             </div>
           </div>
-
-          {/* Header Controls: View Mode */}
-          <div className="flex items-center gap-3 self-end lg:self-center">
-            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/60">
-              <button
-                onClick={() => setViewMode("detailed")}
-                aria-label="มุมมองละเอียด"
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  viewMode === "detailed" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-800"
-                }`}
-              >
-                <List size={14} /> ละเอียด
-              </button>
-              <button
-                onClick={() => setViewMode("grid")}
-                aria-label="มุมมองการ์ด"
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  viewMode === "grid" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-800"
-                }`}
-              >
-                <LayoutGrid size={14} /> การ์ด
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* 2. Toolbar & Segmented Tabs Bar */}
-        <div className="px-6 lg:px-7 py-3 bg-slate-50/70 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+        <div className="p-3 sm:px-6 lg:px-7 sm:py-3.5 bg-slate-50/70 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
           {/* Segmented Tabs Switcher */}
           <div className="flex items-center gap-1.5 bg-slate-200/70 p-1 rounded-xl border border-slate-200/80">
             <button
@@ -137,13 +113,28 @@ export default function ReviewClient() {
             </button>
           </div>
 
-          <div className="text-xs text-slate-500 font-semibold flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-            {activeTab === "pending" ? (
-              <span>มีสลิปรอตรวจ <strong>{pending.length}</strong> รายการ</span>
-            ) : (
-              <span>กำลังสแกนจ่าย <strong>{waiting.length}</strong> รายการ</span>
-            )}
+          {/* View Mode Switcher (Visible on both mobile & desktop) */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/60">
+              <button
+                onClick={() => setViewMode("detailed")}
+                aria-label="มุมมองละเอียด"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  viewMode === "detailed" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                <List size={14} /> ละเอียด
+              </button>
+              <button
+                onClick={() => setViewMode("grid")}
+                aria-label="มุมมองการ์ด"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  viewMode === "grid" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                <LayoutGrid size={14} /> การ์ด
+              </button>
+            </div>
           </div>
         </div>
 

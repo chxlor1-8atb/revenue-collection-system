@@ -365,9 +365,55 @@ export default function HistoryClient() {
         </div>
 
         {/* 2. Toolbar Filters Bar */}
-        <div className="p-5 lg:p-6 border-b border-slate-100 flex flex-col gap-4 bg-slate-50/60 relative z-20">
+        <div className="p-4 sm:p-5 lg:p-6 border-b border-slate-100 flex flex-col gap-3 sm:gap-4 bg-slate-50/60 relative z-20">
+          {/* Action Row on Mobile (View Mode Switcher & Quick Export) */}
+          <div className="flex sm:hidden items-center justify-between gap-2 flex-wrap pb-2 border-b border-slate-200/60">
+            {/* View Mode Switcher */}
+            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/60">
+              <button
+                onClick={() => setViewMode("detailed")}
+                aria-label="มุมมองละเอียด"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  viewMode === "detailed" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                <List size={14} /> ละเอียด
+              </button>
+              <button
+                onClick={() => setViewMode("grid")}
+                aria-label="มุมมองการ์ด"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  viewMode === "grid" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                <LayoutGrid size={14} /> การ์ด
+              </button>
+            </div>
+
+            {/* Mobile Export / Report buttons */}
+            <div className="flex items-center gap-1.5">
+              <Link
+                href={summaryReportUrl}
+                target="_blank"
+                className="h-8 px-2.5 flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/80 text-indigo-700 rounded-lg text-xs font-bold transition-all shadow-xs"
+                title="พิมพ์รายงานสรุปยอดนำส่งเงินประจำวัน / งวด"
+              >
+                <FileSpreadsheet size={13} className="text-indigo-600" />
+                <span>รายงาน</span>
+              </Link>
+              <button
+                onClick={handleExportCSV}
+                aria-label="ส่งออก CSV"
+                className="h-8 px-2.5 flex items-center gap-1 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition-all shadow-xs cursor-pointer"
+                title="ส่งออก CSV"
+              >
+                <Download size={13} className="text-slate-500" />
+                <span>CSV</span>
+              </button>
+            </div>
+          </div>
+
           <div className="flex flex-col lg:flex-row flex-wrap gap-3 items-stretch lg:items-center justify-between">
-            
             {/* Search autocomplete */}
             <div className="relative w-full lg:w-80">
               <SearchAutocomplete

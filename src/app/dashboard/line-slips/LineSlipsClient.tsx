@@ -385,7 +385,7 @@ export default function LineSlipsClient({
             </div>
           </div>
           
-          <div className="flex flex-wrap items-center gap-3 self-start lg:self-center">
+          <div className="flex flex-wrap items-center justify-between w-full lg:w-auto gap-3 self-start lg:self-center">
             {/* Tab Switcher Pills */}
             <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200/60">
               <button

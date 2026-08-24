@@ -110,7 +110,7 @@ export default function UsersClient({
             </div>
           </div>
           
-          <div className="flex flex-wrap items-center gap-3 self-start lg:self-center">
+          <div className="flex items-center justify-between w-full sm:w-auto gap-3 self-start lg:self-center">
             {/* View Mode Toggle */}
             <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/60">
               <button
