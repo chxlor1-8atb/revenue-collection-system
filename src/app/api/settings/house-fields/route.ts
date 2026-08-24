@@ -26,7 +26,11 @@ export async function GET() {
       schema.splice(2, 0, { id: "defaultBillingAmount", name: "ยอดเก็บประจำเดือน (บาท)", placeholder: "เช่น 100", type: "number", required: false, isSystem: true, isHidden: false });
     }
 
-    return NextResponse.json(schema);
+    return NextResponse.json(schema, {
+      headers: {
+        'Cache-Control': 'private, max-age=30, stale-while-revalidate=120'
+      }
+    });
   } catch (error: any) {
     console.error("Failed to fetch custom fields schema:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });

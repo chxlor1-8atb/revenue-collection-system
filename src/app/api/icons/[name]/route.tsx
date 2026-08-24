@@ -104,6 +104,9 @@ export async function GET(
       {
         width: SIZE,
         height: SIZE,
+        headers: {
+          'Cache-Control': 'public, max-age=31536000, immutable',
+        },
       }
     );
   } catch (e: any) {
