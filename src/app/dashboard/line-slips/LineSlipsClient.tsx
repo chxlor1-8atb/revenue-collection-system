@@ -91,6 +91,22 @@ export default function LineSlipsClient({
   const [rejectionReason, setRejectionReason] = useState<string>("ภาพสลิปไม่ชัดเจน / มืดเกินไป");
   const [customReason, setCustomReason] = useState<string>("");
 
+  // Generic Confirm Modal State
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: React.ReactNode;
+    warningText?: string;
+    confirmText?: string;
+    variant?: "success" | "danger" | "primary";
+    onConfirm: () => void | Promise<void>;
+  }>({
+    isOpen: false,
+    title: "",
+    description: "",
+    onConfirm: () => {},
+  });
+
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -312,7 +328,7 @@ export default function LineSlipsClient({
   };
 
   // Batch approve selected slips that have matched houses
-  const handleBatchApprove = async () => {
+  const handleBatchApprove = () => {
     const candidateSlips = slips.filter(
       s => selectedSlipIds.includes(s.id) && (s.smartMatch?.house || s.houseNumber)
     );
@@ -322,34 +338,40 @@ export default function LineSlipsClient({
       return;
     }
 
-    if (!confirm(`ยืนยันอนุมัติสลิปที่จับคู่บ้านแล้วจำนวน ${candidateSlips.length} รายการ ?`)) {
-      return;
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: "ยืนยันอนุมัติสลิปหลายรายการ",
+      description: `คุณต้องการอนุมัติสลิปที่จับคู่บ้านแล้วจำนวน ${candidateSlips.length} รายการ ใช่หรือไม่?`,
+      confirmText: "ใช่, อนุมัติสลิปทั้งหมด",
+      variant: "success",
+      onConfirm: async () => {
+        setIsLoading(true);
+        try {
+          const approvals = candidateSlips.map(slip => {
+            const house = slip.smartMatch?.house;
+            return {
+              lineMessageId: slip.id,
+              houseId: house?.id || 0,
+              invoiceIds: [],
+              amount: parseFloat(slip.amount || "0"),
+              imageUrl: slip.imageUrl || "",
+              lineUserId: slip.lineUserId,
+            };
+          });
 
-    setIsLoading(true);
-    try {
-      const approvals = candidateSlips.map(slip => {
-        const house = slip.smartMatch?.house;
-        return {
-          lineMessageId: slip.id,
-          houseId: house?.id || 0,
-          invoiceIds: [],
-          amount: parseFloat(slip.amount || "0"),
-          imageUrl: slip.imageUrl || "",
-          lineUserId: slip.lineUserId,
-        };
-      });
-
-      const res = await batchApproveSlips(approvals);
-      if (res.success) {
-        setSelectedSlipIds([]);
-        router.refresh();
-      } else {
-        alert("บางรายการไม่สามารถอนุมัติได้: " + res.errors?.join(", "));
+          const res = await batchApproveSlips(approvals);
+          if (res.success) {
+            setSelectedSlipIds([]);
+            setConfirmModal(prev => ({ ...prev, isOpen: false }));
+            router.refresh();
+          } else {
+            alert("บางรายการไม่สามารถอนุมัติได้: " + res.errors?.join(", "));
+          }
+        } finally {
+          setIsLoading(false);
+        }
       }
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   // Calculations for modal
@@ -1219,6 +1241,20 @@ export default function LineSlipsClient({
           </div>
         </div>
       )}
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        description={confirmModal.description}
+        warningText={confirmModal.warningText}
+        confirmText={confirmModal.confirmText || "ยืนยัน"}
+        cancelText="ยกเลิก"
+        variant={confirmModal.variant}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+        isLoading={isLoading}
+      />
 
     </div>
   );
