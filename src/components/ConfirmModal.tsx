@@ -35,44 +35,44 @@ export default function ConfirmModal({
 
   return (
     <div 
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-in fade-in duration-150"
       onClick={handleCancel}
     >
       <div 
-        className="bg-white rounded-[22px] shadow-2xl w-full max-w-[500px] p-8 sm:p-10 animate-in zoom-in-95 duration-150 border border-slate-100/90 relative font-sans"
+        className="bg-white rounded-xl shadow-2xl w-full max-w-[520px] px-8 py-10 animate-in zoom-in-95 duration-150 border-2 border-red-600 relative font-sans"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Title */}
-        <h3 className="text-2xl sm:text-[26px] font-bold text-center text-slate-950 mb-3.5 tracking-tight">
+        <h3 className="text-2xl sm:text-[28px] font-extrabold text-center text-black mb-5 tracking-tight">
           {title}
         </h3>
         
         {/* Description */}
-        <div className="text-center text-slate-900 font-medium mb-6 text-sm sm:text-base leading-relaxed">
+        <div className="text-center text-slate-900 font-medium mb-7 text-base sm:text-[17px] leading-relaxed px-4">
           {description}
         </div>
 
         {/* Warning Box */}
         {warningText ? (
-          <div className="bg-[#FFEFE6] p-4 rounded-md border-l-[6px] border-[#FF5A36] mb-8 text-left shadow-2xs">
-            <div className="flex items-center gap-1.5 text-[#88240A] font-bold text-sm sm:text-[15px] mb-1">
-              <AlertTriangle size={16} className="shrink-0 text-[#E04B26] fill-[#E04B26] text-white" />
+          <div className="bg-[#FFF0E6] py-3.5 px-4 rounded-r-md rounded-l-none border-l-[6px] border-[#E85C38] mb-8 text-left w-full mx-auto">
+            <div className="flex items-center gap-2 text-[#8C2A0D] font-bold text-[15px] mb-1">
+              <AlertTriangle size={18} className="shrink-0 text-[#8C2A0D] fill-[#8C2A0D]" />
               <span>{warningTitle}</span>
             </div>
-            <p className="text-[#9E3618] text-xs sm:text-[13px] leading-relaxed font-normal">
+            <p className="text-[#A33B1C] text-[14px] leading-relaxed font-normal ml-6">
               {warningText}
             </p>
           </div>
         ) : null}
 
         {/* Action Buttons Row */}
-        <div className="flex items-center justify-between gap-4 pt-1 w-full">
+        <div className="flex items-center justify-between gap-4 mt-2 w-full">
           {/* 2. Cancel Button (Red - สีแดง) */}
           <button
             type="button"
             onClick={handleCancel}
             disabled={isLoading}
-            className="px-7 py-3 bg-[#DC2626] hover:bg-[#B91C1C] text-white font-bold rounded text-sm sm:text-[15px] transition-all shadow-xs cursor-pointer disabled:opacity-50 text-center border border-[#DC2626] min-w-[125px]"
+            className="px-8 py-3 bg-[#DC2626] hover:bg-[#B91C1C] text-white font-medium rounded-sm text-[16px] transition-all shadow-sm cursor-pointer disabled:opacity-50 text-center min-w-[140px]"
           >
             {cancelText}
           </button>
@@ -82,10 +82,10 @@ export default function ConfirmModal({
             type="button"
             onClick={onConfirm}
             disabled={isLoading}
-            className="px-7 py-3 bg-[#10B981] hover:bg-[#059669] text-white font-bold rounded text-sm sm:text-[15px] transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 text-center border border-[#10B981] min-w-[125px]"
+            className="px-8 py-3 bg-[#10B981] hover:bg-[#059669] text-white font-medium rounded-sm text-[16px] transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 text-center min-w-[140px]"
           >
             {isLoading ? (
-              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0"></span>
+              <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0"></span>
             ) : null}
             <span>{confirmText}</span>
           </button>
