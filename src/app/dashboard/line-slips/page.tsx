@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
-import { lineMessages, houses } from "@/lib/schema";
-import { desc, eq, sql, inArray } from "drizzle-orm";
+import { lineMessages, transactions, houses } from "@/lib/schema";
+import { desc, eq, sql, inArray, and } from "drizzle-orm";
 import LineSlipsClient from "./LineSlipsClient";
 import { getSmartSuggestion } from "./actions";
 
@@ -14,11 +14,20 @@ export default async function LineSlipsPage(props: { searchParams: Promise<{ [ke
   const limit = Number(searchParams.limit) || 12;
   const offset = (page - 1) * limit;
 
+  // Filter ONLY image messages (slips)
+  const isImageCondition = eq(lineMessages.type, "image");
+
   // Get total counts for badges
   const [pendingCountRes, verifiedCountRes, rejectedCountRes] = await Promise.all([
-    db.select({ count: sql<number>`count(*)` }).from(lineMessages).where(eq(lineMessages.status, "pending")),
-    db.select({ count: sql<number>`count(*)` }).from(lineMessages).where(inArray(lineMessages.status, ["verified_auto", "processed"])),
-    db.select({ count: sql<number>`count(*)` }).from(lineMessages).where(eq(lineMessages.status, "rejected")),
+    db.select({ count: sql<number>`count(*)` })
+      .from(lineMessages)
+      .where(and(isImageCondition, eq(lineMessages.status, "pending"))),
+    db.select({ count: sql<number>`count(*)` })
+      .from(lineMessages)
+      .where(and(isImageCondition, inArray(lineMessages.status, ["verified_auto", "processed"]))),
+    db.select({ count: sql<number>`count(*)` })
+      .from(lineMessages)
+      .where(and(isImageCondition, eq(lineMessages.status, "rejected"))),
   ]);
 
   const pendingCount = Number(pendingCountRes[0]?.count || 0);
@@ -31,27 +40,67 @@ export default async function LineSlipsPage(props: { searchParams: Promise<{ [ke
 
   if (tab === 'pending') {
     slips = await db
-      .select()
+      .select({
+        id: lineMessages.id,
+        lineMessageId: lineMessages.lineMessageId,
+        lineUserId: lineMessages.lineUserId,
+        type: lineMessages.type,
+        imageUrl: lineMessages.imageUrl,
+        houseNumber: lineMessages.houseNumber,
+        amount: lineMessages.amount,
+        senderName: lineMessages.senderName,
+        isVerified: lineMessages.isVerified,
+        status: lineMessages.status,
+        transactionId: lineMessages.transactionId,
+        createdAt: lineMessages.createdAt,
+      })
       .from(lineMessages)
-      .where(eq(lineMessages.status, "pending"))
+      .where(and(isImageCondition, eq(lineMessages.status, "pending")))
       .orderBy(desc(lineMessages.createdAt))
       .limit(limit)
       .offset(offset);
     totalForTab = pendingCount;
   } else if (tab === 'verified') {
     slips = await db
-      .select()
+      .select({
+        id: lineMessages.id,
+        lineMessageId: lineMessages.lineMessageId,
+        lineUserId: lineMessages.lineUserId,
+        type: lineMessages.type,
+        imageUrl: sql<string>`COALESCE(${lineMessages.imageUrl}, ${transactions.slipImageUrl})`,
+        houseNumber: lineMessages.houseNumber,
+        amount: sql<string>`COALESCE(${lineMessages.amount}, ${transactions.amount})`,
+        senderName: lineMessages.senderName,
+        isVerified: lineMessages.isVerified,
+        status: lineMessages.status,
+        transactionId: lineMessages.transactionId,
+        createdAt: lineMessages.createdAt,
+      })
       .from(lineMessages)
-      .where(inArray(lineMessages.status, ["verified_auto", "processed"]))
+      .leftJoin(transactions, eq(lineMessages.transactionId, transactions.id))
+      .where(and(isImageCondition, inArray(lineMessages.status, ["verified_auto", "processed"])))
       .orderBy(desc(lineMessages.createdAt))
       .limit(limit)
       .offset(offset);
     totalForTab = verifiedCount;
   } else {
     slips = await db
-      .select()
+      .select({
+        id: lineMessages.id,
+        lineMessageId: lineMessages.lineMessageId,
+        lineUserId: lineMessages.lineUserId,
+        type: lineMessages.type,
+        imageUrl: lineMessages.imageUrl,
+        houseNumber: lineMessages.houseNumber,
+        amount: lineMessages.amount,
+        senderName: lineMessages.senderName,
+        isVerified: lineMessages.isVerified,
+        status: lineMessages.status,
+        transactionId: lineMessages.transactionId,
+        createdAt: lineMessages.createdAt,
+      })
       .from(lineMessages)
-      .where(eq(lineMessages.status, "rejected"))
+      .where(and(isImageCondition, eq(lineMessages.status, "rejected")))
       .orderBy(desc(lineMessages.createdAt))
       .limit(limit)
       .offset(offset);
