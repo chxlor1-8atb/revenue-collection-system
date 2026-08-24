@@ -104,8 +104,8 @@ export default function TopNav({ userName, settings }: { userName: string, setti
                       prefetch={true}
                       className={`relative flex items-center justify-center gap-1.5 w-full md:w-auto h-9 sm:h-10 md:h-auto px-1.5 sm:px-2.5 md:px-3 lg:px-4 py-1.5 md:py-2 rounded-xl md:rounded-full text-xs lg:text-sm font-bold transition-all whitespace-nowrap ${
                         isActive 
-                          ? "text-slate-900 bg-white border-2 border-slate-900 shadow-xs" 
-                          : "text-slate-500 hover:text-slate-900 hover:bg-white/60 md:hover:bg-slate-50/80 border-2 border-transparent"
+                          ? "text-slate-900 bg-transparent border-2 border-slate-900" 
+                          : "text-slate-500 hover:text-slate-900 hover:bg-slate-50/50 border-2 border-transparent"
                       }`}
                       title={item.name}
                       aria-label={item.name}
