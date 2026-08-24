@@ -730,7 +730,7 @@ export default function HousesClient({
                       <div>
                         <div className="text-[10px] uppercase font-bold text-slate-400">อัตราค่าบริการ</div>
                         <div className="font-mono font-bold text-emerald-700 text-sm">
-                          ฿{parseFloat(house.defaultBillingAmount || "20").toLocaleString("th-TH", { minimumFractionDigits: 2 })}/ด.
+                          ฿{parseFloat(house.defaultBillingAmount || "20").toLocaleString("th-TH", { minimumFractionDigits: 2 })}/เดือน
                         </div>
                       </div>
 
