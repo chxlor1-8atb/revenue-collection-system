@@ -16,6 +16,7 @@ import TablePagination from "@/components/TablePagination";
 import MonthPicker from "@/components/MonthPicker";
 import ConfirmModal from "@/components/ConfirmModal";
 import LineSendingModal from "@/components/LineSendingModal";
+import LottieIcon from "@/components/LottieIcon";
 
 export default function HousesClient({ 
   initialHouses,
@@ -348,8 +349,8 @@ export default function HousesClient({
         {/* 1. Header Section */}
         <div className="p-6 lg:p-7 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#5B58F2] to-[#7E7BFF] flex items-center justify-center text-white shadow-md shadow-[#5B58F2]/25 shrink-0">
-              <Building2 size={24} strokeWidth={2.2} />
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#5B58F2] to-[#7E7BFF] flex items-center justify-center text-white shadow-md shadow-[#5B58F2]/25 shrink-0 overflow-hidden">
+              <LottieIcon src="/icons/icons8-home.json" size={26} className="brightness-0 invert" loop autoplay />
             </div>
             <div>
               <div className="flex items-center gap-2.5">
@@ -765,8 +766,8 @@ export default function HousesClient({
         {/* Empty State */}
         {initialHouses.length === 0 && !isPending && (
           <div className="p-16 text-center">
-            <div className="w-16 h-16 rounded-3xl bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-4">
-              <Home size={32} />
+            <div className="w-16 h-16 rounded-3xl bg-slate-100 mx-auto flex items-center justify-center mb-4 overflow-hidden">
+              <LottieIcon src="/icons/icons8-home.json" size={36} className="opacity-60" loop autoplay />
             </div>
             <div className="text-slate-800 font-bold text-lg">ไม่พบข้อมูลบ้านที่ตรงกับเงื่อนไข</div>
             <p className="text-slate-500 text-sm mt-1 max-w-sm mx-auto">
