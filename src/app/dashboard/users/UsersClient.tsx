@@ -97,9 +97,7 @@ export default function UsersClient({
         {/* Header & Toolbar */}
         <div className="p-6 lg:p-7 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#5B58F2] to-[#7E7BFF] flex items-center justify-center text-white shadow-md shadow-[#5B58F2]/25 shrink-0">
-              <Shield size={24} strokeWidth={2.2} />
-            </div>
+            <Shield size={38} className="text-slate-800 shrink-0" strokeWidth={2} />
             <div>
               <div className="flex items-center gap-2.5">
                 <h1 className="font-bold text-2xl text-slate-900 tracking-tight">ผู้ดูแลระบบ</h1>

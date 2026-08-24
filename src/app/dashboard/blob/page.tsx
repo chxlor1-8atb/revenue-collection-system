@@ -23,6 +23,7 @@ import {
   Layers,
   X
 } from "lucide-react";
+import LottieIcon from "@/components/LottieIcon";
 import { motion, AnimatePresence } from "framer-motion";
 import SlipModalButton from "@/components/SlipModalButton";
 import TablePagination from "@/components/TablePagination";
@@ -337,10 +338,8 @@ export default function BlobManagementPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2.5 mb-1">
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#5B58F2] to-[#7B78FF] flex items-center justify-center text-white shadow-sm shadow-[#5B58F2]/20">
-              <HardDrive size={19} />
-            </div>
+          <div className="flex items-center gap-3.5 mb-1">
+            <LottieIcon src="/icons/icons8-folder.json" size={48} className="shrink-0" loop autoplay />
             <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
               พื้นที่จัดเก็บไฟล์ (Vercel Blob)
             </h1>
