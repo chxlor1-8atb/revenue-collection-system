@@ -814,9 +814,9 @@ export default function HistoryClient() {
                           </td>
 
                           {/* ID & Slip */}
-                          <td className="px-4 py-3.5 font-mono text-xs font-bold text-slate-500">
+                          <td className="px-4 py-3.5">
                             <div className="flex items-center gap-2">
-                              <span>#{item.id}</span>
+                              <span className="font-mono text-xs font-bold text-slate-500">#{item.id}</span>
                               {item.slipImageUrl && item.slipImageUrl !== "pending" && (
                                 <SlipModalButton imageUrl={item.slipImageUrl} buttonStyle="history" />
                               )}

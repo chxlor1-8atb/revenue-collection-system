@@ -43,9 +43,9 @@ export default function SlipModalButton({ imageUrl, buttonStyle = "history", chi
       ) : (
         <button 
           onClick={() => setIsOpen(true)}
-          className="inline-flex items-center gap-1 text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 rounded-lg border border-emerald-200 transition-colors font-medium"
+          className="inline-flex items-center gap-1.5 text-xs font-sans font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-2.5 py-1 rounded-lg border border-emerald-200/80 transition-colors cursor-pointer"
         >
-          {buttonStyle === "history" ? <ReceiptText size={14} /> : <Receipt size={14} />} ดูสลิป
+          {buttonStyle === "history" ? <ReceiptText size={13} /> : <Receipt size={13} />} ดูสลิป
         </button>
       )}
 
