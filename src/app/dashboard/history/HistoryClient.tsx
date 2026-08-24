@@ -18,6 +18,7 @@ import CustomSelect from "@/components/CustomSelect";
 import MonthPicker from "@/components/MonthPicker";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import LottieIcon from "@/components/LottieIcon";
 
 function formatThaiMonth(monthYear: string) {
   const thaiMonths = ["", "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
@@ -288,10 +289,8 @@ export default function HistoryClient() {
         
         {/* 1. Header Section */}
         <div className="p-6 lg:p-7 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#5B58F2] to-[#7E7BFF] flex items-center justify-center text-white shadow-md shadow-[#5B58F2]/25 shrink-0">
-              <History size={24} strokeWidth={2.2} />
-            </div>
+          <div className="flex items-center gap-3">
+            <LottieIcon src="/icons/Receipt.json" size={42} className="shrink-0" loop autoplay />
             <div>
               <div className="flex items-center gap-2.5 flex-wrap">
                 <h1 className="font-bold text-2xl text-slate-900 tracking-tight">ประวัติการรับชำระเงิน</h1>
