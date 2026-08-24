@@ -73,17 +73,17 @@ export default function TablePagination({
 
     return pages.map((p, i) => {
       if (p === '...') {
-        return <span key={`dots-${i}`} className="px-2 text-slate-400">...</span>;
+        return <span key={`dots-${i}`} className="px-1 sm:px-2 text-slate-400 text-xs sm:text-sm">...</span>;
       }
       const isActive = p === currentPage;
       return (
         <button
           key={p}
           onClick={() => onPageChange(p as number)}
-          className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
+          className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
             isActive 
-              ? 'bg-[#1F2E22] text-white shadow-sm' 
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-[#5B58F2] text-white shadow-xs shadow-[#5B58F2]/25' 
+              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
           {p}
@@ -96,71 +96,71 @@ export default function TablePagination({
   const safeTotalPages = Math.max(1, totalPages);
 
   return (
-    <div className="flex flex-col lg:flex-row items-center justify-between px-6 py-4 bg-white border-t border-slate-200 gap-4 relative z-10">
+    <div className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 bg-white border-t border-slate-100 gap-3 sm:gap-4 relative z-10">
       
       {/* Left: Item Range */}
-      <div className="flex items-center gap-2 text-sm text-slate-500 whitespace-nowrap">
-        <div className="bg-emerald-50 text-emerald-700 font-medium px-3 py-1 rounded-lg border border-emerald-100/50">
+      <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-500 whitespace-nowrap order-1 sm:order-none">
+        <div className="bg-[#EEF0FF] text-[#5B58F2] font-semibold px-2.5 py-1 rounded-lg border border-[#D5D9FF]">
           {startItem}-{isInfinite ? Math.max(startItem, startItem + totalItems - 1) : endItem}
         </div>
         {!isInfinite && (
-          <span>จาก <strong className="text-slate-800 bg-slate-100 px-2 py-0.5 rounded">{totalItems}</strong> รายการ</span>
+          <span>จาก <strong className="text-slate-800 bg-slate-100 px-2 py-0.5 rounded font-semibold">{totalItems}</strong> รายการ</span>
         )}
       </div>
 
       {/* Center: Pagination Buttons */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-0.5 sm:gap-1 order-3 sm:order-none">
         <button
           onClick={() => onPageChange(1)}
           disabled={currentPage <= 1}
           aria-label="หน้าแรกสุด"
-          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+          className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer disabled:cursor-not-allowed"
         >
-          <ChevronsLeft size={16} />
+          <ChevronsLeft size={15} />
         </button>
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage <= 1}
           aria-label="หน้าก่อนหน้า"
-          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors mr-1"
+          className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors mr-0.5 cursor-pointer disabled:cursor-not-allowed"
         >
-          <ChevronLeft size={16} />
+          <ChevronLeft size={15} />
         </button>
         
         {!isInfinite && (
-          <>
+          <div className="flex items-center gap-0.5 sm:gap-1">
             {renderPageNumbers()}
-          </>
+          </div>
         )}
         {isInfinite && (
-          <span className="px-3 text-sm font-medium text-slate-700">หน้า {currentPage}</span>
+          <span className="px-3 text-xs sm:text-sm font-semibold text-slate-700">หน้า {currentPage}</span>
         )}
 
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= safeTotalPages}
           aria-label="หน้าถัดไป"
-          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors ml-1"
+          className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors ml-0.5 cursor-pointer disabled:cursor-not-allowed"
         >
-          <ChevronRight size={16} />
+          <ChevronRight size={15} />
         </button>
         {!isInfinite && (
           <button
             onClick={() => onPageChange(safeTotalPages)}
             disabled={currentPage >= safeTotalPages}
             aria-label="หน้าสุดท้าย"
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer disabled:cursor-not-allowed"
           >
-            <ChevronsRight size={16} />
+            <ChevronsRight size={15} />
           </button>
         )}
       </div>
 
       {/* Right: Jump & Limit */}
-      <div className="flex items-center gap-4 text-sm text-slate-500 whitespace-nowrap">
+      <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-slate-500 whitespace-nowrap order-2 sm:order-none">
         
-        {!isInfinite && (
-          <div className="flex items-center gap-2 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200">
+        {!isInfinite && totalPages > 5 && (
+          <div className="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200">
             <span>ไป</span>
             <input
               type="text"
@@ -168,20 +168,20 @@ export default function TablePagination({
               onChange={(e) => setJumpPage(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleJump()}
               aria-label="ระบุเลขหน้าเพื่อกระโดดไป"
-              className="w-10 h-7 text-center border border-slate-300 rounded text-slate-700 focus:outline-none focus:border-emerald-500"
+              className="w-8 sm:w-9 h-6 sm:h-7 text-center border border-slate-200 rounded text-slate-700 bg-white focus:outline-none focus:border-[#5B58F2] text-xs font-semibold"
             />
             <button 
               onClick={handleJump}
               aria-label="ไปที่หน้าที่ระบุ"
-              className="w-7 h-7 flex items-center justify-center bg-[#1F2E22]/10 hover:bg-[#1F2E22]/20 text-[#1F2E22] rounded transition-colors"
+              className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center bg-[#5B58F2]/10 hover:bg-[#5B58F2]/20 text-[#5B58F2] rounded transition-colors cursor-pointer"
             >
-              <ArrowRight size={14} />
+              <ArrowRight size={13} />
             </button>
           </div>
         )}
 
         {onLimitChange && (
-          <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
+          <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200">
             <span>แสดง</span>
             
             <div className="relative" ref={limitRef}>
@@ -189,10 +189,10 @@ export default function TablePagination({
                 type="button"
                 onClick={() => setIsLimitOpen(!isLimitOpen)}
                 aria-label={`เลือกจำนวนรายการต่อหน้า (ปัจจุบัน ${itemsPerPage} รายการ)`}
-                className="flex items-center gap-1 font-semibold text-[#1F2E22] hover:text-[#2A3E2E] transition-colors focus:outline-none"
+                className="flex items-center gap-1 font-bold text-[#5B58F2] hover:text-[#4A47D1] transition-colors focus:outline-none cursor-pointer"
               >
                 {itemsPerPage}
-                <ChevronDown size={14} className={`transition-transform duration-200 ${isLimitOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown size={13} className={`transition-transform duration-200 ${isLimitOpen ? 'rotate-180' : ''}`} />
               </button>
 
               <AnimatePresence>
@@ -202,9 +202,9 @@ export default function TablePagination({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -5 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-white border border-slate-200 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] overflow-hidden w-20 z-[100] origin-bottom"
+                    className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden w-20 z-[100] origin-bottom p-1"
                   >
-                    <div className="flex flex-col p-1">
+                    <div className="flex flex-col gap-0.5">
                       {[10, 20, 50, 100].map((val) => (
                         <button
                           key={val}
@@ -213,10 +213,10 @@ export default function TablePagination({
                             onLimitChange(val);
                             setIsLimitOpen(false);
                           }}
-                          className={`px-3 py-2 text-sm text-center rounded-lg transition-colors ${
+                          className={`px-2 py-1.5 text-xs font-semibold text-center rounded-lg transition-colors cursor-pointer ${
                             itemsPerPage === val 
-                              ? 'bg-[#1F2E22] text-white font-medium' 
-                              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                              ? 'bg-[#5B58F2] text-white' 
+                              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                           }`}
                         >
                           {val}
