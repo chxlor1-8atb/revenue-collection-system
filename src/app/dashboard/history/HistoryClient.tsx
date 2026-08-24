@@ -582,10 +582,11 @@ export default function HistoryClient() {
                                 className="w-4 h-4 rounded text-[#5B58F2] focus:ring-[#5B58F2] border-slate-300 cursor-pointer"
                               />
                             )}
-                            <span className="font-mono text-xs font-bold text-slate-900 bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200">
-                              บ้าน {item.houseNumber}
+                            <span className="inline-flex items-center gap-1 bg-slate-100 px-3 py-1 rounded-xl border border-slate-200 text-slate-900 shadow-2xs">
+                              <span className="font-sans text-xs text-slate-500 font-medium">บ้าน</span>
+                              <span className="font-mono font-bold text-sm">{item.houseNumber}</span>
                             </span>
-                            <span className="font-mono text-[11px] font-semibold text-slate-400">
+                            <span className="font-mono text-xs font-semibold text-slate-400">
                               #{item.id}
                             </span>
                           </div>
@@ -823,8 +824,11 @@ export default function HistoryClient() {
                           </td>
 
                           {/* House Number */}
-                          <td className="px-4 py-3.5 font-mono font-bold text-slate-900">
-                            บ้าน {item.houseNumber}
+                          <td className="px-4 py-3.5">
+                            <div className="flex items-center gap-1.5 text-slate-900">
+                              <span className="font-sans text-xs text-slate-400 font-medium">บ้าน</span>
+                              <span className="font-mono font-bold text-sm">{item.houseNumber}</span>
+                            </div>
                           </td>
 
                           {/* Owner & Sender */}
