@@ -35,8 +35,11 @@ import {
   PlusCircle,
   HelpCircle,
   TrendingUp,
-  CreditCard
+  CreditCard,
+  House,
+  CornerDownLeft
 } from "lucide-react";
+import AnimatedLineIcon from "@/components/AnimatedLineIcon";
 import SlipModalButton from "@/components/SlipModalButton";
 import ConfirmModal from "@/components/ConfirmModal";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
@@ -368,7 +371,7 @@ export default function LineSlipsClient({
         {/* Header & Tabs */}
         <div className="p-6 lg:p-7 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
           <div className="flex items-center gap-4">
-            <Smartphone size={40} className="text-[#06C755] shrink-0" strokeWidth={2} />
+            <AnimatedLineIcon size={52} variant="green" />
             <div>
               <div className="flex items-center gap-2.5">
                 <h1 className="font-bold text-2xl text-slate-900 tracking-tight">สลิปจาก LINE</h1>
