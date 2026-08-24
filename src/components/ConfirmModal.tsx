@@ -20,10 +20,10 @@ export default function ConfirmModal({
   isOpen,
   title,
   description,
-  warningTitle = "คำเตือน (Warning)",
+  warningTitle = "Warning",
   warningText,
-  cancelText = "ยกเลิก (No, Cancel)",
-  confirmText = "ยืนยัน (Confirm)",
+  cancelText = "No, Cancel",
+  confirmText = "Yes, Delete",
   variant,
   onConfirm,
   onCancel,
@@ -34,68 +34,71 @@ export default function ConfirmModal({
 
   const handleCancel = onCancel || onClose || (() => {});
 
-  // Auto-detect danger variant if title or confirmText implies deletion/voiding
+  // Auto-detect danger variant if title or confirmText implies deletion/voiding/rejecting
   const isDanger = variant === "danger" || (!variant && (
-    (typeof title === 'string' && (title.includes('ลบ') || title.includes('ยกเลิก') || title.toLowerCase().includes('delete') || title.toLowerCase().includes('void') || title.includes('ปฏิเสธ'))) ||
-    (typeof confirmText === 'string' && (confirmText.includes('ลบ') || confirmText.includes('ยกเลิก') || confirmText.toLowerCase().includes('delete')))
+    (typeof title === 'string' && (title.includes('ลบ') || title.includes('ยกเลิก') || title.toLowerCase().includes('delete') || title.toLowerCase().includes('void') || title.includes('ปฏิเสธ') || title.includes('ออกจากระบบ'))) ||
+    (typeof confirmText === 'string' && (confirmText.includes('ลบ') || confirmText.includes('ยกเลิก') || confirmText.toLowerCase().includes('delete') || confirmText.includes('ปฏิเสธ')))
   ));
 
   const resolvedVariant = variant || (isDanger ? "danger" : "success");
 
   // Button styles: Red for danger/delete, Green for success/confirm, Indigo for primary
   const confirmBtnStyles = resolvedVariant === "danger"
-    ? "bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20 border border-rose-600"
+    ? "bg-[#DC2626] hover:bg-[#B91C1C] text-white border border-[#DC2626] shadow-sm shadow-red-500/20"
     : resolvedVariant === "primary"
-    ? "bg-[#5B58F2] hover:bg-[#4A47D1] text-white shadow-md shadow-[#5B58F2]/20 border border-[#5B58F2]"
-    : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 border border-emerald-600";
+    ? "bg-[#5B58F2] hover:bg-[#4A47D1] text-white border border-[#5B58F2] shadow-sm shadow-[#5B58F2]/20"
+    : "bg-[#10B981] hover:bg-[#059669] text-white border border-[#10B981] shadow-sm shadow-emerald-500/20";
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div 
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150"
+      onClick={handleCancel}
+    >
       <div 
-        className="bg-white rounded-[28px] shadow-2xl w-full max-w-[480px] overflow-hidden p-7 sm:p-8 animate-in zoom-in-95 duration-200 border border-slate-100 text-center"
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-[460px] p-7 sm:p-9 animate-in zoom-in-95 duration-150 border border-slate-100 text-left relative font-sans"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Title */}
-        <h3 className="text-2xl sm:text-[26px] font-black text-slate-900 mb-2.5 tracking-tight">
+        <h3 className="text-2xl font-bold text-center text-slate-900 mb-3 tracking-tight">
           {title}
         </h3>
         
         {/* Description */}
-        <div className="text-slate-700 font-medium mb-6 text-sm sm:text-base leading-relaxed">
+        <div className="text-center text-slate-700 font-medium mb-5 text-sm sm:text-base leading-relaxed">
           {description}
         </div>
 
-        {/* Warning Box */}
+        {/* Warning Box (Soft peach background with orange accent left bar) */}
         {warningText && (
-          <div className="bg-[#FDF1E8] p-4 rounded-2xl border-l-4 border-[#F26E43] mb-6 text-left shadow-2xs">
-            <div className="flex items-center gap-2 text-[#993A1C] font-bold mb-1 text-sm">
-              <AlertTriangle size={17} className="shrink-0 text-[#E05326]" />
+          <div className="bg-[#FDF0E7] p-4 rounded-md border-l-[5px] border-[#F25A38] mb-6 text-left shadow-2xs">
+            <div className="flex items-center gap-1.5 text-[#9C3217] font-bold text-sm mb-1">
+              <AlertTriangle size={15} className="shrink-0 text-[#E05326] fill-[#E05326] text-white" />
               <span>{warningTitle}</span>
             </div>
-            <p className="text-[#A34B2E] text-xs sm:text-[13px] leading-relaxed font-normal">
+            <p className="text-[#A34224] text-xs sm:text-[13px] leading-relaxed font-normal">
               {warningText}
             </p>
           </div>
         )}
 
         {/* Action Buttons Row */}
-        <div className="flex items-center justify-between gap-3 sm:gap-4 pt-1">
-          {/* Cancel Button (Dark Charcoal Solid Pill) */}
+        <div className="flex items-center justify-between gap-4 pt-1 w-full">
+          {/* Cancel Button (Dark Solid Navy/Charcoal) */}
           <button
             type="button"
             onClick={handleCancel}
             disabled={isLoading}
-            className="flex-1 py-3 px-5 bg-[#112022] hover:bg-[#1C3337] text-white font-bold rounded-xl text-sm transition-all shadow-sm cursor-pointer disabled:opacity-50 text-center"
+            className="px-6 py-2.5 bg-[#112022] hover:bg-[#1E3033] text-white font-bold rounded-lg text-sm transition-all shadow-sm cursor-pointer disabled:opacity-50 text-center min-w-[120px]"
           >
             {cancelText}
           </button>
 
-          {/* Confirm Button (Red for delete / Green for confirm) */}
+          {/* Confirm Button (Red for Delete / Green for Confirm) */}
           <button
             type="button"
             onClick={onConfirm}
             disabled={isLoading}
-            className={`flex-1 py-3 px-5 ${confirmBtnStyles} font-bold rounded-xl text-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 text-center`}
+            className={`px-6 py-2.5 ${confirmBtnStyles} font-bold rounded-lg text-sm transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 min-w-[120px] text-center`}
           >
             {isLoading ? (
               <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0"></span>
