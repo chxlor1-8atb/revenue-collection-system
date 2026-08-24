@@ -72,12 +72,12 @@ export default function ConfirmModal({
 
         {/* Action Buttons Row */}
         <div className="flex items-center justify-between w-full">
-          {/* Cancel Button (Dark Slate) */}
+          {/* Cancel Button (Red) */}
           <button
             type="button"
             onClick={handleCancel}
             disabled={isLoading}
-            className="px-8 py-3 bg-[#101D1E] hover:bg-[#1A2E2F] text-white font-semibold rounded-[2px] text-[16px] transition-colors cursor-pointer disabled:opacity-50 text-center min-w-[140px]"
+            className="px-8 py-3 bg-[#DC2626] hover:bg-[#B91C1C] text-white font-semibold rounded-[2px] text-[16px] transition-colors cursor-pointer disabled:opacity-50 text-center min-w-[140px]"
           >
             {cancelText}
           </button>
