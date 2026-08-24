@@ -334,113 +334,7 @@ export default function BlobManagementPage() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto pb-16 space-y-6">
-      {/* Top Header (Desktop only - mobile goes straight to storage analytics & files) */}
-      <div className="hidden sm:flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-3.5 mb-1">
-            <LottieIcon src="/icons/icons8-folder.json" size={48} className="shrink-0" loop autoplay />
-            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
-              พื้นที่จัดเก็บไฟล์ (Vercel Blob)
-            </h1>
-          </div>
-          <p className="text-sm text-slate-500">
-            ตรวจสอบสถิติการใช้งาน จัดการรูปภาพสลิป และทำความสะอาดไฟล์คลาวด์
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 self-start sm:self-center">
-          <button
-            onClick={() => fetchFiles(false)}
-            disabled={loading && !cursor}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/80 rounded-xl text-xs font-semibold shadow-sm hover:border-slate-300 transition-all disabled:opacity-50"
-          >
-            <RefreshCw size={14} className={loading && !cursor ? 'animate-spin text-[#5B58F2]' : 'text-slate-500'} />
-            <span>รีเฟรชข้อมูล</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Storage Gauge & Analytics Card */}
-      <div className="bg-white rounded-[24px] border border-slate-100 p-6 md:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.03)] relative overflow-hidden">
-        {/* Background glow accent */}
-        <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-bl from-[#5B58F2]/5 to-transparent rounded-full pointer-events-none -mr-20 -mt-20"></div>
-
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-100">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">สถานะความจุคลาวด์</span>
-              <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
-                usagePercentage > 90 
-                  ? 'bg-red-50 text-red-600 border border-red-200' 
-                  : usagePercentage > 75 
-                  ? 'bg-amber-50 text-amber-600 border border-amber-200' 
-                  : 'bg-emerald-50 text-emerald-600 border border-emerald-200'
-              }`}>
-                {usagePercentage > 90 ? <AlertTriangle size={11} /> : <ShieldCheck size={11} />}
-                {usagePercentage > 90 ? 'พื้นที่ใกล้เต็ม' : usagePercentage > 75 ? 'ใช้งานปานกลาง' : 'พื้นที่พร้อมใช้งาน'}
-              </span>
-            </div>
-            <div className="flex items-baseline gap-3">
-              <h2 className="text-3xl font-extrabold text-slate-800 tracking-tight">
-                {loading && files.length === 0 ? '—' : formatSize(totalSize)}
-              </h2>
-              <span className="text-sm font-medium text-slate-400">
-                จากทั้งหมด 1.00 GB
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <div className="text-xs text-slate-400 font-medium">เหลือพื้นที่ว่าง</div>
-              <div className="text-lg font-bold text-slate-700">
-                {loading && files.length === 0 ? '—' : formatSize(remainingBytes)}
-              </div>
-            </div>
-            <div className="w-12 h-12 rounded-2xl bg-[#EEF0FF] flex items-center justify-center text-[#5B58F2] font-black text-sm shrink-0">
-              {loading && files.length === 0 ? '—' : `${usagePercentage.toFixed(1)}%`}
-            </div>
-          </div>
-        </div>
-
-        {/* Dynamic Progress Bar */}
-        <div className="pt-6 space-y-3">
-          <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden p-0.5 relative">
-            <div 
-              className={`h-full rounded-full transition-all duration-700 ease-out ${
-                usagePercentage > 90 
-                  ? 'bg-gradient-to-r from-amber-500 to-red-500' 
-                  : usagePercentage > 75 
-                  ? 'bg-gradient-to-r from-blue-500 to-amber-500' 
-                  : 'bg-gradient-to-r from-[#5B58F2] to-[#7B78FF]'
-              }`}
-              style={{ width: `${Math.min(100, Math.max(1, usagePercentage))}%` }}
-            />
-          </div>
-
-          {/* Quick Metrics Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
-            <div className="p-3.5 rounded-2xl bg-slate-50/70 border border-slate-100/80">
-              <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">จำนวนไฟล์ในระบบ</div>
-              <div className="text-lg font-bold text-slate-800 mt-0.5">{files.length.toLocaleString()} ไฟล์</div>
-            </div>
-            <div className="p-3.5 rounded-2xl bg-slate-50/70 border border-slate-100/80">
-              <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">ขนาดเฉลี่ยต่อรูป</div>
-              <div className="text-lg font-bold text-slate-800 mt-0.5">{loading && files.length === 0 ? '—' : formatSize(averageFileSize)}</div>
-            </div>
-            <div className="p-3.5 rounded-2xl bg-slate-50/70 border border-slate-100/80">
-              <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">รองรับสลิปได้อีก</div>
-              <div className="text-lg font-bold text-emerald-600 mt-0.5">~{loading && files.length === 0 ? '—' : estimatedRemainingImages.toLocaleString()} รูป</div>
-            </div>
-            <div className="p-3.5 rounded-2xl bg-[#EEF0FF]/50 border border-[#5B58F2]/15">
-              <div className="text-[11px] font-semibold text-[#5B58F2] uppercase tracking-wider">เลือกรายการอยู่</div>
-              <div className="text-lg font-bold text-[#5B58F2] mt-0.5">{selectedUrls.size} ไฟล์</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <div className="max-w-7xl mx-auto pb-16 font-sans">
       {/* Notifications / Banners */}
       <AnimatePresence>
         {deleteResult && (
@@ -448,7 +342,7 @@ export default function BlobManagementPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between shadow-sm"
+            className="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between shadow-sm"
           >
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
@@ -465,7 +359,7 @@ export default function BlobManagementPage() {
             </div>
             <button 
               onClick={() => setDeleteResult(null)}
-              className="text-emerald-700 hover:text-emerald-900 p-1.5 hover:bg-emerald-100/80 rounded-xl transition-colors"
+              className="text-emerald-700 hover:text-emerald-900 p-1.5 hover:bg-emerald-100/80 rounded-xl transition-colors cursor-pointer"
             >
               <X size={16} />
             </button>
@@ -477,7 +371,7 @@ export default function BlobManagementPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="p-4 bg-blue-50 border border-blue-200 rounded-2xl flex items-center gap-3 shadow-sm"
+            className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-2xl flex items-center gap-3 shadow-sm"
           >
             <RefreshCw size={20} className="animate-spin text-blue-600 shrink-0" />
             <p className="text-sm font-semibold text-blue-900">{actionProgress}</p>
@@ -485,200 +379,296 @@ export default function BlobManagementPage() {
         )}
       </AnimatePresence>
 
-      {/* Controls & Filter Hub */}
-      <div className="bg-white rounded-[24px] border border-slate-100 p-4 sm:p-5 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-4">
-        {/* Row 1: Folder Tabs & Search & View Toggle */}
-        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
-          {/* Tabs */}
-          <div className="flex items-center gap-1.5 p-1 bg-slate-100/80 rounded-2xl self-start sm:self-auto overflow-x-auto max-w-full">
-            {tabs.map(tab => (
-              <button
-                key={tab.prefix}
-                onClick={() => setActiveTab(tab.prefix)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                  activeTab === tab.prefix
-                    ? 'bg-white text-[#5B58F2] shadow-sm shadow-slate-200'
-                    : 'text-slate-500 hover:text-slate-800 hover:bg-white/50'
-                }`}
-              >
-                {tab.icon}
-                <span>{tab.label}</span>
-              </button>
-            ))}
+      {/* Unified Master Container */}
+      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col font-sans">
+        {/* 1. Header Section */}
+        <div className="p-6 lg:p-7 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
+          <div className="flex items-center gap-4">
+            <LottieIcon src="/icons/icons8-folder.json" size={48} className="shrink-0" loop autoplay />
+            <div>
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <h1 className="font-bold text-2xl text-slate-900 tracking-tight">พื้นที่จัดเก็บไฟล์ (Vercel Blob)</h1>
+                <span className="bg-[#EEF0FF] text-[#5B58F2] text-xs font-bold px-2.5 py-0.5 rounded-full border border-[#D5D9FF]">
+                  {files.length.toLocaleString()} ไฟล์
+                </span>
+                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                  usagePercentage > 90 
+                    ? 'bg-red-50 text-red-600 border border-red-200' 
+                    : usagePercentage > 75 
+                    ? 'bg-amber-50 text-amber-600 border border-amber-200' 
+                    : 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                }`}>
+                  {usagePercentage > 90 ? <AlertTriangle size={12} /> : <ShieldCheck size={12} />}
+                  {usagePercentage > 90 ? 'พื้นที่ใกล้เต็ม' : usagePercentage > 75 ? 'ใช้งานปานกลาง' : 'พื้นที่พร้อมใช้งาน'}
+                </span>
+              </div>
+              <p className="text-slate-500 text-sm mt-0.5 hidden sm:block">
+                ตรวจสอบสถิติการใช้งาน จัดการรูปภาพสลิป และทำความสะอาดไฟล์คลาวด์
+              </p>
+            </div>
           </div>
 
-          {/* Search, Sort, View Toggle */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            {/* Search Input */}
-            <div className="relative flex-1 sm:w-64">
-              <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-              <input
-                type="text"
-                placeholder="ค้นหาชื่อไฟล์..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200/80 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#5B58F2]/20 focus:border-[#5B58F2] transition-all"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
-                >
-                  <X size={14} />
-                </button>
-              )}
-            </div>
+          <div className="flex items-center gap-2 self-start lg:self-center">
+            <button
+              onClick={() => fetchFiles(false)}
+              disabled={loading && !cursor}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold shadow-xs transition-all disabled:opacity-50 cursor-pointer"
+            >
+              <RefreshCw size={14} className={loading && !cursor ? 'animate-spin text-[#5B58F2]' : 'text-slate-500'} />
+              <span>รีเฟรชข้อมูล</span>
+            </button>
+          </div>
+        </div>
 
-            {/* Sort Selector */}
-            <div className="flex items-center gap-1 bg-slate-50 border border-slate-200/80 rounded-xl px-2 py-1.5">
-              <span className="text-[11px] text-slate-400 font-semibold px-1 hidden sm:inline">เรียง:</span>
-              <select
-                value={sortKey}
-                onChange={(e) => setSortKey(e.target.value as SortKey)}
-                className="bg-transparent text-xs font-semibold text-slate-700 border-none outline-none cursor-pointer pr-1"
-              >
-                <option value="uploadedAt">วันที่อัปโหลด</option>
-                <option value="size">ขนาดไฟล์</option>
-                <option value="pathname">ชื่อไฟล์</option>
-              </select>
-              <button
-                onClick={() => setSortDir(prev => prev === 'asc' ? 'desc' : 'asc')}
-                className="p-1 text-slate-500 hover:text-[#5B58F2] rounded-lg transition-colors"
-                title={sortDir === 'asc' ? 'น้อยไปมาก' : 'มากไปน้อย'}
-              >
-                <ArrowUpDown size={13} className={sortDir === 'desc' ? 'rotate-180 transition-transform' : 'transition-transform'} />
-              </button>
+        {/* 2. Storage Gauge & Analytics Strip */}
+        <div className="p-5 lg:p-6 bg-slate-50/40 border-b border-slate-100 space-y-4">
+          {/* Storage Bar & Summary */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="space-y-1 w-full sm:w-auto">
+              <div className="flex items-baseline gap-2">
+                <span className="text-xs font-bold text-slate-500">ใช้พื้นที่ไป:</span>
+                <span className="text-xl sm:text-2xl font-black text-slate-900">
+                  {loading && files.length === 0 ? '—' : formatSize(totalSize)}
+                </span>
+                <span className="text-xs text-slate-400 font-medium">/ 1.00 GB ({usagePercentage.toFixed(1)}%)</span>
+              </div>
             </div>
+            
+            <div className="text-xs text-slate-500 font-medium flex items-center gap-2">
+              <span>เหลือพื้นที่ว่าง:</span>
+              <strong className="text-slate-800 font-bold text-sm bg-white px-2.5 py-1 rounded-lg border border-slate-200/80 shadow-2xs">
+                {loading && files.length === 0 ? '—' : formatSize(remainingBytes)}
+              </strong>
+            </div>
+          </div>
 
-            {/* View Mode Toggle */}
-            <div className="flex items-center p-1 bg-slate-100/80 rounded-xl">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded-lg transition-all ${
-                  viewMode === 'grid' ? 'bg-white text-[#5B58F2] shadow-xs' : 'text-slate-400 hover:text-slate-700'
-                }`}
-                title="มุมมองการ์ด (Grid)"
-              >
-                <LayoutGrid size={15} />
-              </button>
-              <button
-                onClick={() => setViewMode('table')}
-                className={`p-1.5 rounded-lg transition-all ${
-                  viewMode === 'table' ? 'bg-white text-[#5B58F2] shadow-xs' : 'text-slate-400 hover:text-slate-700'
-                }`}
-                title="มุมมองตาราง (Table)"
-              >
-                <List size={15} />
-              </button>
+          {/* Progress Bar */}
+          <div className="h-2.5 w-full bg-slate-200/70 rounded-full overflow-hidden p-0.5">
+            <div 
+              className={`h-full rounded-full transition-all duration-700 ease-out ${
+                usagePercentage > 90 
+                  ? 'bg-gradient-to-r from-amber-500 to-red-500' 
+                  : usagePercentage > 75 
+                  ? 'bg-gradient-to-r from-blue-500 to-amber-500' 
+                  : 'bg-gradient-to-r from-[#5B58F2] to-[#7B78FF]'
+              }`}
+              style={{ width: `${Math.min(100, Math.max(1, usagePercentage))}%` }}
+            />
+          </div>
+
+          {/* 4 Quick Stat Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-1">
+            <div className="p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+              <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">จำนวนไฟล์ในระบบ</div>
+              <div className="text-base font-bold text-slate-800 mt-0.5">{files.length.toLocaleString()} ไฟล์</div>
+            </div>
+            <div className="p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+              <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">ขนาดเฉลี่ยต่อรูป</div>
+              <div className="text-base font-bold text-slate-800 mt-0.5">{loading && files.length === 0 ? '—' : formatSize(averageFileSize)}</div>
+            </div>
+            <div className="p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+              <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">รองรับสลิปได้อีก</div>
+              <div className="text-base font-bold text-emerald-600 mt-0.5">~{loading && files.length === 0 ? '—' : estimatedRemainingImages.toLocaleString()} รูป</div>
+            </div>
+            <div className="p-3 rounded-xl bg-[#EEF0FF]/60 border border-[#D5D9FF] shadow-2xs">
+              <div className="text-[11px] font-semibold text-[#5B58F2] uppercase tracking-wider">เลือกรายการอยู่</div>
+              <div className="text-base font-bold text-[#5B58F2] mt-0.5">{selectedUrls.size} ไฟล์</div>
             </div>
           </div>
         </div>
 
-        {/* Row 2: Maintenance & Cleaning Hub */}
-        <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mr-1">
-              <Sparkles size={13} className="text-[#5B58F2]" />
-              เครื่องมือดูแลพื้นที่:
-            </span>
-
-            {/* Clean Rejected Slips */}
-            <button
-              onClick={() => promptDelete('rejected')}
-              disabled={actionProgress !== null}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100/80 text-orange-700 border border-orange-200/80 text-xs font-semibold transition-all disabled:opacity-50"
-            >
-              <AlertTriangle size={13} />
-              <span>ลบสลิปที่ตรวจไม่ผ่าน</span>
-            </button>
-
-            {/* Clean Old Slips with Popover / Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setShowCleanupMenu(prev => !prev)}
-                disabled={actionProgress !== null}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100/80 text-amber-700 border border-amber-200/80 text-xs font-semibold transition-all disabled:opacity-50"
-              >
-                <Clock size={13} />
-                <span>ลบไฟล์สลิปเก่า ({oldDays} วัน)</span>
-                <ChevronDown size={12} />
-              </button>
-
-              {showCleanupMenu && (
-                <div className="absolute left-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl p-4 shadow-xl z-30 space-y-3">
-                  <div className="text-xs font-bold text-slate-800">ล้างไฟล์เก่ากว่าที่กำหนด</div>
-                  <div className="flex gap-1.5">
-                    {[15, 30, 60, 90].map(d => (
-                      <button
-                        key={d}
-                        onClick={() => setOldDays(d)}
-                        className={`flex-1 py-1 text-xs rounded-lg font-bold border transition-all ${
-                          oldDays === d 
-                            ? 'bg-amber-500 text-white border-amber-500' 
-                            : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                        }`}
-                      >
-                        {d} วัน
-                      </button>
-                    ))}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="number"
-                      value={oldDays}
-                      onChange={(e) => setOldDays(Math.max(1, parseInt(e.target.value) || 1))}
-                      className="w-20 px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-center"
-                      min={1}
-                    />
-                    <span className="text-xs text-slate-500">วันขึ้นไป</span>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setShowCleanupMenu(false);
-                      promptDelete('old', { days: oldDays });
-                    }}
-                    className="w-full py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-amber-500/20"
-                  >
-                    เริ่มค้นหาและลบ
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Quick Batch Selection Info */}
-          <div className="flex items-center gap-2 ml-auto">
-            {selectedUrls.size > 0 ? (
-              <div className="flex items-center gap-2">
+        {/* 3. Toolbar & Actions Bar */}
+        <div className="p-4 sm:p-5 border-b border-slate-100 bg-white space-y-3.5 relative z-20">
+          {/* Row 1: Folder Tabs, Search, Sort & View Mode */}
+          <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+            {/* Tabs */}
+            <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl self-start sm:self-auto overflow-x-auto max-w-full border border-slate-200/60">
+              {tabs.map(tab => (
                 <button
-                  onClick={() => promptDelete('selected')}
-                  disabled={actionProgress !== null}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-sm shadow-red-600/20 transition-all disabled:opacity-50"
+                  key={tab.prefix}
+                  onClick={() => setActiveTab(tab.prefix)}
+                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                    activeTab === tab.prefix
+                      ? 'bg-white text-[#5B58F2] shadow-xs'
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}
                 >
-                  <Trash2 size={13} />
-                  <span>ลบที่เลือก ({selectedUrls.size})</span>
+                  {tab.icon}
+                  <span>{tab.label}</span>
                 </button>
-                <button
-                  onClick={() => setSelectedUrls(new Set())}
-                  className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold transition-all"
+              ))}
+            </div>
+
+            {/* Search, Sort, View Toggle */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              {/* Search Input */}
+              <div className="relative flex-1 sm:w-60">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="ค้นหาชื่อไฟล์..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-8.5 pr-8 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#5B58F2]/20 focus:border-[#5B58F2] transition-all"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                  >
+                    <X size={13} />
+                  </button>
+                )}
+              </div>
+
+              {/* Sort Selector */}
+              <div className="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-xl px-2 py-1">
+                <span className="text-[11px] text-slate-400 font-semibold px-0.5 hidden sm:inline">เรียง:</span>
+                <select
+                  value={sortKey}
+                  onChange={(e) => setSortKey(e.target.value as SortKey)}
+                  className="bg-transparent text-xs font-semibold text-slate-700 border-none outline-none cursor-pointer pr-1"
                 >
-                  ยกเลิก
+                  <option value="uploadedAt">วันที่อัปโหลด</option>
+                  <option value="size">ขนาดไฟล์</option>
+                  <option value="pathname">ชื่อไฟล์</option>
+                </select>
+                <button
+                  onClick={() => setSortDir(prev => prev === 'asc' ? 'desc' : 'asc')}
+                  className="p-1 text-slate-500 hover:text-[#5B58F2] rounded-lg transition-colors cursor-pointer"
+                  title={sortDir === 'asc' ? 'น้อยไปมาก' : 'มากไปน้อย'}
+                >
+                  <ArrowUpDown size={13} className={sortDir === 'desc' ? 'rotate-180 transition-transform' : 'transition-transform'} />
                 </button>
               </div>
-            ) : (
+
+              {/* View Mode Switcher (Always visible!) */}
+              <div className="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200/60">
+                <button
+                  onClick={() => setViewMode('table')}
+                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    viewMode === 'table' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                  title="มุมมองตาราง"
+                >
+                  <List size={14} /> ตาราง
+                </button>
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    viewMode === 'grid' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                  title="มุมมองการ์ด"
+                >
+                  <LayoutGrid size={14} /> การ์ด
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Row 2: Maintenance & Cleaning Tools */}
+          <div className="pt-2.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mr-1">
+                <Sparkles size={13} className="text-[#5B58F2]" />
+                เครื่องมือดูแลพื้นที่:
+              </span>
+
               <button
-                onClick={toggleSelectAll}
-                className="text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors"
+                onClick={() => promptDelete('rejected')}
+                disabled={actionProgress !== null}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100/80 text-orange-700 border border-orange-200/80 text-xs font-semibold transition-all disabled:opacity-50 cursor-pointer"
               >
-                เลือกทั้งหมดในหน้านี้
+                <AlertTriangle size={13} />
+                <span>ลบสลิปที่ตรวจไม่ผ่าน</span>
               </button>
-            )}
+
+              <div className="relative">
+                <button
+                  onClick={() => setShowCleanupMenu(prev => !prev)}
+                  disabled={actionProgress !== null}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100/80 text-amber-700 border border-amber-200/80 text-xs font-semibold transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  <Clock size={13} />
+                  <span>ลบไฟล์สลิปเก่า ({oldDays} วัน)</span>
+                  <ChevronDown size={12} />
+                </button>
+
+                {showCleanupMenu && (
+                  <div className="absolute left-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl p-4 shadow-xl z-50 space-y-3">
+                    <div className="text-xs font-bold text-slate-800">ล้างไฟล์เก่ากว่าที่กำหนด</div>
+                    <div className="flex gap-1.5">
+                      {[15, 30, 60, 90].map(d => (
+                        <button
+                          key={d}
+                          onClick={() => setOldDays(d)}
+                          className={`flex-1 py-1 text-xs rounded-lg font-bold border transition-all cursor-pointer ${
+                            oldDays === d 
+                              ? 'bg-amber-500 text-white border-amber-500' 
+                              : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                          }`}
+                        >
+                          {d} วัน
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        value={oldDays}
+                        onChange={(e) => setOldDays(Math.max(1, parseInt(e.target.value) || 1))}
+                        className="w-20 px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-center"
+                        min={1}
+                      />
+                      <span className="text-xs text-slate-500">วันขึ้นไป</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setShowCleanupMenu(false);
+                        promptDelete('old', { days: oldDays });
+                      }}
+                      className="w-full py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-amber-500/20 cursor-pointer"
+                    >
+                      เริ่มค้นหาและลบ
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Batch Selection */}
+            <div className="flex items-center gap-2 ml-auto">
+              {selectedUrls.size > 0 ? (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => promptDelete('selected')}
+                    disabled={actionProgress !== null}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-sm shadow-red-600/20 transition-all disabled:opacity-50 cursor-pointer"
+                  >
+                    <Trash2 size={13} />
+                    <span>ลบที่เลือก ({selectedUrls.size})</span>
+                  </button>
+                  <button
+                    onClick={() => setSelectedUrls(new Set())}
+                    className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold transition-all cursor-pointer"
+                  >
+                    ยกเลิก
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={toggleSelectAll}
+                  className="text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+                >
+                  เลือกทั้งหมดในหน้านี้
+                </button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Main File Content (Grid vs Table) */}
-      <div className="bg-white rounded-[24px] border border-slate-100 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+        {/* 4. Main File Content (Grid vs Table) */}
+        <div className="overflow-hidden bg-slate-50/20">
         {loading && !cursor && files.length === 0 ? (
           <div className="p-20 text-center space-y-3">
             <RefreshCw size={36} className="animate-spin text-[#5B58F2] mx-auto opacity-80" />
@@ -902,6 +892,7 @@ export default function BlobManagementPage() {
             </table>
           </div>
         )}
+        </div>
 
         {/* Load More Banner */}
         {hasMore && (
