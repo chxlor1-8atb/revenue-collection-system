@@ -502,7 +502,7 @@ export default function LineSlipsClient({
                       filterType === "suggested" ? "bg-[#5B58F2] text-white shadow-2xs" : "bg-white border border-slate-200 text-purple-700 hover:bg-purple-50"
                     }`}
                   >
-                    <Sparkles size={11} /> มีข้อเสนอแนะ
+                    <Zap size={11} /> จับคู่อัตโนมัติ
                   </button>
                   <button
                     onClick={() => setFilterType("verified")}
