@@ -36,26 +36,28 @@ export default function TopNav({ userName, settings }: { userName: string, setti
 
   const navItems = [
     { name: "ภาพรวม", href: "/dashboard", icon: LayoutDashboard },
-    { name: "จัดการบ้าน", href: "/dashboard/houses", icon: Home, lottieSrc: "/icons/icons8-home.json", lottieSize: 34 },
-    { name: "รายการตรวจสอบ", href: "/dashboard/review", icon: CheckCircle2, lottieSrc: "/icons/icons8-document.json", lottieSize: 34 },
-    { name: "ประวัติชำระ", href: "/dashboard/history", icon: Receipt, lottieSrc: "/icons/Receipt.json", lottieSize: 58 },
-    { name: "ผู้ใช้งาน", href: "/dashboard/users", icon: Users, imageSrc: "/icons/icons8-user.gif", imageSize: 32 },
-    { name: "สลิป LINE", href: "/dashboard/line-slips", icon: Smartphone, imageSrc: "/icons/line-black-animated.gif", imageSize: 34 },
-    { name: "คลังไฟล์", href: "/dashboard/blob", icon: Folder, lottieSrc: "/icons/icons8-folder.json", lottieSize: 34 },
+    { name: "จัดการบ้าน", href: "/dashboard/houses", icon: Home, lottieSrc: "/icons/icons8-home.json", lottieSize: 25 },
+    { name: "รายการตรวจสอบ", href: "/dashboard/review", icon: CheckCircle2, lottieSrc: "/icons/icons8-document.json", lottieSize: 25 },
+    { name: "ประวัติชำระ", href: "/dashboard/history", icon: Receipt, lottieSrc: "/icons/Receipt.json", lottieSize: 40 },
+    { name: "ผู้ใช้งาน", href: "/dashboard/users", icon: Users, imageSrc: "/icons/icons8-user.gif", imageSize: 24 },
+    { name: "สลิป LINE", href: "/dashboard/line-slips", icon: Smartphone, imageSrc: "/icons/line-black-animated.gif", imageSize: 25 },
+    { name: "คลังไฟล์", href: "/dashboard/blob", icon: Folder, lottieSrc: "/icons/icons8-folder.json", lottieSize: 25 },
   ];
 
   return (
     <>
-      <header className="border-b border-slate-100 bg-white rounded-t-[32px] px-4 sm:px-6 md:px-8 lg:px-12 py-3.5 sm:py-5 relative z-40">
-        <div className="max-w-[1400px] mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4">
+      <header className="border-b border-slate-100 bg-white rounded-t-[32px] px-3 sm:px-5 md:px-6 lg:px-8 py-3 sm:py-4 relative z-40">
+        <div className="max-w-[1440px] mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-2.5 md:gap-3 lg:gap-4">
           
           {/* Top Bar Row (Brand on Left, User Actions on Right for Mobile) */}
-          <div className="flex items-center justify-between w-full md:w-auto">
-            <div className="flex items-center gap-2.5">
-              <div className="flex items-center justify-center w-8 h-8 bg-[#5B58F2] rounded-full text-white shadow-sm shrink-0">
-                <Trash2 size={16} strokeWidth={2.5} />
+          <div className="flex items-center justify-between w-full md:w-auto shrink-0">
+            <div className="flex items-center gap-2 lg:gap-2.5">
+              <div className="flex items-center justify-center w-7 h-7 lg:w-8 lg:h-8 bg-[#5B58F2] rounded-full text-white shadow-sm shrink-0">
+                <Trash2 size={15} strokeWidth={2.5} />
               </div>
-              <span className="font-sans font-bold text-[#0F172A] tracking-tight text-lg md:text-xl">ระบบจัดเก็บค่าขยะ</span>
+              <span className="font-sans font-bold text-[#0F172A] tracking-tight text-base sm:text-lg lg:text-xl whitespace-nowrap">
+                ระบบจัดเก็บค่าขยะ
+              </span>
             </div>
 
             {/* Mobile-only User Actions on Top Right */}
@@ -86,18 +88,18 @@ export default function TopNav({ userName, settings }: { userName: string, setti
             </div>
           </div>
 
-          {/* Navigation Bar: Segmented App Dock on Mobile, Pill Bar on Desktop */}
-          <nav className="w-full md:w-auto overflow-x-auto no-scrollbar">
-            <ul className="flex items-center justify-between md:justify-center gap-1 sm:gap-1.5 md:gap-2 bg-slate-100/70 md:bg-transparent p-1 md:p-0 rounded-2xl border border-slate-200/60 md:border-transparent">
+          {/* Navigation Bar: 7-Grid Dock on Mobile, Flex Pill Bar on Desktop */}
+          <nav className="w-full md:w-auto overflow-hidden">
+            <ul className="grid grid-cols-7 gap-0.5 sm:gap-1 bg-slate-100/70 p-1 rounded-2xl border border-slate-200/60 md:flex md:items-center md:justify-center md:gap-0.5 lg:gap-1 xl:gap-1.5 md:bg-transparent md:p-0 md:border-transparent">
               {navItems.map((item) => {
                 const isActive = pathname === item.href;
                 const IconComponent = item.icon;
                 return (
-                  <li key={item.href} className="flex-1 md:flex-initial flex justify-center">
+                  <li key={item.href} className="flex justify-center">
                     <Link
                       href={item.href}
                       prefetch={true}
-                      className={`relative flex items-center justify-center gap-2 w-full md:w-auto h-10 md:h-auto px-1.5 sm:px-4 md:px-5 py-1.5 md:py-2.5 rounded-xl md:rounded-full text-sm font-semibold transition-all whitespace-nowrap ${
+                      className={`relative flex items-center justify-center gap-1.5 w-full md:w-auto h-9 sm:h-10 md:h-auto px-1 sm:px-2 md:px-2.5 lg:px-3.5 py-1.5 md:py-2 rounded-xl md:rounded-full text-xs lg:text-sm font-semibold transition-all whitespace-nowrap ${
                         isActive 
                           ? "text-[#5B58F2] bg-white md:bg-[#EEF0FF] border border-slate-200/80 md:border-[#D5D9FF] shadow-xs shadow-[#5B58F2]/10" 
                           : "text-slate-500 hover:text-slate-900 hover:bg-white/60 md:hover:bg-slate-50/80 border border-transparent"
@@ -105,19 +107,19 @@ export default function TopNav({ userName, settings }: { userName: string, setti
                       title={item.name}
                       aria-label={item.name}
                     >
-                      <div className="w-7 h-7 flex items-center justify-center shrink-0">
+                      <div className="w-6 h-6 lg:w-7 lg:h-7 flex items-center justify-center shrink-0">
                         {item.lottieSrc ? (
-                          <LottieIcon src={item.lottieSrc} size={item.lottieSize || 30} loop autoplay />
+                          <LottieIcon src={item.lottieSrc} size={item.lottieSize || 25} loop autoplay />
                         ) : item.imageSrc ? (
                           /* eslint-disable-next-line @next/next/no-img-element */
                           <img 
                             src={item.imageSrc} 
                             alt={item.name} 
-                            style={{ width: item.imageSize || 28, height: item.imageSize || 28 }}
+                            style={{ width: item.imageSize || 24, height: item.imageSize || 24 }}
                             className="object-contain shrink-0" 
                           />
                         ) : (
-                          <IconComponent size={20} className={`shrink-0 ${isActive ? "text-[#5B58F2]" : "text-slate-600"}`} />
+                          <IconComponent size={18} className={`shrink-0 ${isActive ? "text-[#5B58F2]" : "text-slate-600"}`} />
                         )}
                       </div>
                       <span className="hidden md:inline">{item.name}</span>
@@ -129,7 +131,7 @@ export default function TopNav({ userName, settings }: { userName: string, setti
           </nav>
 
           {/* Desktop-only Right User Actions */}
-          <div className="hidden md:flex items-center gap-3 shrink-0">
+          <div className="hidden md:flex items-center gap-2 lg:gap-3 shrink-0">
             <button 
               onClick={() => setIsSettingsOpen(true)}
               aria-label="ตั้งค่าระบบ"
