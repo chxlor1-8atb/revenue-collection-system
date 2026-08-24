@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { 
   Trash2, 
   HardDrive, 
@@ -12,6 +12,8 @@ import {
   Search, 
   ArrowUpDown, 
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   LayoutGrid,
   List,
   Copy,
@@ -21,11 +23,15 @@ import {
   CheckCircle2,
   Calendar,
   Layers,
+  Download,
+  Upload,
+  ExternalLink,
+  Eye,
+  Filter,
   X
 } from "lucide-react";
 import LottieIcon from "@/components/LottieIcon";
 import { motion, AnimatePresence } from "framer-motion";
-import SlipModalButton from "@/components/SlipModalButton";
 import TablePagination from "@/components/TablePagination";
 import ConfirmModal from "@/components/ConfirmModal";
 
@@ -40,6 +46,8 @@ type TabPrefix = '' | 'line-slips/';
 type SortKey = 'pathname' | 'size' | 'uploadedAt';
 type SortDirection = 'asc' | 'desc';
 type ViewMode = 'grid' | 'table';
+type SizeFilter = 'all' | 'large' | 'huge' | 'small';
+type DateFilter = 'all' | 'today' | '7days' | '30days';
 
 export default function BlobManagementPage() {
   const [files, setFiles] = useState<BlobFile[]>([]);
@@ -54,10 +62,24 @@ export default function BlobManagementPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>('uploadedAt');
   const [sortDir, setSortDir] = useState<SortDirection>('desc');
+  const [sizeFilter, setSizeFilter] = useState<SizeFilter>('all');
+  const [dateFilter, setDateFilter] = useState<DateFilter>('all');
+
   const [actionProgress, setActionProgress] = useState<string | null>(null);
   const [deleteResult, setDeleteResult] = useState<{ count: number; mode: string } | null>(null);
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
   
+  // Lightbox Preview Modal State
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  // Manual Upload Modal State
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadFolder, setUploadFolder] = useState<'line-slips' | 'uploads'>('line-slips');
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   // Custom Days for Old Files Cleanup
   const [oldDays, setOldDays] = useState(30);
   const [showCleanupMenu, setShowCleanupMenu] = useState(false);
@@ -68,7 +90,7 @@ export default function BlobManagementPage() {
     title: string;
     description: React.ReactNode;
     warningText?: string;
-    mode: 'selected' | 'old' | 'rejected' | 'single';
+    mode: 'selected' | 'old' | 'rejected' | 'single' | 'orphaned';
     extraData?: any;
   }>({
     isOpen: false,
@@ -125,6 +147,30 @@ export default function BlobManagementPage() {
       const lowerQ = searchQuery.toLowerCase().trim();
       result = result.filter(f => f.pathname.toLowerCase().includes(lowerQ));
     }
+
+    // Size filter
+    if (sizeFilter === 'large') {
+      result = result.filter(f => f.size >= 500 * 1024); // >= 500 KB
+    } else if (sizeFilter === 'huge') {
+      result = result.filter(f => f.size >= 1024 * 1024); // >= 1 MB
+    } else if (sizeFilter === 'small') {
+      result = result.filter(f => f.size < 100 * 1024); // < 100 KB
+    }
+
+    // Date filter
+    if (dateFilter !== 'all') {
+      const now = new Date();
+      if (dateFilter === 'today') {
+        const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        result = result.filter(f => new Date(f.uploadedAt).getTime() >= startOfDay);
+      } else if (dateFilter === '7days') {
+        const past7 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).getTime();
+        result = result.filter(f => new Date(f.uploadedAt).getTime() >= past7);
+      } else if (dateFilter === '30days') {
+        const past30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).getTime();
+        result = result.filter(f => new Date(f.uploadedAt).getTime() >= past30);
+      }
+    }
     
     result.sort((a, b) => {
       let valA = a[sortKey];
@@ -141,7 +187,7 @@ export default function BlobManagementPage() {
     });
     
     return result;
-  }, [files, searchQuery, sortKey, sortDir]);
+  }, [files, searchQuery, sortKey, sortDir, sizeFilter, dateFilter]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = viewMode === 'grid' ? 24 : 20;
@@ -154,7 +200,23 @@ export default function BlobManagementPage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, sortKey, sortDir, activeTab, viewMode]);
+  }, [searchQuery, sortKey, sortDir, activeTab, viewMode, sizeFilter, dateFilter]);
+
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (lightboxIndex === null) return;
+      if (e.key === 'Escape') setLightboxIndex(null);
+      if (e.key === 'ArrowLeft') {
+        setLightboxIndex(prev => (prev !== null && prev > 0 ? prev - 1 : paginatedFiles.length - 1));
+      }
+      if (e.key === 'ArrowRight') {
+        setLightboxIndex(prev => (prev !== null && prev < paginatedFiles.length - 1 ? prev + 1 : 0));
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxIndex, paginatedFiles.length]);
 
   const toggleSelect = (url: string) => {
     setSelectedUrls(prev => {
@@ -179,8 +241,82 @@ export default function BlobManagementPage() {
     setTimeout(() => setCopiedUrl(null), 2000);
   };
 
+  const formatSize = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+  };
+
+  const formatDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('th-TH', {
+      day: 'numeric',
+      month: 'short',
+      year: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  // Export Blob Manifest to CSV
+  const exportBlobCsv = () => {
+    const headers = ["ชื่อไฟล์ (Pathname)", "ขนาดไฟล์ (Bytes)", "ขนาดไฟล์", "วันที่อัปโหลด", "ลิงก์รูปภาพ (URL)"];
+    const rows = filteredAndSortedFiles.map(f => [
+      `"${f.pathname.replace(/"/g, '""')}"`,
+      f.size,
+      `"${formatSize(f.size)}"`,
+      `"${new Date(f.uploadedAt).toLocaleString('th-TH')}"`,
+      `"${f.url}"`
+    ]);
+    const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `vercel_blob_files_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Handle Manual File Upload
+  const handleUploadSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!uploadFile) return;
+
+    setIsUploading(true);
+    setUploadError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', uploadFile);
+      formData.append('folder', uploadFolder);
+
+      const res = await fetch('/api/blob', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Failed to upload file');
+      }
+
+      setIsUploadOpen(false);
+      setUploadFile(null);
+      fetchFiles(false);
+      setDeleteResult({ count: 1, mode: 'upload' });
+    } catch (err: any) {
+      setUploadError(err.message || 'เกิดข้อผิดพลาดในการอัปโหลด');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   // Open confirmation modal
-  const promptDelete = (mode: 'selected' | 'old' | 'rejected' | 'single', extraData?: any) => {
+  const promptDelete = (mode: 'selected' | 'old' | 'rejected' | 'single' | 'orphaned', extraData?: any) => {
     if (mode === 'selected') {
       const selectedFiles = files.filter(f => selectedUrls.has(f.url));
       const totalSelectedBytes = selectedFiles.reduce((acc, f) => acc + f.size, 0);
@@ -217,6 +353,14 @@ export default function BlobManagementPage() {
         title: 'ยืนยันการลบสลิปที่ไม่ผ่านการตรวจสอบ',
         description: 'ระบบจะค้นหาภาพสลิปที่ระบบตรวจแล้วไม่ผ่าน (isVerified = false) และลบออกจากพื้นที่จัดเก็บ',
         warningText: 'สลิปที่ไม่ผ่านและถูกปฏิเสธจะถูกลบถาวร ไม่สามารถเรียกดูภาพย้อนหลังได้',
+      });
+    } else if (mode === 'orphaned') {
+      setConfirmModal({
+        isOpen: true,
+        mode: 'orphaned',
+        title: 'ยืนยันการล้างไฟล์สลิปตกค้างที่ไม่มีบิลผูก',
+        description: 'ระบบจะตรวจสอบไฟล์ใน Blob Storage เทียบกับฐานข้อมูลธุรกรรม และลบไฟล์ที่ไม่มีข้อมูลบิลหรือสลิปรองรับออกจากคลาวด์',
+        warningText: 'ไฟล์ที่ไม่มีประวัติธุรกรรมจะถูกลบถาวรเพื่อประหยัดพื้นที่จัดเก็บ',
       });
     }
   };
@@ -288,6 +432,17 @@ export default function BlobManagementPage() {
           offset = data.nextOffset;
         }
       }
+      else if (mode === 'orphaned') {
+        setActionProgress('กำลังสแกนและลบไฟล์ตกค้างที่ไม่มีบิลผูก...');
+        const payload = { mode: 'orphaned' };
+        const res = await fetch('/api/blob', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data: any = await res.json();
+        totalDeleted = data.deletedCount || 0;
+      }
       
       setDeleteResult({ count: totalDeleted, mode });
       setSelectedUrls(new Set());
@@ -298,25 +453,6 @@ export default function BlobManagementPage() {
     } finally {
       setActionProgress(null);
     }
-  };
-
-  const formatSize = (bytes: number) => {
-    if (bytes === 0) return '0 B';
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
-  };
-
-  const formatDate = (dateStr: string) => {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('th-TH', {
-      day: 'numeric',
-      month: 'short',
-      year: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
   };
 
   const totalSize = useMemo(() => files.reduce((sum, f) => sum + f.size, 0), [files]);
@@ -408,14 +544,32 @@ export default function BlobManagementPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 self-start lg:self-center">
+          <div className="flex items-center gap-2 self-start lg:self-center flex-wrap">
+            <button
+              onClick={exportBlobCsv}
+              disabled={filteredAndSortedFiles.length === 0}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold shadow-xs transition-all disabled:opacity-50 cursor-pointer"
+              title="ส่งออกรายการไฟล์ทั้งหมดเป็น CSV"
+            >
+              <Download size={14} className="text-slate-500" />
+              <span>ส่งออก CSV</span>
+            </button>
+
+            <button
+              onClick={() => setIsUploadOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#5B58F2] hover:bg-[#4A47D1] text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer"
+            >
+              <Upload size={14} />
+              <span>อัปโหลดไฟล์</span>
+            </button>
+
             <button
               onClick={() => fetchFiles(false)}
               disabled={loading && !cursor}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold shadow-xs transition-all disabled:opacity-50 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold shadow-xs transition-all disabled:opacity-50 cursor-pointer"
             >
               <RefreshCw size={14} className={loading && !cursor ? 'animate-spin text-[#5B58F2]' : 'text-slate-500'} />
-              <span>รีเฟรชข้อมูล</span>
+              <span>รีเฟรช</span>
             </button>
           </div>
         </div>
@@ -479,10 +633,10 @@ export default function BlobManagementPage() {
 
         {/* 3. Toolbar & Actions Bar */}
         <div className="p-4 sm:p-5 border-b border-slate-100 bg-white space-y-3.5 relative z-20">
-          {/* Row 1: Folder Tabs, Search, Sort & View Mode */}
-          <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+          {/* Row 1: Folder Tabs, Search, Filters & View Mode */}
+          <div className="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3">
             {/* Tabs */}
-            <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl self-start sm:self-auto overflow-x-auto max-w-full border border-slate-200/60">
+            <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl self-start overflow-x-auto max-w-full border border-slate-200/60 shrink-0">
               {tabs.map(tab => (
                 <button
                   key={tab.prefix}
@@ -499,10 +653,10 @@ export default function BlobManagementPage() {
               ))}
             </div>
 
-            {/* Search, Sort, View Toggle */}
-            <div className="flex flex-wrap items-center gap-2.5">
+            {/* Search & Filter Controls */}
+            <div className="flex flex-wrap items-center gap-2">
               {/* Search Input */}
-              <div className="relative flex-1 sm:w-60">
+              <div className="relative flex-1 sm:w-52 min-w-[140px]">
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 <input
                   type="text"
@@ -519,6 +673,36 @@ export default function BlobManagementPage() {
                     <X size={13} />
                   </button>
                 )}
+              </div>
+
+              {/* Size Filter */}
+              <div className="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-xl px-2 py-1">
+                <span className="text-[11px] text-slate-400 font-semibold px-0.5 hidden sm:inline">ขนาด:</span>
+                <select
+                  value={sizeFilter}
+                  onChange={(e) => setSizeFilter(e.target.value as SizeFilter)}
+                  className="bg-transparent text-xs font-semibold text-slate-700 border-none outline-none cursor-pointer pr-1"
+                >
+                  <option value="all">ทุกขนาด</option>
+                  <option value="large">&gt; 500 KB (ใหญ่)</option>
+                  <option value="huge">&gt; 1 MB (ใหญ่มาก)</option>
+                  <option value="small">&lt; 100 KB (เล็ก)</option>
+                </select>
+              </div>
+
+              {/* Date Filter */}
+              <div className="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-xl px-2 py-1">
+                <span className="text-[11px] text-slate-400 font-semibold px-0.5 hidden sm:inline">ช่วงเวลา:</span>
+                <select
+                  value={dateFilter}
+                  onChange={(e) => setDateFilter(e.target.value as DateFilter)}
+                  className="bg-transparent text-xs font-semibold text-slate-700 border-none outline-none cursor-pointer pr-1"
+                >
+                  <option value="all">ทุกช่วงเวลา</option>
+                  <option value="today">วันนี้</option>
+                  <option value="7days">7 วันล่าสุด</option>
+                  <option value="30days">30 วันล่าสุด</option>
+                </select>
               </div>
 
               {/* Sort Selector */}
@@ -542,7 +726,7 @@ export default function BlobManagementPage() {
                 </button>
               </div>
 
-              {/* View Mode Switcher (Always visible!) */}
+              {/* View Mode Switcher */}
               <div className="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200/60">
                 <button
                   onClick={() => setViewMode('table')}
@@ -581,6 +765,16 @@ export default function BlobManagementPage() {
               >
                 <AlertTriangle size={13} />
                 <span>ลบสลิปที่ตรวจไม่ผ่าน</span>
+              </button>
+
+              <button
+                onClick={() => promptDelete('orphaned')}
+                disabled={actionProgress !== null}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100/80 text-purple-700 border border-purple-200/80 text-xs font-semibold transition-all disabled:opacity-50 cursor-pointer"
+                title="สแกนและล้างไฟล์สลิปในคลาวด์ที่ไม่มีรายการบิลผูกอยู่"
+              >
+                <Layers size={13} />
+                <span>ล้างสลิปตกค้างไร้บิล</span>
               </button>
 
               <div className="relative">
@@ -681,9 +875,9 @@ export default function BlobManagementPage() {
               <FolderOpen size={32} />
             </div>
             <p className="text-base font-bold text-slate-700">ไม่พบไฟล์ที่ตรงกับเงื่อนไข</p>
-            {searchQuery && (
+            {(searchQuery || sizeFilter !== 'all' || dateFilter !== 'all') && (
               <p className="text-xs text-slate-400">
-                ไม่มีไฟล์ที่ตรงกับคำค้นหา &ldquo;{searchQuery}&rdquo;
+                ลองปรับตัวกรองหรือคำค้นหาใหม่
               </p>
             )}
           </div>
@@ -691,7 +885,7 @@ export default function BlobManagementPage() {
           /* GRID / GALLERY VIEW */
           <div className="p-6">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {paginatedFiles.map((file) => {
+              {paginatedFiles.map((file, idx) => {
                 const isSelected = selectedUrls.has(file.url);
                 return (
                   <motion.div
@@ -706,7 +900,7 @@ export default function BlobManagementPage() {
                     }`}
                   >
                     {/* Thumbnail Image Container */}
-                    <div className="relative aspect-square w-full bg-slate-100 overflow-hidden flex items-center justify-center">
+                    <div className="relative aspect-square w-full bg-slate-100 overflow-hidden flex items-center justify-center cursor-pointer" onClick={() => setLightboxIndex(idx)}>
                       <img
                         src={file.url}
                         alt=""
@@ -715,7 +909,7 @@ export default function BlobManagementPage() {
                       />
 
                       {/* Selection Checkbox */}
-                      <div className="absolute top-2 left-2 z-10">
+                      <div className="absolute top-2 left-2 z-10" onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
                           checked={isSelected}
@@ -730,19 +924,18 @@ export default function BlobManagementPage() {
                       </div>
 
                       {/* Overlay Hover Actions */}
-                      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-2">
-                        <SlipModalButton imageUrl={file.url}>
-                          <button 
-                            className="p-2 rounded-xl bg-white/90 hover:bg-white text-slate-800 shadow-lg transition-transform hover:scale-110"
-                            title="ดูรูปภาพขนาดเต็ม"
-                          >
-                            <Search size={14} />
-                          </button>
-                        </SlipModalButton>
+                      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-2" onClick={(e) => e.stopPropagation()}>
+                        <button 
+                          onClick={() => setLightboxIndex(idx)}
+                          className="p-2 rounded-xl bg-white/90 hover:bg-white text-slate-800 shadow-lg transition-transform hover:scale-110 cursor-pointer"
+                          title="ดูรูปภาพขนาดเต็ม (Lightbox)"
+                        >
+                          <Eye size={14} />
+                        </button>
 
                         <button
                           onClick={() => handleCopy(file.url)}
-                          className="p-2 rounded-xl bg-white/90 hover:bg-white text-slate-800 shadow-lg transition-transform hover:scale-110"
+                          className="p-2 rounded-xl bg-white/90 hover:bg-white text-slate-800 shadow-lg transition-transform hover:scale-110 cursor-pointer"
                           title="คัดลอก URL"
                         >
                           {copiedUrl === file.url ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
@@ -750,7 +943,7 @@ export default function BlobManagementPage() {
 
                         <button
                           onClick={() => promptDelete('single', file)}
-                          className="p-2 rounded-xl bg-white/90 hover:bg-red-600 hover:text-white text-red-600 shadow-lg transition-all hover:scale-110"
+                          className="p-2 rounded-xl bg-white/90 hover:bg-red-600 hover:text-white text-red-600 shadow-lg transition-all hover:scale-110 cursor-pointer"
                           title="ลบไฟล์นี้"
                         >
                           <Trash2 size={14} />
@@ -824,7 +1017,7 @@ export default function BlobManagementPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50 text-slate-700">
-                {paginatedFiles.map((file) => {
+                {paginatedFiles.map((file, idx) => {
                   const isSelected = selectedUrls.has(file.url);
                   return (
                     <tr
@@ -842,19 +1035,20 @@ export default function BlobManagementPage() {
                         />
                       </td>
                       <td className="px-4 py-3.5">
-                        <SlipModalButton imageUrl={file.url}>
-                          <div className="w-10 h-10 rounded-xl border border-slate-200/80 overflow-hidden cursor-zoom-in group relative bg-slate-100">
-                            <img
-                              src={file.url}
-                              alt=""
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200"
-                              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                            />
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                              <Search size={12} className="text-white opacity-0 group-hover:opacity-100" />
-                            </div>
+                        <div 
+                          onClick={() => setLightboxIndex(idx)}
+                          className="w-10 h-10 rounded-xl border border-slate-200/80 overflow-hidden cursor-zoom-in group relative bg-slate-100"
+                        >
+                          <img
+                            src={file.url}
+                            alt=""
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200"
+                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                          />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                            <Eye size={12} className="text-white opacity-0 group-hover:opacity-100" />
                           </div>
-                        </SlipModalButton>
+                        </div>
                       </td>
                       <td className="px-6 py-3.5">
                         <div className="font-mono text-xs font-bold text-slate-700 truncate max-w-xs md:max-w-md" title={file.pathname}>
@@ -871,14 +1065,14 @@ export default function BlobManagementPage() {
                         <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => handleCopy(file.url)}
-                            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+                            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
                             title="คัดลอก URL"
                           >
                             {copiedUrl === file.url ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
                           </button>
                           <button
                             onClick={() => promptDelete('single', file)}
-                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                             title="ลบไฟล์"
                           >
                             <Trash2 size={14} />
@@ -901,7 +1095,7 @@ export default function BlobManagementPage() {
             <button
               onClick={() => fetchFiles(true)}
               disabled={loading}
-              className="inline-flex items-center gap-2 px-4 py-1.5 bg-white border border-slate-200 text-[#5B58F2] text-xs font-bold rounded-xl shadow-xs hover:bg-[#EEF0FF] transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-1.5 bg-white border border-slate-200 text-[#5B58F2] text-xs font-bold rounded-xl shadow-xs hover:bg-[#EEF0FF] transition-colors disabled:opacity-50 cursor-pointer"
             >
               {loading && cursor ? <RefreshCw size={12} className="animate-spin" /> : <ChevronDown size={12} />}
               <span>โหลดไฟล์เพิ่มจากคลาวด์</span>
@@ -922,13 +1116,248 @@ export default function BlobManagementPage() {
         </div>
       </div>
 
+      {/* Lightbox Modal with Prev/Next Navigation */}
+      <AnimatePresence>
+        {lightboxIndex !== null && paginatedFiles[lightboxIndex] && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md"
+            onClick={() => setLightboxIndex(null)}
+          >
+            {/* Top Toolbar */}
+            <div 
+              className="absolute top-4 left-4 right-4 flex items-center justify-between z-20 text-white"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-bold px-3 py-1 bg-white/10 rounded-full backdrop-blur-md">
+                  รูปที่ {lightboxIndex + 1} จาก {paginatedFiles.length}
+                </span>
+                <span className="text-xs font-mono opacity-80 truncate max-w-xs md:max-w-md">
+                  {paginatedFiles[lightboxIndex].pathname}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleCopy(paginatedFiles[lightboxIndex].url)}
+                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                  title="คัดลอก URL"
+                >
+                  {copiedUrl === paginatedFiles[lightboxIndex].url ? <Check size={18} className="text-emerald-400" /> : <Copy size={18} />}
+                </button>
+                <a
+                  href={paginatedFiles[lightboxIndex].url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                  title="เปิดในแท็บใหม่"
+                >
+                  <ExternalLink size={18} />
+                </a>
+                <button
+                  onClick={() => setLightboxIndex(null)}
+                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                  title="ปิด (Esc)"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+
+            {/* Left Nav Arrow */}
+            {paginatedFiles.length > 1 && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLightboxIndex(prev => (prev !== null && prev > 0 ? prev - 1 : paginatedFiles.length - 1));
+                }}
+                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all z-20 backdrop-blur-md cursor-pointer hover:scale-110"
+                title="รูปก่อนหน้า (ลูกศรซ้าย)"
+              >
+                <ChevronLeft size={28} />
+              </button>
+            )}
+
+            {/* Main Image Container */}
+            <motion.div
+              key={paginatedFiles[lightboxIndex].url}
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="max-w-4xl max-h-[80vh] flex flex-col items-center justify-center z-10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={paginatedFiles[lightboxIndex].url}
+                alt={paginatedFiles[lightboxIndex].pathname}
+                className="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-2xl"
+              />
+              <div className="mt-3 flex items-center gap-4 text-xs text-white/80 bg-black/40 px-4 py-1.5 rounded-full backdrop-blur-md">
+                <span>ขนาด: <strong>{formatSize(paginatedFiles[lightboxIndex].size)}</strong></span>
+                <span>•</span>
+                <span>อัปโหลดเมื่อ: <strong>{formatDate(paginatedFiles[lightboxIndex].uploadedAt)}</strong></span>
+              </div>
+            </motion.div>
+
+            {/* Right Nav Arrow */}
+            {paginatedFiles.length > 1 && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLightboxIndex(prev => (prev !== null && prev < paginatedFiles.length - 1 ? prev + 1 : 0));
+                }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all z-20 backdrop-blur-md cursor-pointer hover:scale-110"
+                title="รูปถัดไป (ลูกศรขวา)"
+              >
+                <ChevronRight size={28} />
+              </button>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Manual Upload Modal */}
+      <AnimatePresence>
+        {isUploadOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+            onClick={() => !isUploading && setIsUploadOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl border border-slate-200 space-y-5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-[#EEF0FF] text-[#5B58F2] flex items-center justify-center">
+                    <Upload size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900">อัปโหลดไฟล์ขึ้นคลาวด์</h3>
+                    <p className="text-xs text-slate-500">รองรับไฟล์รูปภาพ PNG, JPG, JPEG, WEBP</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => !isUploading && setIsUploadOpen(false)}
+                  disabled={isUploading}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {uploadError && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700">
+                  {uploadError}
+                </div>
+              )}
+
+              <form onSubmit={handleUploadSubmit} className="space-y-4">
+                {/* Destination Folder */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700">โฟลเดอร์ปลายทาง</label>
+                  <select
+                    value={uploadFolder}
+                    onChange={(e) => setUploadFolder(e.target.value as any)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#5B58F2]/20 focus:border-[#5B58F2]"
+                  >
+                    <option value="line-slips">line-slips/ (รูปสลิป)</option>
+                    <option value="uploads">uploads/ (ไฟล์ทั่วไป)</option>
+                  </select>
+                </div>
+
+                {/* Drag & Drop File Zone */}
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={(e) => { e.preventDefault(); }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                      setUploadFile(e.dataTransfer.files[0]);
+                    }
+                  }}
+                  className="border-2 border-dashed border-slate-200 hover:border-[#5B58F2] bg-slate-50/50 hover:bg-[#EEF0FF]/30 rounded-2xl p-6 text-center cursor-pointer transition-all space-y-2"
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg,image/webp"
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setUploadFile(e.target.files[0]);
+                      }
+                    }}
+                  />
+                  
+                  {uploadFile ? (
+                    <div className="space-y-1">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
+                        <Check size={20} />
+                      </div>
+                      <p className="text-xs font-bold text-slate-800 truncate max-w-xs mx-auto">{uploadFile.name}</p>
+                      <p className="text-[11px] text-slate-500 font-mono">{formatSize(uploadFile.size)}</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+                        <Upload size={20} />
+                      </div>
+                      <p className="text-xs font-bold text-slate-700">คลิกเพื่อเลือกไฟล์ หรือ ลากไฟล์มาวางที่นี่</p>
+                      <p className="text-[10px] text-slate-400">ขนาดสูงสุดไม่เกิน 10 MB</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsUploadOpen(false)}
+                    disabled={isUploading}
+                    className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors cursor-pointer"
+                  >
+                    ยกเลิก
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={!uploadFile || isUploading}
+                    className="flex-1 py-2.5 bg-[#5B58F2] hover:bg-[#4A47D1] text-white font-bold text-xs rounded-xl shadow-md transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    {isUploading ? (
+                      <>
+                        <RefreshCw size={14} className="animate-spin" />
+                        <span>กำลังอัปโหลด...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload size={14} />
+                        <span>เริ่มอัปโหลด</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Confirmation Modal */}
       <ConfirmModal
         isOpen={confirmModal.isOpen}
         title={confirmModal.title}
         description={confirmModal.description}
         warningText={confirmModal.warningText}
-        confirmText="ยืนยันการลบถาวร"
+        confirmText="ยืนยันการดำเนินการ"
         cancelText="ยกเลิก"
         onConfirm={executeDelete}
         onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}

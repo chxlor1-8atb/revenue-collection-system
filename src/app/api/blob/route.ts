@@ -1,4 +1,4 @@
-import { list, del } from '@vercel/blob';
+import { list, del, put } from '@vercel/blob';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
@@ -28,12 +28,40 @@ export async function GET(request: Request) {
   }
 }
 
+export async function POST(request: Request) {
+  const session = await auth();
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  try {
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
+    const folder = (formData.get('folder') as string) || 'line-slips';
+
+    if (!file) {
+      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+    }
+
+    const cleanName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const filename = `${folder}/${Date.now()}-${cleanName}`;
+    const blob = await put(filename, file, {
+      access: 'public',
+      contentType: file.type || 'image/jpeg',
+    });
+
+    return NextResponse.json({ success: true, blob });
+  } catch (error: any) {
+    console.error('Blob upload error:', error);
+    return NextResponse.json({ error: error.message || 'Failed to upload file' }, { status: 500 });
+  }
+}
+
 export async function DELETE(request: Request) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const { mode, urls, days } = await request.json();
+    const body = await request.json();
+    const { mode, urls, days, prefix, cursor, offset = 0 } = body;
     let deletedCount = 0;
 
     if (mode === 'selected') {
@@ -51,7 +79,6 @@ export async function DELETE(request: Request) {
       }
     } else if (mode === 'old') {
       // Delete files older than N days (Batched per prefix & cursor)
-      const { days, prefix, cursor } = await request.json();
       const threshold = days || 30;
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - threshold);
@@ -70,8 +97,6 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ success: true, deletedCount, hasMore: result.hasMore, cursor: result.cursor });
 
     } else if (mode === 'rejected') {
-      const { offset = 0 } = await request.json();
-
       // Find rejected/failed slip URLs from database (Batched)
       const rejectedMessages = await db.select({ imageUrl: lineMessages.imageUrl })
         .from(lineMessages)
@@ -96,6 +121,29 @@ export async function DELETE(request: Request) {
       
       const hasMore = rejectedMessages.length === 100;
       return NextResponse.json({ success: true, deletedCount, hasMore, nextOffset: offset + 100 });
+
+    } else if (mode === 'orphaned') {
+      // Find all blobs that are not recorded in transactions or lineMessages
+      const allTxSlips = await db.select({ url: transactions.slipImageUrl }).from(transactions);
+      const allLineSlips = await db.select({ url: lineMessages.imageUrl }).from(lineMessages);
+      const validUrlSet = new Set([
+        ...allTxSlips.map(t => t.url).filter(Boolean),
+        ...allLineSlips.map(l => l.url).filter(Boolean)
+      ]);
+
+      const result = await list({ limit: 300 });
+      for (const blob of result.blobs) {
+        if (!validUrlSet.has(blob.url)) {
+          try {
+            await del(blob.url);
+            deletedCount++;
+          } catch (e) {
+            console.error(`Failed to delete orphaned blob ${blob.url}:`, e);
+          }
+        }
+      }
+      return NextResponse.json({ success: true, deletedCount });
+
     } else {
       return NextResponse.json({ error: 'Invalid mode' }, { status: 400 });
     }
