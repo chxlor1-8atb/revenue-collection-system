@@ -73,12 +73,16 @@ export default function TopNav({ userName, settings }: { userName: string, setti
                       title={item.name}
                       aria-label={item.name}
                     >
-                      <div className={`w-7 h-7 flex items-center justify-center shrink-0 ${isActive && (item.lottieSrc || item.imageSrc) ? "brightness-0 invert" : ""}`}>
+                      <div className={`w-7 h-7 flex items-center justify-center shrink-0 ${isActive && item.lottieSrc ? "brightness-0 invert" : ""}`}>
                         {item.lottieSrc ? (
                           <LottieIcon src={item.lottieSrc} size={item.lottieSize || 30} loop autoplay />
                         ) : item.imageSrc ? (
                           /* eslint-disable-next-line @next/next/no-img-element */
-                          <img src={item.imageSrc} alt={item.name} className="w-[26px] h-[26px] object-contain shrink-0" />
+                          <img 
+                            src={item.imageSrc} 
+                            alt={item.name} 
+                            className={`w-[26px] h-[26px] object-contain shrink-0 ${item.href === '/dashboard/users' && isActive ? 'brightness-0 invert' : ''}`} 
+                          />
                         ) : (
                           <IconComponent size={20} className="shrink-0" />
                         )}
