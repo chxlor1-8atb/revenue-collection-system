@@ -41,47 +41,51 @@ async function attemptAutoApprove(house: any, slipAmountStr: string, slipImageUr
       return { success: false, totalDebt };
     }
 
-    // CREATE TRANSACTION
-    const newTx = await db.insert(transactions).values({
-      amount: slipAmountStr,
-      amountClaimedByPayer: slipAmountStr,
-      slipImageUrl: slipImageUrl,
-      slipStatus: "verified",
-      slipRefId: transRef,
-      paidAt: new Date(),
-      verifiedBy: "line_bot_auto",
-    }).returning();
+    let txId: number | undefined;
 
-    const txId = newTx[0].id;
+    // ATOMIC TRANSACTION: CREATE TRANSACTION, MARK INVOICES AS PAID, GENERATE ADVANCE INVOICES
+    await db.transaction(async (txDb) => {
+      const newTx = await txDb.insert(transactions).values({
+        amount: slipAmountStr,
+        amountClaimedByPayer: slipAmountStr,
+        slipImageUrl: slipImageUrl,
+        slipStatus: "verified",
+        slipRefId: transRef,
+        paidAt: new Date(),
+        verifiedBy: "line_bot_auto",
+      }).returning();
 
-    // MARK EXISTING INVOICES AS PAID
-    if (unpaidInvoices.length > 0) {
-      await db.update(invoices).set({ status: 'paid', transactionId: txId }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
-    }
+      txId = newTx[0].id;
 
-    // GENERATE ADVANCE INVOICES
-    if (advanceMonthsCount > 0) {
-      let lastMonthDate = new Date();
-      const latestInvoiceList = await db.select().from(invoices).where(eq(invoices.houseId, house.id)).orderBy(desc(invoices.monthYear)).limit(1);
-      if (latestInvoiceList.length > 0) {
-        const [year, month] = latestInvoiceList[0].monthYear.split("-");
-        lastMonthDate = new Date(parseInt(year), parseInt(month) - 1, 1);
+      // MARK EXISTING INVOICES AS PAID
+      if (unpaidInvoices.length > 0) {
+        await txDb.update(invoices).set({ status: 'paid', transactionId: txId }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
       }
-      
-      for (let i = 1; i <= advanceMonthsCount; i++) {
-        const advanceDate = new Date(lastMonthDate);
-        advanceDate.setMonth(advanceDate.getMonth() + i);
-        const advanceMonthYear = `${advanceDate.getFullYear()}-${String(advanceDate.getMonth() + 1).padStart(2, "0")}`;
+
+      // GENERATE ADVANCE INVOICES
+      if (advanceMonthsCount > 0) {
+        let lastMonthDate = new Date();
+        const latestInvoiceList = await txDb.select().from(invoices).where(eq(invoices.houseId, house.id)).orderBy(desc(invoices.monthYear)).limit(1);
+        if (latestInvoiceList.length > 0) {
+          const [year, month] = latestInvoiceList[0].monthYear.split("-");
+          lastMonthDate = new Date(parseInt(year), parseInt(month) - 1, 1);
+        }
         
-        await db.insert(invoices).values({
-          houseId: house.id,
-          amount: defaultBill.toString(),
-          status: 'paid', // immediately paid
-          monthYear: advanceMonthYear,
-          transactionId: txId
-        });
+        for (let i = 1; i <= advanceMonthsCount; i++) {
+          const advanceDate = new Date(lastMonthDate);
+          advanceDate.setMonth(advanceDate.getMonth() + i);
+          const advanceMonthYear = `${advanceDate.getFullYear()}-${String(advanceDate.getMonth() + 1).padStart(2, "0")}`;
+          
+          await txDb.insert(invoices).values({
+            houseId: house.id,
+            amount: defaultBill.toString(),
+            status: 'paid', // immediately paid
+            monthYear: advanceMonthYear,
+            transactionId: txId
+          });
+        }
       }
-    }
+    });
 
     return { success: true, newTxId: txId, totalDebt };
   } catch (error) {
