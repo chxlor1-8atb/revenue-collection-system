@@ -97,7 +97,8 @@ export default function UsersClient({
         {/* Header & Toolbar */}
         <div className="p-6 lg:p-7 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
           <div className="flex items-center gap-4">
-            <Shield size={38} className="text-slate-800 shrink-0" strokeWidth={2} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icons/icons8-user.gif" alt="ผู้ดูแลระบบ" className="w-12 h-12 object-contain shrink-0" />
             <div>
               <div className="flex items-center gap-2.5">
                 <h1 className="font-bold text-2xl text-slate-900 tracking-tight">ผู้ดูแลระบบ</h1>
