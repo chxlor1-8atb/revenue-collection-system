@@ -20,7 +20,7 @@ export default function ConfirmModal({
   isOpen,
   title,
   description,
-  warningTitle = "คำเตือน (Warning)",
+  warningTitle = "คำเตือน",
   warningText,
   cancelText = "ยกเลิก",
   confirmText = "ยืนยัน",
@@ -39,27 +39,27 @@ export default function ConfirmModal({
       onClick={handleCancel}
     >
       <div 
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-[480px] p-7 sm:p-9 animate-in zoom-in-95 duration-150 border border-slate-100/90 relative font-sans"
+        className="bg-white rounded-[22px] shadow-2xl w-full max-w-[500px] p-8 sm:p-10 animate-in zoom-in-95 duration-150 border border-slate-100/90 relative font-sans"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Title */}
-        <h3 className="text-2xl font-bold text-center text-slate-900 mb-3 tracking-tight">
+        <h3 className="text-2xl sm:text-[26px] font-bold text-center text-slate-950 mb-3.5 tracking-tight">
           {title}
         </h3>
         
         {/* Description */}
-        <div className="text-center text-slate-700 font-medium mb-6 text-sm sm:text-base leading-relaxed">
+        <div className="text-center text-slate-900 font-medium mb-6 text-sm sm:text-base leading-relaxed">
           {description}
         </div>
 
         {/* Warning Box */}
         {warningText ? (
-          <div className="bg-[#FDF0E7] p-4 rounded-md border-l-[5px] border-[#F25A38] mb-7 text-left shadow-2xs">
-            <div className="flex items-center gap-1.5 text-[#9C3217] font-bold text-sm mb-1">
-              <AlertTriangle size={16} className="shrink-0 text-[#E05326] fill-[#E05326] text-white" />
+          <div className="bg-[#FFEFE6] p-4 rounded-md border-l-[6px] border-[#FF5A36] mb-8 text-left shadow-2xs">
+            <div className="flex items-center gap-1.5 text-[#88240A] font-bold text-sm sm:text-[15px] mb-1">
+              <AlertTriangle size={16} className="shrink-0 text-[#E04B26] fill-[#E04B26] text-white" />
               <span>{warningTitle}</span>
             </div>
-            <p className="text-[#A34224] text-xs sm:text-[13px] leading-relaxed font-normal">
+            <p className="text-[#9E3618] text-xs sm:text-[13px] leading-relaxed font-normal">
               {warningText}
             </p>
           </div>
@@ -72,7 +72,7 @@ export default function ConfirmModal({
             type="button"
             onClick={handleCancel}
             disabled={isLoading}
-            className="flex-1 sm:flex-initial sm:min-w-[130px] px-6 py-2.5 bg-[#DC2626] hover:bg-[#B91C1C] text-white font-bold rounded-md text-sm transition-all shadow-sm cursor-pointer disabled:opacity-50 text-center border border-[#DC2626]"
+            className="px-7 py-3 bg-[#DC2626] hover:bg-[#B91C1C] text-white font-bold rounded text-sm sm:text-[15px] transition-all shadow-xs cursor-pointer disabled:opacity-50 text-center border border-[#DC2626] min-w-[125px]"
           >
             {cancelText}
           </button>
@@ -82,7 +82,7 @@ export default function ConfirmModal({
             type="button"
             onClick={onConfirm}
             disabled={isLoading}
-            className="flex-1 sm:flex-initial sm:min-w-[130px] px-6 py-2.5 bg-[#10B981] hover:bg-[#059669] text-white font-bold rounded-md text-sm transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 text-center border border-[#10B981]"
+            className="px-7 py-3 bg-[#10B981] hover:bg-[#059669] text-white font-bold rounded text-sm sm:text-[15px] transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 text-center border border-[#10B981] min-w-[125px]"
           >
             {isLoading ? (
               <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0"></span>
