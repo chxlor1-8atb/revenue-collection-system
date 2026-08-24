@@ -244,8 +244,9 @@ export default function TopNav({ userName, settings }: { userName: string, setti
         isOpen={showLogoutConfirm}
         title="ออกจากระบบ"
         description={<>คุณต้องการออกจากระบบใช่หรือไม่?</>}
-        warningTitle=""
-        warningText=""
+        warningTitle="คำเตือน (Warning)"
+        warningText="คุณจะต้องเข้าสู่ระบบใหม่อีกครั้งเพื่อเข้าถึงข้อมูลและจัดการระบบหลังบ้าน"
+        cancelText="ยกเลิก"
         confirmText="ใช่, ออกจากระบบ"
         onConfirm={async () => {
           await signOut({ redirect: false });
