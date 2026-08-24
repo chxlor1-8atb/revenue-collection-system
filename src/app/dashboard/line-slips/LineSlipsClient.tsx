@@ -371,7 +371,7 @@ export default function LineSlipsClient({
         {/* Header & Tabs */}
         <div className="p-6 lg:p-7 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
           <div className="flex items-center gap-4">
-            <AnimatedLineIcon size={52} variant="green" />
+            <AnimatedLineIcon size={52} variant="black" />
             <div>
               <div className="flex items-center gap-2.5">
                 <h1 className="font-bold text-2xl text-slate-900 tracking-tight">สลิปจาก LINE</h1>

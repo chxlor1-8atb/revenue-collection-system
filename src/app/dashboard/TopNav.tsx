@@ -40,7 +40,7 @@ export default function TopNav({ userName, settings }: { userName: string, setti
     { name: "รายการตรวจสอบ", href: "/dashboard/review", icon: CheckCircle2, lottieSrc: "/icons/icons8-document.json", lottieSize: 30 },
     { name: "ประวัติชำระ", href: "/dashboard/history", icon: Receipt, lottieSrc: "/icons/Receipt.json", lottieSize: 46 },
     { name: "ผู้ใช้งาน", href: "/dashboard/users", icon: Users, imageSrc: "/icons/icons8-user.gif", imageSize: 26 },
-    { name: "สลิป LINE", href: "/dashboard/line-slips", icon: Smartphone, imageSrc: "/icons/line-animated.gif", imageSize: 26 },
+    { name: "สลิป LINE", href: "/dashboard/line-slips", icon: Smartphone, imageSrc: "/icons/line-black-animated.gif", imageSize: 26 },
     { name: "คลังไฟล์", href: "/dashboard/blob", icon: Folder, lottieSrc: "/icons/icons8-folder.json", lottieSize: 30 },
   ];
 
@@ -73,7 +73,7 @@ export default function TopNav({ userName, settings }: { userName: string, setti
                       title={item.name}
                       aria-label={item.name}
                     >
-                      <div className={`w-7 h-7 flex items-center justify-center shrink-0 ${isActive && item.lottieSrc ? "brightness-0 invert" : ""}`}>
+                      <div className={`w-7 h-7 flex items-center justify-center shrink-0 ${isActive && (item.lottieSrc || item.imageSrc) ? "brightness-0 invert" : ""}`}>
                         {item.lottieSrc ? (
                           <LottieIcon src={item.lottieSrc} size={item.lottieSize || 30} loop autoplay />
                         ) : item.imageSrc ? (
@@ -81,7 +81,7 @@ export default function TopNav({ userName, settings }: { userName: string, setti
                           <img 
                             src={item.imageSrc} 
                             alt={item.name} 
-                            className={`w-[26px] h-[26px] object-contain shrink-0 ${item.href === '/dashboard/users' && isActive ? 'brightness-0 invert' : ''}`} 
+                            className="w-[26px] h-[26px] object-contain shrink-0" 
                           />
                         ) : (
                           <IconComponent size={20} className="shrink-0" />

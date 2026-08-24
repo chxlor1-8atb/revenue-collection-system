@@ -4,18 +4,18 @@ import { motion } from "framer-motion";
 
 interface AnimatedLineIconProps {
   size?: number;
-  variant?: "green" | "black" | "white";
+  variant?: "black" | "green" | "white";
   className?: string;
   animate?: boolean;
 }
 
 export default function AnimatedLineIcon({
   size = 28,
-  variant = "green",
+  variant = "black",
   className = "",
   animate = true,
 }: AnimatedLineIconProps) {
-  const iconSrc = variant === "black" ? "/icons/line-black.png" : "/icons/line-green.png";
+  const iconSrc = variant === "green" ? "/icons/line-green.png" : "/icons/line-black.png";
 
   return (
     <motion.div
