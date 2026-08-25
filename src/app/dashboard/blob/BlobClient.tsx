@@ -1212,55 +1212,57 @@ export default function BlobClient({
               </div>
             </div>
 
-            {/* Left Nav Arrow */}
-            {paginatedFiles.length > 1 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setLightboxIndex(prev => (prev !== null && prev > 0 ? prev - 1 : paginatedFiles.length - 1));
-                }}
-                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all z-20 backdrop-blur-md cursor-pointer hover:scale-110"
-                title="รูปก่อนหน้า (ลูกศรซ้าย)"
-              >
-                <ChevronLeft size={28} />
-              </button>
-            )}
+                        <div className="flex items-center justify-center gap-4 sm:gap-12 w-full max-w-7xl mx-auto px-2 z-10">
+              {/* Left Nav Arrow */}
+              {paginatedFiles.length > 1 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLightboxIndex(prev => (prev !== null && prev > 0 ? prev - 1 : paginatedFiles.length - 1));
+                  }}
+                  className="shrink-0 p-3 sm:p-4 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all z-20 backdrop-blur-md cursor-pointer hover:scale-110"
+                  title="รูปก่อนหน้า (ลูกศรซ้าย)"
+                >
+                  <ChevronLeft size={28} />
+                </button>
+              )}
 
-            {/* Main Image Container */}
-            <motion.div
-              key={paginatedFiles[lightboxIndex].url}
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              className="max-w-4xl max-h-[80vh] flex flex-col items-center justify-center z-10"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <img
-                src={paginatedFiles[lightboxIndex].url}
-                alt={paginatedFiles[lightboxIndex].pathname}
-                className="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-2xl"
-              />
-              <div className="mt-3 flex items-center gap-4 text-xs text-white/80 bg-black/40 px-4 py-1.5 rounded-full backdrop-blur-md">
-                <span>ขนาด: <strong>{formatSize(paginatedFiles[lightboxIndex].size)}</strong></span>
-                <span>•</span>
-                <span>อัปโหลดเมื่อ: <strong>{formatDate(paginatedFiles[lightboxIndex].uploadedAt)}</strong></span>
-              </div>
-            </motion.div>
-
-            {/* Right Nav Arrow */}
-            {paginatedFiles.length > 1 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setLightboxIndex(prev => (prev !== null && prev < paginatedFiles.length - 1 ? prev + 1 : 0));
-                }}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all z-20 backdrop-blur-md cursor-pointer hover:scale-110"
-                title="รูปถัดไป (ลูกศรขวา)"
+              {/* Main Image Container */}
+              <motion.div
+                key={paginatedFiles[lightboxIndex].url}
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="flex flex-col items-center justify-center shrink min-w-0"
+                onClick={(e) => e.stopPropagation()}
               >
-                <ChevronRight size={28} />
-              </button>
-            )}
+                <img
+                  src={paginatedFiles[lightboxIndex].url}
+                  alt={paginatedFiles[lightboxIndex].pathname}
+                  className="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-2xl"
+                />
+                <div className="mt-4 flex items-center gap-3 sm:gap-4 text-[10px] sm:text-xs text-white/80 bg-black/40 px-4 py-1.5 rounded-full backdrop-blur-md whitespace-nowrap">
+                  <span>ขนาด: <strong>{formatSize(paginatedFiles[lightboxIndex].size)}</strong></span>
+                  <span>•</span>
+                  <span>อัปโหลดเมื่อ: <strong>{formatDate(paginatedFiles[lightboxIndex].uploadedAt)}</strong></span>
+                </div>
+              </motion.div>
+
+              {/* Right Nav Arrow */}
+              {paginatedFiles.length > 1 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLightboxIndex(prev => (prev !== null && prev < paginatedFiles.length - 1 ? prev + 1 : 0));
+                  }}
+                  className="shrink-0 p-3 sm:p-4 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all z-20 backdrop-blur-md cursor-pointer hover:scale-110"
+                  title="รูปถัดไป (ลูกศรขวา)"
+                >
+                  <ChevronRight size={28} />
+                </button>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
