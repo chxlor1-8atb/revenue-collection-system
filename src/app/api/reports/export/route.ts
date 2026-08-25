@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { transactions, invoices, houses } from "@/lib/schema";
 import { eq, desc, sql, and } from "drizzle-orm";
 import ExcelJS from "exceljs";
+import { auth } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,11 @@ const OFFICIAL_ZONES = [
 
 export async function GET() {
   try {
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const workbook = new ExcelJS.Workbook();
     workbook.creator = "เทศบาลเมืองนางรอง - กองสาธารณสุขและสิ่งแวดล้อม";
     workbook.created = new Date();

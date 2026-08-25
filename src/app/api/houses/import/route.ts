@@ -1,9 +1,16 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { houses } from "@/lib/schema";
+import { auth } from "@/lib/auth";
+import { recordAuditLog } from "@/lib/audit";
 
 export async function POST(req: Request) {
   try {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const data = await req.json();
     if (!Array.isArray(data) || data.length === 0) {
       return NextResponse.json({ success: false, error: "No data provided" }, { status: 400 });
@@ -46,6 +53,17 @@ export async function POST(req: Request) {
     }
 
     const skippedCount = data.length - uniqueToInsert.length;
+
+    // Record audit log
+    await recordAuditLog({
+      action: "IMPORT",
+      entityType: "HOUSE",
+      details: {
+        totalRows: data.length,
+        insertedCount: uniqueToInsert.length,
+        skippedCount
+      }
+    });
 
     return NextResponse.json({ 
       success: true, 

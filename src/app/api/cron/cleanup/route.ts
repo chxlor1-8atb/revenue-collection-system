@@ -3,11 +3,18 @@ import { db } from "@/lib/db";
 import { transactions, invoices } from "@/lib/schema";
 import { eq, and, lt, inArray } from "drizzle-orm";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
-  // Check authorization (e.g. from Vercel Cron)
+  // Check authorization (e.g. from Vercel Cron or secret key)
   const authHeader = request.headers.get('authorization');
-  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new NextResponse('Unauthorized', { status: 401 });
+  const cronSecret = process.env.CRON_SECRET;
+  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    const url = new URL(request.url);
+    const queryKey = url.searchParams.get('key');
+    if (queryKey !== cronSecret) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
   }
 
   try {
@@ -31,9 +38,9 @@ export async function GET(request: Request) {
     const txIds = expiredTxs.map(tx => tx.id);
 
     // Atomically cancel them and free up the invoices
-    const tx = db; {
+    await db.transaction(async (txDb) => {
       // Unlink invoices
-      await tx.update(invoices)
+      await txDb.update(invoices)
         .set({ status: 'unpaid', transactionId: null })
         .where(
           and(
@@ -43,7 +50,7 @@ export async function GET(request: Request) {
         );
 
       // Delete any advance invoices tied to these expired transactions
-      await tx.delete(invoices)
+      await txDb.delete(invoices)
         .where(
           and(
             inArray(invoices.transactionId, txIds),
@@ -52,10 +59,10 @@ export async function GET(request: Request) {
         );
 
       // Mark transactions as expired
-      await tx.update(transactions)
+      await txDb.update(transactions)
         .set({ slipStatus: 'expired' })
         .where(inArray(transactions.id, txIds));
-      }
+    });
 
     return NextResponse.json({ success: true, count: txIds.length, message: `Expired ${txIds.length} transactions.` });
 

@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { houses, invoices } from "@/lib/schema";
 import { asc } from "drizzle-orm";
 import ExcelJS from "exceljs";
+import { auth } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,11 @@ function formatThaiShortMonth(monthYear: string) {
 
 export async function GET() {
   try {
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const [allHouses, allInvoices] = await Promise.all([
       db.select().from(houses).orderBy(asc(houses.houseNumber)),
       db.select().from(invoices)

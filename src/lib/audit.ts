@@ -3,7 +3,7 @@ import { auditLogs } from "@/lib/schema";
 import { auth } from "@/lib/auth";
 
 export interface AuditLogParams {
-  action: "CREATE" | "UPDATE" | "DELETE" | "VOID" | "APPROVE" | "REJECT" | "EXPORT" | "SETTINGS" | "BROADCAST" | "LOGIN";
+  action: "CREATE" | "UPDATE" | "DELETE" | "VOID" | "APPROVE" | "REJECT" | "EXPORT" | "IMPORT" | "SYNC" | "SETTINGS" | "BROADCAST" | "LOGIN";
   entityType: "HOUSE" | "INVOICE" | "TRANSACTION" | "USER" | "SETTINGS" | "BROADCAST" | "LINE" | "FEE_CATEGORY";
   entityId?: string | number | null;
   details?: Record<string, any>;
