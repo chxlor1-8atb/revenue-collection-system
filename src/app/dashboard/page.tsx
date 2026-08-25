@@ -8,6 +8,7 @@ import { CalendarClock, BellRing } from "lucide-react";
 import { eq, desc, inArray, or, and, sql } from "drizzle-orm";
 import RevenueChart from "./RevenueChart";
 import { StaggerContainer, StaggerItem } from "@/components/animations/Stagger";
+import LottieIcon from "@/components/LottieIcon";
 import { 
   Banknote, 
   Home, 
@@ -225,7 +226,7 @@ export default async function DashboardPage() {
           <div className="flex items-start justify-between gap-3 mb-3">
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-2xl bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0 border border-rose-500/20">
-                <Home size={22} strokeWidth={2} />
+                <LottieIcon src="/icons/icons8-home.json" size={28} loop autoplay />
               </div>
               <div>
                 <span className="text-slate-800 font-bold text-sm xl:text-base tracking-tight block">บ้านที่ค้างชำระ</span>
