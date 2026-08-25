@@ -125,9 +125,9 @@ export default function TopNav({ userName, settings }: { userName: string, setti
               <img
                 src="/icons/mainiconweb.png"
                 alt="ระบบจัดเก็บค่าขยะ"
-                className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 lg:w-13 lg:h-13 object-contain shrink-0 drop-shadow-xs transition-transform duration-200 group-hover:scale-105"
+                className="hidden sm:block w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 lg:w-13 lg:h-13 object-contain shrink-0 drop-shadow-xs transition-transform duration-200 group-hover:scale-105"
               />
-              <span className="hidden sm:inline font-sans font-bold text-[#0F172A] tracking-tight text-base sm:text-lg lg:text-xl whitespace-nowrap">
+              <span className="font-sans font-bold text-[#0F172A] tracking-tight text-base sm:text-lg lg:text-xl whitespace-nowrap">
                 ระบบจัดเก็บค่าขยะ
               </span>
             </Link>
