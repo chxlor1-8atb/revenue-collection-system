@@ -950,7 +950,7 @@ export default function BlobClient({
                     className={`group relative rounded-[20px] sm:rounded-[24px] border-[6px] transition-all overflow-hidden flex flex-col aspect-square sm:aspect-[5/4] ${
                       isSelected 
                         ? 'border-[#5B58F2] shadow-xl ring-4 ring-[#5B58F2]/20' 
-                        : 'border-[#1a1a1a] shadow-md hover:-translate-y-1 hover:shadow-xl'
+                        : 'border-[#3f3f46] shadow-md hover:-translate-y-1 hover:shadow-xl'
                     }`}
                   >
                     {/* Background Image */}
@@ -969,7 +969,7 @@ export default function BlobClient({
                       preserveAspectRatio="none" 
                       className="absolute bottom-0 w-full h-[60%] z-10 pointer-events-none"
                     >
-                      <path d="M 0 0 H 160 C 190 0, 190 40, 220 40 H 400 V 200 H 0 Z" fill={isSelected ? '#5B58F2' : '#1a1a1a'} className="transition-colors duration-300" />
+                      <path d="M 0 0 H 160 C 190 0, 190 40, 220 40 H 400 V 200 H 0 Z" fill={isSelected ? '#5B58F2' : '#3f3f46'} className="transition-colors duration-300" />
                     </svg>
 
                     {/* Foreground Content */}
@@ -1005,7 +1005,7 @@ export default function BlobClient({
                     </div>
 
                     {/* Hover Actions */}
-                    <div className="absolute inset-0 rounded-[14px] sm:rounded-[18px] bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 sm:gap-3 z-30" onClick={(e) => e.stopPropagation()}>
+                    <div className="absolute inset-0 rounded-[14px] sm:rounded-[18px] bg-[#3f3f46]/85 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 sm:gap-3 z-30" onClick={(e) => e.stopPropagation()}>
                       <button onClick={() => setLightboxIndex(idx)} className="p-2 sm:p-2.5 rounded-xl bg-white/90 hover:bg-white text-slate-800 shadow-xl transition-transform hover:scale-110"><Eye size={16} /></button>
                       <button onClick={() => handleCopy(file.url)} className="p-2 sm:p-2.5 rounded-xl bg-white/90 hover:bg-white text-slate-800 shadow-xl transition-transform hover:scale-110">{copiedUrl === file.url ? <Check size={16} className="text-emerald-600" /> : <Copy size={16} />}</button>
                       <button onClick={() => promptDelete('single', file)} className="p-2 sm:p-2.5 rounded-xl bg-white/90 hover:bg-red-600 hover:text-white text-red-600 shadow-xl transition-transform hover:scale-110"><Trash2 size={16} /></button>
@@ -1411,6 +1411,7 @@ export default function BlobClient({
     </div>
   );
 }
+
 
 
 
