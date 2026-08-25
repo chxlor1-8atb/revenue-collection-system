@@ -276,9 +276,7 @@
     background-color: #ffffff !important;
     background: #ffffff !important;
     color: #000000 !important;
-    height: auto !important;
-    min-height: auto !important;
-    overflow: visible !important;
+    height: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
   }
@@ -299,20 +297,12 @@
     border: none !important;
   }
 
-  .print\:p-0 {
-    padding: 0 !important;
-  }
-
-  .print\:m-0 {
-    margin: 0 !important;
-  }
-
   .print\:bg-white {
     background-color: #ffffff !important;
     background: #ffffff !important;
   }
 
-  /* When printing with #printable-receipt, isolate it completely */
+  /* When printing with #printable-receipt, isolate and center it perfectly */
   body:has(#printable-receipt) {
     visibility: hidden !important;
   }
@@ -325,7 +315,16 @@
     left: 0 !important;
     top: 0 !important;
     width: 100% !important;
+    min-height: 275mm !important;
+    max-height: 290mm !important;
     margin: 0 !important;
-    padding: 0 !important;
+    padding: 12mm 14mm 10mm 14mm !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 }
