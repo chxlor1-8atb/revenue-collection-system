@@ -48,6 +48,19 @@ function formatThaiMonth(monthYear: string) {
   return `${thaiMonths[monthIdx] || month} ${yearBe}`;
 }
 
+function formatThaiDateTime(date: Date) {
+  const thaiMonths = [
+    "", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+    "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+  ];
+  const day = date.getDate();
+  const month = thaiMonths[date.getMonth() + 1];
+  const yearBe = date.getFullYear() + 543;
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${day} ${month} ${yearBe} เวลา ${hours}:${minutes} น.`;
+}
+
 function thaiBahtText(num: number): string {
   if (isNaN(num) || num === 0) return "ศูนย์บาทถ้วน";
   const thaiNums = ["ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"];
@@ -146,6 +159,15 @@ export default function ReceiptModal({ isOpen, onClose, item }: ReceiptModalProp
             ownerName: item.ownerName
           }];
 
+  const handlePrint = () => {
+    const originalTitle = document.title;
+    document.title = "";
+    window.print();
+    setTimeout(() => {
+      document.title = originalTitle;
+    }, 1000);
+  };
+
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-slate-900/60 backdrop-blur-xs print:p-0 print:bg-white print:static print:block print:z-auto">
@@ -183,7 +205,7 @@ export default function ReceiptModal({ isOpen, onClose, item }: ReceiptModalProp
 
             <div className="flex items-center gap-2">
               <button
-                onClick={() => window.print()}
+                onClick={handlePrint}
                 className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold text-white bg-[#5B58F2] hover:bg-[#4A47D1] rounded-xl shadow-xs transition-all cursor-pointer"
               >
                 <Printer size={14} />
@@ -201,10 +223,10 @@ export default function ReceiptModal({ isOpen, onClose, item }: ReceiptModalProp
 
           {/* Scrollable Receipt Area */}
           <div className="flex-1 overflow-y-auto p-2 sm:p-6 md:p-8 custom-scrollbar bg-slate-100/60 print:bg-white print:p-0 print:overflow-visible print:block">
-            {/* Perfect Single-Page A4 Sheet (Cleanly Fitted with No 2nd Page Overflow) */}
+            {/* Perfect Single-Page A4 Sheet */}
             <div 
               id="printable-receipt"
-              className="relative mx-auto bg-white sm:rounded-2xl pt-8 sm:pt-10 px-6 sm:px-12 pb-8 sm:pb-10 shadow-xs border border-slate-200/80 print:border-none print:shadow-none print:pt-6 print:px-8 print:pb-6 print:rounded-none overflow-hidden max-w-[210mm] flex flex-col justify-between"
+              className="relative mx-auto bg-white sm:rounded-2xl pt-8 sm:pt-10 px-6 sm:px-12 pb-8 sm:pb-10 shadow-xs border border-slate-200/80 print:border-none print:shadow-none print:pt-8 print:px-10 print:pb-8 print:rounded-none overflow-hidden max-w-[210mm] flex flex-col justify-between"
             >
               {/* Soft Watermark */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.065] z-0 overflow-hidden select-none">
@@ -249,11 +271,11 @@ export default function ReceiptModal({ isOpen, onClose, item }: ReceiptModalProp
                       </div>
                       <span className="text-slate-300 hidden sm:inline">•</span>
                       <div>
-                        <span className="text-slate-400 font-medium mr-1">วันที่:</span>
-                        <span className="text-slate-800 font-medium">{paidDate.toLocaleDateString("th-TH", { day: "numeric", month: "long", year: "numeric" })}</span>
+                        <span className="text-slate-400 font-medium mr-1">วันที่ชำระ:</span>
+                        <span className="text-slate-800 font-medium">{formatThaiDateTime(paidDate)}</span>
                       </div>
                       <span className="text-slate-300 hidden sm:inline">•</span>
-                      <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[11px] font-semibold">
+                      <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[11px] font-semibold">
                         <CheckCircle2 size={11} /> ชำระเงินเรียบร้อย
                       </div>
                     </div>
@@ -276,7 +298,7 @@ export default function ReceiptModal({ isOpen, onClose, item }: ReceiptModalProp
                     <div className="space-y-1 sm:text-right sm:border-l sm:border-slate-200/60 sm:pl-5">
                       <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ข้อมูลการชำระเงิน (Payment Info)</div>
                       <div className="text-slate-800 font-medium text-xs sm:text-sm">
-                        เวลาที่ชำระ: <span className="font-semibold text-slate-900">{paidDate.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })} น.</span>
+                        ผู้ทำรายการ: <span className="font-semibold text-slate-900">{item.senderName || item.ownerName || "-"}</span>
                       </div>
                       <div className="text-slate-600 text-xs">
                         ช่องทาง: <span className="text-slate-800 font-medium">{item.paidVia || "PromptPay QR (ออนไลน์)"}</span>
@@ -372,9 +394,9 @@ export default function ReceiptModal({ isOpen, onClose, item }: ReceiptModalProp
                     </div>
                   </div>
 
-                  {/* Clean Footer Timestamp */}
+                  {/* Clean Footer Timestamp (Thai Format) */}
                   <div suppressHydrationWarning className="text-center text-[10px] text-slate-400 pt-2 border-t border-slate-100">
-                    เอกสารฉบับนี้ถูกสร้างขึ้นด้วยระบบอิเล็กทรอนิกส์ • เทศบาลเมืองนางรอง • วันที่พิมพ์: {new Date().toLocaleString("th-TH")}
+                    เอกสารฉบับนี้ถูกสร้างขึ้นด้วยระบบอิเล็กทรอนิกส์ • เทศบาลเมืองนางรอง • วันที่พิมพ์: {formatThaiDateTime(new Date())}
                   </div>
                 </div>
 

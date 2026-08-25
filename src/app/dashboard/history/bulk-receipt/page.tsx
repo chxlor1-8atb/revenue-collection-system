@@ -19,6 +19,19 @@ function formatThaiMonth(monthYear: string) {
   return `${thaiMonths[monthIdx] || month} ${yearBe}`;
 }
 
+function formatThaiDateTime(date: Date) {
+  const thaiMonths = [
+    "", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+    "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+  ];
+  const day = date.getDate();
+  const month = thaiMonths[date.getMonth() + 1];
+  const yearBe = date.getFullYear() + 543;
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${day} ${month} ${yearBe} เวลา ${hours}:${minutes} น.`;
+}
+
 function thaiBahtText(num: number): string {
   if (isNaN(num) || num === 0) return "ศูนย์บาทถ้วน";
   const thaiNums = ["ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"];
@@ -190,8 +203,8 @@ export default async function BulkReceiptPage(props: {
                     </div>
                     <span className="text-slate-300 hidden sm:inline">•</span>
                     <div>
-                      <span className="text-slate-400 font-medium mr-1">วันที่:</span>
-                      <span className="text-slate-800 font-medium">{paidDate.toLocaleDateString("th-TH", { day: "numeric", month: "long", year: "numeric" })}</span>
+                      <span className="text-slate-400 font-medium mr-1">วันที่ชำระ:</span>
+                      <span className="text-slate-800 font-medium">{formatThaiDateTime(paidDate)}</span>
                     </div>
                     <span className="text-slate-300 hidden sm:inline">•</span>
                     <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[11px] font-semibold">
@@ -204,7 +217,7 @@ export default async function BulkReceiptPage(props: {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 p-4 sm:p-4.5 rounded-xl bg-slate-50/70 border border-slate-100 text-xs sm:text-sm">
                   <div className="space-y-1">
                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ข้อมูลผู้ชำระเงิน (Billed To)</div>
-                    <div className="text-sm sm:text-base font-bold text-slate-900">{house.ownerName || "-"}</div>
+                    <div className="text-base font-bold text-slate-900">{house.ownerName || "-"}</div>
                     <div className="text-slate-600 flex items-center gap-2 text-xs">
                       <span>บ้านเลขที่: <strong className="text-slate-800 font-semibold">{house.houseNumber || "-"}</strong></span>
                       <span className="text-slate-300">•</span>
@@ -215,7 +228,7 @@ export default async function BulkReceiptPage(props: {
                   <div className="space-y-1 sm:text-right sm:border-l sm:border-slate-200/60 sm:pl-5">
                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ข้อมูลการชำระเงิน (Payment Info)</div>
                     <div className="text-slate-800 font-medium text-xs sm:text-sm">
-                      เวลาที่ชำระ: <span className="font-semibold text-slate-900">{paidDate.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })} น.</span>
+                      ผู้ทำรายการ: <span className="font-semibold text-slate-900">{senderName}</span>
                     </div>
                     <div className="text-slate-600 text-xs">
                       ช่องทาง: <span className="text-slate-800 font-medium">{paidVia}</span>
@@ -324,7 +337,7 @@ export default async function BulkReceiptPage(props: {
                 </div>
 
                 <div suppressHydrationWarning className="text-center text-[10px] text-slate-400 pt-2 border-t border-slate-100">
-                  เอกสารฉบับนี้ถูกสร้างขึ้นด้วยระบบอิเล็กทรอนิกส์ (ใบที่ {idx + 1} จาก {receipts.length}) • เทศบาลเมืองนางรอง • วันที่พิมพ์: {new Date().toLocaleString("th-TH")}
+                  เอกสารฉบับนี้ถูกสร้างขึ้นด้วยระบบอิเล็กทรอนิกส์ • เทศบาลเมืองนางรอง • วันที่พิมพ์: {formatThaiDateTime(new Date())}
                 </div>
               </div>
 

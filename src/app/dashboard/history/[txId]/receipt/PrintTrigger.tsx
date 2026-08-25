@@ -7,10 +7,19 @@ import Link from "next/link";
 export default function PrintTrigger() {
   const [copied, setCopied] = useState(false);
 
+  const executePrint = () => {
+    const originalTitle = document.title;
+    document.title = "";
+    window.print();
+    setTimeout(() => {
+      document.title = originalTitle;
+    }, 1000);
+  };
+
   useEffect(() => {
     // Automatically open print dialog after a short delay to allow images/fonts to load
     const timer = setTimeout(() => {
-      window.print();
+      executePrint();
     }, 600);
     return () => clearTimeout(timer);
   }, []);
@@ -42,7 +51,7 @@ export default function PrintTrigger() {
       </button>
 
       <button
-        onClick={() => window.print()}
+        onClick={executePrint}
         className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white bg-[#5B58F2] hover:bg-[#4A47D1] rounded-xl shadow-xs transition-all cursor-pointer"
       >
         <Printer size={14} />
