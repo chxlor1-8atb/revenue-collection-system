@@ -5,7 +5,7 @@ import {
   CheckCircle2, Smartphone, Globe, Calendar, Home, User, Search, Download, 
   Printer, Loader2, AlertTriangle, X, History, LayoutGrid, List, Eye,
   RotateCcw, Tag, Hash, FileText, Ban, ArrowUpDown, ArrowUp, ArrowDown,
-  CheckSquare, Square, FileSpreadsheet, Shield, UserCheck, Archive
+  CheckSquare, Square, FileSpreadsheet, Shield, UserCheck, Archive, Check
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import SlipModalButton from "@/components/SlipModalButton";
@@ -20,6 +20,49 @@ import ReceiptModal from "@/components/ReceiptModal";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import LottieIcon from "@/components/LottieIcon";
+
+function FancyCheckbox({
+  checked,
+  indeterminate,
+  onChange,
+  disabled,
+  size = "md"
+}: {
+  checked: boolean;
+  indeterminate?: boolean;
+  onChange: () => void;
+  disabled?: boolean;
+  size?: "sm" | "md";
+}) {
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={indeterminate ? "mixed" : checked}
+      disabled={disabled}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (!disabled) onChange();
+      }}
+      className={`relative inline-flex items-center justify-center rounded-lg transition-all duration-200 cursor-pointer select-none shrink-0 ${
+        size === "sm" ? "w-4.5 h-4.5" : "w-5 h-5"
+      } ${
+        disabled
+          ? "opacity-40 cursor-not-allowed bg-slate-100 border border-slate-200"
+          : checked || indeterminate
+          ? "bg-[#5B58F2] text-white shadow-xs shadow-[#5B58F2]/30 border border-[#5B58F2] hover:bg-[#4A47D1] active:scale-95"
+          : "bg-white border-2 border-slate-300 hover:border-[#5B58F2] hover:bg-indigo-50/30 active:scale-95"
+      }`}
+    >
+      {checked && !indeterminate && (
+        <Check size={size === "sm" ? 11 : 13} strokeWidth={3} className="text-white" />
+      )}
+      {indeterminate && (
+        <span className={`block bg-white rounded-full ${size === "sm" ? "w-2 h-0.5" : "w-2.5 h-0.5"}`} />
+      )}
+    </button>
+  );
+}
 
 function formatThaiMonth(monthYear: string) {
   const thaiMonths = ["", "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
@@ -272,7 +315,11 @@ export default function HistoryClient() {
     .filter(d => selectedIds.includes(d.id))
     .reduce((sum, item) => sum + parseFloat(item.amount || "0"), 0);
 
-  const isAllCurrentPageSelected = data.length > 0 && data.filter(d => d.slipStatus !== "voided").every(d => selectedIds.includes(d.id));
+  const currentValidItems = data.filter(d => d.slipStatus !== "voided");
+  const currentValidCount = currentValidItems.length;
+  const selectedOnCurrentPageCount = currentValidItems.filter(d => selectedIds.includes(d.id)).length;
+  const isAllCurrentPageSelected = currentValidCount > 0 && selectedOnCurrentPageCount === currentValidCount;
+  const isSomeCurrentPageSelected = selectedOnCurrentPageCount > 0 && selectedOnCurrentPageCount < currentValidCount;
 
   // Summary Report URL generator
   const summaryReportUrl = `/dashboard/history/summary-report?${new URLSearchParams({
@@ -579,22 +626,42 @@ export default function HistoryClient() {
           ) : viewMode === "grid" ? (
             /* Grid Cards Mode */
             <div>
-              {/* Compact Select All in Grid View */}
+              {/* Modern Sleek Select All in Grid View */}
               <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-                <label className="inline-flex items-center gap-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 px-3.5 py-1.5 rounded-xl border border-slate-200/90 shadow-2xs cursor-pointer select-none transition-colors">
-                  <input
-                    type="checkbox"
+                <button
+                  type="button"
+                  onClick={handleSelectAllCurrentPage}
+                  className={`inline-flex items-center gap-2.5 text-xs font-semibold px-3.5 py-2 rounded-xl border transition-all duration-200 cursor-pointer shadow-2xs select-none ${
+                    isAllCurrentPageSelected || isSomeCurrentPageSelected
+                      ? "bg-indigo-50/80 border-[#5B58F2]/40 text-[#5B58F2] hover:bg-indigo-100/70"
+                      : "bg-white border-slate-200/90 text-slate-700 hover:bg-slate-50 hover:border-slate-300"
+                  }`}
+                >
+                  <FancyCheckbox
                     checked={isAllCurrentPageSelected}
+                    indeterminate={isSomeCurrentPageSelected}
                     onChange={handleSelectAllCurrentPage}
-                    className="w-4 h-4 rounded text-[#5B58F2] focus:ring-[#5B58F2] border-slate-300 cursor-pointer"
+                    size="sm"
                   />
-                  <span>เลือกทั้งหมด ({data.filter(d => d.slipStatus !== "voided").length})</span>
-                </label>
+                  <span>เลือกทั้งหมดในหน้านี้</span>
+                  <span className="text-[11px] font-bold px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-600 font-mono">
+                    {currentValidCount}
+                  </span>
+                </button>
 
                 {selectedIds.length > 0 && (
-                  <span className="text-xs font-semibold text-[#5B58F2] bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-100">
-                    เลือกแล้ว {selectedIds.length} รายการ
-                  </span>
+                  <div className="inline-flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#5B58F2] bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-200/60 shadow-2xs">
+                      <span className="w-2 h-2 rounded-full bg-[#5B58F2] animate-pulse" />
+                      เลือกแล้ว {selectedIds.length} รายการ (฿{selectedTotalAmount.toLocaleString("th-TH", { minimumFractionDigits: 2 })})
+                    </span>
+                    <button
+                      onClick={() => setSelectedIds([])}
+                      className="text-xs font-medium text-slate-500 hover:text-red-600 px-2 py-1 transition-colors cursor-pointer"
+                    >
+                      ล้างการเลือก
+                    </button>
+                  </div>
                 )}
               </div>
 
@@ -622,11 +689,10 @@ export default function HistoryClient() {
                         <div className="flex items-start justify-between gap-2 mb-3">
                           <div className="flex items-center gap-2">
                             {!isVoided && (
-                              <input
-                                type="checkbox"
+                              <FancyCheckbox
                                 checked={isSelected}
                                 onChange={() => handleToggleSelect(item.id)}
-                                className="w-4 h-4 rounded text-[#5B58F2] focus:ring-[#5B58F2] border-slate-300 cursor-pointer"
+                                size="sm"
                               />
                             )}
                             <span className="inline-flex items-center gap-1 bg-slate-100 px-3 py-1 rounded-xl border border-slate-200 text-slate-900 shadow-2xs">
@@ -765,13 +831,15 @@ export default function HistoryClient() {
                   <thead>
                     <tr className="border-b border-slate-100 bg-slate-50/70 text-xs font-bold text-slate-500 uppercase tracking-wider">
                       {/* Checkbox Column */}
-                      <th className="px-4 py-3.5 w-10 text-center">
-                        <input
-                          type="checkbox"
-                          checked={isAllCurrentPageSelected}
-                          onChange={handleSelectAllCurrentPage}
-                          className="w-4 h-4 rounded text-[#5B58F2] focus:ring-[#5B58F2] border-slate-300 cursor-pointer"
-                        />
+                      <th className="px-4 py-3.5 w-12 text-center">
+                        <div className="flex items-center justify-center">
+                          <FancyCheckbox
+                            checked={isAllCurrentPageSelected}
+                            indeterminate={isSomeCurrentPageSelected}
+                            onChange={handleSelectAllCurrentPage}
+                            size="sm"
+                          />
+                        </div>
                       </th>
 
                       {/* ID / Slip */}
@@ -857,13 +925,16 @@ export default function HistoryClient() {
                         >
                           {/* Checkbox */}
                           <td className="px-4 py-3.5 text-center">
-                            {!isVoided && (
-                              <input
-                                type="checkbox"
-                                checked={isSelected}
-                                onChange={() => handleToggleSelect(item.id)}
-                                className="w-4 h-4 rounded text-[#5B58F2] focus:ring-[#5B58F2] border-slate-300 cursor-pointer"
-                              />
+                            {!isVoided ? (
+                              <div className="flex items-center justify-center">
+                                <FancyCheckbox
+                                  checked={isSelected}
+                                  onChange={() => handleToggleSelect(item.id)}
+                                  size="sm"
+                                />
+                              </div>
+                            ) : (
+                              <span className="text-slate-300">-</span>
                             )}
                           </td>
 
@@ -1017,46 +1088,50 @@ export default function HistoryClient() {
         )}
       </div>
 
-      {/* 5. Floating Bulk Action Toolbar */}
+      {/* 5. Modern Floating Bulk Action Toolbar */}
       <AnimatePresence>
         {selectedValidCount > 0 && (
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-slate-900 text-white px-6 py-3.5 rounded-2xl shadow-2xl flex flex-wrap items-center gap-4 border border-slate-700/80 backdrop-blur-lg"
+            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 40, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 28 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-slate-900/95 backdrop-blur-xl text-white px-5 py-3 rounded-2xl shadow-2xl flex flex-wrap items-center gap-3.5 border border-slate-700/80"
           >
-            <div className="flex items-center gap-2 pr-2 border-r border-slate-700">
-              <div className="w-6 h-6 rounded-full bg-[#5B58F2] flex items-center justify-center text-white text-xs font-bold font-mono">
+            <div className="flex items-center gap-2.5 pr-3 border-r border-slate-700/80">
+              <span className="w-6 h-6 rounded-lg bg-[#5B58F2] flex items-center justify-center text-white text-xs font-bold font-mono shadow-xs shadow-[#5B58F2]/50">
                 {selectedValidCount}
-              </div>
-              <span className="text-xs font-medium text-slate-300">
-                เลือกแล้ว (฿{selectedTotalAmount.toLocaleString("th-TH", { minimumFractionDigits: 2 })})
               </span>
+              <div className="text-xs">
+                <span className="text-slate-400 mr-1.5">เลือกแล้ว</span>
+                <strong className="text-white font-mono font-semibold">฿{selectedTotalAmount.toLocaleString("th-TH", { minimumFractionDigits: 2 })}</strong>
+              </div>
             </div>
 
             {/* Bulk Print Receipts */}
             <Link
               href={`/dashboard/history/bulk-receipt?ids=${selectedIds.join(",")}`}
               target="_blank"
-              className="flex items-center gap-1.5 bg-[#5B58F2] hover:bg-[#4A47D1] text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-md shadow-[#5B58F2]/30"
+              className="inline-flex items-center gap-2 bg-[#5B58F2] hover:bg-[#4A47D1] text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-md shadow-[#5B58F2]/30 active:scale-95 cursor-pointer"
             >
-              <Printer size={14} /> พิมพ์ใบเสร็จที่เลือก ({selectedValidCount})
+              <Printer size={14} />
+              <span>พิมพ์ใบเสร็จ ({selectedValidCount})</span>
             </Link>
 
             {/* Download Selected Slips as ZIP */}
             <button
               onClick={() => handleDownloadSlipsZip()}
               disabled={isZipping}
-              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-xl text-xs font-semibold transition-all border border-slate-600 cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-xl text-xs font-semibold transition-all border border-slate-700 active:scale-95 cursor-pointer disabled:opacity-50"
             >
-              <Archive size={14} /> ดาวน์โหลดสลิป ZIP ({selectedValidCount})
+              <Archive size={14} />
+              <span>ดาวน์โหลดสลิป ZIP ({selectedValidCount})</span>
             </button>
 
             {/* Clear Selection */}
             <button
               onClick={() => setSelectedIds([])}
-              className="text-xs text-slate-400 hover:text-white px-2 py-1 transition-colors cursor-pointer"
+              className="text-xs text-slate-400 hover:text-rose-400 hover:bg-white/5 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
             >
               ยกเลิกการเลือก
             </button>
