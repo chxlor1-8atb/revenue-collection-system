@@ -1005,7 +1005,7 @@ export default function BlobClient({
                     </div>
 
                     {/* Hover Actions */}
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 sm:gap-3 z-30" onClick={(e) => e.stopPropagation()}>
+                    <div className="absolute inset-0 rounded-[14px] sm:rounded-[18px] bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 sm:gap-3 z-30" onClick={(e) => e.stopPropagation()}>
                       <button onClick={() => setLightboxIndex(idx)} className="p-2 sm:p-2.5 rounded-xl bg-white/90 hover:bg-white text-slate-800 shadow-xl transition-transform hover:scale-110"><Eye size={16} /></button>
                       <button onClick={() => handleCopy(file.url)} className="p-2 sm:p-2.5 rounded-xl bg-white/90 hover:bg-white text-slate-800 shadow-xl transition-transform hover:scale-110">{copiedUrl === file.url ? <Check size={16} className="text-emerald-600" /> : <Copy size={16} />}</button>
                       <button onClick={() => promptDelete('single', file)} className="p-2 sm:p-2.5 rounded-xl bg-white/90 hover:bg-red-600 hover:text-white text-red-600 shadow-xl transition-transform hover:scale-110"><Trash2 size={16} /></button>
@@ -1411,5 +1411,6 @@ export default function BlobClient({
     </div>
   );
 }
+
 
 
