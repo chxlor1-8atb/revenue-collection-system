@@ -171,32 +171,7 @@ export default async function SummaryReportPage(props: {
     <div className="min-h-screen bg-slate-200 py-8 font-sans print:bg-white print:py-0 print:m-0">
       <PrintTrigger />
 
-      {/* Floating Action Bar */}
-      <div className="fixed top-6 right-6 z-50 flex items-center gap-3 bg-white/95 backdrop-blur-md p-2 rounded-2xl shadow-xl border border-slate-200/80 print:hidden">
-        <Link
-          href="/dashboard/history"
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-all"
-        >
-          <ArrowLeft size={14} /> กลับ
-        </Link>
-        <button
-          onClick={undefined}
-          className="print-btn flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md shadow-emerald-600/25 transition-all cursor-pointer"
-        >
-          <Printer size={15} /> สั่งพิมพ์รายงาน
-        </button>
-      </div>
 
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            document.addEventListener('DOMContentLoaded', () => {
-              const btn = document.querySelector('.print-btn');
-              if (btn) btn.addEventListener('click', () => window.print());
-            });
-          `,
-        }}
-      />
 
       {/* Report Page (A4) */}
       <div className="max-w-[210mm] mx-auto bg-white p-10 shadow-md print:shadow-none print:p-0 print:m-0 border border-slate-300 print:border-none relative">

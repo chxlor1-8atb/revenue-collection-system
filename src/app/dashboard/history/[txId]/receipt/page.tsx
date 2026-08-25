@@ -151,21 +151,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ txId: 
 
       </div>
       
-      {/* Screen Only Action Buttons */}
-      <div className="fixed bottom-8 right-8 flex gap-4 print:hidden">
-        <button 
-          onClick={() => window.close()}
-          className="bg-white hover:bg-slate-50 text-slate-700 px-6 py-3 rounded-xl shadow-lg border border-slate-200 font-bold transition-all"
-        >
-          ปิดหน้าต่าง
-        </button>
-        <button 
-          onClick={() => window.print()}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl shadow-lg shadow-emerald-500/30 font-bold transition-all"
-        >
-          สั่งพิมพ์ใบเสร็จ
-        </button>
-      </div>
+
     </div>
   );
 }

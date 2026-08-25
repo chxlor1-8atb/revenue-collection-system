@@ -91,29 +91,7 @@ export default async function BulkReceiptPage(props: {
     <div className="min-h-screen bg-slate-200 py-8 font-sans print:bg-white print:py-0 print:m-0">
       <PrintTrigger />
 
-      {/* Floating Action Bar (Screen Only) */}
-      <div className="fixed top-6 right-6 z-50 flex items-center gap-3 bg-white/95 backdrop-blur-md p-2 rounded-2xl shadow-xl border border-slate-200/80 print:hidden">
-        <span className="text-xs font-bold text-slate-600 px-3">
-          ทั้งหมด <span className="text-[#5B58F2] font-mono font-black">{receipts.length}</span> ใบเสร็จ
-        </span>
-        <button
-          onClick={undefined}
-          className="print-btn flex items-center gap-2 bg-[#5B58F2] hover:bg-[#4A47D1] text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md shadow-[#5B58F2]/25 transition-all cursor-pointer"
-        >
-          <Printer size={15} /> สั่งพิมพ์ทั้งหมด ({receipts.length})
-        </button>
-      </div>
 
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            document.addEventListener('DOMContentLoaded', () => {
-              const btn = document.querySelector('.print-btn');
-              if (btn) btn.addEventListener('click', () => window.print());
-            });
-          `,
-        }}
-      />
 
       {/* Receipts Container */}
       <div className="space-y-8 print:space-y-0 max-w-[210mm] mx-auto">
