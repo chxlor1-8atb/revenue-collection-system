@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { CreditCard, Smartphone, BookOpen, Save, CheckCircle2, AlertCircle, Phone, Megaphone, Calendar, Clock, Loader2, Send, Shield, ArrowRight } from "lucide-react";
+import { CreditCard, Smartphone, BookOpen, Save, CheckCircle2, AlertCircle, Phone, Megaphone, Calendar, Clock, Loader2, Send, Shield, ArrowRight, Users } from "lucide-react";
 
 export default function SettingsForm({
   collectorId,
@@ -92,8 +92,27 @@ export default function SettingsForm({
   return (
     <div className="bg-white p-5 sm:p-6 rounded-2xl shadow-xs border border-slate-200/80 font-sans space-y-6">
       {/* Quick Access to System Tools */}
-      <div className="space-y-2">
-        <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">เครื่องมือ & ประวัติการทำงาน</div>
+      <div className="space-y-2.5">
+        <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">เครื่องมือ & การจัดการระบบ</div>
+        
+        {/* User Management Primary Card */}
+        <Link
+          href="/dashboard/users"
+          className="p-3.5 rounded-2xl bg-blue-50/70 hover:bg-blue-100/80 border border-blue-200/60 transition-all flex items-center justify-between group shadow-2xs"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <Users size={16} />
+            </div>
+            <div className="text-left">
+              <div className="text-xs font-bold text-blue-950">ผู้ดูแลระบบ & สิทธิ์การใช้งาน</div>
+              <div className="text-[11px] text-blue-700">จัดการบัญชีเจ้าหน้าที่และรหัสผ่าน</div>
+            </div>
+          </div>
+          <ArrowRight size={15} className="text-blue-400 group-hover:translate-x-0.5 transition-transform" />
+        </Link>
+
+        {/* 2-Column Tools */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <Link
             href="/dashboard/broadcast"
@@ -120,8 +139,8 @@ export default function SettingsForm({
                 <Shield size={14} />
               </div>
               <div className="text-left">
-                <div className="text-xs font-bold text-slate-900">ประวัติระบบ (Audit Logs)</div>
-                <div className="text-[10px] text-slate-500">บันทึกกิจกรรมเจ้าหน้าที่</div>
+                <div className="text-xs font-bold text-slate-900">ประวัติระบบ</div>
+                <div className="text-[10px] text-slate-500">Audit Logs เจ้าหน้าที่</div>
               </div>
             </div>
             <ArrowRight size={14} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />

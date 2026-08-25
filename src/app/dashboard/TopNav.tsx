@@ -111,7 +111,6 @@ export default function TopNav({ userName, settings }: { userName: string, setti
     { name: "สลิป LINE", href: "/dashboard/line-slips", icon: Smartphone, imageSrc: "/icons/line-black-animated.gif", imageSize: 25 },
     { name: "ประวัติชำระ", href: "/dashboard/history", icon: Receipt, lottieSrc: "/icons/Receipt.json", lottieSize: 40 },
     { name: "รายงานการคลัง", href: "/dashboard/reports", icon: BarChart3 },
-    { name: "ผู้ใช้งาน", href: "/dashboard/users", icon: Users, imageSrc: "/icons/icons8-user.gif", imageSize: 24 },
     { name: "คลังไฟล์", href: "/dashboard/blob", icon: Folder, lottieSrc: "/icons/icons8-folder.json", lottieSize: 25 },
   ];
 
@@ -162,9 +161,9 @@ export default function TopNav({ userName, settings }: { userName: string, setti
             </div>
           </div>
 
-          {/* Navigation Bar: 8-Grid Dock on Mobile, Flex Pill Bar on Desktop */}
+          {/* Navigation Bar: 7-Grid Dock on Mobile, Flex Pill Bar on Desktop */}
           <nav className="w-full md:w-auto overflow-hidden">
-            <ul className="grid grid-cols-8 gap-0.5 sm:gap-1 bg-slate-100/70 p-1 rounded-2xl border border-slate-200/60 md:flex md:items-center md:justify-center md:gap-0.5 lg:gap-1 xl:gap-1.5 md:bg-transparent md:p-0 md:border-transparent">
+            <ul className="grid grid-cols-7 gap-0.5 sm:gap-1 bg-slate-100/70 p-1 rounded-2xl border border-slate-200/60 md:flex md:items-center md:justify-center md:gap-0.5 lg:gap-1 xl:gap-1.5 md:bg-transparent md:p-0 md:border-transparent">
               {navItems.map((item) => {
                 const isActive = pathname === item.href;
                 const IconComponent = item.icon;
