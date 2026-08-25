@@ -188,11 +188,11 @@ export default async function DashboardPage() {
     <div className="space-y-10 pb-12 font-sans">
       
       {/* 4 Stat KPI Cards */}
-      <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-5">
+      <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 xl:gap-5">
         
         {/* Card 1: Verified Revenue */}
-        <StaggerItem className="bg-white rounded-3xl p-5 xl:p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between min-h-[155px]">
-          <div className="flex items-start justify-between gap-3 mb-3">
+        <StaggerItem className="bg-white rounded-[20px] sm:rounded-3xl p-4 sm:p-5 xl:p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between min-h-[115px] sm:min-h-[155px]">
+          <div className="flex items-start justify-between gap-2 sm:gap-3 mb-2 sm:mb-3">
             <div className="flex items-center gap-3">
               <div className="flex items-center justify-center shrink-0">
                 <Image src="/money/icons8-money.png" alt="Revenue" width={44} height={44} className="object-contain drop-shadow-sm" unoptimized />
@@ -207,7 +207,7 @@ export default async function DashboardPage() {
             </span>
           </div>
 
-          <div className="mt-auto pt-2.5 border-t border-slate-100 flex items-end justify-between gap-2">
+          <div className="mt-auto pt-2 sm:pt-2.5 border-t border-slate-100 flex items-end justify-between gap-2">
             <div>
               <div className="text-2xl xl:text-3xl font-extrabold text-slate-900 tracking-tight leading-none">
                 <span className="text-lg xl:text-xl font-bold text-slate-400 mr-1">฿</span>
@@ -222,8 +222,8 @@ export default async function DashboardPage() {
         </StaggerItem>
 
         {/* Card 2: Houses with Unpaid Invoices */}
-        <StaggerItem className="bg-white rounded-3xl p-5 xl:p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between min-h-[155px]">
-          <div className="flex items-start justify-between gap-3 mb-3">
+        <StaggerItem className="bg-white rounded-[20px] sm:rounded-3xl p-4 sm:p-5 xl:p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between min-h-[115px] sm:min-h-[155px]">
+          <div className="flex items-start justify-between gap-2 sm:gap-3 mb-2 sm:mb-3">
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-2xl bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0 border border-rose-500/20">
                 <LottieIcon src="/icons/icons8-home.json" size={28} loop autoplay />
@@ -238,7 +238,7 @@ export default async function DashboardPage() {
             </span>
           </div>
 
-          <div className="mt-auto pt-2.5 border-t border-slate-100 flex items-end justify-between gap-2">
+          <div className="mt-auto pt-2 sm:pt-2.5 border-t border-slate-100 flex items-end justify-between gap-2">
             <div className="text-2xl xl:text-3xl font-extrabold text-slate-900 tracking-tight leading-none">
               {housesWithUnpaidCount} <span className="text-sm font-semibold text-slate-400">หลัง</span>
             </div>
@@ -253,8 +253,8 @@ export default async function DashboardPage() {
         </StaggerItem>
 
         {/* Card 3: Waiting For Review */}
-        <StaggerItem className="bg-white rounded-3xl p-5 xl:p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between min-h-[155px]">
-          <div className="flex items-start justify-between gap-3 mb-3">
+        <StaggerItem className="bg-white rounded-[20px] sm:rounded-3xl p-4 sm:p-5 xl:p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between min-h-[115px] sm:min-h-[155px]">
+          <div className="flex items-start justify-between gap-2 sm:gap-3 mb-2 sm:mb-3">
             <div className="flex items-center gap-3">
               <div className="flex items-center justify-center shrink-0">
                 <Image src="/glass/icons8-waiting.png" alt="Waiting" width={44} height={44} className="object-contain drop-shadow-sm" unoptimized />
@@ -273,7 +273,7 @@ export default async function DashboardPage() {
             </span>
           </div>
 
-          <div className="mt-auto pt-2.5 border-t border-slate-100 flex items-end justify-between gap-2">
+          <div className="mt-auto pt-2 sm:pt-2.5 border-t border-slate-100 flex items-end justify-between gap-2">
             <div className="text-2xl xl:text-3xl font-extrabold text-slate-900 tracking-tight leading-none">
               {waitingForReviewCount} <span className="text-sm font-semibold text-slate-400">รายการ</span>
             </div>
@@ -288,8 +288,8 @@ export default async function DashboardPage() {
         </StaggerItem>
 
         {/* Card 4: LINE Slips */}
-        <StaggerItem className="bg-white rounded-3xl p-5 xl:p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between min-h-[155px]">
-          <div className="flex items-start justify-between gap-3 mb-3">
+        <StaggerItem className="bg-white rounded-[20px] sm:rounded-3xl p-4 sm:p-5 xl:p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between min-h-[115px] sm:min-h-[155px]">
+          <div className="flex items-start justify-between gap-2 sm:gap-3 mb-2 sm:mb-3">
             <div className="flex items-center gap-3">
               <div className="flex items-center justify-center shrink-0">
                 <Image src="/glass/icons8-phonelink-ring.png" alt="LINE" width={44} height={44} className="object-contain drop-shadow-sm" unoptimized />
@@ -308,7 +308,7 @@ export default async function DashboardPage() {
             </span>
           </div>
 
-          <div className="mt-auto pt-2.5 border-t border-slate-100 flex items-end justify-between gap-2">
+          <div className="mt-auto pt-2 sm:pt-2.5 border-t border-slate-100 flex items-end justify-between gap-2">
             <div className="text-2xl xl:text-3xl font-extrabold text-slate-900 tracking-tight leading-none">
               {pendingLineSlipsCount} <span className="text-sm font-semibold text-slate-400">รายการ</span>
             </div>
