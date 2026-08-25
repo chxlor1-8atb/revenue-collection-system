@@ -146,7 +146,7 @@ export default async function BulkReceiptPage(props: {
           <div
             key={tx.id}
             id="printable-receipt"
-            className="bg-white p-6 sm:p-12 shadow-md print:shadow-none print:p-0 print:m-0 min-h-[250mm] sm:min-h-[265mm] border border-slate-200/80 print:border-none relative break-after-page print:page-break-after-always overflow-hidden flex flex-col justify-between"
+            className="bg-white pt-12 sm:pt-20 px-6 sm:px-14 pb-10 sm:pb-14 shadow-md print:shadow-none print:p-0 print:m-0 min-h-[250mm] sm:min-h-[265mm] border border-slate-200/80 print:border-none relative break-after-page print:page-break-after-always overflow-hidden flex flex-col justify-between"
             style={{ pageBreakAfter: "always", breakAfter: "page" }}
           >
             {/* Watermark */}
@@ -157,49 +157,54 @@ export default async function BulkReceiptPage(props: {
             </div>
 
             {/* Document Content */}
-            <div className="relative z-10 flex flex-col h-full justify-between flex-1 gap-8">
+            <div className="relative z-10 flex flex-col h-full justify-between flex-1 gap-10">
               
-              {/* 1. TOP HEADER & METADATA BENTO */}
-              <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 sm:gap-0 pb-6 border-b border-slate-100">
-                  <div className="flex items-center gap-4">
-                    <img 
-                      src="/nangrong-logo.png" 
-                      alt="เทศบาลเมืองนางรอง" 
-                      className="w-16 h-16 sm:w-20 sm:h-20 object-contain shrink-0 drop-shadow-xs" 
-                    />
-                    <div className="space-y-0.5">
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[11px] font-semibold tracking-wide">
-                        เทศบาลเมืองนางรอง
-                      </div>
-                      <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-                        ใบเสร็จรับเงินอิเล็กทรอนิกส์
-                      </h1>
-                      <p className="text-xs text-slate-500 font-medium">
-                        กองสาธารณสุขและสิ่งแวดล้อม • อ.นางรอง จ.บุรีรัมย์ 31110
-                      </p>
-                    </div>
+              {/* 1. TOP HEADER (CENTERED 2X LOGO) & METADATA */}
+              <div className="space-y-8">
+                <div className="text-center flex flex-col items-center space-y-3 pb-6 border-b border-slate-100">
+                  <img 
+                    src="/nangrong-logo.png" 
+                    alt="เทศบาลเมืองนางรอง" 
+                    className="w-32 h-32 sm:w-36 sm:h-36 object-contain drop-shadow-md mx-auto mb-2" 
+                  />
+                  <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold tracking-wide">
+                    เทศบาลเมืองนางรอง
                   </div>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                    ใบเสร็จรับเงินอิเล็กทรอนิกส์
+                  </h1>
+                  <p className="text-xs sm:text-sm text-slate-500 font-medium">
+                    กองสาธารณสุขและสิ่งแวดล้อม • อำเภอนางรอง จังหวัดบุรีรัมย์ 31110
+                  </p>
 
-                  {/* Right Meta Column */}
-                  <div className="sm:text-right flex sm:flex-col justify-between sm:justify-start items-baseline sm:items-end gap-1.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                    <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                      ชำระค่าธรรมเนียมขยะ
+                  {/* Sub-header Bar */}
+                  <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 pt-3 text-xs sm:text-sm text-slate-600">
+                    <div>
+                      <span className="text-slate-400 font-medium mr-1.5">รายการ:</span>
+                      <strong className="text-slate-800 font-semibold">ค่าธรรมเนียมจัดเก็บขยะ</strong>
                     </div>
-                    <div className="text-lg sm:text-xl font-mono font-bold text-slate-900">
-                      #{tx.id}
+                    <span className="text-slate-300 hidden sm:inline">•</span>
+                    <div>
+                      <span className="text-slate-400 font-medium mr-1.5">เลขที่:</span>
+                      <strong className="font-mono font-bold text-slate-900">#{tx.id}</strong>
                     </div>
-                    <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[11px] font-semibold">
-                      <CheckCircle2 size={11} /> ชำระเงินเรียบร้อย
+                    <span className="text-slate-300 hidden sm:inline">•</span>
+                    <div>
+                      <span className="text-slate-400 font-medium mr-1.5">วันที่:</span>
+                      <span className="text-slate-800 font-medium">{paidDate.toLocaleDateString("th-TH", { day: "numeric", month: "long", year: "numeric" })}</span>
+                    </div>
+                    <span className="text-slate-300 hidden sm:inline">•</span>
+                    <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-xs font-semibold">
+                      <CheckCircle2 size={12} /> ชำระเงินเรียบร้อย
                     </div>
                   </div>
                 </div>
 
                 {/* Modern 2-Column Bento Info Card */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 sm:p-5 rounded-2xl bg-slate-50/70 border border-slate-100/90 text-xs sm:text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 p-5 sm:p-6 rounded-2xl bg-slate-50/70 border border-slate-100/90 text-xs sm:text-sm">
                   <div className="space-y-1.5">
                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ข้อมูลผู้ชำระเงิน (Billed To)</div>
-                    <div className="text-base font-bold text-slate-900">{house.ownerName || "-"}</div>
+                    <div className="text-base sm:text-lg font-bold text-slate-900">{house.ownerName || "-"}</div>
                     <div className="text-slate-600 flex items-center gap-2">
                       <span>บ้านเลขที่: <strong className="text-slate-800 font-semibold">{house.houseNumber || "-"}</strong></span>
                       <span className="text-slate-300">•</span>
@@ -207,10 +212,10 @@ export default async function BulkReceiptPage(props: {
                     </div>
                   </div>
 
-                  <div className="space-y-1.5 sm:text-right sm:border-l sm:border-slate-200/60 sm:pl-5">
+                  <div className="space-y-1.5 sm:text-right sm:border-l sm:border-slate-200/60 sm:pl-6">
                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ข้อมูลการชำระเงิน (Payment Info)</div>
                     <div className="text-slate-800 font-medium">
-                      วันที่ชำระ: <span className="font-semibold text-slate-900">{paidDate.toLocaleString('th-TH', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                      เวลาที่ชำระ: <span className="font-semibold text-slate-900">{paidDate.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })} น.</span>
                     </div>
                     <div className="text-slate-600">
                       ช่องทาง: <span className="text-slate-800 font-medium">{paidVia}</span>
@@ -224,17 +229,17 @@ export default async function BulkReceiptPage(props: {
                   <table className="w-full border-collapse text-xs sm:text-sm">
                     <thead>
                       <tr className="border-b border-slate-200 bg-slate-50/80 text-slate-500">
-                        <th className="py-3 px-4 text-left font-semibold w-12 sm:w-16 text-[11px] uppercase tracking-wider">ลำดับ</th>
-                        <th className="py-3 px-4 text-left font-semibold text-[11px] uppercase tracking-wider">รายการ</th>
-                        <th className="py-3 px-4 text-right font-semibold text-[11px] uppercase tracking-wider w-36 sm:w-44">จำนวนเงิน (บาท)</th>
+                        <th className="py-3.5 px-4 text-left font-semibold w-12 sm:w-16 text-[11px] uppercase tracking-wider">ลำดับ</th>
+                        <th className="py-3.5 px-4 text-left font-semibold text-[11px] uppercase tracking-wider">รายการ</th>
+                        <th className="py-3.5 px-4 text-right font-semibold text-[11px] uppercase tracking-wider w-36 sm:w-44">จำนวนเงิน (บาท)</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 bg-white">
                       {txInvoices.length > 0 ? (
                         txInvoices.map((inv, index) => (
                           <tr key={inv.id} className="hover:bg-slate-50/40 transition-colors">
-                            <td className="py-4 px-4 text-slate-400 font-mono text-xs">{String(index + 1).padStart(2, "0")}</td>
-                            <td className="py-4 px-4">
+                            <td className="py-4.5 px-4 text-slate-400 font-mono text-xs">{String(index + 1).padStart(2, "0")}</td>
+                            <td className="py-4.5 px-4">
                               <div className="font-semibold text-slate-900 text-sm sm:text-base">
                                 ค่าธรรมเนียมจัดเก็บและขนขยะมูลฝอย
                               </div>
@@ -242,21 +247,21 @@ export default async function BulkReceiptPage(props: {
                                 ประจำงวดเดือน: <span className="font-medium text-slate-700">{formatThaiMonth(inv.monthYear)}</span> (รหัสบิล: #{inv.id})
                               </div>
                             </td>
-                            <td className="py-4 px-4 text-right font-mono font-semibold text-sm sm:text-base text-slate-900">
+                            <td className="py-4.5 px-4 text-right font-mono font-semibold text-sm sm:text-base text-slate-900">
                               {parseFloat(inv.amount).toLocaleString("th-TH", { minimumFractionDigits: 2 })}
                             </td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td className="py-4 px-4 text-slate-400 font-mono text-xs">01</td>
-                          <td className="py-4 px-4">
+                          <td className="py-4.5 px-4 text-slate-400 font-mono text-xs">01</td>
+                          <td className="py-4.5 px-4">
                             <div className="font-semibold text-slate-900 text-sm sm:text-base">
                               ค่าธรรมเนียมจัดเก็บและขนขยะมูลฝอย
                             </div>
                             <div className="text-xs text-slate-500 mt-0.5">ชำระตามรายการธุรกรรม #{tx.id}</div>
                           </td>
-                          <td className="py-4 px-4 text-right font-mono font-semibold text-sm sm:text-base text-slate-900">
+                          <td className="py-4.5 px-4 text-right font-mono font-semibold text-sm sm:text-base text-slate-900">
                             {totalAmount.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
                           </td>
                         </tr>
@@ -264,7 +269,7 @@ export default async function BulkReceiptPage(props: {
                     </tbody>
                     <tfoot>
                       <tr className="border-t-2 border-slate-900/80 bg-slate-50/60">
-                        <td colSpan={2} className="py-4 px-4 text-slate-700">
+                        <td colSpan={2} className="py-4.5 px-4 text-slate-700">
                           <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-0.5">
                             ยอดชำระสุทธิ (Total Amount)
                           </div>
@@ -272,7 +277,7 @@ export default async function BulkReceiptPage(props: {
                             {thaiBahtText(totalAmount)}
                           </div>
                         </td>
-                        <td className="py-4 px-4 text-right">
+                        <td className="py-4.5 px-4 text-right">
                           <div className="text-[11px] font-medium text-slate-400">บาท (THB)</div>
                           <div className="font-mono font-black text-xl sm:text-2xl text-slate-900 tracking-tight">
                             ฿{totalAmount.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
@@ -286,19 +291,19 @@ export default async function BulkReceiptPage(props: {
               </div>
 
               {/* 3. BOTTOM SECTION */}
-              <div className="mt-auto pt-6 space-y-6">
-                <div className="p-3.5 rounded-xl bg-slate-50/60 text-[11px] text-slate-400 leading-relaxed space-y-0.5">
+              <div className="mt-auto pt-8 space-y-6">
+                <div className="p-4 rounded-xl bg-slate-50/60 text-[11px] text-slate-400 leading-relaxed space-y-0.5 text-center sm:text-left">
                   <p className="font-medium text-slate-600">
                     • ใบเสร็จรับเงินฉบับนี้สร้างโดยระบบอิเล็กทรอนิกส์ของเทศบาลเมืองนางรอง มีผลสมบูรณ์ตามพระราชบัญญัติการสาธารณสุข พ.ศ. 2535
                   </p>
                   <p>
-                    • สอบถามข้อมูลเพิ่มเติม: กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองนางรอง โทร. 044-631-414
+                    • สอบถามข้อมูลเพิ่มเติม: กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองนางรอง โทร. 044-631-414 ในวันและเวลาราชการ
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-8 sm:gap-16 pt-2">
+                <div className="grid grid-cols-2 gap-8 sm:gap-16 pt-4">
                   <div className="text-center flex flex-col items-center">
-                    <div className="h-10 flex items-end justify-center mb-1.5 w-48 sm:w-60 border-b border-slate-300 pb-1">
+                    <div className="h-12 flex items-end justify-center mb-2 w-48 sm:w-64 border-b border-slate-300 pb-1.5">
                       <span className="text-slate-800 font-medium text-xs sm:text-sm truncate max-w-full px-2">
                         {house.ownerName || "-"}
                       </span>
@@ -308,7 +313,7 @@ export default async function BulkReceiptPage(props: {
                   </div>
 
                   <div className="text-center flex flex-col items-center">
-                    <div className="h-10 flex items-end justify-center mb-1.5 w-48 sm:w-60 border-b border-slate-300 pb-1">
+                    <div className="h-12 flex items-end justify-center mb-2 w-48 sm:w-64 border-b border-slate-300 pb-1.5">
                       <span className="text-slate-800 font-semibold text-xs sm:text-sm truncate max-w-full px-2">
                         {tx.verifiedBy === "line_bot" ? "ระบบรับชำระอิเล็กทรอนิกส์อัตโนมัติ" : tx.verifiedBy || "เจ้าหน้าที่การเงินและบัญชี"}
                       </span>
@@ -318,7 +323,7 @@ export default async function BulkReceiptPage(props: {
                   </div>
                 </div>
 
-                <div suppressHydrationWarning className="text-center text-[10px] text-slate-400 pt-3 border-t border-slate-100">
+                <div suppressHydrationWarning className="text-center text-[10px] text-slate-400 pt-4 border-t border-slate-100">
                   เอกสารฉบับนี้ถูกสร้างขึ้นด้วยระบบอิเล็กทรอนิกส์ (ใบที่ {idx + 1} จาก {receipts.length}) • เทศบาลเมืองนางรอง • วันที่พิมพ์: {new Date().toLocaleString("th-TH")}
                 </div>
               </div>
