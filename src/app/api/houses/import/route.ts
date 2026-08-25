@@ -14,7 +14,10 @@ export async function POST(req: Request) {
       houseNumber: String(item.houseNumber).trim(),
       ownerName: String(item.ownerName).trim(),
       zone: item.zone ? String(item.zone).trim() : null,
+      moo: item.moo ? String(item.moo).trim() : null,
+      soi: item.soi ? String(item.soi).trim() : null,
       road: item.road ? String(item.road).trim() : null,
+      defaultBillingAmount: item.defaultBillingAmount ? String(item.defaultBillingAmount).replace(/[^0-9.]/g, '').trim() || '20.00' : '20.00',
       customFields: item.customFields || {},
     }));
 

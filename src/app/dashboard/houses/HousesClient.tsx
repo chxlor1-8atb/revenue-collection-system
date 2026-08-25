@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useTransition, useMemo } from "react";
-import { Plus, Edit2, Trash2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Download, Upload, QrCode, X, Settings, Home, Loader2, FileText, CheckCircle2, FilePlus, Send, Copy, Check, Banknote, Building2, RotateCcw, ArrowRight, AlertCircle, TrendingUp, LayoutGrid, List, Eye, ExternalLink, MapPin, User, Phone } from "lucide-react";
+import { Plus, Edit2, Trash2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Download, Upload, QrCode, X, Settings, Home, Loader2, FileText, CheckCircle2, FilePlus, Send, Copy, Check, Banknote, Building2, RotateCcw, ArrowRight, AlertCircle, TrendingUp, LayoutGrid, List, Eye, ExternalLink, MapPin, User, Phone, FileSpreadsheet } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import QRCode from "qrcode";
 import Link from "next/link";
@@ -234,6 +234,40 @@ export default function HousesClient({
     setDeletingHouse(null);
   };
 
+  function parseCsvLine(line: string): string[] {
+    const result: string[] = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '"') {
+        if (inQuotes && line[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (char === ',' && !inQuotes) {
+        result.push(current.trim());
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    result.push(current.trim());
+    return result;
+  }
+
+  function findColumnIndex(headers: string[], patterns: RegExp[]): number {
+    for (let i = 0; i < headers.length; i++) {
+      const h = (headers[i] || '').trim().replace(/[*:]/g, '');
+      if (patterns.some(p => p.test(h))) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -242,66 +276,86 @@ export default function HousesClient({
     setError(null);
     setSuccessMsg(null);
 
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      try {
-        const text = event.target?.result as string;
-        const lines = text.split('\n');
-        
-        // Filter out hidden fields for import mapping
-        const visibleFields = customFieldsSchema.filter(f => !f.isHidden);
+    try {
+      let rawRows: string[][] = [];
 
-        const parsedData = lines.slice(1).map(line => {
-          const cols = line.split(',');
-          
-          let houseNumber = "";
-          let ownerName = "";
-          let zone = "";
-          let road = "";
-          const customFieldsObj: Record<string, any> = {};
-          
-          visibleFields.forEach((field, i) => {
-            const val = cols[i] ? cols[i].trim() : "";
-            if (field.isSystem) {
-              if (field.id === 'houseNumber') houseNumber = val;
-              if (field.id === 'ownerName') ownerName = val;
-              if (field.id === 'zone') zone = val;
-              if (field.id === 'road') road = val;
-            } else {
-              customFieldsObj[field.id] = val;
-            }
-          });
+      const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls') || file.type.includes('spreadsheetml');
+      if (isExcel) {
+        const buffer = await file.arrayBuffer();
+        const ExcelJS = (await import('exceljs')).default;
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.load(buffer);
+        const worksheet = workbook.worksheets[0];
+        if (!worksheet) throw new Error("ไม่พบแผ่นงานในไฟล์ Excel");
 
-          return {
-            houseNumber,
-            ownerName,
-            zone,
-            road,
-            customFields: customFieldsObj,
-          };
-        }).filter(item => item.houseNumber && item.ownerName);
-
-        const res = await fetch('/api/houses/import', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(parsedData)
+        worksheet.eachRow((row) => {
+          const rowValues = (row.values as any[]).slice(1).map(v => (v !== null && v !== undefined ? String(v).trim() : ''));
+          if (rowValues.some(Boolean)) {
+            rawRows.push(rowValues);
+          }
         });
-        
-        const result = await res.json();
-        if (result.success) {
-          setSuccessMsg(`นำเข้าข้อมูลสำเร็จ: เพิ่มใหม่ ${result.insertedCount} หลัง (ข้ามข้อมูลซ้ำ/ไม่สมบูรณ์ ${result.skippedCount} หลัง)`);
-          router.refresh();
-        } else {
-          setError(result.error || "เกิดข้อผิดพลาดในการนำเข้า");
-        }
-      } catch (err: any) {
-        setError("ไม่สามารถอ่านไฟล์ CSV ได้: " + err.message);
-      } finally {
-        setIsImporting(false);
-        if (fileInputRef.current) fileInputRef.current.value = '';
+      } else {
+        const text = await file.text();
+        const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+        rawRows = lines.map(parseCsvLine);
       }
-    };
-    reader.readAsText(file);
+
+      if (rawRows.length < 2) {
+        throw new Error("ไฟล์ไม่มีข้อมูลหรือมีเฉพาะหัวตาราง");
+      }
+
+      const headers = rawRows[0];
+      const houseNumIdx = findColumnIndex(headers, [/บ้านเลขที่/i, /เลขที่บ้าน/i, /houseNumber/i, /house_number/i, /^บ้าน$/i]);
+      const ownerIdx = findColumnIndex(headers, [/ชื่อ\s*-\s*สกุล/i, /ชื่อ-สกุล/i, /ชื่อเจ้าบ้าน/i, /ชื่อผู้ครอบครอง/i, /^ชื่อ$/i, /ownerName/i, /owner_name/i, /owner/i, /name/i]);
+      const zoneIdx = findColumnIndex(headers, [/ชุมชน/i, /zone/i, /หมู่บ้าน/i]);
+      const mooIdx = findColumnIndex(headers, [/หมู่ที่/i, /^หมู่$/i, /moo/i]);
+      const soiIdx = findColumnIndex(headers, [/ซอย/i, /soi/i]);
+      const roadIdx = findColumnIndex(headers, [/ถนน/i, /ถนน\/ซอย/i, /road/i]);
+      const amountIdx = findColumnIndex(headers, [/ยอดจัดเก็บ/i, /ค่าขยะ/i, /ยอดเงิน/i, /defaultBillingAmount/i, /amount/i]);
+
+      const parsedData = rawRows.slice(1).map(cols => {
+        const hNum = (houseNumIdx >= 0 ? cols[houseNumIdx] : cols[1] || cols[0] || '').trim();
+        const oName = (ownerIdx >= 0 ? cols[ownerIdx] : cols[2] || cols[1] || '').trim();
+        const z = (zoneIdx >= 0 ? cols[zoneIdx] : cols[3] || '').trim();
+        const m = (mooIdx >= 0 ? cols[mooIdx] : cols[4] || '').trim();
+        const s = (soiIdx >= 0 ? cols[soiIdx] : cols[5] || '').trim();
+        const r = (roadIdx >= 0 ? cols[roadIdx] : cols[6] || '').trim();
+        const amt = (amountIdx >= 0 ? cols[amountIdx] : '20.00').trim();
+
+        return {
+          houseNumber: hNum,
+          ownerName: oName,
+          zone: z && z !== '-' ? z : null,
+          moo: m && m !== '-' ? m : null,
+          soi: s && s !== '-' ? s : null,
+          road: r && r !== '-' ? r : null,
+          defaultBillingAmount: amt ? amt.replace(/[^0-9.]/g, '') || '20.00' : '20.00',
+        };
+      }).filter(item => item.houseNumber && item.ownerName && item.houseNumber !== "บ้านเลขที่" && item.houseNumber !== "houseNumber" && item.ownerName !== "ชื่อ - สกุล");
+
+      if (parsedData.length === 0) {
+        throw new Error("ไม่พบแถวข้อมูลบ้านที่สมบูรณ์ (ต้องมีบ้านเลขที่และชื่อเจ้าบ้าน)");
+      }
+
+      const res = await fetch('/api/houses/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(parsedData)
+      });
+      
+      const result = await res.json();
+      if (result.success) {
+        setSuccessMsg(`นำเข้าข้อมูลสำเร็จ: เพิ่มใหม่ ${result.insertedCount} หลัง (ข้ามข้อมูลซ้ำ/ไม่สมบูรณ์ ${result.skippedCount} หลัง)`);
+        router.refresh();
+      } else {
+        setError(result.error || "เกิดข้อผิดพลาดในการนำเข้า");
+      }
+    } catch (err: any) {
+      setError("ไม่สามารถนำเข้าไฟล์ได้: " + err.message);
+    } finally {
+      setIsImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   };
 
   const openQrModal = async (house: HouseData) => {
@@ -325,17 +379,18 @@ export default function HousesClient({
   };
 
   const downloadCsvTemplate = () => {
-    const headers = ["houseNumber", "ownerName", "zone", "moo", "soi", "road", "defaultBillingAmount"];
+    const headers = ["ลำดับ", "บ้านเลขที่", "ชื่อ - สกุล", "ชุมชน", "หมู่ที่", "ซอย", "ถนน", "ยอดจัดเก็บต่อเดือน (บาท)"];
     const rows = [
-      ["101/1", "นายสมชาย ใจดี", "หนองรี", "1", "ซอยร่วมใจ", "ประชาร่วมมิตร", "20.00"],
-      ["101/2", "นางสมศรี มีสุข", "วัดกลาง", "2", "ซอยสุขใจ", "เทศบาล 1", "20.00"],
+      ["1", "101/1", "นายสมชาย ใจดี", "หนองรี", "1", "ซอยร่วมใจ", "ประชาร่วมมิตร", "20.00"],
+      ["2", "101/2", "นางสมศรี มีสุข", "วัดกลาง", "2", "ซอยสุขใจ", "เทศบาล 1", "20.00"],
+      ["3", "101/3", "นายประสิทธิ์ มั่นคง", "ป่าเรไร", "3", "ซอย 3", "นางรอง-ลำปลายมาศ", "20.00"],
     ];
     const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", "ตัวอย่างไฟล์นำเข้าบ้าน_template.csv");
+    link.setAttribute("download", "ตัวอย่างไฟล์นำเข้าบ้าน_template_นางรอง.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -368,44 +423,48 @@ export default function HousesClient({
           <div className="flex items-center gap-4">
             <LottieIcon src="/icons/icons8-home.json" size={52} className="shrink-0" loop autoplay />
             <div>
-              <div className="flex items-center gap-2.5">
-                <h1 className="font-bold text-2xl text-slate-900 tracking-tight">จัดการข้อมูลบ้าน</h1>
-                <span className="bg-[#EEF0FF] text-[#5B58F2] text-xs font-bold px-2.5 py-0.5 rounded-full border border-[#D5D9FF]">
-                  {totalHouses} หลัง
+              <div className="flex items-center gap-2">
+                <h1 className="font-bold text-2xl lg:text-3xl text-slate-800 tracking-tight">
+                  ทะเบียนบ้านและลูกบ้าน
+                </h1>
+                <span className="bg-indigo-50 text-[#5B58F2] text-xs font-bold px-2.5 py-0.5 rounded-full border border-indigo-100">
+                  {totalHouses.toLocaleString()} หลัง
                 </span>
               </div>
-              <p className="text-slate-500 text-sm mt-0.5">จัดการทะเบียนบ้าน รายละเอียดเจ้าบ้าน และออกบิลค่าบริการ</p>
+              <p className="text-xs text-slate-500 mt-1">
+                จัดการข้อมูลทะเบียนบ้าน กำหนดค่าธรรมเนียม และติดตามสถานะการชำระเงิน
+              </p>
             </div>
           </div>
 
-          {/* Header Action Buttons */}
-          <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
+          {/* Action Toolbar */}
+          <div className="flex items-center gap-2 flex-wrap">
             <input 
               type="file" 
-              accept=".csv" 
               ref={fileInputRef} 
               onChange={handleFileUpload} 
+              accept=".csv, .xlsx, .xls" 
               className="hidden" 
             />
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isImporting}
-              aria-label="นำเข้าข้อมูลจากไฟล์ CSV"
+              aria-label="นำเข้าข้อมูลจากไฟล์ Excel หรือ CSV"
               className="h-10 flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 px-3.5 rounded-xl text-xs font-semibold transition-all shadow-xs disabled:opacity-50 cursor-pointer"
             >
               <Upload size={15} className="text-slate-500" />
-              {isImporting ? 'กำลังนำเข้า...' : 'นำเข้า CSV'}
+              <span>{isImporting ? 'กำลังนำเข้า...' : 'นำเข้า Excel / CSV'}</span>
             </button>
 
-            <button
-              onClick={downloadCsvTemplate}
-              aria-label="ดาวน์โหลดไฟล์ตัวอย่าง CSV"
-              className="h-10 flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 px-3.5 rounded-xl text-xs font-semibold transition-all shadow-xs cursor-pointer"
-              title="ดาวน์โหลดไฟล์ต้นแบบสำหรับกรอกข้อมูล"
+            <a
+              href="/api/houses/template"
+              aria-label="ดาวน์โหลดไฟล์ตัวอย่าง Excel ภาษาไทย"
+              className="h-10 flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200 text-emerald-800 px-3.5 rounded-xl text-xs font-semibold transition-all shadow-xs cursor-pointer"
+              title="ดาวน์โหลดไฟล์ต้นแบบ Excel ภาษาไทยสำหรับกรอกข้อมูล"
             >
-              <FileText size={15} className="text-slate-500" />
-              เทมเพลต CSV
-            </button>
+              <FileSpreadsheet size={15} className="text-emerald-700" />
+              <span>เทมเพลต Excel</span>
+            </a>
             
             <a
               href="/api/houses/export"
@@ -413,7 +472,7 @@ export default function HousesClient({
               className="h-10 flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 px-3.5 rounded-xl text-xs font-semibold transition-all shadow-xs cursor-pointer"
             >
               <Download size={15} className="text-slate-500" />
-              ส่งออก Excel
+              <span>ส่งออก Excel</span>
             </a>
 
             <button
