@@ -46,7 +46,16 @@ export default async function LineSlipsPage(props: { searchParams: Promise<{ [ke
         lineUserId: lineMessages.lineUserId,
         type: lineMessages.type,
         imageUrl: lineMessages.imageUrl,
-        houseNumber: lineMessages.houseNumber,
+        houseNumber: sql<string>`COALESCE(
+          ${lineMessages.houseNumber},
+          (
+            SELECT h.house_number 
+            FROM invoices inv 
+            JOIN houses h ON inv.house_id = h.id 
+            WHERE inv.transaction_id = ${lineMessages.transactionId} 
+            LIMIT 1
+          )
+        )`,
         amount: lineMessages.amount,
         senderName: lineMessages.senderName,
         isVerified: lineMessages.isVerified,
@@ -68,7 +77,16 @@ export default async function LineSlipsPage(props: { searchParams: Promise<{ [ke
         lineUserId: lineMessages.lineUserId,
         type: lineMessages.type,
         imageUrl: sql<string>`COALESCE(${lineMessages.imageUrl}, ${transactions.slipImageUrl})`,
-        houseNumber: lineMessages.houseNumber,
+        houseNumber: sql<string>`COALESCE(
+          ${lineMessages.houseNumber},
+          (
+            SELECT h.house_number 
+            FROM invoices inv 
+            JOIN houses h ON inv.house_id = h.id 
+            WHERE inv.transaction_id = ${lineMessages.transactionId} 
+            LIMIT 1
+          )
+        )`,
         amount: sql<string>`COALESCE(${lineMessages.amount}, ${transactions.amount})`,
         senderName: lineMessages.senderName,
         isVerified: lineMessages.isVerified,
