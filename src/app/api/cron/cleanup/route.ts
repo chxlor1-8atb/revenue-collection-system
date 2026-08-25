@@ -31,7 +31,7 @@ export async function GET(request: Request) {
     const txIds = expiredTxs.map(tx => tx.id);
 
     // Atomically cancel them and free up the invoices
-    await db.transaction(async (tx) => {
+    const tx = db; {
       // Unlink invoices
       await tx.update(invoices)
         .set({ status: 'unpaid', transactionId: null })

@@ -94,7 +94,7 @@ export async function GET(req: Request) {
           wallet = 0;
         }
         
-        await db.transaction(async (tx) => {
+        const tx = db; {
           await tx.insert(invoices).values({
             houseId: house.id,
             monthYear: currentMonthYear,

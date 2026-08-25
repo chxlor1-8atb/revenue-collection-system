@@ -112,7 +112,9 @@ export async function POST(request: Request) {
     const txInfo = txDetails.length > 0 ? txDetails[0] : null;
 
     // Execute updates atomically inside a transaction
-    await db.transaction(async (tx) => {
+    // Execute updates sequentially
+      const tx = db;
+      {
       // 1. Update Transaction Status
       await tx.update(transactions)
         .set({ 
