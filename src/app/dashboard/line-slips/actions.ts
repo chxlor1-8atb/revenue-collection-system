@@ -95,6 +95,9 @@ export async function getSmartSuggestion(slip: {
   }
 }
 
+import { generateNextReceiptSeries } from "@/lib/receiptSeries";
+import { recordAuditLog } from "@/lib/audit";
+
 // Approve slip with support for multiple advance months and LINE notification
 export async function approveLineSlip(
   lineMessageId: number, 
@@ -106,6 +109,8 @@ export async function approveLineSlip(
   lineUserId?: string
 ) {
   try {
+    const series = await generateNextReceiptSeries(new Date());
+
     // 1. Create transaction record
     const newTx = await db.insert(transactions).values({
       amount: amount.toString(),
@@ -114,6 +119,10 @@ export async function approveLineSlip(
       slipStatus: "verified",
       paidAt: new Date(),
       verifiedBy: "admin_manual", 
+      bookNumber: series.bookNumber,
+      receiptNumber: series.receiptNumber,
+      fiscalYear: series.fiscalYear,
+      receiptCode: series.receiptCode
     }).returning();
 
     const transactionId = newTx[0].id;
@@ -182,6 +191,13 @@ export async function approveLineSlip(
       }
     }
 
+    await recordAuditLog({
+      action: "APPROVE",
+      entityType: "TRANSACTION",
+      entityId: transactionId,
+      details: { houseNumber: house?.houseNumber, amount, receiptCode: series.receiptCode, lineMessageId }
+    });
+
     revalidatePath("/dashboard/line-slips");
     revalidatePath("/dashboard/history");
     revalidatePath("/dashboard/houses");
@@ -238,6 +254,13 @@ export async function rejectLineSlip(
       .set({ status: "rejected" })
       .where(eq(lineMessages.id, lineMessageId));
       
+    await recordAuditLog({
+      action: "REJECT",
+      entityType: "TRANSACTION",
+      entityId: lineMessageId,
+      details: { lineMessageId, reason, lineUserId }
+    });
+
     // Send polite LINE notification to citizen
     if (lineUserId && lineUserId.startsWith("U")) {
       try {

@@ -41,6 +41,13 @@ export async function addHouse(formData: FormData) {
       customFields,
     }).returning({ id: houses.id });
 
+    await recordAuditLog({
+      action: "CREATE",
+      entityType: "HOUSE",
+      entityId: insertedHouse.id,
+      details: { houseNumber, ownerName, zone, road, defaultBillingAmount }
+    });
+
     revalidatePath("/dashboard/houses");
     return { success: true, houseId: insertedHouse.id };
   } catch (error: any) {
@@ -85,6 +92,13 @@ export async function updateHouse(id: number, formData: FormData) {
       customFields,
     }).where(eq(houses.id, id));
 
+    await recordAuditLog({
+      action: "UPDATE",
+      entityType: "HOUSE",
+      entityId: id,
+      details: { houseNumber, ownerName, zone, road, defaultBillingAmount }
+    });
+
     revalidatePath("/dashboard/houses");
     return { success: true, houseId: id };
   } catch (error: any) {
@@ -102,7 +116,16 @@ export async function deleteHouse(id: number) {
       return { success: false, error: "ไม่สามารถลบได้ เนื่องจากมีบิลแจ้งหนี้ค้างอยู่ในระบบ กรุณาลบบิลที่เกี่ยวข้องก่อน" };
     }
 
+    const houseList = await db.select().from(houses).where(eq(houses.id, id)).limit(1);
+
     await db.delete(houses).where(eq(houses.id, id));
+
+    await recordAuditLog({
+      action: "DELETE",
+      entityType: "HOUSE",
+      entityId: id,
+      details: { houseNumber: houseList[0]?.houseNumber, ownerName: houseList[0]?.ownerName }
+    });
 
     revalidatePath("/dashboard/houses");
     return { success: true };
@@ -124,13 +147,20 @@ export async function createInitialInvoice(houseId: number, monthYear: string, a
       }
     }
     
-    await db.insert(invoices).values({
+    const [newInv] = await db.insert(invoices).values({
       houseId,
       monthYear,
       amount,
       type,
       title,
       status: 'unpaid'
+    }).returning({ id: invoices.id });
+
+    await recordAuditLog({
+      action: "CREATE",
+      entityType: "INVOICE",
+      entityId: newInv.id,
+      details: { houseId, monthYear, amount, type, title }
     });
 
     revalidatePath(`/dashboard/houses/${houseId}`);
@@ -209,6 +239,9 @@ export async function sendLineReminder(houseId: number, origin: string) {
   }
 }
 
+import { generateNextReceiptSeries } from "@/lib/receiptSeries";
+import { recordAuditLog } from "@/lib/audit";
+
 export async function markInvoiceAsPaidCash(invoiceId: number) {
   try {
     const invData = await db.select().from(invoices).where(eq(invoices.id, invoiceId)).limit(1);
@@ -220,6 +253,8 @@ export async function markInvoiceAsPaidCash(invoiceId: number) {
     const houseData = await db.select().from(houses).where(eq(houses.id, inv.houseId)).limit(1);
     if (houseData.length === 0) return { success: false, error: "ไม่พบบ้าน" };
 
+    const series = await generateNextReceiptSeries(new Date());
+
     // Create a transaction for cash
     const tx = await db.insert(transactions).values({
       amount: inv.amount,
@@ -227,7 +262,11 @@ export async function markInvoiceAsPaidCash(invoiceId: number) {
       slipImageUrl: 'cash',
       paidAt: new Date(),
       verifiedBy: 'admin_cash',
-      payerNote: 'รับชำระเงินสด'
+      payerNote: 'รับชำระเงินสด',
+      bookNumber: series.bookNumber,
+      receiptNumber: series.receiptNumber,
+      fiscalYear: series.fiscalYear,
+      receiptCode: series.receiptCode
     }).returning({ id: transactions.id });
 
     // Update invoice
@@ -236,6 +275,13 @@ export async function markInvoiceAsPaidCash(invoiceId: number) {
       transactionId: tx[0].id,
       updatedAt: new Date(),
     }).where(eq(invoices.id, invoiceId));
+
+    await recordAuditLog({
+      action: "APPROVE",
+      entityType: "TRANSACTION",
+      entityId: tx[0].id,
+      details: { houseNumber: houseData[0].houseNumber, amount: inv.amount, method: "cash", receiptCode: series.receiptCode }
+    });
 
     return { success: true, transactionId: tx[0].id };
   } catch (error: any) {
@@ -254,6 +300,8 @@ export async function markAllInvoicesAsPaidCash(houseId: number) {
     const houseData = await db.select().from(houses).where(eq(houses.id, houseId)).limit(1);
     if (houseData.length === 0) return { success: false, error: "ไม่พบบ้าน" };
 
+    const series = await generateNextReceiptSeries(new Date());
+
     // Create a transaction for cash
     const tx = await db.insert(transactions).values({
       amount: totalDebt.toString(),
@@ -261,7 +309,11 @@ export async function markAllInvoicesAsPaidCash(houseId: number) {
       slipImageUrl: 'cash',
       paidAt: new Date(),
       verifiedBy: 'admin_cash',
-      payerNote: 'รับชำระเงินสด (ทั้งหมด)'
+      payerNote: 'รับชำระเงินสด (ทั้งหมด)',
+      bookNumber: series.bookNumber,
+      receiptNumber: series.receiptNumber,
+      fiscalYear: series.fiscalYear,
+      receiptCode: series.receiptCode
     }).returning({ id: transactions.id });
 
     // Update invoices
@@ -270,6 +322,13 @@ export async function markAllInvoicesAsPaidCash(houseId: number) {
       transactionId: tx[0].id,
       updatedAt: new Date(),
     }).where(and(eq(invoices.houseId, houseId), eq(invoices.status, 'unpaid')));
+
+    await recordAuditLog({
+      action: "APPROVE",
+      entityType: "TRANSACTION",
+      entityId: tx[0].id,
+      details: { houseNumber: houseData[0].houseNumber, amount: totalDebt, method: "cash_all", receiptCode: series.receiptCode }
+    });
 
     return { success: true, transactionId: tx[0].id };
   } catch (error: any) {

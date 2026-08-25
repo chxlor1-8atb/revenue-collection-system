@@ -13,7 +13,11 @@ import {
   Receipt, 
   Users, 
   Smartphone, 
-  Folder 
+  Folder,
+  BarChart3,
+  Send,
+  Shield,
+  Sliders
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import SettingsForm from "./settings/SettingsForm";
@@ -108,8 +112,12 @@ export default function TopNav({ userName, settings }: { userName: string, setti
       badgeCount: pendingReviewCount 
     },
     { name: "ประวัติชำระ", href: "/dashboard/history", icon: Receipt, lottieSrc: "/icons/Receipt.json", lottieSize: 40 },
-    { name: "ผู้ใช้งาน", href: "/dashboard/users", icon: Users, imageSrc: "/icons/icons8-user.gif", imageSize: 24 },
+    { name: "รายงานการคลัง", href: "/dashboard/reports", icon: BarChart3 },
+    { name: "แจ้งเตือน LINE", href: "/dashboard/broadcast", icon: Send },
     { name: "สลิป LINE", href: "/dashboard/line-slips", icon: Smartphone, imageSrc: "/icons/line-black-animated.gif", imageSize: 25 },
+    { name: "ประวัติระบบ", href: "/dashboard/logs", icon: Shield },
+    { name: "LINE Bot", href: "/dashboard/line-manager", icon: Sliders },
+    { name: "ผู้ใช้งาน", href: "/dashboard/users", icon: Users, imageSrc: "/icons/icons8-user.gif", imageSize: 24 },
     { name: "คลังไฟล์", href: "/dashboard/blob", icon: Folder, lottieSrc: "/icons/icons8-folder.json", lottieSize: 25 },
   ];
 

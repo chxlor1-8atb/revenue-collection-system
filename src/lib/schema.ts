@@ -10,7 +10,19 @@ export const systemSettings = pgTable('system_settings', {
   autoBillingDay: integer('auto_billing_day'),
   dueDateDays: integer('due_date_days'),
   autoRemindDays: integer('auto_remind_days'),
+  receiptBookConfig: jsonb('receipt_book_config').default('{"itemsPerBook": 50, "currentBook": 1, "fiscalYear": "2569"}'),
+  lineConfig: jsonb('line_config').default('{"emergencyPhone": "044-631405", "healthDeptPhone": "044-631405", "announcementText": "เทศบาลเมืองนางรอง ขอขอบคุณทุกท่านที่ร่วมชำระค่าธรรมเนียมขยะตรงเวลา", "isAnnouncementActive": true}'),
   updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const feeCategories = pgTable('fee_categories', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  code: text('code').notNull().unique(),
+  defaultAmount: numeric('default_amount', { precision: 12, scale: 2 }).notNull().default('20.00'),
+  description: text('description'),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
 });
 
 export const houses = pgTable('houses', {
@@ -21,6 +33,7 @@ export const houses = pgTable('houses', {
   moo: text('moo'), // หมู่
   soi: text('soi'), // ซอย
   road: text('road'), // ถนน
+  feeCategoryId: integer('fee_category_id').references(() => feeCategories.id), // หมวดหมู่อัตราค่าธรรมเนียม
   defaultBillingAmount: numeric('default_billing_amount', { precision: 12, scale: 2 }), // ยอดจัดเก็บประจำเดือน
   walletBalance: numeric('wallet_balance', { precision: 12, scale: 2 }).default('0'), // ยอดเงินเกิน/ชำระล่วงหน้า
   customFields: jsonb('custom_fields').default('{}'), // เก็บข้อมูล custom fields ในรูปแบบ JSON (key-value)
@@ -42,18 +55,25 @@ export const transactions = pgTable('transactions', {
   slipRefId: text('slip_ref_id').unique(),
   slipStatus: text('slip_status').notNull().default('pending'), // pending, verified, rejected, manual_review
 
+  // Official Municipal Receipt Book Series
+  bookNumber: integer('book_number'), // เล่มที่ (เช่น 01)
+  receiptNumber: integer('receipt_number'), // เลขที่ (เช่น 01-50)
+  fiscalYear: text('fiscal_year'), // ปีงบประมาณ (เช่น 2569)
+  receiptCode: text('receipt_code'), // รหัสใบเสร็จกำกับราชการ เช่น "เล่มที่ 01 เลขที่ 05/2569"
+
   payerNote: text('payer_note'),
   paidAt: timestamp('paid_at'),
   createdAt: timestamp('created_at').defaultNow(),
   notifiedAt: timestamp('notified_at'),
   verifiedBy: text('verified_by'),
-    lockKey: text('lock_key').unique(),
+  lockKey: text('lock_key').unique(),
   rejectReason: text('reject_reason'),
   lockedBy: text('locked_by'),
   lockedAt: timestamp('locked_at'),
   reconciledAt: timestamp('reconciled_at'), // วันที่กระทบยอดกับธนาคารสำเร็จ
 }, (table) => [
   index('idx_transactions_status_paid').on(table.slipStatus, table.paidAt),
+  index('idx_transactions_receipt_code').on(table.receiptCode),
 ]);
 
 export const invoices = pgTable('invoices', {
@@ -103,5 +123,21 @@ export const lineMessages = pgTable('line_messages', {
 }, (table) => [
   index('idx_line_msgs_status').on(table.status),
   index('idx_line_msgs_user').on(table.lineUserId),
+]);
+
+export const auditLogs = pgTable('audit_logs', {
+  id: serial('id').primaryKey(),
+  userName: text('user_name').notNull(),
+  userRole: text('user_role').default('staff'),
+  action: text('action').notNull(), // CREATE, UPDATE, DELETE, VOID, APPROVE, REJECT, EXPORT, SETTINGS, BROADCAST
+  entityType: text('entity_type').notNull(), // HOUSE, INVOICE, TRANSACTION, USER, SETTINGS, BROADCAST, LINE
+  entityId: text('entity_id'),
+  details: jsonb('details').default('{}'),
+  ipAddress: text('ip_address'),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => [
+  index('idx_audit_action').on(table.action),
+  index('idx_audit_entity').on(table.entityType, table.entityId),
+  index('idx_audit_created_at').on(table.createdAt),
 ]);
 

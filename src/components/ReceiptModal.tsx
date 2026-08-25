@@ -26,6 +26,10 @@ interface ReceiptData {
   zone?: string | null;
   invoices?: InvoiceItem[];
   months?: string[];
+  receiptCode?: string | null;
+  bookNumber?: number | null;
+  receiptNumber?: number | null;
+  fiscalYear?: string | null;
 }
 
 interface ReceiptModalProps {
@@ -260,10 +264,17 @@ export default function ReceiptModal({ isOpen, onClose, item }: ReceiptModalProp
 
                     {/* Compact Single-Line Sub-header Meta Bar */}
                     <div className="flex items-center justify-center gap-2.5 sm:gap-4 pt-1.5 text-xs text-slate-600 flex-wrap sm:flex-nowrap">
-                      <div>
-                        <span className="text-slate-400 mr-1">เลขที่รายการ:</span>
-                        <strong className="font-mono font-bold text-slate-900">#{item.id}</strong>
-                      </div>
+                      {item.receiptCode ? (
+                        <div className="flex items-center gap-1">
+                          <span className="text-slate-400">รหัสกำกับ:</span>
+                          <strong className="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200/80">{item.receiptCode}</strong>
+                        </div>
+                      ) : (
+                        <div>
+                          <span className="text-slate-400 mr-1">เลขที่รายการ:</span>
+                          <strong className="font-mono font-bold text-slate-900">#{item.id}</strong>
+                        </div>
+                      )}
                       <span className="text-slate-300">•</span>
                       <div>
                         <span className="text-slate-400 mr-1">วันที่ชำระ:</span>
