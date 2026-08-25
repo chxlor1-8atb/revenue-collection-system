@@ -311,4 +311,21 @@
     background-color: #ffffff !important;
     background: #ffffff !important;
   }
+
+  /* When printing with #printable-receipt, isolate it completely */
+  body:has(#printable-receipt) {
+    visibility: hidden !important;
+  }
+  body:has(#printable-receipt) #printable-receipt,
+  body:has(#printable-receipt) #printable-receipt * {
+    visibility: visible !important;
+  }
+  body:has(#printable-receipt) #printable-receipt {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
 }

@@ -287,7 +287,7 @@ export default function HistoryClient() {
   return (
     <div className="font-sans pb-24 relative">
       {/* Unified Master Container */}
-      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col">
+      <div className={`bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col ${receiptModalItem ? "print:hidden" : ""}`}>
         
         {/* 1. Header Section (Desktop only - mobile goes straight to filters & transactions) */}
         <div className="hidden sm:flex p-6 lg:p-7 border-b border-slate-100 flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
