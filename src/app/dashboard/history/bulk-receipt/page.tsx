@@ -98,30 +98,38 @@ export default async function BulkReceiptPage(props: {
         {receipts.map(({ tx, house, invoices: txInvoices, senderName, paidVia, totalAmount, paidDate }, idx) => (
           <div
             key={tx.id}
-            className="bg-white p-12 shadow-md print:shadow-none print:p-0 print:m-0 aspect-[1/1.414] border border-slate-300 print:border-none relative break-after-page print:page-break-after-always"
+            className="bg-white p-12 shadow-md print:shadow-none print:p-0 print:m-0 aspect-[1/1.414] border border-slate-300 print:border-none relative break-after-page print:page-break-after-always overflow-hidden"
             style={{ pageBreakAfter: "always", breakAfter: "page" }}
           >
-            {/* Header */}
-            <div className="flex justify-between items-start border-b-2 border-slate-800 pb-6 mb-8">
-              <div className="flex gap-6 items-center">
-                <img src="/nangrong-logo.png" alt="เทศบาลเมืองนางรอง" className="w-20 h-20 object-contain shrink-0" />
-                <div>
-                  <h1 className="text-2xl font-bold text-slate-900 tracking-tight">ใบเสร็จรับเงิน</h1>
-                  <h2 className="text-lg font-semibold text-slate-700 mt-1">เทศบาลเมืองนางรอง</h2>
-                  <p className="text-sm text-slate-500 mt-1">อ.นางรอง จ.บุรีรัมย์</p>
+            {/* Watermark */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.04] z-0">
+              <span className="text-[120px] font-black text-slate-900 -rotate-45 select-none whitespace-nowrap">
+                กองสาธารณสุข
+              </span>
+            </div>
+
+            <div className="relative z-10 h-full">
+              {/* Header */}
+              <div className="flex justify-between items-start border-b-2 border-slate-800 pb-6 mb-8">
+                <div className="flex gap-6 items-center">
+                  <img src="/nangrong-logo.png" alt="เทศบาลเมืองนางรอง" className="w-20 h-20 object-contain shrink-0" />
+                  <div>
+                    <h1 className="text-2xl font-bold text-slate-900 tracking-tight">ใบเสร็จรับเงิน</h1>
+                    <h2 className="text-lg font-semibold text-slate-700 mt-1">เทศบาลเมืองนางรอง</h2>
+                    <p className="text-sm text-slate-500 mt-1">อ.นางรอง จ.บุรีรัมย์</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-3xl font-black tracking-widest text-slate-200 mb-2">ชำระค่าขยะ</div>
+                  <p className="text-sm font-semibold text-slate-700">เลขที่รายการ: #{tx.id}</p>
+                  <p className="text-sm text-slate-600 mt-1">
+                    วันที่: {paidDate.toLocaleString("th-TH", {
+                      day: "numeric", month: "long", year: "numeric",
+                      hour: "2-digit", minute: "2-digit"
+                    })}
+                  </p>
                 </div>
               </div>
-              <div className="text-right">
-                <div className="text-3xl font-mono font-bold text-slate-300 mb-2">RECEIPT</div>
-                <p className="text-sm font-semibold text-slate-700">เลขที่รายการ: #{tx.id}</p>
-                <p className="text-sm text-slate-600 mt-1">
-                  วันที่: {paidDate.toLocaleString("th-TH", {
-                    day: "numeric", month: "long", year: "numeric",
-                    hour: "2-digit", minute: "2-digit"
-                  })}
-                </p>
-              </div>
-            </div>
 
             {/* Customer Info */}
             <div className="flex justify-between mb-8">
@@ -195,6 +203,8 @@ export default async function BulkReceiptPage(props: {
             {/* Print Only Notice */}
             <div suppressHydrationWarning className="absolute bottom-8 left-0 right-0 text-center text-xs text-slate-400 print:block hidden">
               เอกสารฉบับนี้ถูกสร้างขึ้นด้วยระบบอิเล็กทรอนิกส์ (ใบที่ {idx + 1} จาก {receipts.length}) • วันที่พิมพ์: {new Date().toLocaleString("th-TH")}
+            </div>
+
             </div>
           </div>
         ))}

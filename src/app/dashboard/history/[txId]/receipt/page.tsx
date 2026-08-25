@@ -48,29 +48,37 @@ export default async function ReceiptPage({ params }: { params: Promise<{ txId: 
     <div className="min-h-screen bg-slate-200 py-8 font-sans print:bg-white print:py-0">
       <PrintTrigger />
       
-      <div className="max-w-[210mm] mx-auto bg-white p-12 shadow-md print:shadow-none print:p-0 print:m-0 aspect-[1/1.414] border border-slate-300 print:border-none relative">
+      <div className="max-w-[210mm] mx-auto bg-white p-12 shadow-md print:shadow-none print:p-0 print:m-0 aspect-[1/1.414] border border-slate-300 print:border-none relative overflow-hidden">
         
-        {/* Receipt Header */}
-        <div className="flex justify-between items-start border-b-2 border-slate-800 pb-6 mb-8">
-          <div className="flex gap-6 items-center">
-            <img src="/nangrong-logo.png" alt="เทศบาลเมืองนางรอง" className="w-20 h-20 object-contain" />
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">ใบเสร็จรับเงิน</h1>
-              <h2 className="text-lg font-semibold text-slate-700 mt-1">เทศบาลเมืองนางรอง</h2>
-              <p className="text-sm text-slate-500 mt-1">อ.นางรอง จ.บุรีรัมย์</p>
+        {/* Watermark */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.04] z-0">
+          <span className="text-[120px] font-black text-slate-900 -rotate-45 select-none whitespace-nowrap">
+            กองสาธารณสุข
+          </span>
+        </div>
+
+        <div className="relative z-10 h-full">
+          {/* Receipt Header */}
+          <div className="flex justify-between items-start border-b-2 border-slate-800 pb-6 mb-8">
+            <div className="flex gap-6 items-center">
+              <img src="/nangrong-logo.png" alt="เทศบาลเมืองนางรอง" className="w-20 h-20 object-contain" />
+              <div>
+                <h1 className="text-2xl font-bold text-slate-900 tracking-tight">ใบเสร็จรับเงิน</h1>
+                <h2 className="text-lg font-semibold text-slate-700 mt-1">เทศบาลเมืองนางรอง</h2>
+                <p className="text-sm text-slate-500 mt-1">อ.นางรอง จ.บุรีรัมย์</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-3xl font-black tracking-widest text-slate-200 mb-2">ชำระค่าขยะ</div>
+              <p className="text-sm font-semibold text-slate-700">เลขที่รายการ: #{tx.id}</p>
+              <p className="text-sm text-slate-600 mt-1">
+                วันที่: {paidDate.toLocaleString('th-TH', { 
+                  day: 'numeric', month: 'long', year: 'numeric', 
+                  hour: '2-digit', minute: '2-digit' 
+                })}
+              </p>
             </div>
           </div>
-          <div className="text-right">
-            <div className="text-3xl font-mono font-bold text-slate-300 mb-2">RECEIPT</div>
-            <p className="text-sm font-semibold text-slate-700">เลขที่รายการ: #{tx.id}</p>
-            <p className="text-sm text-slate-600 mt-1">
-              วันที่: {paidDate.toLocaleString('th-TH', { 
-                day: 'numeric', month: 'long', year: 'numeric', 
-                hour: '2-digit', minute: '2-digit' 
-              })}
-            </p>
-          </div>
-        </div>
 
         {/* Customer Info */}
         <div className="flex justify-between mb-8">
@@ -146,6 +154,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ txId: 
           เอกสารฉบับนี้ถูกสร้างขึ้นด้วยระบบอิเล็กทรอนิกส์ • วันที่พิมพ์: {new Date().toLocaleString('th-TH')}
         </div>
 
+        </div>
       </div>
       
 
