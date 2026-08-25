@@ -941,156 +941,74 @@ export default function BlobClient({
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {paginatedFiles.map((file, idx) => {
                 const isSelected = selectedUrls.has(file.url);
-                
-                if (file.pathname.startsWith('qr')) {
-                  return (
-                    <motion.div
-                      key={file.url}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.2 }}
-                      className={`group relative rounded-[20px] sm:rounded-[24px] border-[6px] transition-all overflow-hidden flex flex-col aspect-square sm:aspect-[5/4] ${
-                        isSelected 
-                          ? 'border-[#5B58F2] shadow-xl' 
-                          : 'border-[#1a1a1a] shadow-md hover:-translate-y-1 hover:shadow-xl'
-                      }`}
-                    >
-                      {/* QR Code Background */}
-                      <div className="absolute inset-0 w-full h-[65%] flex items-center justify-center p-4 bg-white cursor-pointer" onClick={() => setLightboxIndex(idx)}>
-                        <img
-                          src={file.url}
-                          alt="QR Code"
-                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-                        />
-                      </div>
-
-                      {/* Folder Tab SVG Overlay */}
-                      <svg 
-                        viewBox="0 0 400 200" 
-                        preserveAspectRatio="none" 
-                        className="absolute bottom-0 w-full h-[60%] z-10 pointer-events-none"
-                      >
-                        <path d="M 0 0 H 160 C 190 0, 190 40, 220 40 H 400 V 200 H 0 Z" fill={isSelected ? '#5B58F2' : '#1a1a1a'} className="transition-colors duration-300" />
-                      </svg>
-
-                      {/* Foreground Content */}
-                      <div className="absolute bottom-0 left-0 w-full h-[60%] z-20 p-4 sm:p-5 flex flex-col justify-between pointer-events-none">
-                        <div>
-                          <h3 className="text-white font-mono font-bold text-[10px] sm:text-xs tracking-wider uppercase truncate w-[80%]">
-                            {file.pathname.replace('qrcodes/', '').split('.')[0] || 'QR CODE'}
-                          </h3>
-                          <p className="text-gray-400 font-mono text-[8px] uppercase tracking-widest mt-0.5">
-                            {formatDate(file.uploadedAt)}
-                          </p>
-                        </div>
-
-                        <div className="flex items-end justify-between mt-auto">
-                          <div className="text-white font-mono font-bold text-2xl sm:text-4xl leading-none tracking-tighter">
-                            {String(idx + 1).padStart(3, '0')}
-                          </div>
-                          <div className="text-gray-400 font-mono text-[9px] uppercase tracking-widest text-right">
-                            {formatSize(file.size)}<br/>
-                            FILE
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Checkbox */}
-                      <div className="absolute top-3 right-3 z-30" onClick={(e) => e.stopPropagation()}>
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => toggleSelect(file.url)}
-                          className="w-5 h-5 rounded-md border-2 border-slate-200 bg-white/90 text-[#1a1a1a] focus:ring-[#1a1a1a] cursor-pointer shadow-sm"
-                        />
-                      </div>
-
-                      {/* Hover Actions */}
-                      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 z-30" onClick={(e) => e.stopPropagation()}>
-                        <button onClick={() => setLightboxIndex(idx)} className="p-2.5 rounded-xl bg-white/90 hover:bg-white text-slate-800 shadow-xl transition-transform hover:scale-110"><Eye size={16} /></button>
-                        <button onClick={() => handleCopy(file.url)} className="p-2.5 rounded-xl bg-white/90 hover:bg-white text-slate-800 shadow-xl transition-transform hover:scale-110">{copiedUrl === file.url ? <Check size={16} className="text-emerald-600" /> : <Copy size={16} />}</button>
-                        <button onClick={() => promptDelete('single', file)} className="p-2.5 rounded-xl bg-white/90 hover:bg-red-600 hover:text-white text-red-600 shadow-xl transition-transform hover:scale-110"><Trash2 size={16} /></button>
-                      </div>
-                    </motion.div>
-                  );
-                }
-
                 return (
                   <motion.div
                     key={file.url}
-                    initial={{ opacity: 0, scale: 0.95 }}
+                    initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.2 }}
-                    className={`group relative rounded-2xl border transition-all overflow-hidden flex flex-col bg-white ${
+                    className={`group relative rounded-[20px] sm:rounded-[24px] border-[6px] transition-all overflow-hidden flex flex-col aspect-square sm:aspect-[5/4] ${
                       isSelected 
-                        ? 'border-[#5B58F2] ring-2 ring-[#5B58F2]/20 shadow-md' 
-                        : 'border-slate-100 hover:border-slate-300 hover:shadow-md'
+                        ? 'border-[#5B58F2] shadow-xl ring-4 ring-[#5B58F2]/20' 
+                        : 'border-[#1a1a1a] shadow-md hover:-translate-y-1 hover:shadow-xl'
                     }`}
                   >
-                    {/* Thumbnail Image Container */}
-                    <div className="relative aspect-[3/4] w-full bg-slate-100 overflow-hidden flex items-center justify-center cursor-pointer" onClick={() => setLightboxIndex(idx)}>
+                    {/* Background Image */}
+                    <div className="absolute inset-0 w-full h-[65%] flex items-center justify-center bg-slate-50 cursor-pointer overflow-hidden" onClick={() => setLightboxIndex(idx)}>
                       <img
                         src={file.url}
-                        alt=""
-                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                        alt="File Thumbnail"
+                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                         onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="%23cbd5e1" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="2" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>'; }}
                       />
+                    </div>
 
-                      {/* Selection Checkbox */}
-                      <div className="absolute top-2 left-2 z-10 bg-white/80 backdrop-blur-sm rounded-md p-0.5 shadow-sm" onClick={(e) => e.stopPropagation()}>
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => toggleSelect(file.url)}
-                          className="w-4 h-4 rounded-md border-slate-300 text-[#5B58F2] focus:ring-[#5B58F2] cursor-pointer shadow-xs"
-                        />
+                    {/* Folder Tab SVG Overlay */}
+                    <svg 
+                      viewBox="0 0 400 200" 
+                      preserveAspectRatio="none" 
+                      className="absolute bottom-0 w-full h-[60%] z-10 pointer-events-none"
+                    >
+                      <path d="M 0 0 H 160 C 190 0, 190 40, 220 40 H 400 V 200 H 0 Z" fill={isSelected ? '#5B58F2' : '#1a1a1a'} className="transition-colors duration-300" />
+                    </svg>
+
+                    {/* Foreground Content */}
+                    <div className="absolute bottom-0 left-0 w-full h-[60%] z-20 p-4 sm:p-5 flex flex-col justify-between pointer-events-none">
+                      <div>
+                        <h3 className="text-white font-mono font-bold text-[10px] sm:text-xs tracking-wider uppercase truncate w-[80%]">
+                          {file.pathname.replace('line-slips/', '').replace('qrcodes/', '').split('.')[0] || 'FILE'}
+                        </h3>
+                        <p className="text-gray-400 font-mono text-[8px] uppercase tracking-widest mt-0.5">
+                          {formatDate(file.uploadedAt)}
+                        </p>
                       </div>
 
-                      {/* File Size Badge */}
-                      <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2.5 py-0.5 rounded-full shadow-sm text-[10px] font-bold text-white font-mono">
-                        {formatSize(file.size)}
-                      </div>
-
-                      {/* Overlay Hover Actions */}
-                      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-2" onClick={(e) => e.stopPropagation()}>
-                        <button 
-                          onClick={() => setLightboxIndex(idx)}
-                          className="p-2 rounded-xl bg-white/90 hover:bg-white text-slate-800 shadow-lg transition-transform hover:scale-110 cursor-pointer"
-                          title="ดูรูปภาพขนาดเต็ม (Lightbox)"
-                        >
-                          <Eye size={14} />
-                        </button>
-
-                        <button
-                          onClick={() => handleCopy(file.url)}
-                          className="p-2 rounded-xl bg-white/90 hover:bg-white text-slate-800 shadow-lg transition-transform hover:scale-110 cursor-pointer"
-                          title="คัดลอก URL"
-                        >
-                          {copiedUrl === file.url ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
-                        </button>
-
-                        <button
-                          onClick={() => promptDelete('single', file)}
-                          className="p-2 rounded-xl bg-white/90 hover:bg-red-600 hover:text-white text-red-600 shadow-lg transition-all hover:scale-110 cursor-pointer"
-                          title="ลบไฟล์นี้"
-                        >
-                          <Trash2 size={14} />
-                        </button>
+                      <div className="flex items-end justify-between mt-auto">
+                        <div className="text-white font-mono font-bold text-2xl sm:text-4xl leading-none tracking-tighter">
+                          {String(idx + 1).padStart(3, '0')}
+                        </div>
+                        <div className="text-gray-400 font-mono text-[9px] uppercase tracking-widest text-right">
+                          {formatSize(file.size)}<br/>
+                          FILE
+                        </div>
                       </div>
                     </div>
 
-                    {/* Meta info */}
-                    <div className="p-3 space-y-1 bg-white">
-                      <p 
-                        className="text-xs font-mono font-bold text-slate-700 truncate" 
-                        title={file.pathname}
-                      >
-                        {file.pathname.replace('line-slips/', '')}
-                      </p>
-                      <p className="text-[10px] text-slate-400 flex items-center gap-1">
-                        <Calendar size={10} />
-                        {formatDate(file.uploadedAt)}
-                      </p>
+                    {/* Checkbox */}
+                    <div className="absolute top-3 right-3 z-30 bg-white/80 backdrop-blur-sm rounded-md p-0.5 shadow-sm" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleSelect(file.url)}
+                        className="w-4 h-4 rounded-sm border-slate-300 text-[#5B58F2] focus:ring-[#5B58F2] cursor-pointer"
+                      />
+                    </div>
+
+                    {/* Hover Actions */}
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 sm:gap-3 z-30" onClick={(e) => e.stopPropagation()}>
+                      <button onClick={() => setLightboxIndex(idx)} className="p-2 sm:p-2.5 rounded-xl bg-white/90 hover:bg-white text-slate-800 shadow-xl transition-transform hover:scale-110"><Eye size={16} /></button>
+                      <button onClick={() => handleCopy(file.url)} className="p-2 sm:p-2.5 rounded-xl bg-white/90 hover:bg-white text-slate-800 shadow-xl transition-transform hover:scale-110">{copiedUrl === file.url ? <Check size={16} className="text-emerald-600" /> : <Copy size={16} />}</button>
+                      <button onClick={() => promptDelete('single', file)} className="p-2 sm:p-2.5 rounded-xl bg-white/90 hover:bg-red-600 hover:text-white text-red-600 shadow-xl transition-transform hover:scale-110"><Trash2 size={16} /></button>
                     </div>
                   </motion.div>
                 );
@@ -1493,4 +1411,5 @@ export default function BlobClient({
     </div>
   );
 }
+
 
