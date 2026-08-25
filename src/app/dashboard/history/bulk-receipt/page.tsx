@@ -104,9 +104,7 @@ export default async function BulkReceiptPage(props: {
             {/* Header */}
             <div className="flex justify-between items-start border-b-2 border-slate-800 pb-6 mb-8">
               <div className="flex gap-6 items-center">
-                <div className="w-20 h-20 rounded-full border-4 border-slate-800 flex items-center justify-center shrink-0">
-                  <span className="font-bold text-slate-800 text-xs text-center leading-tight">เทศบาลเมือง<br/>นางรอง</span>
-                </div>
+                <img src="/nangrong-logo.png" alt="เทศบาลเมืองนางรอง" className="w-20 h-20 object-contain shrink-0" />
                 <div>
                   <h1 className="text-2xl font-bold text-slate-900 tracking-tight">ใบเสร็จรับเงิน</h1>
                   <h2 className="text-lg font-semibold text-slate-700 mt-1">เทศบาลเมืองนางรอง</h2>

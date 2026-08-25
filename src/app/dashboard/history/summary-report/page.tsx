@@ -178,9 +178,7 @@ export default async function SummaryReportPage(props: {
         
         {/* Official Header */}
         <div className="text-center border-b-2 border-slate-800 pb-6 mb-6">
-          <div className="w-16 h-16 rounded-full border-2 border-slate-800 flex items-center justify-center mx-auto mb-2">
-            <span className="font-bold text-slate-800 text-[10px] text-center leading-tight">เทศบาลเมือง<br/>นางรอง</span>
-          </div>
+          <img src="/nangrong-logo.png" alt="เทศบาลเมืองนางรอง" className="w-20 h-20 object-contain mx-auto mb-3" />
           <h1 className="text-xl font-bold text-slate-900 tracking-tight">เทศบาลเมืองนางรอง อำเภอนางรอง จังหวัดบุรีรัมย์</h1>
           <h2 className="text-base font-semibold text-slate-800 mt-1">รายงานสรุปการรับชำระเงินค่าธรรมเนียมจัดเก็บและขนขยะมูลฝอย</h2>
           <div className="flex items-center justify-center gap-4 text-xs text-slate-600 mt-2">
