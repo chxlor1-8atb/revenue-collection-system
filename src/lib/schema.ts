@@ -51,6 +51,7 @@ export const transactions = pgTable('transactions', {
   rejectReason: text('reject_reason'),
   lockedBy: text('locked_by'),
   lockedAt: timestamp('locked_at'),
+  reconciledAt: timestamp('reconciled_at'), // วันที่กระทบยอดกับธนาคารสำเร็จ
 }, (table) => [
   index('idx_transactions_status_paid').on(table.slipStatus, table.paidAt),
 ]);
