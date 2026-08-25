@@ -954,7 +954,7 @@ export default function BlobClient({
                     }`}
                   >
                     {/* Background Image */}
-                    <div className="absolute inset-0 w-full h-[65%] flex items-center justify-center bg-slate-50 cursor-pointer overflow-hidden" onClick={() => setLightboxIndex(idx)}>
+                    <div className="absolute top-0 left-0 w-full h-[80%] flex items-center justify-center bg-slate-50 cursor-pointer overflow-hidden" onClick={() => setLightboxIndex(idx)}>
                       <img
                         src={file.url}
                         alt="File Thumbnail"
@@ -965,31 +965,37 @@ export default function BlobClient({
 
                     {/* Folder Tab SVG Overlay */}
                     <svg 
-                      viewBox="0 0 400 200" 
+                      viewBox="0 0 400 120" 
                       preserveAspectRatio="none" 
-                      className="absolute bottom-0 w-full h-[60%] z-10 pointer-events-none"
+                      className="absolute bottom-0 w-full h-[35%] z-10 pointer-events-none"
                     >
-                      <path d="M 0 0 H 160 C 190 0, 190 40, 220 40 H 400 V 200 H 0 Z" fill={isSelected ? '#5B58F2' : '#3f3f46'} className="transition-colors duration-300" />
+                      <path d="M 0 0 H 160 C 190 0, 190 40, 220 40 H 400 V 120 H 0 Z" fill={isSelected ? '#5B58F2' : '#3f3f46'} className="transition-colors duration-300" />
                     </svg>
 
                     {/* Foreground Content */}
-                    <div className="absolute bottom-0 left-0 w-full h-[60%] z-20 p-4 sm:p-5 flex flex-col justify-between pointer-events-none">
-                      <div>
-                        <h3 className="text-white font-mono font-bold text-[10px] sm:text-xs tracking-wider uppercase truncate w-[80%]">
-                          {file.pathname.replace('line-slips/', '').replace('qrcodes/', '').split('.')[0] || 'FILE'}
-                        </h3>
-                        <p className="text-gray-400 font-mono text-[8px] uppercase tracking-widest mt-0.5">
-                          {formatDate(file.uploadedAt)}
-                        </p>
-                      </div>
-
-                      <div className="flex items-end justify-between mt-auto">
-                        <div className="text-white font-mono font-bold text-2xl sm:text-4xl leading-none tracking-tighter">
-                          {String(idx + 1).padStart(3, '0')}
+                    <div className="absolute bottom-0 left-0 w-full h-[35%] z-20 p-3 sm:p-4 flex flex-col justify-end pointer-events-none">
+                      <div className="flex items-end justify-between w-full">
+                        <div className="flex items-end gap-2 sm:gap-3 overflow-hidden">
+                          <span className="text-white font-mono font-bold text-4xl sm:text-5xl leading-[0.8] tracking-tighter shrink-0 drop-shadow-sm">
+                            {String(idx + 1).padStart(3, '0')}
+                          </span>
+                          <div className="flex flex-col pb-0.5 overflow-hidden">
+                            <span className="text-slate-300 font-mono text-[9px] sm:text-[10px] truncate w-full" title={file.pathname}>
+                              {file.pathname.replace('line-slips/', '').replace('qrcodes/', '').split('.')[0] || 'FILE'}
+                            </span>
+                            <span className="text-slate-400 font-mono text-[8px] sm:text-[9px] uppercase mt-0.5">
+                              {formatDate(file.uploadedAt)}
+                            </span>
+                          </div>
                         </div>
-                        <div className="text-gray-400 font-mono text-[9px] uppercase tracking-widest text-right">
-                          {formatSize(file.size)}<br/>
-                          FILE
+                        
+                        <div className="flex flex-col items-end shrink-0 pb-0.5 ml-2">
+                          <span className="text-slate-200 font-mono text-[10px] sm:text-xs font-bold">
+                            {formatSize(file.size)}
+                          </span>
+                          <span className="text-slate-500 font-mono text-[8px] uppercase mt-0.5 tracking-widest font-bold">
+                            FILE
+                          </span>
                         </div>
                       </div>
                     </div>
