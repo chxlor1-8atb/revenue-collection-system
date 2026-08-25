@@ -258,25 +258,22 @@ export default function ReceiptModal({ isOpen, onClose, item }: ReceiptModalProp
                       กองสาธารณสุขและสิ่งแวดล้อม • อำเภอนางรอง จังหวัดบุรีรัมย์ 31110
                     </p>
 
-                    {/* Sub-header Meta Bar */}
-                    <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 pt-2 text-xs sm:text-sm text-slate-600">
+                    {/* Compact Single-Line Sub-header Meta Bar */}
+                    <div className="flex items-center justify-center gap-2.5 sm:gap-4 pt-1.5 text-xs text-slate-600 flex-wrap sm:flex-nowrap">
                       <div>
-                        <span className="text-slate-400 font-medium mr-1.5">รายการ:</span>
-                        <strong className="text-slate-800 font-semibold">ค่าธรรมเนียมจัดเก็บขยะ</strong>
-                      </div>
-                      <span className="text-slate-300 hidden sm:inline">•</span>
-                      <div>
-                        <span className="text-slate-400 font-medium mr-1.5">เลขที่:</span>
+                        <span className="text-slate-400 mr-1">เลขที่รายการ:</span>
                         <strong className="font-mono font-bold text-slate-900">#{item.id}</strong>
                       </div>
-                      <span className="text-slate-300 hidden sm:inline">•</span>
+                      <span className="text-slate-300">•</span>
                       <div>
-                        <span className="text-slate-400 font-medium mr-1.5">วันที่ชำระ:</span>
-                        <span className="text-slate-800 font-medium">{formatThaiDateTime(paidDate)}</span>
+                        <span className="text-slate-400 mr-1">วันที่ชำระ:</span>
+                        <span className="text-slate-800 font-medium">
+                          {paidDate.toLocaleDateString("th-TH", { day: "numeric", month: "long", year: "numeric" })}
+                        </span>
                       </div>
-                      <span className="text-slate-300 hidden sm:inline">•</span>
-                      <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-xs font-semibold">
-                        <CheckCircle2 size={12} /> ชำระเงินเรียบร้อย
+                      <span className="text-slate-300">•</span>
+                      <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[11px] font-semibold shrink-0">
+                        <CheckCircle2 size={11} /> ชำระเงินเรียบร้อย
                       </div>
                     </div>
                   </div>
