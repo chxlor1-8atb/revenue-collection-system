@@ -99,12 +99,17 @@ export default async function ReceiptPage(props: { params: Promise<{ txId: strin
     houseNumber: houses.houseNumber,
     ownerName: houses.ownerName,
     zone: houses.zone,
+    moo: houses.moo,
   })
     .from(invoices)
     .innerJoin(houses, eq(invoices.houseId, houses.id))
     .where(eq(invoices.transactionId, txId));
 
-  const house = relatedInvoices.length > 0 ? relatedInvoices[0] : {
+  const firstInv = relatedInvoices[0];
+  const house = firstInv ? {
+    ...firstInv,
+    zone: firstInv.zone || (firstInv.moo ? `หมู่ ${firstInv.moo}` : "ในเขตเทศบาล")
+  } : {
     houseNumber: "-",
     ownerName: "-",
     zone: "-"

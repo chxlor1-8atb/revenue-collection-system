@@ -127,6 +127,9 @@ export async function GET(req: NextRequest) {
         amount: invoices.amount,
         houseNumber: houses.houseNumber,
         ownerName: houses.ownerName,
+        zone: houses.zone,
+        moo: houses.moo,
+        soi: houses.soi,
       })
         .from(invoices)
         .innerJoin(houses, eq(invoices.houseId, houses.id))
@@ -144,11 +147,13 @@ export async function GET(req: NextRequest) {
       historyItems = pagedTxs.map(tx => {
         const txInvoices = relatedInvoices.filter(inv => inv.transactionId === tx.id);
         const lineData = lineMsgMap.get(tx.id);
+        const firstInv = txInvoices[0];
         return {
           ...tx,
           invoices: txInvoices,
-          houseNumber: txInvoices[0]?.houseNumber || "ไม่ระบุ",
-          ownerName: txInvoices[0]?.ownerName || "ไม่ระบุ",
+          houseNumber: firstInv?.houseNumber || "ไม่ระบุ",
+          ownerName: firstInv?.ownerName || "ไม่ระบุ",
+          zone: firstInv?.zone || (firstInv?.moo ? `หมู่ ${firstInv.moo}` : null),
           months: txInvoices.map(inv => inv.monthYear),
           paidVia: tx.verifiedBy === "line_bot" ? "LINE Bot" : tx.verifiedBy === "admin_cash" ? "เงินสด (หน้าเคาน์เตอร์)" : lineData ? "LINE Bot" : "เว็บไซต์",
           senderName: lineData?.senderName || null,
