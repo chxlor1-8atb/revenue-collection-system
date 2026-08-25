@@ -954,16 +954,16 @@ export default function BlobClient({
                     }`}
                   >
                     {/* Thumbnail Image Container */}
-                    <div className="relative aspect-square w-full bg-slate-100 overflow-hidden flex items-center justify-center cursor-pointer" onClick={() => setLightboxIndex(idx)}>
+                    <div className="relative aspect-[3/4] w-full bg-slate-100 overflow-hidden flex items-center justify-center cursor-pointer" onClick={() => setLightboxIndex(idx)}>
                       <img
                         src={file.url}
                         alt=""
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="%23cbd5e1" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="2" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>'; }}
                       />
 
                       {/* Selection Checkbox */}
-                      <div className="absolute top-2 left-2 z-10" onClick={(e) => e.stopPropagation()}>
+                      <div className="absolute top-2 left-2 z-10 bg-white/80 backdrop-blur-sm rounded-md p-0.5 shadow-sm" onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
                           checked={isSelected}
@@ -973,7 +973,7 @@ export default function BlobClient({
                       </div>
 
                       {/* File Size Badge */}
-                      <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-md text-[10px] font-bold text-white font-mono">
+                      <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2.5 py-0.5 rounded-full shadow-sm text-[10px] font-bold text-white font-mono">
                         {formatSize(file.size)}
                       </div>
 
