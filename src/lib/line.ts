@@ -1520,3 +1520,141 @@ export function generateWelcomeFlexMessage() {
     }
   };
 }
+
+export function generateSlipApprovedFlexMessage(houseNumber: string, amount: number, receiptUrl: string) {
+  return {
+    type: "flex",
+    altText: "✅ ชำระเงินสำเร็จ!",
+    contents: {
+      type: "bubble",
+      header: {
+        type: "box",
+        layout: "vertical",
+        contents: [
+          {
+            type: "text",
+            text: "ชำระเงินสำเร็จ",
+            weight: "bold",
+            color: "#10B981",
+            size: "xl"
+          },
+          {
+            type: "text",
+            text: "บ้านเลขที่ " + houseNumber,
+            size: "sm",
+            color: "#64748B",
+            margin: "sm"
+          }
+        ],
+        paddingAll: "20px",
+        paddingBottom: "10px"
+      },
+      body: {
+        type: "box",
+        layout: "vertical",
+        contents: [
+          {
+            type: "text",
+            text: "ยอดเงิน " + amount.toLocaleString() + " บาท ได้รับการตรวจสอบและยืนยันเรียบร้อยแล้ว ขอบคุณค่ะ",
+            wrap: true,
+            size: "sm",
+            color: "#334155"
+          }
+        ],
+        paddingAll: "20px",
+        paddingTop: "10px"
+      },
+      footer: {
+        type: "box",
+        layout: "vertical",
+        contents: [
+          {
+            type: "button",
+            action: {
+              type: "uri",
+              label: "📄 ดาวน์โหลดใบเสร็จ (PDF)",
+              uri: receiptUrl
+            },
+            style: "primary",
+            color: "#5B58F2"
+          }
+        ],
+        paddingAll: "20px"
+      }
+    }
+  };
+}
+
+export function generateSlipRejectedFlexMessage(houseNumber: string, amount: number, rejectReason: string, uploadUrl: string) {
+  return {
+    type: "flex",
+    altText: "❌ สลิปถูกปฏิเสธ",
+    contents: {
+      type: "bubble",
+      header: {
+        type: "box",
+        layout: "vertical",
+        contents: [
+          {
+            type: "text",
+            text: "สลิปไม่ผ่านการตรวจสอบ",
+            weight: "bold",
+            color: "#EF4444",
+            size: "lg"
+          },
+          {
+            type: "text",
+            text: "บ้านเลขที่ " + houseNumber,
+            size: "sm",
+            color: "#64748B",
+            margin: "sm"
+          }
+        ],
+        paddingAll: "20px",
+        paddingBottom: "10px"
+      },
+      body: {
+        type: "box",
+        layout: "vertical",
+        contents: [
+          {
+            type: "text",
+            text: "สลิปยอด " + amount.toLocaleString() + " บาท ถูกปฏิเสธเนื่องจาก:",
+            wrap: true,
+            size: "sm",
+            color: "#334155",
+            margin: "md"
+          },
+          {
+            type: "text",
+            text: rejectReason,
+            wrap: true,
+            size: "md",
+            weight: "bold",
+            color: "#B91C1C",
+            margin: "sm"
+          }
+        ],
+        paddingAll: "20px",
+        paddingTop: "0px"
+      },
+      footer: {
+        type: "box",
+        layout: "vertical",
+        contents: [
+          {
+            type: "button",
+            action: {
+              type: "uri",
+              label: "📤 อัปโหลดสลิปใหม่",
+              uri: uploadUrl
+            },
+            style: "primary",
+            color: "#EF4444"
+          }
+        ],
+        paddingAll: "20px"
+      }
+    }
+  };
+}

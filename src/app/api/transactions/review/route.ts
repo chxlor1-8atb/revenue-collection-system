@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { pushMessage, generateSlipApprovedFlexMessage, generateSlipRejectedFlexMessage } from "@/lib/line";
 import { transactions, invoices, houses } from "@/lib/schema";
 import { eq, desc, inArray, or, and, gte } from "drizzle-orm";
 import { auth } from "@/lib/auth";
@@ -89,11 +90,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { transactionId, status } = await request.json();
+    const { transactionId, status, rejectReason } = await request.json();
 
     if (!transactionId || !['verified', 'rejected'].includes(status)) {
       return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
+
+
+    // Fetch transaction and user details to send LINE message
+    const txDetails = await db.select({
+      amount: transactions.amountClaimedByPayer,
+      houseNumber: houses.houseNumber,
+      lineUserId: houses.lineUserId,
+    })
+    .from(transactions)
+    .innerJoin(invoices, eq(invoices.transactionId, transactions.id))
+    .innerJoin(houses, eq(houses.id, invoices.houseId))
+    .where(eq(transactions.id, transactionId))
+    .limit(1);
+
+    const txInfo = txDetails.length > 0 ? txDetails[0] : null;
 
     // Execute updates atomically inside a transaction
     await db.transaction(async (tx) => {
@@ -102,7 +118,10 @@ export async function POST(request: Request) {
         .set({ 
           slipStatus: status,
           verifiedBy: session.user?.name || "admin",
-          lockKey: null
+          rejectReason: status === 'rejected' ? rejectReason : null,
+          lockKey: null,
+          lockedBy: null,
+          lockedAt: null
         })
         .where(eq(transactions.id, transactionId));
 
@@ -128,6 +147,21 @@ export async function POST(request: Request) {
           .where(eq(invoices.transactionId, transactionId));
       }
     });
+
+
+    // Send LINE Push Notification if lineUserId exists
+    if (txInfo && txInfo.lineUserId) {
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://revenue-collection-system.vercel.app";
+      if (status === 'verified') {
+        const receiptUrl = `${baseUrl}/pay/${transactionId}/success`; // Or PDF link
+        const msg = generateSlipApprovedFlexMessage(txInfo.houseNumber, parseFloat(txInfo.amount || "0"), receiptUrl);
+        await pushMessage(txInfo.lineUserId, [msg]);
+      } else if (status === 'rejected') {
+        const uploadUrl = `${baseUrl}/pay/${transactionId}`; // Let them try again
+        const msg = generateSlipRejectedFlexMessage(txInfo.houseNumber, parseFloat(txInfo.amount || "0"), rejectReason || "ข้อมูลไม่ถูกต้อง", uploadUrl);
+        await pushMessage(txInfo.lineUserId, [msg]);
+      }
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

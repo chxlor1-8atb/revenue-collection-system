@@ -23,6 +23,7 @@ export default function SlipReviewForm({
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showRejectConfirm, setShowRejectConfirm] = useState(false);
+  const [rejectReason, setRejectReason] = useState("ยอดเงินไม่ตรงกับที่เรียกเก็บ");
   const router = useRouter();
 
   const handleReview = async (status: 'verified' | 'rejected') => {
@@ -43,7 +44,8 @@ export default function SlipReviewForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           transactionId: transaction.id, 
-          status 
+          status,
+          rejectReason: status === 'rejected' ? rejectReason : undefined
         })
       });
 

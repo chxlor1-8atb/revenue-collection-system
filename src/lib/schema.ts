@@ -46,7 +46,10 @@ export const transactions = pgTable('transactions', {
   createdAt: timestamp('created_at').defaultNow(),
   notifiedAt: timestamp('notified_at'),
   verifiedBy: text('verified_by'),
-  lockKey: text('lock_key').unique(),
+    lockKey: text('lock_key').unique(),
+  rejectReason: text('reject_reason'),
+  lockedBy: text('locked_by'),
+  lockedAt: timestamp('locked_at'),
 }, (table) => [
   index('idx_transactions_status_paid').on(table.slipStatus, table.paidAt),
 ]);
