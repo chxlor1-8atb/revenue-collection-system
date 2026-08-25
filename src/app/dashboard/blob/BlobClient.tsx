@@ -49,6 +49,49 @@ type ViewMode = 'grid' | 'table';
 type SizeFilter = 'all' | 'large' | 'huge' | 'small';
 type DateFilter = 'all' | 'today' | '7days' | '30days';
 
+function FancyCheckbox({
+  checked,
+  indeterminate,
+  onChange,
+  disabled,
+  size = "md"
+}: {
+  checked: boolean;
+  indeterminate?: boolean;
+  onChange: () => void;
+  disabled?: boolean;
+  size?: "sm" | "md";
+}) {
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={indeterminate ? "mixed" : checked}
+      disabled={disabled}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (!disabled) onChange();
+      }}
+      className={`relative inline-flex items-center justify-center rounded-lg transition-all duration-200 cursor-pointer select-none shrink-0 ${
+        size === "sm" ? "w-4.5 h-4.5" : "w-5 h-5"
+      } ${
+        disabled
+          ? "opacity-40 cursor-not-allowed bg-slate-100 border border-slate-200"
+          : checked || indeterminate
+          ? "bg-[#5B58F2] text-white shadow-xs shadow-[#5B58F2]/30 border border-[#5B58F2] hover:bg-[#4A47D1] active:scale-95"
+          : "bg-white/90 backdrop-blur-xs border-2 border-slate-300 hover:border-[#5B58F2] hover:bg-indigo-50/30 active:scale-95"
+      }`}
+    >
+      {checked && !indeterminate && (
+        <Check size={size === "sm" ? 11 : 13} strokeWidth={3} className="text-white" />
+      )}
+      {indeterminate && (
+        <span className={`block bg-white rounded-full ${size === "sm" ? "w-2 h-0.5" : "w-2.5 h-0.5"}`} />
+      )}
+    </button>
+  );
+}
+
 interface BlobClientProps {
   initialBlobs?: BlobFile[];
   initialCursor?: string | null;
@@ -944,77 +987,86 @@ export default function BlobClient({
                 return (
                   <motion.div
                     key={file.url}
-                    initial={{ opacity: 0, scale: 0.9 }}
+                    initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.2 }}
-                    className={`group relative rounded-[20px] sm:rounded-[24px] border-[6px] transition-all overflow-hidden flex flex-col aspect-square sm:aspect-[5/4] ${
+                    className={`group relative bg-white rounded-2xl border transition-all overflow-hidden flex flex-col shadow-2xs hover:shadow-md ${
                       isSelected 
-                        ? 'border-[#5B58F2] shadow-xl ring-4 ring-[#5B58F2]/20' 
-                        : 'border-[#3f3f46] shadow-md hover:-translate-y-1 hover:shadow-xl'
+                        ? 'border-[#5B58F2] ring-2 ring-[#5B58F2]/20 bg-indigo-50/10' 
+                        : 'border-slate-200/90 hover:border-[#5B58F2]/40'
                     }`}
                   >
-                    {/* Background Image */}
-                    <div className="absolute top-0 left-0 w-full h-[80%] flex items-center justify-center bg-slate-50 cursor-pointer overflow-hidden" onClick={() => setLightboxIndex(idx)}>
+                    {/* Thumbnail Image Container */}
+                    <div 
+                      className="relative aspect-4/3 sm:aspect-square w-full bg-slate-100/80 overflow-hidden cursor-pointer flex items-center justify-center"
+                      onClick={() => setLightboxIndex(idx)}
+                    >
                       <img
                         src={file.url}
                         alt="File Thumbnail"
-                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="%23cbd5e1" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="2" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>'; }}
                       />
-                    </div>
 
-                    {/* Folder Tab SVG Overlay */}
-                    <svg 
-                      viewBox="0 0 400 120" 
-                      preserveAspectRatio="none" 
-                      className="absolute bottom-0 w-full h-[35%] z-10 pointer-events-none"
-                    >
-                      <path d="M 0 0 H 160 C 190 0, 190 40, 220 40 H 400 V 120 H 0 Z" fill={isSelected ? '#5B58F2' : '#3f3f46'} className="transition-colors duration-300" />
-                    </svg>
+                      {/* Small Minimalist Index Badge */}
+                      <span className="absolute top-2.5 left-2.5 z-20 px-2 py-0.5 rounded-md bg-slate-900/75 backdrop-blur-xs text-white text-[10px] font-mono font-bold shadow-xs">
+                        #{String(idx + 1).padStart(2, '0')}
+                      </span>
 
-                    {/* Foreground Content */}
-                    <div className="absolute bottom-0 left-0 w-full h-[35%] z-20 p-3 sm:p-4 flex flex-col justify-end pointer-events-none">
-                      <div className="flex items-end justify-between w-full">
-                        <div className="flex items-end gap-2 sm:gap-3 overflow-hidden">
-                          <span className="text-white font-mono font-bold text-4xl sm:text-5xl leading-[0.8] tracking-tighter shrink-0 drop-shadow-sm">
-                            {String(idx + 1).padStart(3, '0')}
-                          </span>
-                          <div className="flex flex-col pb-0.5 overflow-hidden">
-                            <span className="text-slate-300 font-mono text-[9px] sm:text-[10px] truncate w-full" title={file.pathname}>
-                              {file.pathname.replace('line-slips/', '').replace('qrcodes/', '').split('.')[0] || 'FILE'}
-                            </span>
-                            <span className="text-slate-400 font-mono text-[8px] sm:text-[9px] uppercase mt-0.5">
-                              {formatDate(file.uploadedAt)}
-                            </span>
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-col items-end shrink-0 pb-0.5 ml-2">
-                          <span className="text-slate-200 font-mono text-[10px] sm:text-xs font-bold">
-                            {formatSize(file.size)}
-                          </span>
-                          <span className="text-slate-500 font-mono text-[8px] uppercase mt-0.5 tracking-widest font-bold">
-                            FILE
-                          </span>
-                        </div>
+                      {/* Floating Sleek Checkbox */}
+                      <div 
+                        className="absolute top-2.5 right-2.5 z-20"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <FancyCheckbox
+                          checked={isSelected}
+                          onChange={() => toggleSelect(file.url)}
+                          size="sm"
+                        />
+                      </div>
+
+                      {/* Hover Action Overlay */}
+                      <div 
+                        className="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 z-30" 
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <button 
+                          onClick={() => setLightboxIndex(idx)} 
+                          className="p-2 rounded-xl bg-white/95 hover:bg-white text-slate-800 shadow-md transition-transform hover:scale-110 cursor-pointer"
+                          title="ดูรูปภาพขนาดเต็ม"
+                        >
+                          <Eye size={15} />
+                        </button>
+                        <button 
+                          onClick={() => handleCopy(file.url)} 
+                          className="p-2 rounded-xl bg-white/95 hover:bg-white text-slate-800 shadow-md transition-transform hover:scale-110 cursor-pointer"
+                          title="คัดลอก URL"
+                        >
+                          {copiedUrl === file.url ? <Check size={15} className="text-emerald-600" /> : <Copy size={15} />}
+                        </button>
+                        <button 
+                          onClick={() => promptDelete('single', file)} 
+                          className="p-2 rounded-xl bg-white/95 hover:bg-rose-600 hover:text-white text-rose-600 shadow-md transition-transform hover:scale-110 cursor-pointer"
+                          title="ลบไฟล์นี้"
+                        >
+                          <Trash2 size={15} />
+                        </button>
                       </div>
                     </div>
 
-                    {/* Checkbox */}
-                    <div className="absolute top-3 right-3 z-30 bg-white/80 backdrop-blur-sm rounded-md p-0.5 shadow-sm" onClick={(e) => e.stopPropagation()}>
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleSelect(file.url)}
-                        className="w-4 h-4 rounded-sm border-slate-300 text-[#5B58F2] focus:ring-[#5B58F2] cursor-pointer"
-                      />
-                    </div>
-
-                    {/* Hover Actions */}
-                    <div className="absolute inset-0 rounded-[14px] sm:rounded-[18px] bg-[#3f3f46]/85 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 sm:gap-3 z-30" onClick={(e) => e.stopPropagation()}>
-                      <button onClick={() => setLightboxIndex(idx)} className="p-2 sm:p-2.5 rounded-xl bg-white/90 hover:bg-white text-slate-800 shadow-xl transition-transform hover:scale-110"><Eye size={16} /></button>
-                      <button onClick={() => handleCopy(file.url)} className="p-2 sm:p-2.5 rounded-xl bg-white/90 hover:bg-white text-slate-800 shadow-xl transition-transform hover:scale-110">{copiedUrl === file.url ? <Check size={16} className="text-emerald-600" /> : <Copy size={16} />}</button>
-                      <button onClick={() => promptDelete('single', file)} className="p-2 sm:p-2.5 rounded-xl bg-white/90 hover:bg-red-600 hover:text-white text-red-600 shadow-xl transition-transform hover:scale-110"><Trash2 size={16} /></button>
+                    {/* Card Footer Metadata */}
+                    <div className="p-3 bg-white border-t border-slate-100 flex items-center justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-semibold text-slate-800 truncate font-mono" title={file.pathname}>
+                          {file.pathname.replace('line-slips/', '').replace('qrcodes/', '') || 'FILE'}
+                        </p>
+                        <p className="text-[10px] text-slate-400 font-mono mt-0.5">
+                          {formatDate(file.uploadedAt)}
+                        </p>
+                      </div>
+                      <span className="shrink-0 px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-mono text-[10px] font-semibold">
+                        {formatSize(file.size)}
+                      </span>
                     </div>
                   </motion.div>
                 );
@@ -1028,12 +1080,14 @@ export default function BlobClient({
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/50">
                   <th className="w-12 px-6 py-4 text-center">
-                    <input
-                      type="checkbox"
-                      checked={selectedUrls.size === filteredAndSortedFiles.length && filteredAndSortedFiles.length > 0}
-                      onChange={toggleSelectAll}
-                      className="w-4 h-4 rounded border-slate-300 text-[#5B58F2] focus:ring-[#5B58F2] cursor-pointer"
-                    />
+                    <div className="flex items-center justify-center">
+                      <FancyCheckbox
+                        checked={selectedUrls.size === filteredAndSortedFiles.length && filteredAndSortedFiles.length > 0}
+                        indeterminate={selectedUrls.size > 0 && selectedUrls.size < filteredAndSortedFiles.length}
+                        onChange={toggleSelectAll}
+                        size="sm"
+                      />
+                    </div>
                   </th>
                   <th className="px-4 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider w-16">ตัวอย่าง</th>
                   <th 
@@ -1079,12 +1133,13 @@ export default function BlobClient({
                       }`}
                     >
                       <td className="px-6 py-3.5 text-center">
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => toggleSelect(file.url)}
-                          className="w-4 h-4 rounded border-slate-300 text-[#5B58F2] focus:ring-[#5B58F2] cursor-pointer"
-                        />
+                        <div className="flex items-center justify-center">
+                          <FancyCheckbox
+                            checked={isSelected}
+                            onChange={() => toggleSelect(file.url)}
+                            size="sm"
+                          />
+                        </div>
                       </td>
                       <td className="px-4 py-3.5">
                         <div 
