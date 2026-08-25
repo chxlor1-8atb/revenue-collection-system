@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import SlipReviewForm from "./SlipReviewForm";
-import { FileSignature, Loader2, QrCode, CheckCircle2, Clock, Sparkles, RefreshCw, Layers, LayoutGrid, List, User, MapPin, ExternalLink, Calendar } from "lucide-react";
+import { FileSignature, Loader2, QrCode, CheckCircle2, Clock, Sparkles, RefreshCw, Layers, LayoutGrid, List, User, MapPin, ExternalLink, Calendar, CheckSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import LottieIcon from "@/components/LottieIcon";
@@ -31,6 +31,52 @@ export default function ReviewClient() {
       // ignore
     }
   }, []);
+
+  
+  const [isBulking, setIsBulking] = useState(false);
+
+  const handleBulkApprove = async () => {
+    if (!pending || pending.length === 0 || isBulking) return;
+    
+    // Only safely bulk approve slips where amountClaimedByPayer perfectly matches the invoice amount
+    const safeToApprove = pending.filter((tx: any) => {
+      const invTotal = tx.invoices?.reduce((sum: number, inv: any) => sum + parseFloat(inv.amount), 0) || 0;
+      return parseFloat(tx.amountClaimedByPayer || "0") === invTotal;
+    });
+
+    if (safeToApprove.length === 0) {
+      alert("�������Ի�˹����ʹ�Թ�ç�Ѻ��� 100% ��¤�Ѻ ��سҵ�Ǩ�ͺ������¡�����ͻ�ͧ�ѹ�����Դ��Ҵ�ҧ�ѭ��");
+      return;
+    }
+
+    if (!confirm(`�к���Ǩ�ͺ����Ի����ʹ�Թ�͹�ç�Ѻ��žʹըӹǹ ${safeToApprove.length} ��¡�� �س��ͧ���͹��ѵԷ�����������ѹ�������?`)) {
+      return;
+    }
+
+    setIsBulking(true);
+    let successCount = 0;
+    
+    for (const tx of safeToApprove as any[]) {
+      try {
+        const res = await fetch("/api/transactions/review", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            transactionId: tx.id, 
+            status: 'verified',
+            verifiedAmount: tx.amountClaimedByPayer
+          })
+        });
+        if (res.ok) successCount++;
+      } catch (e) {
+        console.error("Bulk approve failed for", tx.id);
+      }
+    }
+    
+    setIsBulking(false);
+    mutate();
+    alert(`͹��ѵ������ ${successCount} ��¡��`);
+  };
 
   const setViewMode = (mode: "grid" | "detailed") => {
     setViewModeState(mode);

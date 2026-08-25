@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, XCircle, ImageOff, Eye, Calendar, Home, User, Hash, Clock, AlertTriangle, Download } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
@@ -27,6 +27,29 @@ export default function SlipReviewForm({
   const [verifiedAmount, setVerifiedAmount] = useState(transaction.amountClaimedByPayer || "0");
   const [rejectReason, setRejectReason] = useState("ยอดเงินไม่ตรงกับที่เรียกเก็บ");
   const router = useRouter();
+
+  // Lock the transaction when the form is mounted (e.g. user expands it or views it in detailed mode)
+  useEffect(() => {
+    if (!transaction || transaction.slipStatus !== 'pending') return;
+    
+    // Attempt to lock
+    fetch(`/api/transactions/${transaction.id}/lock`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ lock: true })
+    }).catch(() => {});
+
+    return () => {
+      // Release lock on unmount
+      fetch(`/api/transactions/${transaction.id}/lock`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lock: false }),
+        keepalive: true
+      }).catch(() => {});
+    };
+  }, [transaction?.id]);
+
 
   const handleReview = async (status: 'verified' | 'rejected') => {
     if (isSubmitting) return;
