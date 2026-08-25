@@ -16,6 +16,7 @@ import Link from "next/link";
 import TablePagination from "@/components/TablePagination";
 import CustomSelect from "@/components/CustomSelect";
 import MonthPicker from "@/components/MonthPicker";
+import ReceiptModal from "@/components/ReceiptModal";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import LottieIcon from "@/components/LottieIcon";
@@ -69,6 +70,7 @@ export default function HistoryClient() {
   // Modal State
   const [voidConfirmId, setVoidConfirmId] = useState<number | null>(null);
   const [isVoiding, setIsVoiding] = useState(false);
+  const [receiptModalItem, setReceiptModalItem] = useState<any | null>(null);
 
   // Filters
   const [page, setPage] = useState(1);
@@ -731,13 +733,13 @@ export default function HistoryClient() {
 
                         <div className="flex items-center gap-2">
                           {!isVoided && (
-                            <Link
-                              href={`/dashboard/history/${item.id}/receipt`}
-                              target="_blank"
-                              className="flex-1 h-8.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 transition-all"
+                            <button
+                              onClick={() => setReceiptModalItem(item)}
+                              className="flex-1 h-8.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+                              title="ดูและพิมพ์ใบเสร็จ"
                             >
                               <Printer size={13} /> พิมพ์ใบเสร็จ
-                            </Link>
+                            </button>
                           )}
                           {!isVoided && (
                             <button
@@ -972,14 +974,13 @@ export default function HistoryClient() {
                           <td className="px-4 py-3.5 text-right">
                             <div className="flex items-center justify-end gap-1.5">
                               {!isVoided && (
-                                <Link
-                                  href={`/dashboard/history/${item.id}/receipt`}
-                                  target="_blank"
-                                  className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg transition-colors"
-                                  title="พิมพ์ใบเสร็จ"
+                                <button
+                                  onClick={() => setReceiptModalItem(item)}
+                                  className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 rounded-lg transition-colors cursor-pointer"
+                                  title="ดูและพิมพ์ใบเสร็จ"
                                 >
                                   <Printer size={15} />
-                                </Link>
+                                </button>
                               )}
                               {!isVoided && (
                                 <button
@@ -1101,6 +1102,13 @@ export default function HistoryClient() {
         }
         warningText="บิลทั้งหมดที่ผูกกับรายการนี้จะกลับไปเป็นสถานะ ค้างชำระ ทันที และรายการจะถูกย้ายออกจากประวัตินี้"
         confirmText="ยืนยันการยกเลิก"
+      />
+
+      {/* Instant In-Page Receipt Preview & Print Modal */}
+      <ReceiptModal
+        isOpen={!!receiptModalItem}
+        onClose={() => setReceiptModalItem(null)}
+        item={receiptModalItem}
       />
     </div>
   );
