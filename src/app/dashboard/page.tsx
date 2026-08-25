@@ -290,8 +290,8 @@ export default async function DashboardPage() {
         <StaggerItem className="bg-white rounded-3xl p-5 xl:p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between min-h-[155px]">
           <div className="flex items-start justify-between gap-3 mb-3">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-[#EEF0FF] text-[#5B58F2] flex items-center justify-center shrink-0 border border-[#D5D9FF]">
-                <Smartphone size={22} strokeWidth={2} />
+              <div className="flex items-center justify-center shrink-0">
+                <Image src="/glass/icons8-phonelink-ring.png" alt="LINE" width={44} height={44} className="object-contain drop-shadow-sm" unoptimized />
               </div>
               <div>
                 <span className="text-slate-800 font-bold text-sm xl:text-base tracking-tight block">แจ้งผ่าน LINE</span>
