@@ -153,7 +153,7 @@ export async function POST(request: Request) {
     if (txInfo && txInfo.lineUserId) {
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://revenue-collection-system.vercel.app";
       if (status === 'verified') {
-        const receiptUrl = `${baseUrl}/pay/${transactionId}/success`; // Or PDF link
+        const receiptUrl = `${baseUrl}/api/transactions/${transactionId}/receipt`; // Or PDF link
         const msg = generateSlipApprovedFlexMessage(txInfo.houseNumber, parseFloat(txInfo.amount || "0"), receiptUrl);
         await pushMessage(txInfo.lineUserId, [msg]);
       } else if (status === 'rejected') {
