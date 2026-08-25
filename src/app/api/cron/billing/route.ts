@@ -109,7 +109,7 @@ export async function GET(req: Request) {
           if (parseFloat(house.walletBalance || "0") !== wallet) {
             await tx.update(houses).set({ walletBalance: wallet.toString() }).where(eq(houses.id, house.id));
           }
-        });
+        }
         
         createdCount++;
 

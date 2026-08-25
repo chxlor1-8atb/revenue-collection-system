@@ -6,6 +6,8 @@ import Link from "next/link";
 import { ArrowLeft, Home, User, MapPin, ExternalLink, Receipt, CheckCircle2, Clock, AlertCircle, Phone, Info, MessageCircle, Banknote, CalendarDays } from "lucide-react";
 import SlipModalButton from "@/components/SlipModalButton";
 import CashPaymentButton from "./CashPaymentButton";
+import WalletModalButton from "./WalletModalButton";
+import { Wallet } from "lucide-react";
 import HouseActionsClient from "./HouseActionsClient";
 import LottieIcon from "@/components/LottieIcon";
 

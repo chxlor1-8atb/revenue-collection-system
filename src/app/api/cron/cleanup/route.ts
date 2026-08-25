@@ -55,7 +55,7 @@ export async function GET(request: Request) {
       await tx.update(transactions)
         .set({ slipStatus: 'expired' })
         .where(inArray(transactions.id, txIds));
-    });
+      }
 
     return NextResponse.json({ success: true, count: txIds.length, message: `Expired ${txIds.length} transactions.` });
 

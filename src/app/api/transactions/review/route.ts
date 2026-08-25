@@ -148,8 +148,7 @@ export async function POST(request: Request) {
           .set({ status: 'unpaid', transactionId: null })
           .where(eq(invoices.transactionId, transactionId));
       }
-    });
-
+      }
 
     // Send LINE Push Notification if lineUserId exists
     if (txInfo && txInfo.lineUserId) {
