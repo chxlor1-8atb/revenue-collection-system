@@ -74,16 +74,41 @@ export async function GET(req: Request) {
       ).limit(1);
 
       if (existing.length === 0) {
-        // Create bill
+        // Create bill and handle wallet balance
         const amount = house.defaultBillingAmount || "20.00";
+        let amountToPay = parseFloat(amount);
+        let wallet = parseFloat(house.walletBalance || "0");
+        let invStatus = 'unpaid';
+        let invPaid = 0;
+        let invRemaining = amountToPay;
+
+        if (wallet >= amountToPay) {
+          invStatus = 'paid';
+          invPaid = amountToPay;
+          invRemaining = 0;
+          wallet -= amountToPay;
+        } else if (wallet > 0) {
+          invStatus = 'partial';
+          invPaid = wallet;
+          invRemaining = amountToPay - wallet;
+          wallet = 0;
+        }
         
-        await db.insert(invoices).values({
-          houseId: house.id,
-          monthYear: currentMonthYear,
-          amount,
-          type: 'monthly',
-          status: 'unpaid',
-          isBroadcasted: house.lineUserId ? true : false, // mark as broadcasted if we are going to try pushing it
+        await db.transaction(async (tx) => {
+          await tx.insert(invoices).values({
+            houseId: house.id,
+            monthYear: currentMonthYear,
+            amount,
+            amountPaid: invPaid.toString(),
+            remainingAmount: invRemaining.toString(),
+            type: 'monthly',
+            status: invStatus,
+            isBroadcasted: house.lineUserId ? true : false,
+          });
+
+          if (parseFloat(house.walletBalance || "0") !== wallet) {
+            await tx.update(houses).set({ walletBalance: wallet.toString() }).where(eq(houses.id, house.id));
+          }
         });
         
         createdCount++;
