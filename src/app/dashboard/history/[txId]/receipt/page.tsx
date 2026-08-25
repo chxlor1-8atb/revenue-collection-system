@@ -114,7 +114,7 @@ export default async function ReceiptPage(props: { params: Promise<{ txId: strin
         className="max-w-[210mm] min-h-[250mm] sm:min-h-[265mm] mx-auto bg-white p-6 sm:p-12 shadow-md print:shadow-none print:p-0 print:m-0 border border-slate-200/80 print:border-none relative overflow-hidden flex flex-col justify-between"
       >
         {/* Soft Watermark */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.025] z-0 overflow-hidden select-none">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.075] z-0 overflow-hidden select-none">
           <span className="text-[90px] sm:text-[130px] md:text-[150px] font-black text-slate-900 -rotate-45 whitespace-nowrap">
             กองสาธารณสุข
           </span>

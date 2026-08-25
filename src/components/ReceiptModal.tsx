@@ -207,7 +207,7 @@ export default function ReceiptModal({ isOpen, onClose, item }: ReceiptModalProp
               className="relative mx-auto bg-white sm:rounded-2xl p-6 sm:p-12 shadow-xs border border-slate-200/80 print:border-none print:shadow-none print:p-0 print:rounded-none overflow-hidden max-w-[210mm] min-h-[250mm] sm:min-h-[265mm] flex flex-col justify-between"
             >
               {/* Soft Subtle Watermark */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.025] z-0 overflow-hidden select-none">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.075] z-0 overflow-hidden select-none">
                 <span className="text-[90px] sm:text-[130px] md:text-[150px] font-black text-slate-900 -rotate-45 whitespace-nowrap">
                   กองสาธารณสุข
                 </span>
