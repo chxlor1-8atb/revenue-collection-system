@@ -257,114 +257,8 @@ export async function POST(request: Request) {
             }
           }
           
-          // 3.5 Match waiting_for_slip transaction by amount (FIFO — oldest first)
-          // Important: Only match if we have a valid non-zero amount to prevent matching null or "0"
-          if (slipAmount && slipAmount !== "0" && slipAmount !== "0.00") {
-            const expiryTime = new Date();
-            expiryTime.setMinutes(expiryTime.getMinutes() - 5);
-
-            // Match waiting transactions by whole amount (FIFO — oldest first)
-            const waitingTx = await db.select()
-              .from(transactions)
-              .where(and(
-                eq(transactions.amount, Math.floor(parseFloat(slipAmount)).toString()), 
-                eq(transactions.slipStatus, 'waiting_for_slip'),
-                gte(transactions.createdAt, expiryTime)
-              ))
-              .orderBy(transactions.createdAt)  // ASC: oldest first for FIFO matching
-              .limit(1);
-
-            if (waitingTx.length > 0) {
-              const tx = waitingTx[0];
-            const txInvoices = await db.select().from(invoices).where(eq(invoices.transactionId, tx.id));
-            
-            if (txInvoices.length === 0) {
-              // This is an orphaned transaction! The race condition rollback might have unlinked it, 
-              // or it's a bug. Do NOT mark it as verified since no debt will be cleared.
-              await db.update(transactions)
-                .set({ 
-                  slipImageUrl: blobUrl, 
-                  slipStatus: 'manual_review',
-                  slipRefId: transRef || null,
-                  payerNote: 'ยอดเงินเข้าจริง แต่ระบบหาบิลไม่พบ (Orphaned)'
-                })
-                .where(eq(transactions.id, tx.id));
-                
-              await db.insert(lineMessages).values({
-                lineMessageId: event.message.id,
-                lineUserId: userId,
-                type: "image",
-                imageUrl: blobUrl,
-                status: "pending",
-                amount: slipAmount,
-                senderName: verification.data?.sender.name,
-                isVerified: true,
-                transactionId: tx.id
-              });
-              
-              await safeReplyOrPush(userId, replyToken, [{
-                type: "text",
-                text: `ได้รับยอดเงิน ${slipAmount} บาท เรียบร้อยแล้วค่ะ ✅\nแต่ระบบเกิดขัดข้องไม่สามารถจับคู่บิลได้ (ไม่พบหนี้)\n\nกรุณาแจ้งแอดมินเพื่อตรวจสอบและตัดยอดให้แบบ Manual นะคะ 🙏`
-              }]);
-              continue;
-            }
-
-            // Amount matched — verify and link invoices
-            const updateResult = await db.update(transactions)
-              .set({ 
-                slipImageUrl: blobUrl, 
-                slipStatus: 'verified', 
-                slipRefId: transRef || null,
-                paidAt: new Date(), 
-                verifiedBy: 'line_bot',
-                lockKey: null,
-              })
-              .where(and(eq(transactions.id, tx.id), eq(transactions.slipStatus, 'waiting_for_slip')))
-              .returning();
-              
-            if (updateResult.length === 0) continue; // Race condition: already processed
-            
-            await db.update(invoices)
-              .set({ status: 'paid' })
-              .where(eq(invoices.transactionId, tx.id));
-            
-            await db.insert(lineMessages).values({
-              lineMessageId: event.message.id,
-              lineUserId: userId,
-              type: "image",
-              imageUrl: blobUrl,
-              status: "verified_auto",
-              amount: slipAmount,
-              senderName: verification.data?.sender.name,
-              isVerified: true,
-              transactionId: tx.id
-            });
-            
-            let houseText = "";
-            if (txInvoices.length > 0) {
-               const house = await db.select().from(houses).where(eq(houses.id, txInvoices[0].houseId)).limit(1);
-               if (house.length > 0) houseText = ` (บ้านเลขที่ ${house[0].houseNumber})`;
-            }
-            
-            const flexMsg = generateSlipVerificationSuccessFlexMessage(
-              verification.data?.amount || 0,
-              verification.data?.sender?.name || "",
-              verification.data?.sender?.accountNumber || "",
-              verification.data?.receiver?.name || "",
-              verification.data?.receiver?.accountNumber || "",
-              verification.data?.transDate || ""
-            );
-            
-            await safeReplyOrPush(userId, replyToken, [
-              flexMsg,
-              {
-                type: "text",
-                text: `ระบบได้ทำการตัดยอดหนี้ให้เรียบร้อยแล้วค่ะ${houseText} ขอบคุณที่ใช้บริการ 💚`
-              }
-            ]);
-            continue;
-          }
-        }
+          // 3.5 (Secured): Blind FIFO amount matching removed to prevent cross-user collision.
+          // LINE slips are only auto-approved if matched to the verified LINE User's house intent or linked debt.
 
         // 3.5.5 Auto-match with Web Intent Transaction
         if (slipAmount && slipAmount !== "0") {
@@ -469,7 +363,8 @@ export async function POST(request: Request) {
                 amount: slipAmount,
                 senderName: verification.data?.sender.name,
                 isVerified: true,
-                transactionId: newTx[0].id
+                transactionId: newTx[0].id,
+                houseNumber: house.houseNumber
               });
               
               const flexMsg = generateSlipVerificationSuccessFlexMessage(
