@@ -116,7 +116,6 @@ export default function TopNav({ userName, settings }: { userName: string, setti
     { name: "แจ้งเตือน LINE", href: "/dashboard/broadcast", icon: Send },
     { name: "สลิป LINE", href: "/dashboard/line-slips", icon: Smartphone, imageSrc: "/icons/line-black-animated.gif", imageSize: 25 },
     { name: "ประวัติระบบ", href: "/dashboard/logs", icon: Shield },
-    { name: "LINE Bot", href: "/dashboard/line-manager", icon: Sliders },
     { name: "ผู้ใช้งาน", href: "/dashboard/users", icon: Users, imageSrc: "/icons/icons8-user.gif", imageSize: 24 },
     { name: "คลังไฟล์", href: "/dashboard/blob", icon: Folder, lottieSrc: "/icons/icons8-folder.json", lottieSize: 25 },
   ];
@@ -290,11 +289,13 @@ export default function TopNav({ userName, settings }: { userName: string, setti
              <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
                 <SettingsForm 
                   collectorId={settings?.id || 1} 
-                  initialName={settings?.accountName || "ชื่อบัญชีรับเงิน"} 
-                  initialPromptPay={settings?.promptPayId || "เบอร์พร้อมเพย์"}
+                  initialName={settings?.accountName || "เทศบาลเมืองนางรอง"} 
+                  initialPromptPay={settings?.promptPayId || "0994000160759"}
                   initialAutoBillingDay={settings?.autoBillingDay || null}
                   initialDueDateDays={settings?.dueDateDays || null}
                   initialAutoRemindDays={settings?.autoRemindDays || null}
+                  initialLineConfig={settings?.lineConfig}
+                  initialReceiptBookConfig={settings?.receiptBookConfig}
                 />
              </div>
           </div>
