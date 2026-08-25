@@ -172,29 +172,29 @@ export default async function BulkReceiptPage(props: {
                   </tr>
                 ))}
               </tbody>
+              <tfoot>
+                <tr className="bg-slate-50 border-b-2 border-slate-800">
+                  <td colSpan={2} className="py-4 px-4 text-right font-bold text-slate-700">รวมเงินทั้งสิ้น</td>
+                  <td className="py-4 px-2 text-right font-mono font-bold text-lg text-slate-900">
+                    ฿{totalAmount.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+                  </td>
+                </tr>
+              </tfoot>
             </table>
 
-            {/* Total Box */}
-            <div className="flex justify-end mb-16">
-              <div className="w-1/2 bg-slate-50 p-4 rounded-lg border border-slate-200">
-                <div className="flex justify-between items-center">
-                  <span className="font-bold text-slate-700">รวมเงินทั้งสิ้น</span>
-                  <span className="text-2xl font-bold font-mono text-emerald-700">
-                    ฿{totalAmount.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
-                  </span>
-                </div>
-              </div>
-            </div>
-
             {/* Signatures */}
-            <div className="grid grid-cols-2 gap-16 mt-20 pt-8 border-t border-slate-200">
-              <div className="text-center">
-                <div className="border-b border-slate-400 w-48 mx-auto mb-2 border-dashed"></div>
+            <div className="grid grid-cols-2 gap-16 mt-16">
+              <div className="text-center flex flex-col items-center">
+                <div className="h-10 flex items-end justify-center mb-2 w-56 border-b border-slate-400 border-dashed pb-1">
+                  <span className="text-slate-800 font-medium text-sm">{house.ownerName}</span>
+                </div>
                 <p className="text-sm text-slate-600">ผู้ชำระเงิน</p>
               </div>
-              <div className="text-center">
-                <div className="w-48 mx-auto mb-2 text-emerald-700 font-bold font-mono border-b border-slate-400 border-dashed pb-1">
-                  {tx.verifiedBy === "line_bot" ? "ระบบอนุมัติอัตโนมัติ" : tx.verifiedBy || "เจ้าหน้าที่"}
+              <div className="text-center flex flex-col items-center">
+                <div className="h-10 flex items-end justify-center mb-2 w-56 border-b border-slate-400 border-dashed pb-1">
+                  <span className="text-slate-800 font-bold text-sm">
+                    {tx.verifiedBy === "line_bot" ? "ระบบอนุมัติอัตโนมัติ" : tx.verifiedBy || "เจ้าหน้าที่"}
+                  </span>
                 </div>
                 <p className="text-sm text-slate-600">ผู้รับเงิน / ผู้ตรวจสอบ</p>
               </div>
