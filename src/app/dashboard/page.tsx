@@ -225,8 +225,8 @@ export default async function DashboardPage() {
         <StaggerItem className="bg-white rounded-[20px] sm:rounded-3xl p-4 sm:p-5 xl:p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between min-h-[115px] sm:min-h-[155px]">
           <div className="flex items-start justify-between gap-2 sm:gap-3 mb-2 sm:mb-3">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0 border border-rose-500/20">
-                <LottieIcon src="/icons/icons8-home.json" size={28} loop autoplay />
+              <div className="flex items-center justify-center shrink-0 w-11 h-11">
+                <LottieIcon src="/icons/icons8-home.json" size={40} loop autoplay />
               </div>
               <div>
                 <span className="text-slate-800 font-bold text-sm xl:text-base tracking-tight block">บ้านที่ค้างชำระ</span>
