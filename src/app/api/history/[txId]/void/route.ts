@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { transactions, invoices } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
+import { recordAuditLog } from "@/lib/audit";
 
 export async function POST(
   request: Request,
@@ -50,6 +51,19 @@ export async function POST(
       await txDb.update(invoices)
         .set({ status: "unpaid", transactionId: null })
         .where(eq(invoices.transactionId, transactionId));
+    });
+
+    // 4. Record Audit Log
+    await recordAuditLog({
+      action: "VOID",
+      entityType: "TRANSACTION",
+      entityId: transactionId,
+      details: {
+        amount: tx.amount,
+        receiptCode: tx.receiptCode,
+        voidReason,
+        voidedBy: session.user.name || session.user.email
+      }
     });
 
     return NextResponse.json({ success: true });

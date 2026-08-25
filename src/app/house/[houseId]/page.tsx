@@ -26,6 +26,7 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
       createdAt: transactions.createdAt,
       verifiedBy: transactions.verifiedBy,
       slipStatus: transactions.slipStatus,
+      receiptCode: transactions.receiptCode,
     })
       .from(transactions)
       .where(
@@ -51,16 +52,6 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
       year: 'numeric', month: 'short', day: 'numeric',
       hour: '2-digit', minute: '2-digit',
       timeZone: 'Asia/Bangkok'
-    });
-  };
-
-  // Deterministic barcode using houseId as seed to prevent SSR/client hydration mismatch
-  const generateBarcode = () => {
-    return Array.from({ length: 40 }).map((_, i) => {
-      const seed = (houseId * 31 + i * 17) % 100;
-      const width = seed > 50 ? 'w-1' : 'w-0.5';
-      const opacity = seed > 70 ? 'opacity-40' : 'opacity-100';
-      return <div key={i} className={`h-full bg-slate-300/30 ${width} ${opacity} mx-[1px]`}></div>
     });
   };
 
@@ -98,63 +89,53 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
         </Link>
       </div>
 
-      {/* The Ticket (Right side on desktop, centered on mobile) */}
-      <div className="w-full max-w-lg relative z-10 flex flex-col drop-shadow-2xl lg:hover:-translate-y-2 transition-transform duration-500">
-        {/* TOP SECTION: Identity Stub (Deep Navy) */}
-        <div className="bg-slate-900 rounded-t-3xl p-8 sm:p-10 text-white relative overflow-hidden">
-          
-          {/* Diagonal Watermark (คาดสะพาย) */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden">
-             <span className="text-4xl sm:text-5xl font-sans font-bold text-slate-100/5 -rotate-[25deg] whitespace-nowrap tracking-widest scale-125">
-               กองสาธารณสุขและสิ่งแวดล้อม
-             </span>
-          </div>
-
-          {/* Small Logo in Top Right (Mobile only, hidden on Desktop since it's in left col) */}
-          <div className="lg:hidden absolute top-8 right-8 z-10 opacity-90 drop-shadow-md">
-             <img src="/nangrong-logo.png" alt="Municipal Logo" className="w-10 h-10 object-contain" />
-          </div>
-          
-          <div className="flex justify-between items-start relative z-10">
-            <div className="pr-12 lg:pr-0"> {/* Padding to avoid logo overlap on mobile */}
-              <p className="text-[length:10px] font-sans text-slate-400 uppercase tracking-widest mb-1 font-semibold">
-                กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองนางรอง
-              </p>
-              <h1 className="font-mono text-4xl sm:text-5xl font-bold tracking-tight mb-6">
-                {house.houseNumber}
-              </h1>
-              
-              <div className="space-y-4">
-                <div>
-                  <p className="text-[length:10px] text-slate-500 uppercase tracking-widest font-semibold">ชื่อเจ้าบ้าน / Owner</p>
-                  <p className="font-sans text-lg font-medium text-slate-100">{house.ownerName}</p>
-                </div>
-                <div>
-                  <p className="text-[length:10px] text-slate-500 uppercase tracking-widest font-semibold">ชุมชน / Zone</p>
-                  <p className="font-sans text-sm font-medium text-slate-200">{house.zone || "-"}</p>
-                </div>
+      {/* Main Interactive Bill Component */}
+      <div className="w-full max-w-lg bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden relative z-10">
+        
+        {/* TOP SECTION: Municipal Header (Navy Blue Gradient) */}
+        <div className="bg-linear-to-br from-[#0F172A] to-[#1E293B] p-8 text-white relative">
+          <div className="flex justify-between items-start mb-6">
+            <div className="flex items-center gap-3">
+              <div className="bg-white/10 backdrop-blur-xs p-2 rounded-2xl border border-white/10">
+                <img src="/nangrong-logo.png" alt="Municipal Logo" className="w-10 h-10 object-contain" />
+              </div>
+              <div>
+                <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">ใบแจ้งหนี้ค่าธรรมเนียมขยะ</span>
+                <p className="text-sm font-bold text-slate-200">เทศบาลเมืองนางรอง</p>
               </div>
             </div>
             
-            {/* Decorative Barcode */}
-            <div className="hidden sm:flex h-32 items-center justify-end origin-right opacity-80 mix-blend-screen ml-4 mt-8">
-              {generateBarcode()}
+            {/* Status Pill */}
+            <div className="bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1.5 backdrop-blur-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              ระบบออนไลน์
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <p className="text-xs text-slate-400 font-medium">เจ้าของบ้าน / ผู้เช่า</p>
+              <p className="text-2xl font-bold font-sans tracking-tight text-white mt-0.5">{house.ownerName}</p>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-700/50">
+              <div>
+                <p className="text-xs text-slate-400 font-medium">บ้านเลขที่</p>
+                <p className="font-mono text-lg font-bold text-slate-100 mt-0.5">{house.houseNumber}</p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-400 font-medium">ชุมชน / โซน</p>
+                <p className="text-sm font-medium text-slate-200 mt-1">{house.zone || (house.moo ? `หมู่ ${house.moo}` : '-')}</p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* PERFORATION DIVIDER */}
-        <div className="relative w-full h-8 bg-slate-50 flex items-center justify-center overflow-hidden -my-1 z-20">
-          <svg width="100%" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-            <defs>
-              <pattern id="sawtooth" x="0" y="0" width="20" height="32" patternUnits="userSpaceOnUse">
-                <path d="M 0,16 L 10,0 L 20,16 L 10,32 Z" fill="#F8FAFC" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="16" y="0" fill="#0F172A" />
-            <rect width="100%" height="16" y="16" fill="#FFFFFF" />
-            <rect width="100%" height="32" fill="url(#sawtooth)" />
-          </svg>
+        {/* RECEIPT TEAR EFFECT (Visual Separation) */}
+        <div className="relative bg-white h-4 flex items-center justify-between px-2 overflow-hidden">
+          <div className="absolute top-0 left-0 -mt-2 -ml-3 w-6 h-6 rounded-full bg-slate-50 border-r border-slate-100"></div>
+          <div className="w-full border-b-2 border-dashed border-slate-200 mx-4"></div>
+          <div className="absolute top-0 right-0 -mt-2 -mr-3 w-6 h-6 rounded-full bg-slate-50 border-l border-slate-100"></div>
         </div>
 
         {/* BOTTOM SECTION: Transaction Ledger (White) */}
@@ -170,16 +151,16 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
             <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200/80 rounded-2xl flex items-center justify-between shadow-xs animate-in fade-in duration-300">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 text-lg font-bold">
-                  ??
+                  💰
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-emerald-800 uppercase tracking-wider">�ʹ�Թ㹡����� (������ǧ˹��)</p>
-                  <p className="text-xs text-emerald-600">�ж١����ѡź�ѵ��ѵ�������պ���ͺ����</p>
+                  <p className="text-xs font-semibold text-emerald-800 uppercase tracking-wider">ยอดเงินในกระเป๋า (จ่ายล่วงหน้า)</p>
+                  <p className="text-xs text-emerald-600">จะถูกนำมาหักลบอัตโนมัติเมื่อมีบิลรอบใหม่</p>
                 </div>
               </div>
               <div className="text-right">
                 <p className="font-mono text-xl font-bold text-emerald-600">
-                  �{parseFloat(house.walletBalance || "0").toLocaleString('th-TH', { minimumFractionDigits: 2 })}
+                  ฿{parseFloat(house.walletBalance || "0").toLocaleString('th-TH', { minimumFractionDigits: 2 })}
                 </p>
               </div>
             </div>
@@ -189,26 +170,41 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
           {recentTransactions.length > 0 && (
             <div className="mt-8 pt-8 border-t border-slate-100">
               <div className="mb-4 flex items-center justify-between">
-                <h3 className="font-semibold text-slate-900 flex items-center gap-2">
+                <h3 className="font-semibold text-slate-900 flex items-center gap-2 text-sm">
                   <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                   ประวัติการชำระเงิน (30 วันล่าสุด)
                 </h3>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {recentTransactions.map((tx) => (
-                  <div key={tx.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+                  <div key={tx.id} className="flex justify-between items-center p-3.5 bg-slate-50 hover:bg-slate-100/80 rounded-2xl border border-slate-200/60 transition-colors">
                     <div>
-                      <p className="text-sm font-medium text-slate-700">
-                        {formatThaiDate(new Date(tx.paidAt || tx.createdAt || new Date()))}
-                      </p>
-                      <p className="text-xs text-slate-500 mt-0.5">
+                      <div className="flex items-center gap-2">
+                        <p className="text-xs font-bold text-slate-800 font-mono">
+                          {formatThaiDate(new Date(tx.paidAt || tx.createdAt || new Date()))}
+                        </p>
+                        {tx.receiptCode && (
+                          <span className="text-[10px] font-mono font-bold bg-amber-50 text-amber-800 border border-amber-200/60 px-1.5 py-0.5 rounded">
+                            {tx.receiptCode}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-slate-500 mt-0.5">
                         ผ่าน {tx.verifiedBy === 'line_bot_auto' ? 'ระบบอัตโนมัติ' : tx.verifiedBy === 'line_bot' ? 'LINE Bot' : 'เจ้าหน้าที่'}
                       </p>
                     </div>
-                    <div className="text-right">
-                      <p className="font-mono font-bold text-emerald-600">
-                        +{parseFloat(tx.amount || "0").toFixed(2)} ฿
-                      </p>
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <p className="font-mono font-bold text-emerald-600 text-sm">
+                          +{parseFloat(tx.amount || "0").toFixed(2)} ฿
+                        </p>
+                      </div>
+                      <Link
+                        href={`/pay/${tx.id}/success`}
+                        className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-emerald-700 hover:text-emerald-800 border border-slate-200 hover:border-emerald-200 rounded-lg text-xs font-semibold transition-all shadow-2xs cursor-pointer"
+                      >
+                        ใบเสร็จ
+                      </Link>
                     </div>
                   </div>
                 ))}

@@ -699,9 +699,16 @@ export default function HistoryClient() {
                               <span className="font-sans text-xs text-slate-500 font-medium">บ้าน</span>
                               <span className="font-mono font-bold text-sm">{item.houseNumber}</span>
                             </span>
-                            <span className="font-mono text-xs font-semibold text-slate-400">
-                              #{item.id}
-                            </span>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-mono text-xs font-semibold text-slate-400">
+                                #{item.id}
+                              </span>
+                              {item.receiptCode && (
+                                <span className="text-[10px] font-mono font-bold text-amber-900 bg-amber-50 border border-amber-200/60 px-1.5 py-0.5 rounded">
+                                  {item.receiptCode}
+                                </span>
+                              )}
+                            </div>
                           </div>
 
                           <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full border ${
@@ -940,10 +947,17 @@ export default function HistoryClient() {
 
                           {/* ID & Slip */}
                           <td className="px-4 py-3.5">
-                            <div className="flex items-center gap-2">
-                              <span className="font-mono text-xs font-bold text-slate-500">#{item.id}</span>
-                              {item.slipImageUrl && item.slipImageUrl !== "pending" && (
-                                <SlipModalButton imageUrl={item.slipImageUrl} buttonStyle="history" />
+                            <div className="flex flex-col gap-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono text-xs font-bold text-slate-500">#{item.id}</span>
+                                {item.slipImageUrl && item.slipImageUrl !== "pending" && (
+                                  <SlipModalButton imageUrl={item.slipImageUrl} buttonStyle="history" />
+                                )}
+                              </div>
+                              {item.receiptCode && (
+                                <span className="text-[10px] font-mono font-bold text-amber-900 bg-amber-50 border border-amber-200/60 px-1.5 py-0.5 rounded w-fit">
+                                  {item.receiptCode}
+                                </span>
                               )}
                             </div>
                           </td>

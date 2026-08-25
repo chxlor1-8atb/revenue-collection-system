@@ -1,8 +1,8 @@
-﻿import { db } from "@/lib/db";
+import { db } from "@/lib/db";
 import { transactions, invoices, houses } from "@/lib/schema";
-import { eq, inArray } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
-import { CheckCircle2, Home, Calendar, ArrowLeft } from "lucide-react";
+import { CheckCircle2, Home, Calendar, ArrowLeft, Receipt, Check } from "lucide-react";
 import Link from "next/link";
 
 function formatThaiMonth(monthYear: string) {
@@ -24,6 +24,7 @@ export default async function PaySuccessPage({ params }: { params: Promise<{ tra
   const txInvoices = await db.select({
     monthYear: invoices.monthYear,
     amount: invoices.amount,
+    houseId: houses.id,
     houseNumber: houses.houseNumber,
     ownerName: houses.ownerName,
   })
@@ -31,12 +32,13 @@ export default async function PaySuccessPage({ params }: { params: Promise<{ tra
     .innerJoin(houses, eq(invoices.houseId, houses.id))
     .where(eq(invoices.transactionId, transactionId));
 
+  const houseId = txInvoices[0]?.houseId;
   const houseNumber = txInvoices[0]?.houseNumber || "";
   const ownerName = txInvoices[0]?.ownerName || "";
   const totalAmount = parseFloat(txData.amount || "0");
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center py-12 px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center py-12 px-4 relative overflow-hidden font-sans">
       {/* Background */}
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
         style={{ backgroundImage: 'radial-gradient(#0F172A 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
@@ -49,7 +51,7 @@ export default async function PaySuccessPage({ params }: { params: Promise<{ tra
           <div className="bg-emerald-600 px-6 py-3 flex justify-center items-center">
             <div className="flex items-center gap-2 text-white">
               <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-              <span className="text-xs font-medium tracking-widest uppercase">ชำระเงินสำเร็จ</span>
+              <span className="text-xs font-bold tracking-widest uppercase">ชำระเงินสำเร็จเรียบร้อย</span>
             </div>
           </div>
 
@@ -64,32 +66,44 @@ export default async function PaySuccessPage({ params }: { params: Promise<{ tra
             </div>
 
             <h1 className="font-bold text-2xl text-slate-800 mb-1 text-center">ขอบคุณที่ชำระเงิน!</h1>
-            <p className="text-slate-500 text-sm text-center mb-8">ระบบได้ยืนยันการชำระเงินและตัดยอดหนี้ให้แล้ว</p>
+            <p className="text-slate-500 text-xs text-center mb-6">ระบบได้บันทึกการชำระเงินและออกใบเสร็จเรียบร้อยแล้ว</p>
 
             {/* Receipt Card */}
-            <div className="w-full bg-slate-50 rounded-2xl border border-slate-200 divide-y divide-slate-100 mb-8">
+            <div className="w-full bg-slate-50 rounded-2xl border border-slate-200 divide-y divide-slate-100 mb-6">
+              {txData.receiptCode && (
+                <div className="flex items-center justify-between px-5 py-3 bg-amber-50/50 rounded-t-2xl">
+                  <div className="flex items-center gap-2 text-amber-800 text-xs font-bold">
+                    <Receipt size={14} className="text-amber-600" />
+                    รหัสใบเสร็จทางการ
+                  </div>
+                  <div className="font-mono font-bold text-amber-900 text-xs">
+                    {txData.receiptCode}
+                  </div>
+                </div>
+              )}
+
               {houseNumber && (
                 <div className="flex items-center justify-between px-5 py-3">
-                  <div className="flex items-center gap-2 text-slate-500 text-sm">
+                  <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold">
                     <Home size={14} />
                     บ้านเลขที่
                   </div>
                   <div className="text-right">
-                    <div className="font-mono font-bold text-slate-800">{houseNumber}</div>
-                    <div className="text-xs text-slate-400">{ownerName}</div>
+                    <div className="font-mono font-bold text-slate-800 text-sm">{houseNumber}</div>
+                    <div className="text-[11px] text-slate-400">{ownerName}</div>
                   </div>
                 </div>
               )}
 
               {txInvoices.length > 0 && (
                 <div className="flex items-start justify-between px-5 py-3">
-                  <div className="flex items-center gap-2 text-slate-500 text-sm">
+                  <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold">
                     <Calendar size={14} />
-                    รายการที่จ่าย
+                    รายการรอบบิล
                   </div>
                   <div className="flex flex-col gap-1 items-end">
                     {txInvoices.map((inv, i) => (
-                      <span key={i} className="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-100">
+                      <span key={i} className="text-[11px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-100">
                         {formatThaiMonth(inv.monthYear)}
                       </span>
                     ))}
@@ -97,21 +111,34 @@ export default async function PaySuccessPage({ params }: { params: Promise<{ tra
                 </div>
               )}
 
-              <div className="flex items-center justify-between px-5 py-4">
-                <div className="text-slate-500 text-sm">ยอดที่ชำระ</div>
+              <div className="flex items-center justify-between px-5 py-4 bg-emerald-50/30 rounded-b-2xl">
+                <div className="text-slate-600 text-xs font-bold">ยอดเงินที่ชำระ</div>
                 <div className="font-mono text-2xl font-bold text-emerald-600">
                   ฿{totalAmount.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
                 </div>
               </div>
             </div>
 
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors"
-            >
-              <ArrowLeft size={14} />
-              กลับหน้าหลัก
-            </Link>
+            {/* Navigation Actions */}
+            <div className="w-full space-y-2.5">
+              {houseId && (
+                <Link
+                  href={`/house/${houseId}`}
+                  className="w-full bg-[#5B58F2] hover:bg-[#4A47D1] text-white font-bold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer"
+                >
+                  <Home size={14} />
+                  กลับไปยังหน้ารายการบ้าน
+                </Link>
+              )}
+
+              <Link
+                href="/"
+                className="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <ArrowLeft size={14} />
+                กลับหน้าหลัก
+              </Link>
+            </div>
 
           </div>
         </div>

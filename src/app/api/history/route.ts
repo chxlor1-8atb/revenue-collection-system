@@ -71,6 +71,7 @@ export async function GET(req: NextRequest) {
       conditions.push(or(
         ilike(transactions.slipRefId, `%${q}%`),
         ilike(transactions.payerNote, `%${q}%`),
+        ilike(transactions.receiptCode, `%${q}%`),
         sql`EXISTS (
           SELECT 1 FROM ${invoices}
           JOIN ${houses} ON ${invoices.houseId} = ${houses.id}
