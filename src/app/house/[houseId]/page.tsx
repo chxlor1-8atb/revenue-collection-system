@@ -147,24 +147,6 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
             </div>
             <span className="text-xs font-semibold text-slate-400 tracking-wider">INVOICES</span>
           </div>
-          {parseFloat(house.walletBalance || "0") > 0 && (
-            <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200/80 rounded-2xl flex items-center justify-between shadow-xs animate-in fade-in duration-300">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 text-lg font-bold">
-                  💰
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-emerald-800 uppercase tracking-wider">ยอดเงินในกระเป๋า (จ่ายล่วงหน้า)</p>
-                  <p className="text-xs text-emerald-600">จะถูกนำมาหักลบอัตโนมัติเมื่อมีบิลรอบใหม่</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="font-mono text-xl font-bold text-emerald-600">
-                  ฿{parseFloat(house.walletBalance || "0").toLocaleString('th-TH', { minimumFractionDigits: 2 })}
-                </p>
-              </div>
-            </div>
-          )}
           <InvoiceSelectionForm invoices={houseInvoices} house={house} />
           
           {recentTransactions.length > 0 && (
