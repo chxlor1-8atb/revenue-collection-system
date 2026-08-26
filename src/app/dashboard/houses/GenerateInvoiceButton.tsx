@@ -2,23 +2,60 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { X, CheckCircle2, Loader2, AlertCircle, FileText } from "lucide-react";
+import { 
+  X, 
+  CheckCircle2, 
+  Loader2, 
+  AlertCircle, 
+  FileText, 
+  Sparkles, 
+  Send, 
+  Building2, 
+  Calendar, 
+  Zap, 
+  ChevronRight,
+  Info,
+  Layers,
+  Check
+} from "lucide-react";
 import MonthPicker from "@/components/MonthPicker";
+
+const DEFAULT_ZONES = [
+  "หนองรี", "หนองกราด", "หนองเสม็ด", "บ้านเก่า", "วัดขุนก้อง", 
+  "วัดกลาง", "ป่าเรไร", "วัดร่องมันเทศ", "บ้านถนนหัก", "วัดถนนหัก", 
+  "ถนนหักพัฒนา", "สระหญ้าม้า", "โคกสูง", "โคกหลวงเต่า", "ทุ่งแหลม", 
+  "ดอนศิลา", "บ้านแพงพัฒนา", "ใหม่สามัคคี", "ศาลาหนองกราด", "ชุมชนร่วมใจ"
+];
 
 export default function GenerateInvoiceButton() {
   const [showModal, setShowModal] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [month, setMonth] = useState(new Date().toISOString().slice(0, 7));
+  
+  // Form State
+  const now = new Date();
+  const currentMonthStr = now.toISOString().slice(0, 7);
+  const nextMonthDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  const nextMonthStr = nextMonthDate.toISOString().slice(0, 7);
+
+  const [month, setMonth] = useState(currentMonthStr);
+  const [selectedZone, setSelectedZone] = useState<string>("ALL");
+  const [sendLineNotification, setSendLineNotification] = useState<boolean>(false);
+
+  // Status & Result State
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
-  const [message, setMessage] = useState("");
+  const [resultData, setResultData] = useState<any>(null);
+  const [errorMessage, setErrorMessage] = useState("");
   
   const router = useRouter();
 
   const handleOpenModal = () => {
     setShowModal(true);
     setStatus("idle");
-    setMessage("");
-    setMonth(new Date().toISOString().slice(0, 7));
+    setErrorMessage("");
+    setResultData(null);
+    setMonth(currentMonthStr);
+    setSelectedZone("ALL");
+    setSendLineNotification(false);
   };
 
   const handleCloseModal = () => {
@@ -32,33 +69,39 @@ export default function GenerateInvoiceButton() {
   const handleGenerate = async () => {
     if (!month || !/^\d{4}-\d{2}$/.test(month)) {
       setStatus("error");
-      setMessage("รูปแบบเดือน/ปี ไม่ถูกต้อง");
+      setErrorMessage("กรุณาระบุเดือน/ปี ให้ถูกต้อง");
       return;
     }
 
     setIsGenerating(true);
     setStatus("idle");
+    setErrorMessage("");
     
     try {
       const res = await fetch("/api/invoices/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ monthYear: month, amount: "20.00" })
+        body: JSON.stringify({ 
+          monthYear: month, 
+          amount: "20.00",
+          zone: selectedZone,
+          sendLineNotification: sendLineNotification
+        })
       });
 
       const data = await res.json();
       
-      if (res.ok) {
+      if (res.ok && data.success) {
         setStatus("success");
-        setMessage(`สร้างบิลประจำเดือน ${month} จำนวน ${data.count} ใบเรียบร้อยแล้ว`);
+        setResultData(data);
       } else {
         setStatus("error");
-        setMessage(`เกิดข้อผิดพลาด: ${data.error}`);
+        setErrorMessage(data.error || "เกิดข้อผิดพลาดในการสร้างบิล");
       }
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      console.error("Generate Invoice Error:", err);
       setStatus("error");
-      setMessage("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+      setErrorMessage("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
     } finally {
       setIsGenerating(false);
     }
@@ -68,98 +111,241 @@ export default function GenerateInvoiceButton() {
     <>
       <button 
         onClick={handleOpenModal} 
-        className="flex items-center gap-1.5 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-colors shadow-sm"
+        className="flex items-center gap-2 bg-gradient-to-r from-[#5B58F2] to-indigo-600 hover:from-[#4A47D1] hover:to-indigo-700 text-white px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md shadow-indigo-500/20 active:scale-98 cursor-pointer"
       >
-        <FileText size={14} />
-        สร้างบิลประจำเดือน (ทุกบ้าน)
+        <FileText size={16} />
+        <span>สร้างบิลประจำเดือน</span>
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md animate-in zoom-in-95 duration-200 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-200/90 animate-in zoom-in-95 duration-150 relative">
             
-            <div className="bg-slate-50 px-6 py-4 border-b flex justify-between items-center rounded-t-2xl">
-              <h3 className="font-semibold text-slate-800 text-lg flex items-center gap-2">
-                🧾 สร้างบิลประจำเดือนใหม่
-              </h3>
+            {/* Modal Header */}
+            <div className="bg-slate-50/80 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-indigo-100 text-[#5B58F2] flex items-center justify-center font-black text-sm">
+                  📄
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-base sm:text-lg">
+                    สร้างบิลประจำเดือน
+                  </h3>
+                  <p className="text-xs text-slate-500">ออกบิลค่าธรรมเนียมขยะให้กับลูกบ้าน</p>
+                </div>
+              </div>
+
               {!isGenerating && (
                 <button 
                   onClick={handleCloseModal}
-                  className="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-1 rounded-full transition-colors"
+                  className="text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 p-1.5 rounded-full transition-colors cursor-pointer"
                 >
-                  <X size={20} />
+                  <X size={18} />
                 </button>
               )}
             </div>
 
-            <div className="p-6">
-              {status === "success" ? (
-                <div className="flex flex-col items-center justify-center py-6 text-center">
-                  <CheckCircle2 size={48} className="text-emerald-500 mb-4" />
-                  <h4 className="text-xl font-bold text-slate-800 mb-2">สำเร็จ!</h4>
-                  <p className="text-slate-600 mb-6">{message}</p>
+            {/* Modal Body */}
+            <div className="p-5 sm:p-6 space-y-4">
+              
+              {status === "success" && resultData ? (
+                /* Success Result Screen */
+                <div className="py-3 text-center space-y-4 animate-in fade-in duration-200">
+                  <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                    <CheckCircle2 size={32} />
+                  </div>
+                  
+                  <div>
+                    <h4 className="text-lg sm:text-xl font-bold text-slate-900">สร้างบิลสำเร็จเรียบร้อย!</h4>
+                    <p className="text-xs text-slate-500 mt-0.5">รอบเดือน {resultData.formattedMonth}</p>
+                  </div>
+
+                  {/* Summary Metric Badges */}
+                  <div className="grid grid-cols-2 gap-2.5 pt-1 text-left">
+                    <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/80">
+                      <div className="text-[11px] text-slate-500 font-medium">สร้างบิลใหม่</div>
+                      <div className="text-lg font-black text-emerald-700 font-mono">
+                        {resultData.createdCount.toLocaleString()} <span className="text-xs font-normal text-slate-500">หลัง</span>
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/80">
+                      <div className="text-[11px] text-slate-500 font-medium">ยอดเรียกเก็บรวม</div>
+                      <div className="text-lg font-black text-slate-900 font-mono">
+                        ฿{resultData.totalBilledAmount.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+                      </div>
+                    </div>
+
+                    {resultData.skippedCount > 0 && (
+                      <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 col-span-2 text-[11px] text-slate-600 flex items-center justify-between">
+                        <span>ข้ามบ้านที่มีบิลเดือนนี้อยู่แล้ว:</span>
+                        <span className="font-bold text-slate-800">{resultData.skippedCount.toLocaleString()} หลัง</span>
+                      </div>
+                    )}
+
+                    {resultData.lineNotifiedCount > 0 && (
+                      <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-200/70 col-span-2 text-[11px] text-emerald-900 flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">
+                          <Send size={13} className="text-emerald-600" /> ส่งแจ้งเตือน LINE สำเร็จ:
+                        </span>
+                        <span className="font-bold text-emerald-800">{resultData.lineNotifiedCount.toLocaleString()} หลัง</span>
+                      </div>
+                    )}
+                  </div>
+
                   <button
                     onClick={handleCloseModal}
-                    className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl transition-colors"
+                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md shadow-emerald-600/20 cursor-pointer"
                   >
-                    ปิดหน้าต่าง
+                    เสร็จสิ้น & ปิดหน้าต่าง
                   </button>
                 </div>
               ) : (
+                /* Form Builder Screen */
                 <>
-                  <p className="text-slate-600 mb-6 leading-relaxed">
-                    ระบบจะทำการสร้างบิลค่าขยะรอบเดือนที่คุณเลือก ให้กับ <strong>บ้านทุกหลัง</strong> ในระบบโดยอัตโนมัติ (ยอดเงิน 20 บาท/หลัง)
-                  </p>
+                  {/* 1. Quick Month Picker */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                        <Calendar size={14} className="text-[#5B58F2]" /> รอบเดือนที่จะสร้างบิล
+                      </label>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setMonth(currentMonthStr)}
+                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border transition-all cursor-pointer ${
+                            month === currentMonthStr
+                              ? "bg-indigo-50 text-indigo-700 border-indigo-200 font-bold"
+                              : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100"
+                          }`}
+                        >
+                          ⚡ เดือนนี้
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setMonth(nextMonthStr)}
+                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border transition-all cursor-pointer ${
+                            month === nextMonthStr
+                              ? "bg-indigo-50 text-indigo-700 border-indigo-200 font-bold"
+                              : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100"
+                          }`}
+                        >
+                          ⚡ เดือนหน้า
+                        </button>
+                      </div>
+                    </div>
 
-                  <div className="mb-6">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      ระบุเดือน/ปี สำหรับบิลที่จะสร้าง <span className="text-red-500">*</span>
-                    </label>
                     <MonthPicker
                       value={month}
                       onChange={setMonth}
                       disabled={isGenerating}
-                      placement="top"
+                      placement="bottom"
                     />
                   </div>
 
+                  {/* 2. Target Scope Selector */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Building2 size={14} className="text-[#5B58F2]" /> ขอบเขตพื้นที่เป้าหมาย
+                    </label>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedZone("ALL")}
+                        className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                          selectedZone === "ALL"
+                            ? "bg-indigo-50/80 border-[#5B58F2] text-indigo-900 font-bold shadow-2xs"
+                            : "bg-slate-50/60 border-slate-200 text-slate-600 hover:bg-slate-100/60"
+                        }`}
+                      >
+                        <div className="text-xs">🌐 ทุกชุมชน (20 ชุมชน)</div>
+                        {selectedZone === "ALL" && <Check size={14} className="text-[#5B58F2]" />}
+                      </button>
+
+                      <div className="relative">
+                        <select
+                          value={selectedZone === "ALL" ? "" : selectedZone}
+                          onChange={(e) => setSelectedZone(e.target.value || "ALL")}
+                          className={`w-full p-2.5 rounded-xl border text-xs font-medium appearance-none cursor-pointer outline-hidden transition-all ${
+                            selectedZone !== "ALL"
+                              ? "bg-indigo-50/80 border-[#5B58F2] text-indigo-900 font-bold shadow-2xs"
+                              : "bg-slate-50/60 border-slate-200 text-slate-600 hover:bg-slate-100/60"
+                          }`}
+                        >
+                          <option value="">🏘️ เลือกเฉพาะชุมชน...</option>
+                          {DEFAULT_ZONES.map((z) => (
+                            <option key={z} value={z}>ชุมชน{z}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3. Smart Option: LINE Notification */}
+                  <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80">
+                    <label className="flex items-start gap-2.5 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={sendLineNotification}
+                        onChange={(e) => setSendLineNotification(e.target.checked)}
+                        className="mt-0.5 rounded-md text-[#5B58F2] focus:ring-[#5B58F2] cursor-pointer"
+                      />
+                      <div>
+                        <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                          <Send size={13} className="text-emerald-600" />
+                          ส่งบิลแจ้งเตือนเข้า LINE ของลูกบ้านทันที
+                        </div>
+                        <p className="text-[11px] text-slate-400 mt-0.5">
+                          ระบบจะส่งการ์ด QR Code พร้อมยอดเงินไปยังลูกบ้านที่ผูก LINE ไว้แล้วโดยอัตโนมัติ
+                        </p>
+                      </div>
+                    </label>
+                  </div>
+
+                  {/* Error Message */}
                   {status === "error" && (
-                    <div className="mb-6 p-3 bg-red-50 text-red-700 rounded-lg text-sm border border-red-100 flex items-start gap-2">
-                      <AlertCircle size={16} className="mt-0.5 shrink-0" />
-                      <span>{message}</span>
+                    <div className="p-3 bg-red-50 text-red-700 rounded-xl text-xs border border-red-200 flex items-start gap-2 animate-in fade-in duration-150">
+                      <AlertCircle size={15} className="mt-0.5 shrink-0" />
+                      <span>{errorMessage}</span>
                     </div>
                   )}
 
-                  <div className="flex justify-end gap-3">
+                  {/* Action Buttons */}
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2.5">
                     <button
                       type="button"
                       onClick={handleCloseModal}
                       disabled={isGenerating}
-                      className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 disabled:opacity-50"
+                      className="px-4 py-2.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all disabled:opacity-50 cursor-pointer"
                     >
                       ยกเลิก
                     </button>
+
                     <button
                       type="button"
                       onClick={handleGenerate}
                       disabled={isGenerating}
-                      className="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white rounded-xl transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-                      style={{ backgroundColor: "#1F2E22" }}
+                      className="px-6 py-2.5 bg-gradient-to-r from-[#5B58F2] to-indigo-600 hover:from-[#4A47D1] hover:to-indigo-700 text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md shadow-indigo-500/20 flex items-center gap-2 cursor-pointer disabled:opacity-50 active:scale-98"
                     >
                       {isGenerating ? (
                         <>
                           <Loader2 size={16} className="animate-spin" />
-                          กำลังสร้างบิล...
+                          <span>กำลังประมวลผลสร้างบิล...</span>
                         </>
                       ) : (
-                        "ยืนยันสร้างบิล"
+                        <>
+                          <Zap size={15} />
+                          <span>ยืนยันสร้างบิลทันที</span>
+                        </>
                       )}
                     </button>
                   </div>
                 </>
               )}
+
             </div>
-            
+
           </div>
         </div>
       )}
