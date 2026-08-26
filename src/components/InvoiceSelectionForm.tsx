@@ -67,13 +67,25 @@ export default function InvoiceSelectionForm({ invoices, house }: { invoices: an
   const advanceTotal = advanceMonths * advanceRate;
   const grandTotal = invoicesTotal + advanceTotal;
 
+  const formatMonthThai = (monthYear: string) => {
+    if (!monthYear) return "";
+    const [yearStr, monthStr] = monthYear.split('-');
+    const months = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+    const monthIndex = parseInt(monthStr, 10) - 1;
+    const thaiYear = parseInt(yearStr, 10) + 543;
+    if (monthIndex >= 0 && monthIndex < 12) {
+      return `${months[monthIndex]} ${thaiYear}`;
+    }
+    return monthYear;
+  };
+
   const formatMonthEng = (monthYear: string) => {
     if (!monthYear) return "";
     const [yearStr, monthStr] = monthYear.split('-');
     const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
     const monthIndex = parseInt(monthStr, 10) - 1;
     if (monthIndex >= 0 && monthIndex < 12) {
-      return `${months[monthIndex]} ${yearStr}`;
+      return `${months[monthIndex]} ${yearStr.substring(2)}`;
     }
     return monthYear;
   };
@@ -83,15 +95,16 @@ export default function InvoiceSelectionForm({ invoices, house }: { invoices: an
       
       {/* ITEMS HEADER */}
       <div className="flex justify-between items-end mb-2 text-xs font-bold border-b border-slate-300 pb-1">
-        <span>DESCRIPTION</span>
-        <span>AMOUNT</span>
+        <span>รายการ <span className="text-[9px] text-slate-400 font-normal">DESCRIPTION</span></span>
+        <span>ยอดชำระ <span className="text-[9px] text-slate-400 font-normal">AMOUNT</span></span>
       </div>
 
       {/* INVOICE ITEMS */}
       <div className="space-y-1 mb-4">
         {unpaidInvoices.length === 0 ? (
-          <div className="text-center py-4 text-xs text-slate-500">
-            NO PENDING INVOICES
+          <div className="text-center py-4 text-xs font-bold text-slate-600">
+            ไม่มีบิลค้างชำระ
+            <span className="block text-[9px] text-slate-400 font-normal mt-0.5">NO PENDING INVOICES</span>
           </div>
         ) : (
           unpaidInvoices.map((inv) => {
@@ -108,10 +121,11 @@ export default function InvoiceSelectionForm({ invoices, house }: { invoices: an
                   <span className="font-bold shrink-0">
                     {isSelected ? '[X]' : '[ ]'}
                   </span>
-                  <span className="tracking-tighter">
-                    {formatMonthEng(inv.monthYear)}
+                  <span className="tracking-tighter text-xs font-bold">
+                    {formatMonthThai(inv.monthYear)}
                   </span>
-                  <span className="text-slate-300 tracking-widest hidden sm:inline"> ..........................</span>
+                  <span className="text-[9px] text-slate-400 tracking-wider"> ({formatMonthEng(inv.monthYear)})</span>
+                  <span className="text-slate-300 tracking-widest hidden sm:inline"> ......................</span>
                 </div>
                 <div className="shrink-0 pl-2">
                   {(amountNum).toFixed(2)}
@@ -125,7 +139,10 @@ export default function InvoiceSelectionForm({ invoices, house }: { invoices: an
       {/* ADVANCE PAYMENT */}
       <div className="mb-6">
         <div className="flex justify-between items-baseline mb-1">
-          <span className="text-xs font-bold">ADVANCE PMT (@{advanceRate}/MTH)</span>
+          <span className="text-xs font-bold">
+            ชำระล่วงหน้า (@{advanceRate}฿/ด.)
+            <span className="text-[9px] text-slate-400 font-normal ml-1">ADVANCE</span>
+          </span>
           <span className="text-slate-300 tracking-widest hidden sm:inline overflow-hidden whitespace-nowrap px-2"> .................</span>
           <span>{(advanceTotal).toFixed(2)}</span>
         </div>
@@ -156,16 +173,16 @@ export default function InvoiceSelectionForm({ invoices, house }: { invoices: an
 
       {/* TOTALS */}
       <div className="border-t-[3px] border-double border-slate-900/60 pt-4 mb-6">
-        <div className="flex justify-between items-baseline text-xs mb-1">
-          <span>SUBTOTAL</span>
+        <div className="flex justify-between items-baseline text-xs mb-1 font-bold">
+          <span>ยอดรวมบิล <span className="text-[9px] text-slate-400 font-normal">SUBTOTAL</span></span>
           <span>{(grandTotal).toFixed(2)}</span>
         </div>
-        <div className="flex justify-between items-baseline text-xs mb-3">
-          <span>VAT (0%)</span>
+        <div className="flex justify-between items-baseline text-xs mb-3 font-bold">
+          <span>ภาษีมูลค่าเพิ่ม <span className="text-[9px] text-slate-400 font-normal">VAT (0%)</span></span>
           <span>0.00</span>
         </div>
         <div className="flex justify-between items-baseline text-lg sm:text-xl font-bold bg-slate-900 text-white p-2">
-          <span>TOTAL DUE</span>
+          <span>ยอดรวมทั้งสิ้น <span className="text-[10px] text-slate-400 font-normal ml-1">TOTAL DUE</span></span>
           <span>฿ {(grandTotal).toFixed(2)}</span>
         </div>
       </div>
@@ -173,17 +190,23 @@ export default function InvoiceSelectionForm({ invoices, house }: { invoices: an
       {/* BUTTON */}
       <button 
         type="button"
-        className="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold py-4 px-6 transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-3 text-sm cursor-pointer shadow-sm"
+        className="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold py-3.5 px-6 transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-3 text-sm cursor-pointer shadow-sm"
         disabled={(selectedInvoices.length === 0 && advanceMonths === 0) || isLoading || grandTotal === 0}
         onClick={handleProceedToPayment}
       >
         {isLoading ? (
           <>
             <Loader2 size={18} className="animate-spin" />
-            <span>PROCESSING...</span>
+            <span className="flex flex-col items-center">
+              <span>กำลังเตรียม...</span>
+              <span className="text-[9px] text-white/70 tracking-widest font-normal">PROCESSING</span>
+            </span>
           </>
         ) : (
-          <span>PRINT QR CODE</span>
+          <span className="flex flex-col items-center leading-tight">
+            <span>สร้าง QR Code เพื่อชำระเงิน</span>
+            <span className="text-[9px] text-white/70 tracking-widest font-normal mt-0.5">GENERATE QR CODE</span>
+          </span>
         )}
       </button>
 

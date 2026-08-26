@@ -58,7 +58,7 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 py-8 sm:py-16 px-4 sm:px-6 flex flex-col items-center justify-center relative font-sans">
+    <div className="min-h-screen bg-white py-8 sm:py-16 px-4 sm:px-6 flex flex-col items-center justify-center relative font-sans">
       
       {/* 
         ========================================================
@@ -75,36 +75,33 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
         </div>
 
         {/* RECEIPT PAPER BODY */}
-        <div className="bg-[#FDFBF7] w-full px-7 pt-8 pb-10 shadow-[inset_0_0_40px_rgba(0,0,0,0.02)] relative z-10">
+        <div className="bg-[#FDFBF7] w-full px-7 pt-6 pb-10 shadow-[inset_0_0_40px_rgba(0,0,0,0.02)] relative z-10">
           
           {/* Subtle paper noise texture */}
           <div className="absolute inset-0 opacity-[0.4] mix-blend-multiply pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
 
           <div className="relative z-10">
-            {/* LOGO & HEADER */}
+            {/* HEADER */}
             <div className="flex flex-col items-center justify-center text-center mb-6">
-              <div className="w-14 h-14 bg-slate-900 rounded-full flex items-center justify-center mb-3">
-                <img src="/nangrong-logo.png" alt="Seal" className="w-9 h-9 object-contain filter invert brightness-200" />
-              </div>
-              <h1 className="font-bold text-slate-900 text-lg tracking-wide">เทศบาลเมืองนางรอง</h1>
-              <p className="font-mono text-xs text-slate-600 tracking-widest mt-1">TAX INVOICE / RECEIPT</p>
+              <h1 className="font-bold text-slate-900 text-lg tracking-wide">สรุปยอดชำระค่าขยะ</h1>
+              <p className="font-mono text-[9px] text-slate-500 tracking-widest mt-0.5">PAYMENT SUMMARY / INVOICE</p>
             </div>
 
             <div className="border-b-2 border-dotted border-slate-400/60 mb-4"></div>
 
             {/* METADATA */}
             <div className="font-mono text-xs text-slate-800 space-y-1 mb-4">
-              <div className="flex justify-between">
-                <span>DATE: {new Date().toLocaleDateString('en-GB')}</span>
-                <span>TIME: {new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
+              <div className="flex justify-between items-center">
+                <span>วันที่ <span className="text-[9px] text-slate-400">DATE:</span> {new Date().toLocaleDateString('th-TH')}</span>
+                <span>เวลา <span className="text-[9px] text-slate-400">TIME:</span> {new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
               </div>
-              <div className="flex justify-between">
-                <span>TERM: WEB-01</span>
-                <span>REF: #{houseId.toString().padStart(5, '0')}</span>
+              <div className="flex justify-between items-center">
+                <span>จุดบริการ <span className="text-[9px] text-slate-400">TERM:</span> WEB-01</span>
+                <span>อ้างอิง <span className="text-[9px] text-slate-400">REF:</span> #{houseId.toString().padStart(5, '0')}</span>
               </div>
-              <div className="flex justify-between text-emerald-700 font-bold">
-                <span>MODE: ONLINE</span>
-                <span>STATUS: DRAFT</span>
+              <div className="flex justify-between text-emerald-700 font-bold items-center">
+                <span>โหมด <span className="text-[9px] text-emerald-700/60 font-normal">MODE:</span> ONLINE</span>
+                <span>สถานะ <span className="text-[9px] text-emerald-700/60 font-normal">STATUS:</span> DRAFT</span>
               </div>
             </div>
 
@@ -112,10 +109,10 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
 
             {/* CUSTOMER INFO */}
             <div className="font-mono text-xs text-slate-800 mb-6">
-              <p>BILL TO:</p>
+              <p>เรียกเก็บจาก <span className="text-[9px] text-slate-400">BILL TO:</span></p>
               <p className="font-bold text-sm font-sans text-slate-950 mt-1">{house.ownerName}</p>
-              <p className="mt-1">ADDR: {house.houseNumber}</p>
-              <p>ZONE: {house.zone || "-"}</p>
+              <p className="mt-1">บ้านเลขที่ <span className="text-[9px] text-slate-400">ADDR:</span> {house.houseNumber}</p>
+              <p>ชุมชน <span className="text-[9px] text-slate-400">ZONE:</span> {house.zone || "-"}</p>
             </div>
 
             <div className="border-b-[3px] border-double border-slate-900/40 mb-6"></div>
@@ -125,11 +122,11 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
             
             {/* RECENT TRANSACTIONS (If any) */}
             {recentTransactions.length > 0 && (
-              <div className="mt-8 pt-6 border-t-2 border-dotted border-slate-400/60 font-mono text-[10px] text-slate-500 space-y-2">
-                <p className="text-center font-bold text-slate-700 mb-3 tracking-widest">--- RECENT PAYMENTS ---</p>
+              <div className="mt-8 pt-6 border-t-2 border-dotted border-slate-400/60 font-mono text-[10px] text-slate-600 space-y-2">
+                <p className="text-center font-bold text-slate-700 mb-3 tracking-wide">--- ประวัติการชำระเงินล่าสุด <span className="text-[9px] text-slate-400 font-normal">RECENT PMTS</span> ---</p>
                 {recentTransactions.slice(0,3).map(tx => (
                   <div key={tx.id} className="flex justify-between items-center">
-                    <span>{new Date(tx.paidAt || tx.createdAt || new Date()).toLocaleDateString('en-GB')}</span>
+                    <span>{new Date(tx.paidAt || tx.createdAt || new Date()).toLocaleDateString('th-TH', { year: '2-digit', month: 'short', day: 'numeric' })}</span>
                     <span>{tx.receiptCode || 'PAID'}</span>
                     <span className="font-bold text-slate-800">+{parseFloat(tx.amount || "0").toFixed(2)}</span>
                   </div>
@@ -143,11 +140,14 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
                 {barcodeLines}
               </div>
               <p className="font-mono text-[10px] text-slate-500 mt-2 tracking-[0.3em]">
-                {house.id.toString().padStart(4, '0')}-{new Date().getFullYear()}-{house.houseNumber?.replace(/[^0-9]/g, '').padStart(4, '0')}
+                {house.id.toString().padStart(4, '0')}-{new Date().getFullYear() + 543}-{house.houseNumber?.replace(/[^0-9]/g, '').padStart(4, '0')}
               </p>
-              <p className="font-mono text-[9px] text-slate-400 mt-4 text-center">
-                THANK YOU FOR YOUR PAYMENT<br/>
-                TEL: 044-631-419
+              <p className="font-mono text-xs text-slate-600 mt-4 text-center font-bold">
+                ขอบคุณที่ใช้บริการ
+                <span className="block text-[9px] text-slate-400 font-normal tracking-widest mt-0.5">THANK YOU</span>
+              </p>
+              <p className="font-mono text-xs text-slate-600 mt-1 text-center font-bold">
+                โทร <span className="text-[9px] text-slate-400 font-normal">TEL:</span> 044-631-419
               </p>
             </div>
 
@@ -165,7 +165,7 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
       {/* Return Link */}
       <Link 
         href="/" 
-        className="mt-10 inline-flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-white transition-colors underline-offset-4 hover:underline relative z-10"
+        className="mt-10 inline-flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors underline-offset-4 hover:underline relative z-10"
       >
         <ArrowLeft size={16} />
         <span>กลับไปหน้าค้นหา</span>
