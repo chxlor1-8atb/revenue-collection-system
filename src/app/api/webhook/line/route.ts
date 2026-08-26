@@ -646,13 +646,10 @@ export async function POST(request: Request) {
               await replyMessage(replyToken, "หากต้องการชำระเงิน กรุณาส่งรูป 'สลิปการโอนเงิน' เข้ามาในแชทก่อน แล้วค่อยพิมพ์บ้านเลขที่ตามนะคะ 🙏\n\nหรือหากต้องการเช็คยอด พิมพ์คำว่า 'เช็คบิล' ได้เลยค่ะ");
             }
           }
-          }
         } else if (event.message?.type) {
           // Ignore other message types
         }
-      
-      // Handle Postback Events
-      if (event.type === "postback") {
+      } else if (event.type === "postback") {
         const userId = event.source.userId;
         const replyToken = event.replyToken;
         const data = event.postback.data;
@@ -728,10 +725,11 @@ export async function POST(request: Request) {
             }
           }
         }
-      } catch (eventError: any) {
-        console.error(`[Webhook] Error processing event (${event?.type}):`, eventError?.message || eventError);
       }
+    } catch (eventError: any) {
+      console.error(`[Webhook] Error processing event (${event?.type}):`, eventError?.message || eventError);
     }
+  }
 
     return NextResponse.json({ status: "ok" });
   } catch (error) {
