@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { QrCode, FilePlus, Send, Edit2, Trash2, X, Download, Copy, Check, Loader2, FileText, CheckCircle2, AlertCircle } from "lucide-react";
+import { QrCode, FilePlus, Send, Edit2, Trash2, X, Download, Copy, Check, Loader2, FileText, CheckCircle2, AlertCircle, ExternalLink } from "lucide-react";
 import QRCode from "qrcode";
 import { useRouter } from "next/navigation";
 import { deleteHouse, createInitialInvoice, sendLineReminder } from "../actions";
@@ -58,6 +58,17 @@ export default function HouseActionsClient({ house, customFieldsSchema }: { hous
     <>
       <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
         
+        {/* View Citizen Bill Portal */}
+        <a 
+          href={`/house/${house.id}`}
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center gap-1.5 bg-indigo-50 border border-indigo-200/80 hover:bg-indigo-100 text-[#5B58F2] px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-98"
+        >
+          <ExternalLink size={14} />
+          <span>หน้าบิลประชาชน ↗</span>
+        </a>
+
         {/* QR Code Modal Button */}
         <button 
           type="button"
