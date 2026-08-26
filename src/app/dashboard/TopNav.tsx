@@ -261,19 +261,26 @@ export default function TopNav({ userName, settings }: { userName: string, setti
             className="absolute inset-0 bg-slate-900/30 backdrop-blur-sm transition-opacity" 
             onClick={() => setIsSettingsOpen(false)}
           ></div>
-          <div className="relative w-full max-w-md bg-slate-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
-             <div className="p-6 border-b border-slate-200 bg-white flex justify-between items-center shadow-sm z-10">
-               <h2 className="text-xl font-bold font-sans text-slate-800 flex items-center gap-2">
-                 <Settings size={20} className="text-[#5B58F2]" /> ตั้งค่าระบบ
-               </h2>
+          <div className="relative w-full sm:max-w-md bg-slate-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+             <div className="px-5 py-4 border-b border-slate-200/80 bg-white/95 backdrop-blur-xs flex justify-between items-center shadow-xs z-10">
+               <div className="flex items-center gap-2.5">
+                 <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#5B58F2] to-indigo-500 text-white flex items-center justify-center shadow-xs">
+                   <Settings size={16} />
+                 </div>
+                 <div>
+                   <h2 className="text-base font-bold font-sans text-slate-800 leading-tight">ตั้งค่าระบบ</h2>
+                   <p className="text-[10px] text-slate-400 font-medium">การจัดการพารามิเตอร์ & เครื่องมือ</p>
+                 </div>
+               </div>
                <button 
                  onClick={() => setIsSettingsOpen(false)} 
-                 className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 transition-colors"
+                 aria-label="ปิดหน้าต่างตั้งค่า"
+                 className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
                >
                  ✕
                </button>
              </div>
-             <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
+             <div className="p-4 sm:p-5 overflow-y-auto flex-1 custom-scrollbar">
                 <SettingsForm 
                   collectorId={settings?.id || 1} 
                   initialName={settings?.accountName || "เทศบาลเมืองนางรอง"} 
