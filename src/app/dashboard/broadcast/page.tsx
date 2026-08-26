@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { houses, invoices } from "@/lib/schema";
+import { houses, invoices, systemSettings } from "@/lib/schema";
 import { eq, sql, isNotNull } from "drizzle-orm";
 import BroadcastClient from "./BroadcastClient";
 
@@ -13,8 +13,8 @@ const ZONES = [
 ];
 
 export default async function BroadcastPage() {
-  // Aggregate stats for broadcast overview
-  const [totalHousesRes, linkedLineRes, unpaidInvoicesRes] = await Promise.all([
+  // Aggregate stats for broadcast overview and fetch LINE config
+  const [totalHousesRes, linkedLineRes, unpaidInvoicesRes, settingsRes] = await Promise.all([
     db.select({ count: sql<number>`count(*)` }).from(houses),
     db.select({ count: sql<number>`count(*)` }).from(houses).where(isNotNull(houses.lineUserId)),
     db.select({
@@ -22,12 +22,18 @@ export default async function BroadcastPage() {
       overdueInvoicesCount: sql<number>`count(*)`,
       uniqueHousesCount: sql<number>`count(distinct ${invoices.houseId})`
     }).from(invoices).where(eq(invoices.status, "unpaid")),
+    db.select().from(systemSettings).limit(1),
   ]);
 
   const totalHouses = Number(totalHousesRes[0]?.count || 0);
   const totalLinkedLine = Number(linkedLineRes[0]?.count || 0);
   const totalOverdueDebt = parseFloat(unpaidInvoicesRes[0]?.totalDebt || "0");
   const overdueHousesCount = Number(unpaidInvoicesRes[0]?.uniqueHousesCount || 0);
+  const initialLineConfig = (settingsRes[0]?.lineConfig as any) || {
+    healthDeptPhone: "044-631405",
+    announcementText: "เทศบาลเมืองนางรอง ขอขอบคุณทุกท่านที่ร่วมชำระค่าธรรมเนียมขยะตรงเวลา",
+    isAnnouncementActive: true,
+  };
 
   return (
     <BroadcastClient
@@ -36,6 +42,7 @@ export default async function BroadcastPage() {
       totalLinkedLine={totalLinkedLine}
       totalOverdueDebt={totalOverdueDebt}
       overdueHousesCount={overdueHousesCount}
+      initialLineConfig={initialLineConfig}
     />
   );
 }

@@ -44,7 +44,7 @@ export default function SettingsForm({
   initialLineConfig?: any;
   initialReceiptBookConfig?: any;
 }) {
-  const [activeTab, setActiveTab] = useState<"account" | "line" | "receipt">("account");
+  const [activeTab, setActiveTab] = useState<"account" | "receipt">("account");
 
   // Tab 1: Account & Billing Schedule
   const [name, setName] = useState(initialName);
@@ -211,12 +211,12 @@ export default function SettingsForm({
           </span>
         </div>
         
-        {/* Animated Segmented Tabs */}
-        <div className="grid grid-cols-3 gap-1 p-1 bg-slate-200/70 rounded-xl border border-slate-300/50">
+        {/* Animated Segmented Tabs (2 Tabs: Account & Receipt Series) */}
+        <div className="grid grid-cols-2 gap-1 p-1 bg-slate-200/70 rounded-xl border border-slate-300/50">
           <button
             type="button"
             onClick={() => setActiveTab("account")}
-            className={`py-2 px-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+            className={`py-2 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
               activeTab === "account"
                 ? "bg-white text-slate-900 shadow-xs border border-slate-200/80"
                 : "text-slate-500 hover:text-slate-900 hover:bg-white/40"
@@ -228,21 +228,8 @@ export default function SettingsForm({
 
           <button
             type="button"
-            onClick={() => setActiveTab("line")}
-            className={`py-2 px-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-              activeTab === "line"
-                ? "bg-white text-slate-900 shadow-xs border border-slate-200/80"
-                : "text-slate-500 hover:text-slate-900 hover:bg-white/40"
-            }`}
-          >
-            <Smartphone size={13} className={activeTab === "line" ? "text-emerald-600" : ""} />
-            <span className="truncate">LINE Bot</span>
-          </button>
-
-          <button
-            type="button"
             onClick={() => setActiveTab("receipt")}
-            className={`py-2 px-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+            className={`py-2 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
               activeTab === "receipt"
                 ? "bg-white text-slate-900 shadow-xs border border-slate-200/80"
                 : "text-slate-500 hover:text-slate-900 hover:bg-white/40"
@@ -353,72 +340,7 @@ export default function SettingsForm({
             </div>
           )}
 
-          {/* TAB 2: LINE BOT & ANNOUNCEMENTS */}
-          {activeTab === "line" && (
-            <div className="space-y-3.5 animate-in fade-in duration-150">
-              
-              {/* Phone Input */}
-              <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                  <Phone size={13} className="text-emerald-600" />
-                  เบอร์โทรศัพท์กองสาธารณสุขและสิ่งแวดล้อม
-                </label>
-                <input
-                  type="text"
-                  value={healthDeptPhone}
-                  onChange={(e) => setHealthDeptPhone(e.target.value)}
-                  placeholder="เช่น 044-631405"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-hidden transition-all"
-                />
-                <p className="text-[10px] text-slate-400">
-                  เบอร์นี้จะแสดงบน Flex Card เมื่อประชาชนกด &ldquo;ติดต่อเจ้าหน้าที่&rdquo; ใน LINE
-                </p>
-              </div>
-
-              {/* Announcement Box with iOS Switch Toggle */}
-              <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                    <Megaphone size={13} className="text-emerald-600" />
-                    ข้อความประกาศข่าวสารใน LINE
-                  </label>
-                  
-                  {/* iOS Style Animated Switch */}
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={isAnnouncementActive}
-                      onChange={(e) => setIsAnnouncementActive(e.target.checked)}
-                      className="sr-only peer"
-                    />
-                    <div className="w-9 h-5 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
-                    <span className="ml-1.5 text-[10px] font-bold text-slate-600">
-                      {isAnnouncementActive ? "เปิด" : "ปิด"}
-                    </span>
-                  </label>
-                </div>
-
-                <textarea
-                  value={announcementText}
-                  onChange={(e) => setAnnouncementText(e.target.value)}
-                  placeholder="ระบุข้อความประกาศ..."
-                  rows={3}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-hidden transition-all"
-                />
-
-                {isAnnouncementActive && announcementText && (
-                  <div className="p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200/60 text-[11px] text-emerald-800 leading-relaxed flex items-start gap-2">
-                    <Sparkles size={13} className="text-emerald-600 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="font-bold">พรีวิวในแชท:</span> &ldquo;{announcementText}&rdquo;
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* TAB 3: RECEIPT BOOK & NUMBER SERIES */}
+          {/* TAB 2: RECEIPT BOOK & NUMBER SERIES */}
           {activeTab === "receipt" && (
             <div className="space-y-3.5 animate-in fade-in duration-150">
               
