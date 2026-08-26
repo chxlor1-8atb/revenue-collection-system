@@ -119,12 +119,13 @@ export async function POST(request: Request) {
     }
 
     for (const event of body.events) {
-      if (event.type === "follow") {
-        const replyToken = event.replyToken;
-        if (replyToken) {
-          await replyWithMessages(replyToken, [generateWelcomeFlexMessage()]);
-        }
-      } else if (event.type === "message") {
+      try {
+        if (event.type === "follow") {
+          const replyToken = event.replyToken;
+          if (replyToken) {
+            await replyWithMessages(replyToken, [generateWelcomeFlexMessage()]);
+          }
+        } else if (event.type === "message") {
         const userId = event.source.userId;
         const replyToken = event.replyToken;
 
@@ -727,12 +728,14 @@ export async function POST(request: Request) {
             }
           }
         }
+      } catch (eventError: any) {
+        console.error(`[Webhook] Error processing event (${event?.type}):`, eventError?.message || eventError);
       }
     }
 
     return NextResponse.json({ status: "ok" });
   } catch (error) {
-    console.error("LINE Webhook Error:", error);
+    console.error("LINE Webhook Top-level Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

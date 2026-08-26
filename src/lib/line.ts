@@ -2,81 +2,129 @@ export const LINE_API_URL = "https://api.line.me/v2/bot/message/reply";
 export const LINE_PUSH_API_URL = "https://api.line.me/v2/bot/message/push";
 export const LINE_CONTENT_API_URL = "https://api-data.line.me/v2/bot/message";
 
+async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 2): Promise<Response> {
+  let lastError: any;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+      
+      const res = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      return res;
+    } catch (err: any) {
+      lastError = err;
+      const isNetworkError = err?.code === 'ECONNRESET' || 
+                             err?.code === 'ETIMEDOUT' || 
+                             err?.cause?.code === 'ECONNRESET' || 
+                             err?.cause?.code === 'ETIMEDOUT' || 
+                             err?.name === 'AbortError' ||
+                             err?.message?.includes('fetch failed');
+      
+      if (attempt < maxRetries && isNetworkError) {
+        console.warn(`[LINE Network Retry] ${url} failed with ${err?.message || err}. Retrying (attempt ${attempt + 1}/${maxRetries})...`);
+        await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastError;
+}
+
 export async function replyMessage(replyToken: string, text: string) {
   const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
   if (!token) return false;
 
-  const response = await fetch(LINE_API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      replyToken: replyToken,
-      messages: [
-        {
-          type: "text",
-          text: text,
-        },
-      ],
-    }),
-  });
-  
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error(`[LINE API Error] replyMessage failed: ${response.status} ${response.statusText}`, errorText);
+  try {
+    const response = await fetchWithRetry(LINE_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        replyToken: replyToken,
+        messages: [
+          {
+            type: "text",
+            text: text,
+          },
+        ],
+      }),
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`[LINE API Error] replyMessage failed: ${response.status} ${response.statusText}`, errorText);
+      return false;
+    }
+    return true;
+  } catch (error: any) {
+    console.error("[LINE API Network Error] replyMessage failed:", error?.message || error);
     return false;
   }
-  return true;
 }
 
 export async function pushMessage(userId: string, messages: any[]) {
   const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
   if (!token) return false;
 
-  const response = await fetch(LINE_PUSH_API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      to: userId,
-      messages: messages,
-    }),
-  });
-  
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error(`[LINE API Error] pushMessage failed: ${response.status} ${response.statusText}`, errorText);
+  try {
+    const response = await fetchWithRetry(LINE_PUSH_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        to: userId,
+        messages: messages,
+      }),
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`[LINE API Error] pushMessage failed: ${response.status} ${response.statusText}`, errorText);
+      return false;
+    }
+    return true;
+  } catch (error: any) {
+    console.error("[LINE API Network Error] pushMessage failed:", error?.message || error);
     return false;
   }
-  return true;
 }
 
 export async function replyWithMessages(replyToken: string, messages: any[]) {
   const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
   if (!token) return false;
 
-  const response = await fetch(LINE_API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      replyToken: replyToken,
-      messages: messages,
-    }),
-  });
-  
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error(`[LINE API Error] replyWithMessages failed: ${response.status} ${response.statusText}`, errorText);
+  try {
+    const response = await fetchWithRetry(LINE_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        replyToken: replyToken,
+        messages: messages,
+      }),
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`[LINE API Error] replyWithMessages failed: ${response.status} ${response.statusText}`, errorText);
+      return false;
+    }
+    return true;
+  } catch (error: any) {
+    console.error("[LINE API Network Error] replyWithMessages failed:", error?.message || error);
     return false;
   }
-  return true;
 }
 
 // Smart replier: Tries to reply with token. If token is invalid (e.g. consumed by Slip2Go), 
@@ -100,24 +148,29 @@ export async function getMessageContent(messageId: string): Promise<Buffer | nul
     return null;
   }
 
-  // Encode messageId because it may contain +, =, / characters
-  const safeId = encodeURIComponent(messageId);
-  console.log('Fetching image content – messageId:', messageId);
+  try {
+    // Encode messageId because it may contain +, =, / characters
+    const safeId = encodeURIComponent(messageId);
+    console.log('Fetching image content – messageId:', messageId);
 
-  const response = await fetch(`${LINE_CONTENT_API_URL}/${safeId}/content`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+    const response = await fetchWithRetry(`${LINE_CONTENT_API_URL}/${safeId}/content`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  if (!response.ok) {
-    const errText = await response.text();
-    console.error(`Failed to fetch image from LINE – status ${response.status}: ${response.statusText}\nResponse body: ${errText}\nMessage ID used: ${messageId} (encoded: ${safeId})`);
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error(`Failed to fetch image from LINE – status ${response.status}: ${response.statusText}\nResponse body: ${errText}\nMessage ID used: ${messageId} (encoded: ${safeId})`);
+      return null;
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    return Buffer.from(arrayBuffer);
+  } catch (error: any) {
+    console.error("[LINE API Network Error] getMessageContent failed:", error?.message || error);
     return null;
   }
-
-  const arrayBuffer = await response.arrayBuffer();
-  return Buffer.from(arrayBuffer);
 }
 
 // --- Flex Message Templates ---

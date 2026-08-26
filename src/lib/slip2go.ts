@@ -29,13 +29,18 @@ export async function verifySlipWithBuffer(imageBuffer: Buffer): Promise<Slip2Go
     const formData = new FormData();
     formData.append('file', new Blob([imageBuffer as any], { type: 'image/jpeg' }), 'slip.jpg');
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
     const response = await fetch("https://connect.slip2go.com/api/verify-slip/qr-image/info", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${apiKey}`,
       },
       body: formData,
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorText = await response.text();
