@@ -6,6 +6,7 @@ import { eq, and, desc, gte, inArray } from "drizzle-orm";
 import { put } from "@vercel/blob";
 import { verifySlipWithBuffer } from "@/lib/slip2go";
 import { generateNextReceiptSeries } from "@/lib/receiptSeries";
+import { broadcastEvent } from "@/lib/eventHub";
 
 import crypto from 'crypto';
 
@@ -92,6 +93,16 @@ async function attemptAutoApprove(house: any, slipAmountStr: string, slipImageUr
         }
       }
     });
+
+    if (txId) {
+      broadcastEvent("transaction:verified", {
+        transactionId: txId,
+        receiptCode: series.receiptCode,
+        houseNumber: house?.houseNumber,
+        amount: slipAmountStr,
+        verifiedAt: new Date().toISOString(),
+      });
+    }
 
     return { success: true, newTxId: txId, totalDebt };
   } catch (error) {

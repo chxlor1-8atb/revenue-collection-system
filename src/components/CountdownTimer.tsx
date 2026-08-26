@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Clock, RefreshCw, CheckCircle2, AlertCircle } from "lucide-react";
+import { useRealtimeEvents } from "@/hooks/useRealtimeEvents";
 
 export default function CountdownTimer({ initialTimeLeft, transactionId }: { initialTimeLeft: number, transactionId?: number }) {
   const [timeLeft, setTimeLeft] = useState<number>(initialTimeLeft);
@@ -11,21 +12,33 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
   const [isVerified, setIsVerified] = useState(false);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Poll transaction status every 3 seconds
+  const handleSuccessfulVerification = useCallback(() => {
+    setIsVerified(true);
+    if (pollingRef.current) clearInterval(pollingRef.current);
+    setTimeout(() => {
+      window.location.href = `/pay/${transactionId}/success`;
+    }, 1200);
+  }, [transactionId]);
+
+  // 1. Real-Time SSE Stream Listener (Zero Latency < 50ms)
+  useRealtimeEvents({
+    "transaction:verified": (data) => {
+      if (transactionId && data.transactionId === transactionId) {
+        handleSuccessfulVerification();
+      }
+    }
+  }, Boolean(transactionId && !isVerified));
+
+  // 2. Fallback Polling (every 3 seconds)
   useEffect(() => {
-    if (!transactionId) return;
+    if (!transactionId || isVerified) return;
 
     const pollStatus = async () => {
       try {
         const res = await fetch(`/api/transactions/${transactionId}`);
         const data = await res.json();
         if (data.slipStatus === "verified") {
-          setIsVerified(true);
-          if (pollingRef.current) clearInterval(pollingRef.current);
-          // Small delay for the animation, then redirect
-          setTimeout(() => {
-            window.location.href = `/pay/${transactionId}/success`;
-          }, 1500);
+          handleSuccessfulVerification();
         }
       } catch (e) {
         // Ignore polling errors
@@ -33,12 +46,12 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
     };
 
     pollingRef.current = setInterval(pollStatus, 3000);
-    pollStatus(); // Check immediately on mount
+    pollStatus();
 
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
     };
-  }, [transactionId]);
+  }, [transactionId, isVerified, handleSuccessfulVerification]);
 
   useEffect(() => {
     if (initialTimeLeft <= 0) {
@@ -63,29 +76,33 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
     return () => clearInterval(timer);
   }, [initialTimeLeft]);
 
-  const handleExpiry = async () => {
+  const handleExpiry = () => {
     setIsExpired(true);
+  };
+
+  const handleRegenerate = async () => {
     if (!transactionId || isRegeneratingRef.current) return;
     
     isRegeneratingRef.current = true;
     setIsRegenerating(true);
     try {
-      const res = await fetch("/api/transactions/regenerate", {
+      const res = await fetch(`/api/transactions/regenerate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ transactionId })
+        body: JSON.stringify({ transactionId }),
       });
-      const data = await res.json();
-      if (res.ok && data.transactionId) {
-        window.location.href = `/pay/${data.transactionId}`;
+
+      if (res.ok) {
+        window.location.reload();
       } else {
-        console.error("Regenerate failed:", data.error);
+        const err = await res.json();
+        alert(err.error || "เกิดข้อผิดพลาดในการต่อเวลา กรุณาลองใหม่อีกครั้ง");
         isRegeneratingRef.current = false;
         setIsRegenerating(false);
-        setIsExpired(true);
       }
     } catch (e) {
       console.error(e);
+      alert("เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง");
       isRegeneratingRef.current = false;
       setIsRegenerating(false);
     }
@@ -93,52 +110,45 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
-  const isDanger = timeLeft < 60;
+  const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
-  // Verified state
   if (isVerified) {
     return (
-      <div className="flex items-center justify-center gap-2 text-emerald-700 bg-emerald-50 py-3 px-6 rounded-xl border border-emerald-200 mt-4 mb-2 shadow-sm animate-pulse">
-        <CheckCircle2 size={18} />
-        <span className="font-semibold text-sm">ยืนยันการชำระเงินสำเร็จ! กำลังเปลี่ยนหน้า...</span>
+      <div className="w-full bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center justify-center gap-3 text-emerald-800 animate-in zoom-in-95 duration-200">
+        <CheckCircle2 size={24} className="text-emerald-600 animate-bounce" />
+        <span className="font-sans font-bold text-sm">ยืนยันการชำระเงินเรียบร้อยแล้ว กำลังพาไปยังใบเสร็จ...</span>
       </div>
     );
   }
 
   if (isExpired) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 bg-amber-50 py-4 px-6 rounded-xl border border-amber-200 mt-4 mb-2 shadow-sm">
-        {!isRegeneratingRef.current ? (
-          <>
-            <div className="flex items-center gap-2 text-amber-700">
-              <AlertCircle size={18} />
-              <span className="font-semibold text-sm">หมดเวลาหรือเกิดข้อผิดพลาดในการสร้างใหม่</span>
-            </div>
-            <button 
-              onClick={() => window.location.href = '/dashboard/houses'} 
-              className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm"
-            >
-              กลับไปเลือกบิลใหม่
-            </button>
-          </>
-        ) : (
-          <div className="flex items-center gap-2 text-amber-600 animate-pulse">
-            <RefreshCw size={18} className="animate-spin" />
-            <span className="font-semibold text-sm">หมดเวลา! กำลังสร้าง QR Code ใหม่...</span>
-          </div>
-        )}
+      <div className="w-full bg-rose-50 border border-rose-200 rounded-xl p-4 flex flex-col items-center justify-center gap-2 text-rose-800">
+        <div className="flex items-center gap-2 font-sans font-bold text-sm">
+          <AlertCircle size={18} className="text-rose-600" />
+          <span>QR Code หมดอายุแล้ว</span>
+        </div>
+        <p className="text-xs text-rose-600 text-center font-sans">
+          กรุณากดปุ่มด้านล่างเพื่อสร้าง QR Code ใหม่สำหรับชำระเงิน
+        </p>
+        <button
+          onClick={handleRegenerate}
+          disabled={isRegenerating}
+          className="mt-2 flex items-center gap-2 bg-rose-600 hover:bg-rose-700 active:scale-95 text-white text-xs font-sans font-bold py-2 px-4 rounded-lg shadow-sm transition-all disabled:opacity-50"
+        >
+          <RefreshCw size={14} className={isRegenerating ? "animate-spin" : ""} />
+          <span>{isRegenerating ? "กำลังสร้าง QR Code ใหม่..." : "สร้าง QR Code ใหม่"}</span>
+        </button>
       </div>
     );
   }
 
   return (
-    <div className={`flex flex-col items-center justify-center gap-1 py-3 px-5 rounded-xl border mt-4 mb-2 shadow-sm transition-colors duration-500 ${isDanger ? 'bg-red-50 border-red-200 text-red-700' : 'bg-emerald-50 border-emerald-200 text-emerald-800'}`}>
-      <div className="flex items-center gap-2">
-        <Clock size={16} className={isDanger ? "animate-pulse" : ""} />
-        <span className="font-medium text-xs uppercase tracking-wide opacity-80">เวลาที่เหลือในการโอน</span>
-      </div>
-      <span className="font-mono text-2xl font-bold tracking-tight">
-        {minutes}:{seconds.toString().padStart(2, '0')}
+    <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-900 px-4 py-2 rounded-xl text-sm font-sans font-medium mb-6">
+      <Clock size={16} className="text-amber-600 animate-pulse" />
+      <span>กรุณาชำระเงินภายใน:</span>
+      <span className="font-mono font-bold text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded text-base">
+        {formattedTime}
       </span>
     </div>
   );

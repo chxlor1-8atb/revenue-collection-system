@@ -25,6 +25,7 @@ import Link from "next/link";
 import LottieIcon from "@/components/LottieIcon";
 import LiveQrCountdown from "@/components/LiveQrCountdown";
 import CurrencyDisplay from "@/components/CurrencyDisplay";
+import { useRealtimeEvents } from "@/hooks/useRealtimeEvents";
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -104,10 +105,26 @@ export default function ReviewClient() {
     }
   };
 
-  // Poll every 3 seconds
+  // Poll every 3 seconds (fallback)
   const { data, error, isLoading, mutate, isValidating } = useSWR('/api/transactions/review', fetcher, {
     refreshInterval: 3000,
     revalidateOnFocus: true,
+  });
+
+  // Real-Time SSE Stream Listener (Instant updates < 50ms)
+  useRealtimeEvents({
+    "qr:created": () => {
+      mutate();
+    },
+    "slip:uploaded": () => {
+      mutate();
+    },
+    "transaction:verified": () => {
+      mutate();
+    },
+    "transaction:rejected": () => {
+      mutate();
+    },
   });
 
   const pending = data?.pending || [];
