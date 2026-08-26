@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, Check, Plus, Minus, Receipt } from "lucide-react";
 
 export default function InvoiceSelectionForm({ invoices, house }: { invoices: any[], house: any }) {
   const unpaidInvoices = invoices.filter(inv => inv.status === 'unpaid');
@@ -70,7 +70,7 @@ export default function InvoiceSelectionForm({ invoices, house }: { invoices: an
   const formatMonthThai = (monthYear: string) => {
     if (!monthYear) return "";
     const [yearStr, monthStr] = monthYear.split('-');
-    const months = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+    const months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
     const monthIndex = parseInt(monthStr, 10) - 1;
     const thaiYear = parseInt(yearStr, 10) + 543;
     if (monthIndex >= 0 && monthIndex < 12) {
@@ -79,137 +79,158 @@ export default function InvoiceSelectionForm({ invoices, house }: { invoices: an
     return monthYear;
   };
 
-  const formatMonthEng = (monthYear: string) => {
-    if (!monthYear) return "";
-    const [yearStr, monthStr] = monthYear.split('-');
-    const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-    const monthIndex = parseInt(monthStr, 10) - 1;
-    if (monthIndex >= 0 && monthIndex < 12) {
-      return `${months[monthIndex]} ${yearStr.substring(2)}`;
-    }
-    return monthYear;
-  };
-
   return (
-    <div className="font-mono text-sm text-slate-900 w-full">
-      
-      {/* ITEMS HEADER */}
-      <div className="flex justify-between items-end mb-2 text-xs font-bold border-b border-slate-300 pb-1">
-        <span>รายการ <span className="text-[9px] text-slate-400 font-normal">DESCRIPTION</span></span>
-        <span>ยอดชำระ <span className="text-[9px] text-slate-400 font-normal">AMOUNT</span></span>
-      </div>
-
-      {/* INVOICE ITEMS */}
-      <div className="space-y-1 mb-4">
-        {unpaidInvoices.length === 0 ? (
-          <div className="text-center py-4 text-xs font-bold text-slate-600">
-            ไม่มีบิลค้างชำระ
-            <span className="block text-[9px] text-slate-400 font-normal mt-0.5">NO PENDING INVOICES</span>
-          </div>
-        ) : (
-          unpaidInvoices.map((inv) => {
-            const isSelected = selectedInvoices.includes(inv.id);
-            const amountNum = parseFloat(inv.amount || "0");
-            
-            return (
-              <div 
-                key={inv.id}
-                onClick={() => handleToggle(inv.id)}
-                className={`flex justify-between items-baseline cursor-pointer group ${isSelected ? 'bg-amber-100/50' : 'hover:bg-slate-100'} px-1 py-1 -mx-1 transition-colors`}
-              >
-                <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap">
-                  <span className="font-bold shrink-0">
-                    {isSelected ? '[X]' : '[ ]'}
-                  </span>
-                  <span className="tracking-tighter text-xs font-bold">
-                    {formatMonthThai(inv.monthYear)}
-                  </span>
-                  <span className="text-[9px] text-slate-400 tracking-wider"> ({formatMonthEng(inv.monthYear)})</span>
-                  <span className="text-slate-300 tracking-widest hidden sm:inline"> ......................</span>
-                </div>
-                <div className="shrink-0 pl-2">
-                  {(amountNum).toFixed(2)}
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
-
-      {/* ADVANCE PAYMENT */}
-      <div className="mb-6">
-        <div className="flex justify-between items-baseline mb-1">
-          <span className="text-xs font-bold">
-            ชำระล่วงหน้า (@{advanceRate}฿/ด.)
-            <span className="text-[9px] text-slate-400 font-normal ml-1">ADVANCE</span>
-          </span>
-          <span className="text-slate-300 tracking-widest hidden sm:inline overflow-hidden whitespace-nowrap px-2"> .................</span>
-          <span>{(advanceTotal).toFixed(2)}</span>
-        </div>
+    <>
+      <div className="w-full">
+        {/* INVOICE ITEMS SECTION */}
+        <h3 className="text-sm font-bold text-slate-800 mb-3 px-1 flex items-center gap-2">
+          <Receipt size={16} className="text-emerald-600" />
+          รายการบิลค้างชำระ
+        </h3>
         
-        {/* Stepper */}
-        <div className="flex items-center gap-4 bg-slate-100/50 p-2 border border-slate-200">
-          <button 
-            type="button"
-            onClick={() => setAdvanceMonths(Math.max(0, advanceMonths - 1))}
-            className="w-8 h-8 flex items-center justify-center border border-slate-400 bg-white active:bg-slate-200 disabled:opacity-30 cursor-pointer"
-            disabled={advanceMonths === 0}
-          >
-            -
-          </button>
-          <div className="w-16 text-center font-bold tracking-widest">
-            {advanceMonths.toString().padStart(2, '0')}
+        <div className="space-y-3 mb-6">
+          {unpaidInvoices.length === 0 ? (
+            <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 text-center">
+              <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Check size={24} className="text-emerald-500" />
+              </div>
+              <h4 className="font-bold text-slate-800 mb-1">ยอดเยี่ยมมาก!</h4>
+              <p className="text-sm text-slate-500">คุณไม่มีบิลค้างชำระในระบบ</p>
+            </div>
+          ) : (
+            unpaidInvoices.map((inv) => {
+              const isSelected = selectedInvoices.includes(inv.id);
+              const amountNum = parseFloat(inv.amount || "0");
+              
+              return (
+                <div 
+                  key={inv.id}
+                  onClick={() => handleToggle(inv.id)}
+                  className={`flex justify-between items-center cursor-pointer p-4 rounded-2xl border transition-all ${
+                    isSelected 
+                      ? 'bg-emerald-50 border-emerald-500 shadow-sm' 
+                      : 'bg-white border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-6 h-6 rounded-md border flex items-center justify-center transition-colors ${
+                      isSelected ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 bg-white'
+                    }`}>
+                      {isSelected && <Check size={14} strokeWidth={3} />}
+                    </div>
+                    <div>
+                      <p className={`font-bold text-sm ${isSelected ? 'text-emerald-900' : 'text-slate-800'}`}>
+                        บิลประจำเดือน
+                      </p>
+                      <p className={`text-xs mt-0.5 ${isSelected ? 'text-emerald-700/80' : 'text-slate-500'}`}>
+                        {formatMonthThai(inv.monthYear)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className={`font-bold text-base ${isSelected ? 'text-emerald-700' : 'text-slate-700'}`}>
+                    ฿{amountNum.toFixed(2)}
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* ADVANCE PAYMENT SECTION */}
+        <h3 className="text-sm font-bold text-slate-800 mb-3 px-1 mt-8">
+          ชำระล่วงหน้า (รายเดือน)
+        </h3>
+        
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <p className="font-bold text-slate-800 text-sm">จำนวนเดือนที่ต้องการ</p>
+              <p className="text-xs text-slate-500 mt-0.5">เดือนละ ฿{advanceRate.toFixed(2)}</p>
+            </div>
+            
+            {/* Stepper */}
+            <div className="flex items-center gap-4 bg-slate-50 p-1.5 rounded-xl border border-slate-200">
+              <button 
+                type="button"
+                onClick={() => setAdvanceMonths(Math.max(0, advanceMonths - 1))}
+                className="w-8 h-8 rounded-lg flex items-center justify-center bg-white border border-slate-200 text-slate-700 active:bg-slate-100 disabled:opacity-30 disabled:active:bg-white"
+                disabled={advanceMonths === 0}
+              >
+                <Minus size={16} />
+              </button>
+              <div className="w-6 text-center font-bold text-slate-800 text-lg">
+                {advanceMonths}
+              </div>
+              <button 
+                type="button"
+                onClick={() => setAdvanceMonths(advanceMonths + 1)}
+                className="w-8 h-8 rounded-lg flex items-center justify-center bg-white border border-slate-200 text-slate-700 active:bg-slate-100 disabled:opacity-30"
+                disabled={advanceRate === 0}
+              >
+                <Plus size={16} />
+              </button>
+            </div>
           </div>
+
+          {/* Quick Add Chips */}
+          <div className="flex gap-2">
+            {[1, 3, 6, 12].map(m => (
+              <button
+                key={m}
+                onClick={() => setAdvanceMonths(m)}
+                className={`flex-1 py-2 text-xs font-semibold rounded-lg border transition-colors ${
+                  advanceMonths === m 
+                    ? 'bg-slate-800 text-white border-slate-800' 
+                    : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                +{m} เดือน
+              </button>
+            ))}
+          </div>
+
+          {advanceTotal > 0 && (
+            <div className="mt-4 pt-4 border-t border-slate-100 flex justify-between items-center">
+              <span className="text-sm font-semibold text-slate-600">ยอดยกยอดล่วงหน้า</span>
+              <span className="font-bold text-slate-800 text-base">฿{advanceTotal.toFixed(2)}</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* STICKY BOTTOM CHECKOUT BAR */}
+      <div className="fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.08)] z-30">
+        <div className="max-w-md mx-auto flex items-center justify-between gap-4">
+          
+          <div className="flex flex-col">
+            <span className="text-xs font-semibold text-slate-500 mb-0.5">ยอดที่ต้องชำระทั้งหมด</span>
+            <div className="flex items-baseline gap-1">
+              <span className="text-emerald-600 font-bold text-sm">฿</span>
+              <span className="text-emerald-600 font-black text-2xl tracking-tight leading-none">{grandTotal.toFixed(2)}</span>
+            </div>
+          </div>
+
           <button 
             type="button"
-            onClick={() => setAdvanceMonths(advanceMonths + 1)}
-            className="w-8 h-8 flex items-center justify-center border border-slate-400 bg-white active:bg-slate-200 disabled:opacity-30 cursor-pointer"
-            disabled={advanceRate === 0}
+            className="flex-1 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold py-3.5 px-6 rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30"
+            disabled={(selectedInvoices.length === 0 && advanceMonths === 0) || isLoading || grandTotal === 0}
+            onClick={handleProceedToPayment}
           >
-            +
+            {isLoading ? (
+              <>
+                <Loader2 size={20} className="animate-spin" />
+                <span>กำลังเตรียม QR...</span>
+              </>
+            ) : (
+              <span>สแกน QR ชำระเงิน</span>
+            )}
           </button>
+          
+        </div>
+        <div className="max-w-md mx-auto mt-3 text-center pb-safe">
+            <p className="text-[10px] text-slate-400">ระบบชำระเงินออนไลน์ เทศบาลเมืองนางรอง</p>
         </div>
       </div>
-
-      {/* TOTALS */}
-      <div className="border-t-[3px] border-double border-slate-900/60 pt-4 mb-6">
-        <div className="flex justify-between items-baseline text-xs mb-1 font-bold">
-          <span>ยอดรวมบิล <span className="text-[9px] text-slate-400 font-normal">SUBTOTAL</span></span>
-          <span>{(grandTotal).toFixed(2)}</span>
-        </div>
-        <div className="flex justify-between items-baseline text-xs mb-3 font-bold">
-          <span>ภาษีมูลค่าเพิ่ม <span className="text-[9px] text-slate-400 font-normal">VAT (0%)</span></span>
-          <span>0.00</span>
-        </div>
-        <div className="flex justify-between items-baseline text-lg sm:text-xl font-bold bg-slate-900 text-white p-2">
-          <span>ยอดรวมทั้งสิ้น <span className="text-[10px] text-slate-400 font-normal ml-1">TOTAL DUE</span></span>
-          <span>฿ {(grandTotal).toFixed(2)}</span>
-        </div>
-      </div>
-
-      {/* BUTTON */}
-      <button 
-        type="button"
-        className="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold py-3.5 px-6 transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-3 text-sm cursor-pointer shadow-sm"
-        disabled={(selectedInvoices.length === 0 && advanceMonths === 0) || isLoading || grandTotal === 0}
-        onClick={handleProceedToPayment}
-      >
-        {isLoading ? (
-          <>
-            <Loader2 size={18} className="animate-spin" />
-            <span className="flex flex-col items-center">
-              <span>กำลังเตรียม...</span>
-              <span className="text-[9px] text-white/70 tracking-widest font-normal">PROCESSING</span>
-            </span>
-          </>
-        ) : (
-          <span className="flex flex-col items-center leading-tight">
-            <span>สร้าง QR Code เพื่อชำระเงิน</span>
-            <span className="text-[9px] text-white/70 tracking-widest font-normal mt-0.5">GENERATE QR CODE</span>
-          </span>
-        )}
-      </button>
-
-    </div>
+    </>
   );
 }

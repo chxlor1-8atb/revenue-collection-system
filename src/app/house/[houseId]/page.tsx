@@ -4,7 +4,7 @@ import { eq, asc, desc, and, gte, sql } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import InvoiceSelectionForm from "@/components/InvoiceSelectionForm";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MapPin, User } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -49,127 +49,63 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
 
   const house = result[0];
 
-  // Deterministic mini barcode for the footer
-  const barcodeLines = Array.from({ length: 45 }).map((_, i) => {
-    const seed = (houseId * 37 + i * 19) % 100;
-    const width = seed > 70 ? 'w-1.5' : seed > 40 ? 'w-1' : 'w-0.5';
-    const opacity = seed > 85 ? 'opacity-0' : 'opacity-100'; // Some gaps
-    return <div key={i} className={`h-10 bg-slate-800 ${width} ${opacity} mx-[1px] shrink-0`}></div>;
-  });
-
   return (
-    <div className="min-h-screen bg-white py-8 sm:py-16 px-4 sm:px-6 flex flex-col items-center justify-center relative font-sans">
-      
-      {/* 
-        ========================================================
-        THE HYPER-REALISTIC THERMAL RECEIPT
-        ========================================================
-      */}
-      <div className="w-full max-w-[400px] relative z-10 drop-shadow-2xl flex flex-col group">
-        
-        {/* TOP SAWTOOTH EDGE */}
-        <div className="w-full h-3 overflow-hidden text-[#FDFBF7] flex drop-shadow-md">
-          {Array.from({ length: 40 }).map((_, i) => (
-            <div key={i} className="w-3 h-3 bg-current transform rotate-45 -translate-y-1.5 origin-bottom-left shrink-0"></div>
-          ))}
+    <div className="min-h-screen bg-slate-50 font-sans pb-32">
+      {/* Top Header / App Bar */}
+      <div className="bg-white px-4 py-4 flex items-center justify-between border-b border-slate-200 sticky top-0 z-20">
+        <div className="flex items-center gap-3">
+          <Link href="/" className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors -ml-2 text-slate-700">
+            <ArrowLeft size={20} />
+          </Link>
+          <h1 className="text-lg font-bold text-slate-800">ชำระค่าธรรมเนียมขยะ</h1>
         </div>
+      </div>
 
-        {/* RECEIPT PAPER BODY */}
-        <div className="bg-[#FDFBF7] w-full px-7 pt-6 pb-10 shadow-[inset_0_0_40px_rgba(0,0,0,0.02)] relative z-10">
-          
-          {/* Subtle paper noise texture */}
-          <div className="absolute inset-0 opacity-[0.4] mix-blend-multiply pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
-
-          <div className="relative z-10">
-            {/* HEADER */}
-            <div className="flex flex-col items-center justify-center text-center mb-6">
-              <h1 className="font-bold text-slate-900 text-lg tracking-wide">สรุปยอดชำระค่าขยะ</h1>
-              <p className="font-mono text-[9px] text-slate-500 tracking-widest mt-0.5">PAYMENT SUMMARY / INVOICE</p>
-            </div>
-
-            <div className="border-b-2 border-dotted border-slate-400/60 mb-4"></div>
-
-            {/* METADATA */}
-            <div className="font-mono text-xs text-slate-800 space-y-1 mb-4">
-              <div className="flex justify-between items-center">
-                <span>วันที่ <span className="text-[9px] text-slate-400">DATE:</span> {new Date().toLocaleDateString('th-TH')}</span>
-                <span>เวลา <span className="text-[9px] text-slate-400">TIME:</span> {new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span>จุดบริการ <span className="text-[9px] text-slate-400">TERM:</span> WEB-01</span>
-                <span>อ้างอิง <span className="text-[9px] text-slate-400">REF:</span> #{houseId.toString().padStart(5, '0')}</span>
-              </div>
-              <div className="flex justify-between text-emerald-700 font-bold items-center">
-                <span>โหมด <span className="text-[9px] text-emerald-700/60 font-normal">MODE:</span> ONLINE</span>
-                <span>สถานะ <span className="text-[9px] text-emerald-700/60 font-normal">STATUS:</span> DRAFT</span>
-              </div>
-            </div>
-
-            <div className="border-b-2 border-dotted border-slate-400/60 mb-4"></div>
-
-            {/* CUSTOMER INFO */}
-            <div className="font-mono text-xs text-slate-800 mb-6">
-              <p>เรียกเก็บจาก <span className="text-[9px] text-slate-400">BILL TO:</span></p>
-              <p className="font-bold text-sm font-sans text-slate-950 mt-1">{house.ownerName}</p>
-              <p className="mt-1">บ้านเลขที่ <span className="text-[9px] text-slate-400">ADDR:</span> {house.houseNumber}</p>
-              <p>ชุมชน <span className="text-[9px] text-slate-400">ZONE:</span> {house.zone || "-"}</p>
-            </div>
-
-            <div className="border-b-[3px] border-double border-slate-900/40 mb-6"></div>
-
-            {/* INTERACTIVE INVOICE SELECTION FORM */}
-            <InvoiceSelectionForm invoices={houseInvoices} house={house} />
+      <div className="max-w-md mx-auto px-4 mt-6">
+        
+        {/* User Info Card */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 mb-6 flex gap-4">
+          <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+            <User size={24} className="text-slate-400" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-slate-500 mb-0.5">ชื่อผู้ชำระ / เจ้าของบ้าน</p>
+            <h2 className="text-lg font-bold text-slate-900 leading-tight">{house.ownerName}</h2>
             
-            {/* RECENT TRANSACTIONS (If any) */}
-            {recentTransactions.length > 0 && (
-              <div className="mt-8 pt-6 border-t-2 border-dotted border-slate-400/60 font-mono text-[10px] text-slate-600 space-y-2">
-                <p className="text-center font-bold text-slate-700 mb-3 tracking-wide">--- ประวัติการชำระเงินล่าสุด <span className="text-[9px] text-slate-400 font-normal">RECENT PMTS</span> ---</p>
-                {recentTransactions.slice(0,3).map(tx => (
-                  <div key={tx.id} className="flex justify-between items-center">
-                    <span>{new Date(tx.paidAt || tx.createdAt || new Date()).toLocaleDateString('th-TH', { year: '2-digit', month: 'short', day: 'numeric' })}</span>
-                    <span>{tx.receiptCode || 'PAID'}</span>
-                    <span className="font-bold text-slate-800">+{parseFloat(tx.amount || "0").toFixed(2)}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* BARCODE FOOTER */}
-            <div className="mt-8 pt-6 border-t-2 border-dotted border-slate-400/60 flex flex-col items-center">
-              <div className="flex items-center justify-center overflow-hidden w-full max-w-[280px]">
-                {barcodeLines}
-              </div>
-              <p className="font-mono text-[10px] text-slate-500 mt-2 tracking-[0.3em]">
-                {house.id.toString().padStart(4, '0')}-{new Date().getFullYear() + 543}-{house.houseNumber?.replace(/[^0-9]/g, '').padStart(4, '0')}
-              </p>
-              <p className="font-mono text-xs text-slate-600 mt-4 text-center font-bold">
-                ขอบคุณที่ใช้บริการ
-                <span className="block text-[9px] text-slate-400 font-normal tracking-widest mt-0.5">THANK YOU</span>
-              </p>
-              <p className="font-mono text-xs text-slate-600 mt-1 text-center font-bold">
-                โทร <span className="text-[9px] text-slate-400 font-normal">TEL:</span> 044-631-419
-              </p>
+            <div className="flex items-start gap-1.5 mt-2 text-sm text-slate-600">
+              <MapPin size={16} className="shrink-0 mt-0.5 text-slate-400" />
+              <p>บ้านเลขที่ {house.houseNumber} <br/><span className="text-slate-500 text-xs">ชุมชน{house.zone || "-"}</span></p>
             </div>
-
           </div>
         </div>
 
-        {/* BOTTOM SAWTOOTH EDGE */}
-        <div className="w-full h-3 overflow-hidden text-[#FDFBF7] flex drop-shadow-md rotate-180">
-          {Array.from({ length: 40 }).map((_, i) => (
-            <div key={i} className="w-3 h-3 bg-current transform rotate-45 -translate-y-1.5 origin-bottom-left shrink-0"></div>
-          ))}
-        </div>
+        {/* Invoice Selection Section */}
+        <InvoiceSelectionForm invoices={houseInvoices} house={house} />
+        
+        {/* Recent Transactions (Optional) */}
+        {recentTransactions.length > 0 && (
+          <div className="mt-8">
+            <h3 className="text-sm font-bold text-slate-800 mb-3 px-1">ประวัติการชำระเงินล่าสุด</h3>
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 space-y-3">
+              {recentTransactions.slice(0, 3).map(tx => (
+                <div key={tx.id} className="flex justify-between items-center pb-3 border-b border-slate-50 last:border-0 last:pb-0">
+                  <div>
+                    <p className="font-semibold text-slate-800 text-sm">ชำระสำเร็จ</p>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {new Date(tx.paidAt || tx.createdAt || new Date()).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-emerald-600 text-sm">+{parseFloat(tx.amount || "0").toFixed(2)} ฿</p>
+                    <p className="text-[10px] text-slate-400 font-mono mt-0.5">{tx.receiptCode || 'PAID'}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
-      
-      {/* Return Link */}
-      <Link 
-        href="/" 
-        className="mt-10 inline-flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors underline-offset-4 hover:underline relative z-10"
-      >
-        <ArrowLeft size={16} />
-        <span>กลับไปหน้าค้นหา</span>
-      </Link>
     </div>
   );
 }
