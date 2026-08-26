@@ -26,7 +26,6 @@ export default function TopNav({ userName, settings }: { userName: string, setti
   const pathname = usePathname();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const [pendingReviewCount, setPendingReviewCount] = useState<number>(0);
 
   // Close settings on escape
   useEffect(() => {
@@ -42,67 +41,6 @@ export default function TopNav({ userName, settings }: { userName: string, setti
     setIsSettingsOpen(false);
   }, [pathname]);
 
-  // Visibility-aware smart poller for pending review items & audio alert
-  useEffect(() => {
-    let lastCount = 0;
-    const checkReviews = async () => {
-      // Skip network call if browser tab is hidden/backgrounded
-      if (typeof document !== 'undefined' && document.visibilityState !== 'visible') {
-        return;
-      }
-
-      try {
-        const res = await fetch('/api/transactions/review');
-        if (res.ok) {
-          const data = await res.json();
-          const count = (data.pending?.length || 0) + (data.waiting?.length || 0);
-          if (count > lastCount && lastCount > 0) {
-            // Play gentle chime safely
-            try {
-              const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-              if (AudioContextClass) {
-                const ctx = new AudioContextClass();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = "sine";
-                osc.frequency.setValueAtTime(587.33, ctx.currentTime);
-                osc.frequency.setValueAtTime(880, ctx.currentTime + 0.12);
-                gain.gain.setValueAtTime(0.08, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.35);
-              }
-            } catch (e) {
-              // ignore audio errors
-            }
-          }
-          lastCount = count;
-          setPendingReviewCount(count);
-        }
-      } catch (e) {
-        // ignore fetch errors
-      }
-    };
-
-    checkReviews();
-    const interval = setInterval(checkReviews, 30000); // every 30s
-    
-    // Immediately check when user tabs back into the app
-    const handleVisibility = () => {
-      if (document.visibilityState === 'visible') {
-        checkReviews();
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibility);
-
-    return () => {
-      clearInterval(interval);
-      document.removeEventListener('visibilitychange', handleVisibility);
-    };
-  }, []);
-
   const navItems = [
     { name: "ภาพรวม", href: "/dashboard", icon: LayoutDashboard },
     { name: "จัดการบ้าน", href: "/dashboard/houses", icon: Home, lottieSrc: "/icons/icons8-home.json", lottieSize: 25 },
@@ -111,8 +49,7 @@ export default function TopNav({ userName, settings }: { userName: string, setti
       href: "/dashboard/review", 
       icon: CheckCircle2, 
       lottieSrc: "/icons/icons8-document.json", 
-      lottieSize: 25,
-      badgeCount: pendingReviewCount 
+      lottieSize: 25 
     },
     { name: "สลิป LINE", href: "/dashboard/line-slips", icon: Smartphone, imageSrc: "/icons/line-black-animated.gif", imageSize: 25 },
     { name: "ประวัติชำระ", href: "/dashboard/history", icon: Receipt, lottieSrc: "/icons/Receipt.json", lottieSize: 40 },
@@ -195,11 +132,6 @@ export default function TopNav({ userName, settings }: { userName: string, setti
                         )}
                       </div>
                       <span className="hidden md:inline">{item.name}</span>
-                      {item.badgeCount !== undefined && item.badgeCount > 0 && (
-                        <span className="absolute -top-1 -right-1 md:-top-1 md:right-1 min-w-[17px] h-4 px-1 bg-red-500 text-white rounded-full text-[10px] font-extrabold flex items-center justify-center shadow-xs animate-pulse">
-                          {item.badgeCount > 99 ? '99+' : item.badgeCount}
-                        </span>
-                      )}
                     </Link>
                   </li>
                 );
