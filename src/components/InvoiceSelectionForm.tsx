@@ -153,29 +153,31 @@ export default function InvoiceSelectionForm({ invoices, house }: { invoices: an
       </div>
 
       {/* Advance Payment Section */}
-      <div className="mb-8 p-5 bg-emerald-50 rounded-2xl border border-emerald-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h3 className="font-semibold text-emerald-900 flex items-center gap-2">
+      <div className="mb-8 p-4 sm:p-5 bg-emerald-50/90 rounded-2xl border border-emerald-100/90 flex flex-row items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h3 className="font-semibold text-emerald-900 flex items-center gap-1.5 text-sm sm:text-base">
             <span className="text-emerald-600">✨</span> ชำระเงินล่วงหน้า
           </h3>
-          <p className="text-xs text-emerald-700 mt-1">
+          <p className="text-[11px] sm:text-xs text-emerald-700 mt-0.5 leading-snug">
             จ่ายล่วงหน้าเพื่อความสะดวก เดือนต่อไปไม่ต้องกังวล (เรท {getAdvanceRate()} บาท/เดือน)
           </p>
         </div>
-        <div className="flex items-center gap-3 self-start sm:self-auto bg-white p-1 rounded-xl border border-emerald-200 shadow-sm">
+        <div className="flex items-center gap-2 bg-white px-2 py-1 rounded-xl border border-emerald-200 shadow-2xs shrink-0">
           <button 
+            type="button"
             onClick={() => setAdvanceMonths(Math.max(0, advanceMonths - 1))}
-            className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 disabled:opacity-50"
+            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 disabled:opacity-40 text-sm font-bold cursor-pointer"
             disabled={advanceMonths === 0}
           >
             -
           </button>
-          <div className="w-16 text-center font-bold text-emerald-800">
+          <div className="min-w-12 text-center font-bold text-emerald-800 text-sm sm:text-base">
             {advanceMonths} <span className="text-xs font-normal text-emerald-600">เดือน</span>
           </div>
           <button 
+            type="button"
             onClick={() => setAdvanceMonths(advanceMonths + 1)}
-            className="w-8 h-8 flex items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 hover:bg-emerald-200 disabled:opacity-50"
+            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 hover:bg-emerald-200 disabled:opacity-40 text-sm font-bold cursor-pointer"
             disabled={getAdvanceRate() === 0}
           >
             +

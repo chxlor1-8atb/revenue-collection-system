@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { houses, invoices, transactions } from "@/lib/schema";
-import { eq, asc, desc, and, inArray, gte, sql } from "drizzle-orm";
+import { eq, asc, desc, and, gte, sql } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import InvoiceSelectionForm from "@/components/InvoiceSelectionForm";
 import Link from "next/link";
@@ -59,47 +59,20 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row lg:items-center lg:justify-center gap-12 lg:gap-24 relative overflow-hidden">
-      {/* Background abstract grid */}
+    <div className="min-h-screen bg-slate-50 py-10 sm:py-14 px-4 sm:px-6 flex flex-col items-center justify-center relative overflow-hidden">
+      {/* Background abstract subtle dot grid */}
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
            style={{ backgroundImage: 'radial-gradient(#0F172A 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
       </div>
 
-      {/* Decorative gradient blur for desktop */}
-      <div className="hidden lg:block absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px] pointer-events-none -z-0"></div>
-
-      {/* Desktop Branding Left Column */}
-      <div className="hidden lg:flex flex-col max-w-md relative z-10">
-        <div className="bg-white/80 p-4 rounded-3xl shadow-sm border border-slate-100 w-fit mb-8 backdrop-blur-sm">
-          <img src="/nangrong-logo.png" alt="Municipal Logo" className="w-16 h-16 object-contain" />
-        </div>
-        <h1 className="text-5xl font-sans font-bold text-slate-900 tracking-tight leading-[1.15] mb-6">
-          ตรวจสอบและ<br/><span className="text-[#5B58F2]">ชำระค่าธรรมเนียมขยะ</span>
-        </h1>
-        <p className="text-lg text-slate-500 mb-10 leading-relaxed">
-          เทศบาลเมืองนางรองอำนวยความสะดวกในการตรวจสอบยอดค้างชำระและชำระเงินผ่าน QR Code ได้ทันที ปลอดภัยและรวดเร็ว
-        </p>
-        <div className="flex items-center gap-4 text-sm font-medium text-slate-700 bg-white/60 px-6 py-4 rounded-2xl border border-slate-200/60 shadow-sm backdrop-blur-sm w-fit">
-          <div className="relative flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-          </div>
-          อัปเดตข้อมูลแบบเรียลไทม์
-        </div>
+      {/* Centered Master Receipt Ticket */}
+      <div className="w-full max-w-lg bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden relative z-10">
         
-        <Link href="/" className="mt-12 text-sm font-medium text-slate-400 hover:text-slate-700 transition-colors underline-offset-4 hover:underline flex items-center gap-2 w-fit">
-          ← กลับไปหน้าค้นหา
-        </Link>
-      </div>
-
-      {/* Main Interactive Bill Component */}
-      <div className="w-full max-w-lg bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden relative z-10">
-        
-        {/* TOP SECTION: Municipal Header (Navy Blue Gradient) */}
-        <div className="bg-linear-to-br from-[#0F172A] to-[#1E293B] p-8 text-white relative">
+        {/* TOP SECTION: Municipal Header (Deep Navy Blue) */}
+        <div className="bg-gradient-to-br from-[#0F172A] to-[#1E293B] p-7 sm:p-8 text-white relative">
           <div className="flex justify-between items-start mb-6">
             <div className="flex items-center gap-3">
-              <div className="bg-white/10 backdrop-blur-xs p-2 rounded-2xl border border-white/10">
+              <div className="bg-white/10 backdrop-blur-xs p-2 rounded-2xl border border-white/10 shrink-0">
                 <img src="/nangrong-logo.png" alt="Municipal Logo" className="w-10 h-10 object-contain" />
               </div>
               <div>
@@ -121,7 +94,7 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
               <p className="text-2xl font-bold font-sans tracking-tight text-white mt-0.5">{house.ownerName}</p>
             </div>
             
-            <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-700/50">
+            <div className="grid grid-cols-2 gap-4 pt-3 border-t border-slate-700/50">
               <div>
                 <p className="text-xs text-slate-400 font-medium">บ้านเลขที่</p>
                 <p className="font-mono text-lg font-bold text-slate-100 mt-0.5">{house.houseNumber}</p>
@@ -142,7 +115,7 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
         </div>
 
         {/* BOTTOM SECTION: Transaction Ledger (White) */}
-        <div className="bg-white rounded-b-3xl p-8 sm:p-10 relative shadow-inner">
+        <div className="bg-white rounded-b-3xl p-7 sm:p-9 relative shadow-inner">
           <div className="mb-6 flex items-baseline justify-between border-b border-slate-100 pb-4">
             <div>
               <h2 className="text-xl font-bold text-slate-900">รายการค่าธรรมเนียมเก็บขนมูลฝอย</h2>
@@ -150,6 +123,7 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
             </div>
             <span className="text-xs font-semibold text-slate-400 tracking-wider">INVOICES</span>
           </div>
+
           <InvoiceSelectionForm invoices={houseInvoices} house={house} />
           
           {recentTransactions.length > 0 && (
@@ -206,8 +180,8 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
         </div>
       </div>
       
-      {/* Mobile return link */}
-      <Link href="/" className="lg:hidden mt-8 text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors underline-offset-4 hover:underline relative z-10">
+      {/* Return Link */}
+      <Link href="/" className="mt-6 text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors underline-offset-4 hover:underline relative z-10">
         ← กลับไปหน้าค้นหา
       </Link>
     </div>
