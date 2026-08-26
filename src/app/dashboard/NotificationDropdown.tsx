@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import CurrencyDisplay from "@/components/CurrencyDisplay";
 import LiveQrCountdown from "@/components/LiveQrCountdown";
-import { useRealtimeEvents } from "@/hooks/useRealtimeEvents";
 
 export interface PendingNotificationItem {
   id: number;
@@ -147,22 +146,6 @@ export default function NotificationDropdown() {
       document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, [soundEnabled]);
-
-  // Real-Time SSE Stream Listener (Instant notifications & chime < 50ms)
-  useRealtimeEvents({
-    "qr:created": () => {
-      fetchNotifications();
-    },
-    "slip:uploaded": () => {
-      fetchNotifications();
-    },
-    "transaction:verified": () => {
-      fetchNotifications();
-    },
-    "transaction:rejected": () => {
-      fetchNotifications();
-    },
-  });
 
   // Close when clicking outside or pressing Escape
   useEffect(() => {

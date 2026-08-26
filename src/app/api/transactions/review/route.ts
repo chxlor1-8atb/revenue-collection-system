@@ -5,7 +5,6 @@ import { transactions, invoices, houses } from "@/lib/schema";
 import { eq, desc, inArray, or, and, gte } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { generateNextReceiptSeries } from "@/lib/receiptSeries";
-import { broadcastEvent } from "@/lib/eventHub";
 import { generateIdempotencyKey, acquireInFlightLock, releaseInFlightLock } from "@/lib/idempotency";
 
 export async function GET() {
@@ -146,61 +145,41 @@ export async function POST(request: Request) {
       };
     }
 
-    // 3. ATOMIC DATABASE TRANSACTION
-    await db.transaction(async (txDb) => {
-      // Update Transaction Status
-      await txDb.update(transactions)
-        .set({ 
-          slipStatus: status,
-          verifiedBy: session.user?.name || "admin",
-          rejectReason: status === 'rejected' ? rejectReason : null,
-          lockKey: null,
-          lockedBy: null,
-          lockedAt: null,
-          ...seriesData
-        })
-        .where(eq(transactions.id, transactionId));
+    // 3. Update Transaction and Invoices Status
+    await db.update(transactions)
+      .set({ 
+        slipStatus: status,
+        verifiedBy: session.user?.name || "admin",
+        rejectReason: status === 'rejected' ? rejectReason : null,
+        lockKey: null,
+        lockedBy: null,
+        lockedAt: null,
+        ...seriesData
+      })
+      .where(eq(transactions.id, transactionId));
 
-      // Update Related Invoices Status
-      if (status === 'verified') {
-        await txDb.update(invoices)
-          .set({ status: 'paid' })
-          .where(eq(invoices.transactionId, transactionId));
-      } else {
-        // Delete any pending_advance invoices
-        await txDb.delete(invoices)
-          .where(
-            and(
-              eq(invoices.transactionId, transactionId),
-              eq(invoices.status, 'pending_advance')
-            )
-          );
-
-        // Unlink regular invoices
-        await txDb.update(invoices)
-          .set({ status: 'unpaid', transactionId: null })
-          .where(eq(invoices.transactionId, transactionId));
-      }
-    });
-
-    // 4. REAL-TIME EVENT STREAM BROADCAST (Zero Latency < 50ms)
+    // Update Related Invoices Status
     if (status === 'verified') {
-      broadcastEvent("transaction:verified", {
-        transactionId,
-        receiptCode: seriesData.receiptCode,
-        houseNumber: txInfo?.houseNumber,
-        amount: currentTx.amount || "0",
-        verifiedAt: new Date().toISOString(),
-      });
+      await db.update(invoices)
+        .set({ status: 'paid' })
+        .where(eq(invoices.transactionId, transactionId));
     } else {
-      broadcastEvent("transaction:rejected", {
-        transactionId,
-        reason: rejectReason,
-        rejectedAt: new Date().toISOString(),
-      });
+      // Delete any pending_advance invoices
+      await db.delete(invoices)
+        .where(
+          and(
+            eq(invoices.transactionId, transactionId),
+            eq(invoices.status, 'pending_advance')
+          )
+        );
+
+      // Unlink regular invoices
+      await db.update(invoices)
+        .set({ status: 'unpaid', transactionId: null })
+        .where(eq(invoices.transactionId, transactionId));
     }
 
-    // 5. Send LINE Push Notification if lineUserId exists
+    // 4. Send LINE Push Notification if lineUserId exists
     if (txInfo && txInfo.lineUserId) {
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://revenue-collection-system.vercel.app";
       if (status === 'verified') {

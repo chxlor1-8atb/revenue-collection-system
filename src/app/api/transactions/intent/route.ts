@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { transactions, invoices, systemSettings, houses } from "@/lib/schema";
 import { inArray, eq, and, lt, isNull, desc } from "drizzle-orm";
-import { broadcastEvent } from "@/lib/eventHub";
 import { generateIdempotencyKey, acquireInFlightLock, releaseInFlightLock } from "@/lib/idempotency";
 
 export async function POST(request: Request) {
@@ -176,49 +175,40 @@ export async function POST(request: Request) {
 
     let transactionId = 0;
 
-    // 5. ATOMIC DATABASE TRANSACTION
-    await db.transaction(async (txDb) => {
-      const [newTx] = await txDb.insert(transactions).values({
-        amount: finalAmount.toString(),
-        slipImageUrl: '',
-        slipStatus: 'waiting_for_slip',
-      }).returning();
-
-      transactionId = newTx.id;
-
-      if (invoiceIds && invoiceIds.length > 0) {
-        const updatedInvoices = await txDb.update(invoices)
-          .set({ transactionId: transactionId })
-          .where(
-            and(
-              inArray(invoices.id, invoiceIds),
-              isNull(invoices.transactionId)
-            )
-          )
-          .returning({ id: invoices.id });
-
-        if (updatedInvoices.length !== invoiceIds.length) {
-          throw new Error("Invoices were locked by another request");
-        }
-      }
-
-      if (advanceInvoicesToInsert.length > 0) {
-        const advanceInvoicesWithTx = advanceInvoicesToInsert.map(inv => ({
-          ...inv,
-          transactionId: transactionId
-        }));
-        await txDb.insert(invoices).values(advanceInvoicesWithTx);
-      }
-    });
-
-    // 6. REAL-TIME EVENT STREAM BROADCAST (Zero Latency < 50ms)
-    broadcastEvent("qr:created", {
-      transactionId,
-      houseNumber,
-      ownerName,
+    // 5. Create transaction and link invoices
+    const [newTx] = await db.insert(transactions).values({
       amount: finalAmount.toString(),
-      createdAt: new Date().toISOString(),
-    });
+      slipImageUrl: '',
+      slipStatus: 'waiting_for_slip',
+    }).returning();
+
+    transactionId = newTx.id;
+
+    if (invoiceIds && invoiceIds.length > 0) {
+      const updatedInvoices = await db.update(invoices)
+        .set({ transactionId: transactionId })
+        .where(
+          and(
+            inArray(invoices.id, invoiceIds),
+            isNull(invoices.transactionId)
+          )
+        )
+        .returning({ id: invoices.id });
+
+      if (updatedInvoices.length !== invoiceIds.length) {
+        // Rollback transaction if race condition
+        await db.delete(transactions).where(eq(transactions.id, transactionId));
+        return NextResponse.json({ error: "บิลถูกล็อกหรือกำลังมีผู้ทำรายการ กรุณาลองใหม่อีกครั้ง" }, { status: 409 });
+      }
+    }
+
+    if (advanceInvoicesToInsert.length > 0) {
+      const advanceInvoicesWithTx = advanceInvoicesToInsert.map(inv => ({
+        ...inv,
+        transactionId: transactionId
+      }));
+      await db.insert(invoices).values(advanceInvoicesWithTx);
+    }
 
     return NextResponse.json({ 
       transactionId, 

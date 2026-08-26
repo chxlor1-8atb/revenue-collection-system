@@ -37,21 +37,18 @@ export async function POST(
 
     const voidReason = `ยกเลิกรายการโดยแอดมิน: ${session.user.name || session.user.email} (วันที่ ${new Date().toLocaleString('th-TH')})`;
 
-    // Atomic update inside a transaction
-    await db.transaction(async (txDb) => {
-      // 2. Void the transaction
-      await txDb.update(transactions)
-        .set({ 
-          slipStatus: "voided",
-          payerNote: tx.payerNote ? `${tx.payerNote} | ${voidReason}` : voidReason
-        })
-        .where(eq(transactions.id, transactionId));
+    // 2. Void the transaction
+    await db.update(transactions)
+      .set({ 
+        slipStatus: "voided",
+        payerNote: tx.payerNote ? `${tx.payerNote} | ${voidReason}` : voidReason
+      })
+      .where(eq(transactions.id, transactionId));
 
-      // 3. Revert invoices back to unpaid
-      await txDb.update(invoices)
-        .set({ status: "unpaid", transactionId: null })
-        .where(eq(invoices.transactionId, transactionId));
-    });
+    // 3. Revert invoices back to unpaid
+    await db.update(invoices)
+      .set({ status: "unpaid", transactionId: null })
+      .where(eq(invoices.transactionId, transactionId));
 
     // 4. Record Audit Log
     await recordAuditLog({

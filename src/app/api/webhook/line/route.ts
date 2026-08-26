@@ -6,7 +6,6 @@ import { eq, and, desc, gte, inArray } from "drizzle-orm";
 import { put } from "@vercel/blob";
 import { verifySlipWithBuffer } from "@/lib/slip2go";
 import { generateNextReceiptSeries } from "@/lib/receiptSeries";
-import { broadcastEvent } from "@/lib/eventHub";
 
 import crypto from 'crypto';
 
@@ -46,62 +45,49 @@ async function attemptAutoApprove(house: any, slipAmountStr: string, slipImageUr
     let txId: number | undefined;
     const series = await generateNextReceiptSeries(new Date());
 
-    // ATOMIC TRANSACTION: CREATE TRANSACTION, MARK INVOICES AS PAID, GENERATE ADVANCE INVOICES
-    await db.transaction(async (txDb) => {
-      const newTx = await txDb.insert(transactions).values({
-        amount: slipAmountStr,
-        amountClaimedByPayer: slipAmountStr,
-        slipImageUrl: slipImageUrl,
-        slipStatus: "verified",
-        slipRefId: transRef,
-        paidAt: new Date(),
-        verifiedBy: "line_bot_auto",
-        receiptCode: series.receiptCode,
-        bookNumber: series.bookNumber,
-        receiptNumber: series.receiptNumber,
-        fiscalYear: series.fiscalYear,
-      }).returning();
+    const newTx = await db.insert(transactions).values({
+      amount: slipAmountStr,
+      amountClaimedByPayer: slipAmountStr,
+      slipImageUrl: slipImageUrl,
+      slipStatus: "verified",
+      slipRefId: transRef,
+      paidAt: new Date(),
+      verifiedBy: "line_bot_auto",
+      receiptCode: series.receiptCode,
+      bookNumber: series.bookNumber,
+      receiptNumber: series.receiptNumber,
+      fiscalYear: series.fiscalYear,
+    }).returning();
 
-      txId = newTx[0].id;
+    txId = newTx[0].id;
 
-      // MARK EXISTING INVOICES AS PAID
-      if (unpaidInvoices.length > 0) {
-        await txDb.update(invoices).set({ status: 'paid', transactionId: txId }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
+    // MARK EXISTING INVOICES AS PAID
+    if (unpaidInvoices.length > 0) {
+      await db.update(invoices).set({ status: 'paid', transactionId: txId }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
+    }
+
+    // GENERATE ADVANCE INVOICES
+    if (advanceMonthsCount > 0) {
+      let lastMonthDate = new Date();
+      const latestInvoiceList = await db.select().from(invoices).where(eq(invoices.houseId, house.id)).orderBy(desc(invoices.monthYear)).limit(1);
+      if (latestInvoiceList.length > 0) {
+        const [year, month] = latestInvoiceList[0].monthYear.split("-");
+        lastMonthDate = new Date(parseInt(year), parseInt(month) - 1, 1);
       }
-
-      // GENERATE ADVANCE INVOICES
-      if (advanceMonthsCount > 0) {
-        let lastMonthDate = new Date();
-        const latestInvoiceList = await txDb.select().from(invoices).where(eq(invoices.houseId, house.id)).orderBy(desc(invoices.monthYear)).limit(1);
-        if (latestInvoiceList.length > 0) {
-          const [year, month] = latestInvoiceList[0].monthYear.split("-");
-          lastMonthDate = new Date(parseInt(year), parseInt(month) - 1, 1);
-        }
+      
+      for (let i = 1; i <= advanceMonthsCount; i++) {
+        const advanceDate = new Date(lastMonthDate);
+        advanceDate.setMonth(advanceDate.getMonth() + i);
+        const advanceMonthYear = `${advanceDate.getFullYear()}-${String(advanceDate.getMonth() + 1).padStart(2, "0")}`;
         
-        for (let i = 1; i <= advanceMonthsCount; i++) {
-          const advanceDate = new Date(lastMonthDate);
-          advanceDate.setMonth(advanceDate.getMonth() + i);
-          const advanceMonthYear = `${advanceDate.getFullYear()}-${String(advanceDate.getMonth() + 1).padStart(2, "0")}`;
-          
-          await txDb.insert(invoices).values({
-            houseId: house.id,
-            amount: defaultBill.toString(),
-            status: 'paid', // immediately paid
-            monthYear: advanceMonthYear,
-            transactionId: txId
-          });
-        }
+        await db.insert(invoices).values({
+          houseId: house.id,
+          amount: defaultBill.toString(),
+          status: 'paid', // immediately paid
+          monthYear: advanceMonthYear,
+          transactionId: txId
+        });
       }
-    });
-
-    if (txId) {
-      broadcastEvent("transaction:verified", {
-        transactionId: txId,
-        receiptCode: series.receiptCode,
-        houseNumber: house?.houseNumber,
-        amount: slipAmountStr,
-        verifiedAt: new Date().toISOString(),
-      });
     }
 
     return { success: true, newTxId: txId, totalDebt };

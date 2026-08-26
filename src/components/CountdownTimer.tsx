@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Clock, RefreshCw, CheckCircle2, AlertCircle, Sparkles } from "lucide-react";
-import { useRealtimeEvents } from "@/hooks/useRealtimeEvents";
+import { Clock, RefreshCw, CheckCircle2, AlertCircle } from "lucide-react";
 
 export default function CountdownTimer({ initialTimeLeft, transactionId }: { initialTimeLeft: number, transactionId?: number }) {
   const [timeLeft, setTimeLeft] = useState<number>(initialTimeLeft);
@@ -20,16 +19,7 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
     }, 1200);
   }, [transactionId]);
 
-  // 1. Real-Time SSE Stream Listener (Zero Latency < 50ms)
-  useRealtimeEvents({
-    "transaction:verified": (data) => {
-      if (transactionId && data.transactionId === transactionId) {
-        handleSuccessfulVerification();
-      }
-    }
-  }, Boolean(transactionId && !isVerified));
-
-  // 2. Fallback Polling (every 3 seconds)
+  // Fast Polling (every 2.5 seconds + on visibility change)
   useEffect(() => {
     if (!transactionId || isVerified) return;
 
@@ -45,11 +35,17 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
       }
     };
 
-    pollingRef.current = setInterval(pollStatus, 3000);
+    pollingRef.current = setInterval(pollStatus, 2500);
     pollStatus();
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") pollStatus();
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
 
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
+      document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, [transactionId, isVerified, handleSuccessfulVerification]);
 

@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { transactions, invoices, houses } from "@/lib/schema";
 import { eq, inArray, and, or, isNull } from "drizzle-orm";
-import { broadcastEvent } from "@/lib/eventHub";
 import { generateIdempotencyKey, acquireInFlightLock, releaseInFlightLock } from "@/lib/idempotency";
 
 export async function POST(request: Request) {
@@ -58,44 +57,33 @@ export async function POST(request: Request) {
 
     let newTransactionId = 0;
 
-    // 4. ATOMIC DATABASE TRANSACTION
-    await db.transaction(async (txDb) => {
-      // Create new transaction
-      const [newTx] = await txDb.insert(transactions).values({
-        amount: finalAmount.toString(),
-        slipImageUrl: '',
-        slipStatus: 'waiting_for_slip',
-      }).returning();
-
-      newTransactionId = newTx.id;
-
-      // Update invoices to point to the new transaction
-      const updatedInvoices = await txDb.update(invoices)
-        .set({ transactionId: newTransactionId })
-        .where(
-          and(
-            inArray(invoices.id, invoiceIds),
-            or(eq(invoices.transactionId, oldTx.id), isNull(invoices.transactionId))
-          )
-        )
-        .returning({ id: invoices.id });
-        
-      if (updatedInvoices.length !== invoiceIds.length) {
-        throw new Error("Invoices were locked by another request");
-      }
-
-      // Delete old transaction
-      await txDb.delete(transactions).where(eq(transactions.id, oldTx.id));
-    });
-
-    // 5. REAL-TIME BROADCAST TO SSE STREAM
-    broadcastEvent("qr:created", {
-      transactionId: newTransactionId,
-      houseNumber,
-      ownerName,
+    // 4. Create new transaction
+    const [newTx] = await db.insert(transactions).values({
       amount: finalAmount.toString(),
-      createdAt: new Date().toISOString(),
-    });
+      slipImageUrl: '',
+      slipStatus: 'waiting_for_slip',
+    }).returning();
+
+    newTransactionId = newTx.id;
+
+    // Update invoices to point to the new transaction
+    const updatedInvoices = await db.update(invoices)
+      .set({ transactionId: newTransactionId })
+      .where(
+        and(
+          inArray(invoices.id, invoiceIds),
+          or(eq(invoices.transactionId, oldTx.id), isNull(invoices.transactionId))
+        )
+      )
+      .returning({ id: invoices.id });
+      
+    if (updatedInvoices.length !== invoiceIds.length) {
+      await db.delete(transactions).where(eq(transactions.id, newTransactionId));
+      return NextResponse.json({ error: "Invoices were locked by another request" }, { status: 409 });
+    }
+
+    // Delete old transaction
+    await db.delete(transactions).where(eq(transactions.id, oldTx.id));
 
     return NextResponse.json({ 
       transactionId: newTransactionId, 

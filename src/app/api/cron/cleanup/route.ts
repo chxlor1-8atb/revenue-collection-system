@@ -37,32 +37,29 @@ export async function GET(request: Request) {
 
     const txIds = expiredTxs.map(tx => tx.id);
 
-    // Atomically cancel them and free up the invoices
-    await db.transaction(async (txDb) => {
-      // Unlink invoices
-      await txDb.update(invoices)
-        .set({ status: 'unpaid', transactionId: null })
-        .where(
-          and(
-            inArray(invoices.transactionId, txIds),
-            eq(invoices.status, 'pending')
-          )
-        );
+    // Unlink invoices
+    await db.update(invoices)
+      .set({ status: 'unpaid', transactionId: null })
+      .where(
+        and(
+          inArray(invoices.transactionId, txIds),
+          eq(invoices.status, 'pending')
+        )
+      );
 
-      // Delete any advance invoices tied to these expired transactions
-      await txDb.delete(invoices)
-        .where(
-          and(
-            inArray(invoices.transactionId, txIds),
-            eq(invoices.status, 'pending_advance')
-          )
-        );
+    // Delete any advance invoices tied to these expired transactions
+    await db.delete(invoices)
+      .where(
+        and(
+          inArray(invoices.transactionId, txIds),
+          eq(invoices.status, 'pending_advance')
+        )
+      );
 
-      // Mark transactions as expired
-      await txDb.update(transactions)
-        .set({ slipStatus: 'expired' })
-        .where(inArray(transactions.id, txIds));
-    });
+    // Mark transactions as expired
+    await db.update(transactions)
+      .set({ slipStatus: 'expired' })
+      .where(inArray(transactions.id, txIds));
 
     return NextResponse.json({ success: true, count: txIds.length, message: `Expired ${txIds.length} transactions.` });
 
