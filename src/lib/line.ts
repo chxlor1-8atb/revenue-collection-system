@@ -1488,11 +1488,42 @@ export function generateWelcomeFlexMessage() {
                 width: "28px",
                 height: "28px",
                 cornerRadius: "14px",
+                backgroundColor: "#EEF2FF",
+                alignItems: "center",
+                justifyContent: "center",
+                contents: [
+                  { type: "text", text: "4", color: "#4F46E5", weight: "bold", size: "xs", align: "center" }
+                ]
+              },
+              {
+                type: "box",
+                layout: "vertical",
+                justifyContent: "center",
+                contents: [
+                  { type: "text", text: "ชำระเงินล่วงหน้า", weight: "bold", size: "sm", color: "#334155" },
+                  { type: "text", text: "พิมพ์ 'ชำระเงินล่วงหน้า' เพื่อเลือกจ่าย 3, 6, 12 เดือน", size: "xs", color: "#64748B", wrap: true }
+                ]
+              }
+            ]
+          },
+          {
+            type: "box",
+            layout: "horizontal",
+            margin: "md",
+            spacing: "md",
+            alignItems: "center",
+            contents: [
+              {
+                type: "box",
+                layout: "vertical",
+                width: "28px",
+                height: "28px",
+                cornerRadius: "14px",
                 backgroundColor: "#DCFCE7",
                 alignItems: "center",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "4", color: "#047857", weight: "bold", size: "xs", align: "center" }
+                  { type: "text", text: "5", color: "#047857", weight: "bold", size: "xs", align: "center" }
                 ]
               },
               {
@@ -1523,7 +1554,7 @@ export function generateWelcomeFlexMessage() {
                 alignItems: "center",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "5", color: "#B45309", weight: "bold", size: "xs", align: "center" }
+                  { type: "text", text: "6", color: "#B45309", weight: "bold", size: "xs", align: "center" }
                 ]
               },
               {
@@ -1554,7 +1585,7 @@ export function generateWelcomeFlexMessage() {
                 alignItems: "center",
                 justifyContent: "center",
                 contents: [
-                  { type: "text", text: "6", color: "#0E7490", weight: "bold", size: "xs", align: "center" }
+                  { type: "text", text: "7", color: "#0E7490", weight: "bold", size: "xs", align: "center" }
                 ]
               },
               {
@@ -1709,5 +1740,321 @@ export function generateSlipRejectedFlexMessage(houseNumber: string, amount: num
         paddingAll: "20px"
       }
     }
+  };
+}
+
+export function generateAdvanceOptionsFlexMessage(
+  house: { id: number; houseNumber: string; ownerName: string; defaultBillingAmount?: string | null },
+  unpaidCount: number,
+  unpaidTotal: number,
+  monthlyRate: number,
+  appUrl: string
+) {
+  const options = [
+    { months: 3, label: "⚡ 3 เดือน", sub: "ล่วงหน้า 3 เดือน" },
+    { months: 6, label: "🌟 6 เดือน (ครึ่งปี)", sub: "ล่วงหน้า 6 เดือน" },
+    { months: 12, label: "👑 12 เดือน (1 ปี)", sub: "ล่วงหน้า 1 ปีเต็ม" },
+  ];
+
+  const optionBoxes = options.map((opt) => {
+    const advanceCost = opt.months * monthlyRate;
+    const grandTotal = advanceCost + unpaidTotal;
+    return {
+      type: "box",
+      layout: "vertical",
+      backgroundColor: "#F8FAFC",
+      cornerRadius: "md",
+      paddingAll: "12px",
+      margin: "md",
+      borderWidth: "1px",
+      borderColor: "#E2E8F0",
+      action: {
+        type: "postback",
+        label: opt.label,
+        data: `action=payAdvance&houseId=${house.id}&months=${opt.months}`,
+        displayText: `ชำระล่วงหน้า ${opt.months} เดือน (บ้าน ${house.houseNumber})`,
+      },
+      contents: [
+        {
+          type: "box",
+          layout: "horizontal",
+          contents: [
+            {
+              type: "text",
+              text: opt.label,
+              weight: "bold",
+              size: "sm",
+              color: "#1E293B",
+              flex: 3,
+            },
+            {
+              type: "text",
+              text: `${grandTotal.toLocaleString()} ฿`,
+              weight: "bold",
+              size: "sm",
+              color: "#4F46E5",
+              align: "end",
+              flex: 2,
+            },
+          ],
+        },
+        {
+          type: "text",
+          text: unpaidCount > 0 
+            ? `(ล่วงหน้า ${advanceCost} บ. + บิลค้าง ${unpaidTotal} บ.)` 
+            : `(เดือนละ ${monthlyRate} บาท)`,
+          size: "xxs",
+          color: "#64748B",
+          margin: "xs",
+        },
+      ],
+    };
+  });
+
+  return {
+    type: "flex",
+    altText: `ชำระค่าขยะล่วงหน้า - บ้านเลขที่ ${house.houseNumber}`,
+    contents: {
+      type: "bubble",
+      size: "mega",
+      header: {
+        type: "box",
+        layout: "vertical",
+        backgroundColor: "#4F46E5",
+        paddingAll: "16px",
+        contents: [
+          {
+            type: "text",
+            text: "🌟 ชำระค่าธรรมเนียมล่วงหน้า",
+            weight: "bold",
+            color: "#ffffff",
+            size: "md",
+          },
+          {
+            type: "text",
+            text: "เทศบาลเมืองนางรอง",
+            color: "#E0E7FF",
+            size: "xs",
+            margin: "xs",
+          },
+        ],
+      },
+      body: {
+        type: "box",
+        layout: "vertical",
+        paddingAll: "16px",
+        contents: [
+          {
+            type: "box",
+            layout: "horizontal",
+            contents: [
+              { type: "text", text: "🏠 บ้านเลขที่", color: "#64748B", size: "xs", flex: 1 },
+              { type: "text", text: house.houseNumber, color: "#0F172A", size: "xs", weight: "bold", align: "end", flex: 2 },
+            ],
+          },
+          {
+            type: "box",
+            layout: "horizontal",
+            margin: "xs",
+            contents: [
+              { type: "text", text: "👤 เจ้าบ้าน", color: "#64748B", size: "xs", flex: 1 },
+              { type: "text", text: house.ownerName || "-", color: "#0F172A", size: "xs", weight: "bold", align: "end", flex: 2 },
+            ],
+          },
+          {
+            type: "box",
+            layout: "horizontal",
+            margin: "xs",
+            contents: [
+              { type: "text", text: "💡 อัตราจัดเก็บ", color: "#64748B", size: "xs", flex: 1 },
+              { type: "text", text: `${monthlyRate} บาท/เดือน`, color: "#059669", size: "xs", weight: "bold", align: "end", flex: 2 },
+            ],
+          },
+          ...(unpaidCount > 0 ? [
+            {
+              type: "box",
+              layout: "vertical",
+              backgroundColor: "#FFFBEB",
+              cornerRadius: "md",
+              paddingAll: "8px",
+              margin: "md",
+              contents: [
+                {
+                  type: "text",
+                  text: `⚠️ มียอดค้างชำระ ${unpaidTotal} บ. (${unpaidCount} เดือน)`,
+                  color: "#B45309",
+                  size: "xs",
+                  weight: "bold",
+                },
+                {
+                  type: "text",
+                  text: "ยอดชำระล่วงหน้าจะรวมยอดค้างชำระให้อัตโนมัติ",
+                  color: "#92400E",
+                  size: "xxs",
+                },
+              ],
+            },
+          ] : []),
+          {
+            type: "separator",
+            margin: "md",
+          },
+          {
+            type: "text",
+            text: "👇 แตะเลือกแพ็กเกจที่ต้องการชำระ:",
+            weight: "bold",
+            size: "xs",
+            color: "#334155",
+            margin: "md",
+          },
+          ...optionBoxes,
+        ],
+      },
+      footer: {
+        type: "box",
+        layout: "vertical",
+        paddingAll: "16px",
+        paddingTop: "0px",
+        spacing: "sm",
+        contents: [
+          {
+            type: "button",
+            action: {
+              type: "uri",
+              label: "🌐 กำหนดเดือนเองผ่านเว็บ",
+              uri: `${appUrl}/house/${house.id}`,
+            },
+            style: "link",
+            color: "#4F46E5",
+            height: "sm",
+          },
+          {
+            type: "text",
+            text: "💡 หลังสแกนจ่าย ส่งสลิปเข้าแชทนี้ ระบบตัดยอดทันทีค่ะ",
+            size: "xxs",
+            color: "#94A3B8",
+            align: "center",
+          },
+        ],
+      },
+    },
+  };
+}
+
+export function generateAdvanceQrFlexMessage(
+  houseNumber: string,
+  months: number,
+  unpaidCount: number,
+  unpaidTotal: number,
+  totalAmount: number,
+  payUrl: string,
+  qrUrl: string
+) {
+  return {
+    type: "flex",
+    altText: `QR Code ชำระเงินล่วงหน้า ${months} เดือน - บ้านเลขที่ ${houseNumber}`,
+    contents: {
+      type: "bubble",
+      size: "kilo",
+      header: {
+        type: "box",
+        layout: "vertical",
+        backgroundColor: "#4F46E5",
+        paddingAll: "14px",
+        contents: [
+          {
+            type: "text",
+            text: `ชำระล่วงหน้า ${months} เดือน`,
+            weight: "bold",
+            color: "#ffffff",
+            size: "md",
+            align: "center",
+          },
+        ],
+      },
+      hero: {
+        type: "image",
+        url: qrUrl,
+        size: "full",
+        aspectRatio: "1:1",
+        aspectMode: "fit",
+        backgroundColor: "#ffffff",
+      },
+      body: {
+        type: "box",
+        layout: "vertical",
+        paddingAll: "16px",
+        spacing: "sm",
+        contents: [
+          {
+            type: "box",
+            layout: "horizontal",
+            contents: [
+              { type: "text", text: "บ้านเลขที่", color: "#64748B", size: "xs", flex: 1 },
+              { type: "text", text: houseNumber, color: "#111827", size: "sm", weight: "bold", align: "end", flex: 2 },
+            ],
+          },
+          {
+            type: "box",
+            layout: "horizontal",
+            contents: [
+              { type: "text", text: "รายการชำระ", color: "#64748B", size: "xs", flex: 1 },
+              { 
+                type: "text", 
+                text: unpaidCount > 0 ? `ล่วงหน้า ${months} ด. + ค้าง ${unpaidCount} ด.` : `ล่วงหน้า ${months} เดือน`, 
+                color: "#4F46E5", 
+                size: "xs", 
+                weight: "bold", 
+                align: "end", 
+                flex: 2 
+              },
+            ],
+          },
+          {
+            type: "box",
+            layout: "horizontal",
+            contents: [
+              { type: "text", text: "ยอดชำระสุทธิ", color: "#64748B", size: "xs", flex: 1 },
+              { type: "text", text: `${totalAmount.toLocaleString()} บาท`, color: "#059669", size: "md", weight: "bold", align: "end", flex: 2 },
+            ],
+          },
+          {
+            type: "box",
+            layout: "vertical",
+            backgroundColor: "#F0FDF4",
+            cornerRadius: "md",
+            paddingAll: "8px",
+            margin: "sm",
+            contents: [
+              {
+                type: "text",
+                text: "📌 เมื่อโอนเงินแล้ว กรุณาส่ง 'ภาพสลิป' เข้ามาในแชทนี้ ระบบจะตัดยอดและออกใบเสร็จให้อัตโนมัติค่ะ 💚",
+                size: "xxs",
+                color: "#166534",
+                wrap: true,
+              },
+            ],
+          },
+        ],
+      },
+      footer: {
+        type: "box",
+        layout: "vertical",
+        paddingAll: "14px",
+        paddingTop: "0px",
+        contents: [
+          {
+            type: "button",
+            action: {
+              type: "uri",
+              label: "🌐 ดูรายละเอียดบ้านของฉัน",
+              uri: payUrl,
+            },
+            style: "secondary",
+            height: "sm",
+          },
+        ],
+      },
+    },
   };
 }

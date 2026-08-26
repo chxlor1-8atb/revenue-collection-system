@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { generateBillFlexMessage, generateSlipErrorFlexMessage, generateSlipVerificationSuccessFlexMessage, replyMessage, replyWithMessages, safeReplyOrPush, getMessageContent, generateReceiptFlexMessage, generateDuplicateHouseSelectionFlexMessage, generateHowToUseFlexMessage, generateReportProblemFlexMessage, generateContactFlexMessage, generateMyInfoFlexMessage, generateWelcomeFlexMessage } from "@/lib/line";
+import { generateBillFlexMessage, generateSlipErrorFlexMessage, generateSlipVerificationSuccessFlexMessage, replyMessage, replyWithMessages, safeReplyOrPush, getMessageContent, generateReceiptFlexMessage, generateDuplicateHouseSelectionFlexMessage, generateHowToUseFlexMessage, generateReportProblemFlexMessage, generateContactFlexMessage, generateMyInfoFlexMessage, generateWelcomeFlexMessage, generateAdvanceOptionsFlexMessage, generateAdvanceQrFlexMessage } from "@/lib/line";
 import { db } from "@/lib/db";
 import { lineMessages, houses, invoices, transactions } from "@/lib/schema";
 import { eq, and, desc, gte, inArray } from "drizzle-orm";
@@ -333,28 +333,14 @@ export async function POST(request: Request) {
           }
         }
 
-        // 3.6 Auto-match with linked house if amount matches exactly
+        // 3.6 Auto-match with linked house (supports exact match AND advance payment matching)
         if (slipAmount && slipAmount !== "0") {
           const linkedHouses = await db.select().from(houses).where(eq(houses.lineUserId, userId)).limit(1);
           if (linkedHouses.length > 0) {
             const house = linkedHouses[0];
-            const unpaidInvoices = await db.select().from(invoices).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
-            const totalDebt = unpaidInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
+            const approveResult = await attemptAutoApprove(house, slipAmount, blobUrl, transRef || null);
             
-            if (totalDebt > 0 && Math.abs(parseFloat(slipAmount) - totalDebt) < 0.01) {
-              // Perfect match! Auto-approve for the linked house
-              const newTx = await db.insert(transactions).values({
-                amount: slipAmount,
-                amountClaimedByPayer: slipAmount,
-                slipImageUrl: blobUrl,
-                slipStatus: "verified",
-                slipRefId: transRef || null,
-                paidAt: new Date(),
-                verifiedBy: "line_bot_auto",
-              }).returning();
-              
-              await db.update(invoices).set({ status: 'paid', transactionId: newTx[0].id }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
-              
+            if (approveResult.success && approveResult.newTxId) {
               await db.insert(lineMessages).values({
                 lineMessageId: event.message.id,
                 lineUserId: userId,
@@ -364,7 +350,7 @@ export async function POST(request: Request) {
                 amount: slipAmount,
                 senderName: verification.data?.sender.name,
                 isVerified: true,
-                transactionId: newTx[0].id,
+                transactionId: approveResult.newTxId,
                 houseNumber: house.houseNumber
               });
               
@@ -381,7 +367,7 @@ export async function POST(request: Request) {
                 flexMsg,
                 {
                   type: "text",
-                  text: `✅ ระบบได้ทำการตัดยอด ${parseFloat(slipAmount)} บาท สำหรับบ้านเลขที่ ${house.houseNumber} ให้เรียบร้อยแล้วค่ะ ขอบคุณที่ใช้บริการ 💚`
+                  text: `✅ ระบบได้ทำการตัดยอดชำระเงิน ${parseFloat(slipAmount).toLocaleString()} บาท สำหรับบ้านเลขที่ ${house.houseNumber} ให้เรียบร้อยแล้วค่ะ ขอบคุณที่ใช้บริการ 💚`
                 }
               ]);
               continue;
@@ -560,6 +546,64 @@ export async function POST(request: Request) {
             continue;
           }
 
+          // Advance Payment Keyword Matching
+          const isAdvanceKeyword = 
+            text === "ชำระเงินล่วงหน้า" ||
+            text === "จ่ายล่วงหน้า" ||
+            text === "ชำระล่วงหน้า" ||
+            text === "จ่ายค่าขยะล่วงหน้า" ||
+            text === "จ่ายค่าธรรมเนียมล่วงหน้า" ||
+            text === "จ่ายล่วงหน้าค่าขยะ" ||
+            text === "ล่วงหน้า" ||
+            text.toLowerCase() === "advance" ||
+            /^(?:ชำระ|จ่าย)(?:เงิน)?(?:ค่าขยะ|ค่าธรรมเนียม)?ล่วงหน้า/i.test(text);
+
+          const advanceMonthMatch = text.match(/(?:ชำระ|จ่าย)(?:เงิน)?(?:ค่าขยะ|ค่าธรรมเนียม)?ล่วงหน้า\s*(\d+)\s*(?:เดือน)?/i);
+
+          if (isAdvanceKeyword) {
+            const houseList = await db.select().from(houses).where(eq(houses.lineUserId, userId));
+            if (houseList.length === 0) {
+              await replyMessage(replyToken, "คุณยังไม่ได้ผูกบัญชีบ้านค่ะ\nกรุณาพิมพ์ 'บ้านเลขที่' ของคุณ (เช่น 123/45) ส่งเข้ามาในแชทเพื่อผูกบัญชีก่อน แล้วค่อยพิมพ์ 'ชำระเงินล่วงหน้า' อีกครั้งนะคะ 🙏");
+              continue;
+            }
+            const house = houseList[0];
+            const monthlyRate = parseFloat(house.defaultBillingAmount || "20");
+            const unpaidInvoices = await db.select().from(invoices).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
+            const unpaidTotal = unpaidInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
+            const unpaidCount = unpaidInvoices.length;
+
+            const specificMonths = advanceMonthMatch && advanceMonthMatch[1] ? parseInt(advanceMonthMatch[1], 10) : null;
+
+            if (specificMonths && specificMonths > 0) {
+              const advanceCost = specificMonths * monthlyRate;
+              const totalAmount = advanceCost + unpaidTotal;
+              const qrUrl = `${appUrl}/api/qr-image?amount=${totalAmount}&ext=.png`;
+              const payUrl = `${appUrl}/house/${house.id}`;
+              const qrFlex = generateAdvanceQrFlexMessage(
+                house.houseNumber,
+                specificMonths,
+                unpaidCount,
+                unpaidTotal,
+                totalAmount,
+                payUrl,
+                qrUrl
+              );
+              await replyWithMessages(replyToken, [qrFlex]);
+              continue;
+            }
+
+            // Show Options Flex Message
+            const optionsFlex = generateAdvanceOptionsFlexMessage(
+              house,
+              unpaidCount,
+              unpaidTotal,
+              monthlyRate,
+              appUrl
+            );
+            await replyWithMessages(replyToken, [optionsFlex]);
+            continue;
+          }
+
           // 1. Find the most recent pending image from this user
           const recentImages = await db.select()
             .from(lineMessages)
@@ -723,6 +767,51 @@ export async function POST(request: Request) {
             } else {
               await replyMessage(replyToken, "❌ ไม่พบข้อมูลบ้านในระบบ กรุณาลองใหม่อีกครั้งค่ะ");
             }
+          }
+        }
+
+        if (action === "payAdvance") {
+          const houseId = parseInt(params.get('houseId') || "0", 10);
+          const months = parseInt(params.get('months') || "3", 10);
+          
+          let targetHouse = null;
+          if (houseId > 0) {
+            const hResult = await db.select().from(houses).where(eq(houses.id, houseId)).limit(1);
+            if (hResult.length > 0) targetHouse = hResult[0];
+          }
+          if (!targetHouse) {
+            const hResult = await db.select().from(houses).where(eq(houses.lineUserId, userId)).limit(1);
+            if (hResult.length > 0) targetHouse = hResult[0];
+          }
+
+          if (targetHouse && months > 0) {
+            const host = request.headers.get("host") || "";
+            const isLocal = host.includes("localhost") || host.includes("127.0.0.1");
+            const appUrl = isLocal 
+              ? "http://localhost:3000" 
+              : "https://nangronggarbagepayments.vercel.app";
+
+            const monthlyRate = parseFloat(targetHouse.defaultBillingAmount || "20");
+            const unpaidInvoices = await db.select().from(invoices).where(and(eq(invoices.houseId, targetHouse.id), eq(invoices.status, 'unpaid')));
+            const unpaidTotal = unpaidInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
+            const unpaidCount = unpaidInvoices.length;
+
+            const advanceCost = months * monthlyRate;
+            const totalAmount = advanceCost + unpaidTotal;
+            const qrUrl = `${appUrl}/api/qr-image?amount=${totalAmount}&ext=.png`;
+            const payUrl = `${appUrl}/house/${targetHouse.id}`;
+
+            const qrFlex = generateAdvanceQrFlexMessage(
+              targetHouse.houseNumber,
+              months,
+              unpaidCount,
+              unpaidTotal,
+              totalAmount,
+              payUrl,
+              qrUrl
+            );
+            await replyWithMessages(replyToken, [qrFlex]);
+            continue;
           }
         }
       }
