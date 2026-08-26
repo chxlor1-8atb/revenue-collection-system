@@ -5,6 +5,7 @@ import { lineMessages, houses, invoices, transactions, systemSettings } from "@/
 import { eq, and, desc, gte, inArray } from "drizzle-orm";
 import { put } from "@vercel/blob";
 import { verifySlipWithBuffer } from "@/lib/slip2go";
+import { generateNextReceiptSeries } from "@/lib/receiptSeries";
 
 import crypto from 'crypto';
 
@@ -42,6 +43,7 @@ async function attemptAutoApprove(house: any, slipAmountStr: string, slipImageUr
     }
 
     let txId: number | undefined;
+    const series = await generateNextReceiptSeries(new Date());
 
     // ATOMIC TRANSACTION: CREATE TRANSACTION, MARK INVOICES AS PAID, GENERATE ADVANCE INVOICES
     await db.transaction(async (txDb) => {
@@ -53,6 +55,10 @@ async function attemptAutoApprove(house: any, slipAmountStr: string, slipImageUr
         slipRefId: transRef,
         paidAt: new Date(),
         verifiedBy: "line_bot_auto",
+        receiptCode: series.receiptCode,
+        bookNumber: series.bookNumber,
+        receiptNumber: series.receiptNumber,
+        fiscalYear: series.fiscalYear,
       }).returning();
 
       txId = newTx[0].id;
@@ -293,12 +299,17 @@ export async function POST(request: Request) {
               );
               
               if (matchingIntent) {
+                const series = await generateNextReceiptSeries(new Date());
                 await db.update(transactions).set({
                   slipImageUrl: blobUrl,
                   slipStatus: "verified",
                   slipRefId: transRef || null,
                   paidAt: new Date(),
-                  verifiedBy: "line_bot_auto"
+                  verifiedBy: "line_bot_auto",
+                  receiptCode: series.receiptCode,
+                  bookNumber: series.bookNumber,
+                  receiptNumber: series.receiptNumber,
+                  fiscalYear: series.fiscalYear,
                 }).where(eq(transactions.id, matchingIntent.txId));
                 
                 await db.update(invoices).set({ status: 'paid' }).where(eq(invoices.transactionId, matchingIntent.txId));

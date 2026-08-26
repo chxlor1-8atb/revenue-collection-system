@@ -264,17 +264,22 @@ export default function ReceiptModal({ isOpen, onClose, item }: ReceiptModalProp
 
                     {/* Compact Single-Line Sub-header Meta Bar */}
                     <div className="flex items-center justify-center gap-2.5 sm:gap-4 pt-1.5 text-xs text-slate-600 flex-wrap sm:flex-nowrap">
-                      {item.receiptCode ? (
-                        <div className="flex items-center gap-1">
-                          <span className="text-slate-400">รหัสกำกับ:</span>
-                          <strong className="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200/80">{item.receiptCode}</strong>
-                        </div>
-                      ) : (
-                        <div>
-                          <span className="text-slate-400 mr-1">เลขที่รายการ:</span>
-                          <strong className="font-mono font-bold text-slate-900">#{item.id}</strong>
-                        </div>
-                      )}
+                      {(() => {
+                        const m = paidDate.getMonth() + 1;
+                        const y = paidDate.getFullYear();
+                        const fy = item.fiscalYear || (m >= 10 ? y + 544 : y + 543).toString();
+                        const bookNo = item.bookNumber || Math.floor((item.id - 1) / 50) + 1;
+                        const recNo = item.receiptNumber || ((item.id - 1) % 50) + 1;
+                        const code = item.receiptCode || `เล่มที่ ${String(bookNo).padStart(2, "0")} เลขที่ ${String(recNo).padStart(2, "0")}/${fy}`;
+                        return (
+                          <div className="flex items-center gap-1">
+                            <span className="text-slate-400">รหัสกำกับ:</span>
+                            <strong className="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200/80 font-mono">
+                              {code}
+                            </strong>
+                          </div>
+                        );
+                      })()}
                       <span className="text-slate-300">•</span>
                       <div>
                         <span className="text-slate-400 mr-1">วันที่ชำระ:</span>

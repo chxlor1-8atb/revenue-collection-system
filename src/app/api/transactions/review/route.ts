@@ -4,6 +4,7 @@ import { pushMessage, generateSlipApprovedFlexMessage, generateSlipRejectedFlexM
 import { transactions, invoices, houses } from "@/lib/schema";
 import { eq, desc, inArray, or, and, gte } from "drizzle-orm";
 import { auth } from "@/lib/auth";
+import { generateNextReceiptSeries } from "@/lib/receiptSeries";
 
 export async function GET() {
   try {
@@ -96,7 +97,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
 
-
     // Fetch transaction and user details to send LINE message
     const txDetails = await db.select({
       amount: transactions.amountClaimedByPayer,
@@ -111,54 +111,62 @@ export async function POST(request: Request) {
 
     const txInfo = txDetails.length > 0 ? txDetails[0] : null;
 
-    // Execute updates atomically inside a transaction
-    // Execute updates sequentially
-      const tx = db;
-      {
-      // 1. Update Transaction Status
-      await tx.update(transactions)
-        .set({ 
-          slipStatus: status,
-          verifiedBy: session.user?.name || "admin",
-          rejectReason: status === 'rejected' ? rejectReason : null,
-          lockKey: null,
-          lockedBy: null,
-          lockedAt: null
-        })
-        .where(eq(transactions.id, transactionId));
+    // Execute updates
+    let seriesData: any = {};
+    if (status === 'verified') {
+      const series = await generateNextReceiptSeries(new Date());
+      seriesData = {
+        receiptCode: series.receiptCode,
+        bookNumber: series.bookNumber,
+        receiptNumber: series.receiptNumber,
+        fiscalYear: series.fiscalYear,
+        paidAt: new Date()
+      };
+    }
 
-      // 2. Update Related Invoices Status
-      // If slip is verified -> 'paid'. If rejected -> 'unpaid' (and clear transactionId so it can be paid again)
-      if (status === 'verified') {
-        await tx.update(invoices)
-          .set({ status: 'paid' })
-          .where(eq(invoices.transactionId, transactionId));
-      } else {
-        // Delete any pending_advance invoices
-        await tx.delete(invoices)
-          .where(
-            and(
-              eq(invoices.transactionId, transactionId),
-              eq(invoices.status, 'pending_advance')
-            )
-          );
+    // 1. Update Transaction Status
+    await db.update(transactions)
+      .set({ 
+        slipStatus: status,
+        verifiedBy: session.user?.name || "admin",
+        rejectReason: status === 'rejected' ? rejectReason : null,
+        lockKey: null,
+        lockedBy: null,
+        lockedAt: null,
+        ...seriesData
+      })
+      .where(eq(transactions.id, transactionId));
 
-        // Unlink regular invoices
-        await tx.update(invoices)
-          .set({ status: 'unpaid', transactionId: null })
-          .where(eq(invoices.transactionId, transactionId));
-      }
-      }
+    // 2. Update Related Invoices Status
+    if (status === 'verified') {
+      await db.update(invoices)
+        .set({ status: 'paid' })
+        .where(eq(invoices.transactionId, transactionId));
+    } else {
+      // Delete any pending_advance invoices
+      await db.delete(invoices)
+        .where(
+          and(
+            eq(invoices.transactionId, transactionId),
+            eq(invoices.status, 'pending_advance')
+          )
+        );
+
+      // Unlink regular invoices
+      await db.update(invoices)
+        .set({ status: 'unpaid', transactionId: null })
+        .where(eq(invoices.transactionId, transactionId));
+    }
 
     // Send LINE Push Notification if lineUserId exists
     if (txInfo && txInfo.lineUserId) {
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://revenue-collection-system.vercel.app";
       if (status === 'verified') {
-        const receiptUrl = `${baseUrl}/api/transactions/${transactionId}/receipt`; // Or PDF link
+        const receiptUrl = `${baseUrl}/api/transactions/${transactionId}/receipt`;
         const msg = generateSlipApprovedFlexMessage(txInfo.houseNumber, parseFloat(txInfo.amount || "0"), receiptUrl);
         await pushMessage(txInfo.lineUserId, [msg]);
       } else if (status === 'rejected') {
-        const uploadUrl = `${baseUrl}/pay/${transactionId}`; // Let them try again
+        const uploadUrl = `${baseUrl}/pay/${transactionId}`;
         const msg = generateSlipRejectedFlexMessage(txInfo.houseNumber, parseFloat(txInfo.amount || "0"), rejectReason || "ข้อมูลไม่ถูกต้อง", uploadUrl);
         await pushMessage(txInfo.lineUserId, [msg]);
       }
