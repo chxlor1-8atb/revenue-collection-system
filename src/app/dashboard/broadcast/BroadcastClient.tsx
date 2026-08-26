@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { 
   Send, 
   Users, 
@@ -25,7 +25,11 @@ import {
   ShieldCheck,
   Zap,
   TrendingUp,
-  FileText
+  FileText,
+  ChevronDown,
+  Search,
+  X,
+  MapPin
 } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 
@@ -59,6 +63,24 @@ export default function BroadcastClient({
   const [isSending, setIsSending] = useState<boolean>(false);
   const [resultMsg, setResultMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
+
+  // Custom Dropdown State
+  const [isZoneDropdownOpen, setIsZoneDropdownOpen] = useState<boolean>(false);
+  const [zoneSearch, setZoneSearch] = useState<string>("");
+  const zoneDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (zoneDropdownRef.current && !zoneDropdownRef.current.contains(event.target as Node)) {
+        setIsZoneDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filteredZones = zones.filter(z => z.toLowerCase().includes(zoneSearch.trim().toLowerCase()) || `ชุมชน${z}`.includes(zoneSearch.trim()));
 
   // LINE Bot Announcement & Phone State
   const [healthDeptPhone, setHealthDeptPhone] = useState<string>(initialLineConfig?.healthDeptPhone || "044-631405");
@@ -319,30 +341,161 @@ export default function BroadcastClient({
           {/* Left Column: Form Builder (7 Cols) */}
           <div className="lg:col-span-7 space-y-5">
             
-            {/* Step 1: Target Zone Selector */}
-            <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-3">
+            {/* Step 1: Target Zone Selector with Custom Searchable Dropdown */}
+            <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-3 relative z-30" ref={zoneDropdownRef}>
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2">
                   <span className="w-6 h-6 rounded-full bg-[#5B58F2] text-white text-xs font-black flex items-center justify-center shadow-xs">1</span>
                   <h2 className="text-sm sm:text-base font-bold text-slate-800">เลือกชุมชนเป้าหมาย</h2>
                 </div>
-                <span className="text-[11px] font-semibold text-slate-400">Target Area</span>
+                <span className="text-[11px] font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
+                  {selectedZone === "ALL" ? "ครอบคลุม 20 ชุมชน" : `ชุมชน${selectedZone}`}
+                </span>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1.5">
                   ระบุชุมชนที่ต้องการส่งแจ้งเตือน:
                 </label>
-                <select
-                  value={selectedZone}
-                  onChange={(e) => setSelectedZone(e.target.value)}
-                  className="w-full bg-slate-50/80 border border-slate-200 rounded-xl px-4 py-3 text-xs sm:text-sm text-slate-800 font-semibold focus:bg-white focus:ring-2 focus:ring-[#5B58F2]/30 focus:border-[#5B58F2] outline-hidden cursor-pointer transition-all"
-                >
-                  <option value="ALL">🌐 ทุกชุมชนในเขตเทศบาลเมืองนางรอง (20 ชุมชน)</option>
-                  {zones.map((z) => (
-                    <option key={z} value={z}>ชุมชน{z}</option>
+
+                {/* Custom Trigger Button */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setIsZoneDropdownOpen(!isZoneDropdownOpen)}
+                    className={`w-full bg-slate-50/80 hover:bg-slate-100/80 border rounded-2xl px-4 py-3 text-xs sm:text-sm font-bold flex items-center justify-between transition-all cursor-pointer ${
+                      isZoneDropdownOpen 
+                        ? "border-[#5B58F2] ring-2 ring-[#5B58F2]/20 bg-white shadow-xs" 
+                        : "border-slate-200 text-slate-800"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 truncate">
+                      {selectedZone === "ALL" ? (
+                        <>
+                          <div className="w-6 h-6 rounded-lg bg-indigo-100 text-[#5B58F2] flex items-center justify-center text-xs">
+                            🌐
+                          </div>
+                          <span className="text-slate-900 font-bold">ทุกชุมชนในเขตเทศบาลเมืองนางรอง (20 ชุมชน)</span>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">
+                            🏘️
+                          </div>
+                          <span className="text-slate-900 font-bold">ชุมชน{selectedZone}</span>
+                        </>
+                      )}
+                    </div>
+                    <ChevronDown size={16} className={`text-slate-400 transition-transform duration-200 ${isZoneDropdownOpen ? "rotate-180 text-[#5B58F2]" : ""}`} />
+                  </button>
+
+                  {/* Custom Searchable Popover Menu */}
+                  {isZoneDropdownOpen && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-200/90 z-50 p-2 space-y-2 animate-in fade-in zoom-in-95 duration-150">
+                      
+                      {/* Search Box */}
+                      <div className="relative">
+                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input
+                          type="text"
+                          value={zoneSearch}
+                          onChange={(e) => setZoneSearch(e.target.value)}
+                          placeholder="พิมพ์ค้นหาชื่อชุมชน... เช่น วัดกลาง, หนองรี"
+                          className="w-full pl-9 pr-8 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-[#5B58F2]/30 focus:border-[#5B58F2] outline-hidden"
+                          autoFocus
+                        />
+                        {zoneSearch && (
+                          <button
+                            type="button"
+                            onClick={() => setZoneSearch("")}
+                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 rounded-full"
+                          >
+                            <X size={13} />
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Dropdown Options List */}
+                      <div className="max-h-56 overflow-y-auto custom-scrollbar space-y-1 pr-1">
+                        
+                        {/* Option: ALL Zones */}
+                        {(!zoneSearch || "ทุกชุมชน".includes(zoneSearch) || "all".includes(zoneSearch.toLowerCase())) && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedZone("ALL");
+                              setIsZoneDropdownOpen(false);
+                              setZoneSearch("");
+                            }}
+                            className={`w-full p-2.5 rounded-xl text-xs font-bold text-left transition-all flex items-center justify-between cursor-pointer ${
+                              selectedZone === "ALL"
+                                ? "bg-indigo-50 text-[#5B58F2] border border-indigo-200/70"
+                                : "hover:bg-slate-100 text-slate-700"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <span>🌐</span>
+                              <span>ทุกชุมชนในเขตเทศบาลเมืองนางรอง (20 ชุมชน)</span>
+                            </div>
+                            {selectedZone === "ALL" && <Check size={14} className="text-[#5B58F2]" />}
+                          </button>
+                        )}
+
+                        {/* Filtered Community Zones */}
+                        {filteredZones.length > 0 ? (
+                          filteredZones.map((z) => (
+                            <button
+                              key={z}
+                              type="button"
+                              onClick={() => {
+                                setSelectedZone(z);
+                                setIsZoneDropdownOpen(false);
+                                setZoneSearch("");
+                              }}
+                              className={`w-full p-2.5 rounded-xl text-xs font-medium text-left transition-all flex items-center justify-between cursor-pointer ${
+                                selectedZone === z
+                                  ? "bg-indigo-50 text-[#5B58F2] font-bold border border-indigo-200/70"
+                                  : "hover:bg-slate-100 text-slate-700"
+                              }`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <span className="text-slate-400">🏘️</span>
+                                <span>ชุมชน{z}</span>
+                              </div>
+                              {selectedZone === z && <Check size={14} className="text-[#5B58F2]" />}
+                            </button>
+                          ))
+                        ) : (
+                          <div className="p-4 text-center text-xs text-slate-400">
+                            ไม่พบชื่อชุมชนที่ตรงกับคำค้นหา
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Popular Quick Filter Chips */}
+                <div className="flex items-center gap-1.5 flex-wrap pt-2.5">
+                  <span className="text-[10px] font-bold text-slate-400">ลัดเลือกด่วน:</span>
+                  {["ALL", "หนองรี", "บ้านเก่า", "วัดขุนก้อง", "วัดกลาง", "ถนนหักพัฒนา"].map((zKey) => (
+                    <button
+                      key={zKey}
+                      type="button"
+                      onClick={() => {
+                        setSelectedZone(zKey);
+                        setIsZoneDropdownOpen(false);
+                      }}
+                      className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
+                        selectedZone === zKey
+                          ? "bg-[#5B58F2] text-white border-[#5B58F2] shadow-2xs"
+                          : "bg-slate-100 hover:bg-slate-200/70 text-slate-600 border-slate-200/70"
+                      }`}
+                    >
+                      {zKey === "ALL" ? "🌐 ทุกชุมชน" : `ชุมชน${zKey}`}
+                    </button>
                   ))}
-                </select>
+                </div>
               </div>
             </div>
 
