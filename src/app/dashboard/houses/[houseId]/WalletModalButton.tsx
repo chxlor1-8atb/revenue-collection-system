@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Wallet, Plus, CheckCircle2, X } from "lucide-react";
+import { Wallet, Plus, CheckCircle2, X, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function WalletModalButton({ houseId, currentWallet }: { houseId: number; currentWallet: string }) {
@@ -13,7 +13,7 @@ export default function WalletModalButton({ houseId, currentWallet }: { houseId:
 
   const handleUpdate = async () => {
     if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) < 0) {
-      alert("��سҡ�͡�ӹǹ�Թ���١��ͧ");
+      alert("กรุณากรอกจำนวนเงินให้ถูกต้อง");
       return;
     }
 
@@ -30,10 +30,11 @@ export default function WalletModalButton({ houseId, currentWallet }: { houseId:
         setAmount("");
         router.refresh();
       } else {
-        alert("�Դ��ͼԴ��Ҵ㹡�û�Ѻ�ʹ�������Թ");
+        alert("เกิดข้อผิดพลาดในการปรับยอดยอดเงินในกระเป๋า");
       }
     } catch (e) {
       console.error(e);
+      alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
     } finally {
       setIsLoading(false);
     }
@@ -43,71 +44,113 @@ export default function WalletModalButton({ houseId, currentWallet }: { houseId:
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold rounded-xl transition-colors border border-emerald-200 cursor-pointer"
-        title="����Թ / ��Ѻ�ʹ�Թ㹡�����"
+        className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl transition-all border border-indigo-200/80 cursor-pointer shadow-2xs active:scale-98"
+        title="เติมเงิน / ปรับยอดยอดเงินล่วงหน้า"
       >
-        <Wallet size={14} /> ��Ѻ�ʹ������
+        <Wallet size={13} />
+        <span>จัดการเครดิต</span>
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs" onClick={() => setIsOpen(false)}>
-          <div className="bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full relative" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-lg text-slate-800 flex items-center gap-2">
-                <Wallet className="text-emerald-600" size={20} />
-                ��Ѻ�ʹ�Թ㹡����� (Wallet)
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150" onClick={() => setIsOpen(false)}>
+          <div className="bg-white rounded-3xl p-6 shadow-2xl max-w-md w-full relative border border-slate-200/90 animate-in zoom-in-95 duration-150" onClick={e => e.stopPropagation()}>
+            
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+              <h3 className="font-bold text-base sm:text-lg text-slate-800 flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-indigo-100 text-[#5B58F2] flex items-center justify-center font-bold">
+                  <Wallet size={16} />
+                </div>
+                <span>ปรับยอดเงินในกระเป๋า (Wallet)</span>
               </h3>
-              <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-slate-600">
+              <button 
+                onClick={() => setIsOpen(false)} 
+                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+              >
                 <X size={18} />
               </button>
             </div>
 
-            <div className="mb-4 p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
-              <span className="text-xs font-medium text-slate-500">�ʹ�Թ�Ѩ�غѹ:</span>
-              <span className="font-mono font-bold text-emerald-600 text-base">�{parseFloat(currentWallet || "0").toLocaleString('th-TH', { minimumFractionDigits: 2 })}</span>
-            </div>
+            <div className="space-y-4">
+              <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/70 flex justify-between items-center">
+                <span className="text-xs text-slate-500 font-semibold">ยอดคงเหลือปัจจุบัน:</span>
+                <span className="text-base font-black font-mono text-indigo-700">
+                  ฿{parseFloat(currentWallet || "0").toFixed(2)}
+                </span>
+              </div>
 
-            <div className="mb-4">
-              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">�ٻẺ��û�Ѻ��ا</label>
-              <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">รูปแบบการทำรายการ</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setAction("add")}
+                    className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                      action === "add" 
+                        ? "bg-[#5B58F2] text-white border-[#5B58F2] shadow-2xs" 
+                        : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
+                    }`}
+                  >
+                    + เติมเงินเพิ่ม
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAction("set")}
+                    className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                      action === "set" 
+                        ? "bg-[#5B58F2] text-white border-[#5B58F2] shadow-2xs" 
+                        : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
+                    }`}
+                  >
+                    = ตั้งค่าระบุยอดใหม่
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">จำนวนเงิน (บาท)</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 font-bold text-xs">
+                    ฿
+                  </div>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={amount}
+                    onChange={e => setAmount(e.target.value)}
+                    placeholder="0.00"
+                    className="pl-8 pr-4 w-full py-2.5 rounded-xl border border-slate-200 text-sm font-mono font-bold text-slate-900 bg-white focus:ring-2 focus:ring-[#5B58F2]/30 focus:border-[#5B58F2] outline-hidden"
+                    autoFocus
+                  />
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex justify-end gap-2">
                 <button
                   type="button"
-                  onClick={() => setAction("add")}
-                  className={`py-2 text-xs font-bold rounded-xl border transition-all ${action === 'add' ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'bg-slate-50 text-slate-700 border-slate-200'}`}
+                  onClick={() => setIsOpen(false)}
+                  className="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all cursor-pointer"
                 >
-                  ? ����Թ���� (Add)
+                  ยกเลิก
                 </button>
                 <button
                   type="button"
-                  onClick={() => setAction("set")}
-                  className={`py-2 text-xs font-bold rounded-xl border transition-all ${action === 'set' ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs' : 'bg-slate-50 text-slate-700 border-slate-200'}`}
+                  onClick={handleUpdate}
+                  disabled={isLoading}
+                  className="px-5 py-2 text-xs font-bold text-white bg-gradient-to-r from-[#5B58F2] to-indigo-600 hover:from-[#4A47D1] hover:to-indigo-700 rounded-xl transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
                 >
-                  ?? ��˹��ʹ���� (Set)
+                  {isLoading ? (
+                    <>
+                      <Loader2 size={14} className="animate-spin" />
+                      <span>กำลังบันทึก...</span>
+                    </>
+                  ) : (
+                    <span>บันทึกยอดเงิน</span>
+                  )}
                 </button>
               </div>
             </div>
 
-            <div className="mb-6">
-              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                {action === 'add' ? '�ӹǹ�Թ����ͧ������ (�ҷ)' : '�ʹ�Թ�ط�Է���ͧ��õ�� (�ҷ)'}
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-mono text-lg font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-center"
-              />
-            </div>
-
-            <div className="flex gap-3">
-              <button onClick={() => setIsOpen(false)} disabled={isLoading} className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl">¡��ԡ</button>
-              <button onClick={handleUpdate} disabled={isLoading} className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2">
-                {isLoading ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <CheckCircle2 size={16} />}
-                �ѹ�֡�ʹ�Թ
-              </button>
-            </div>
           </div>
         </div>
       )}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { QrCode, FilePlus, Send, Edit2, Trash2, X, Download, Copy, Check, Loader2, FileText, CheckCircle2 } from "lucide-react";
+import { QrCode, FilePlus, Send, Edit2, Trash2, X, Download, Copy, Check, Loader2, FileText, CheckCircle2, AlertCircle } from "lucide-react";
 import QRCode from "qrcode";
 import { useRouter } from "next/navigation";
 import { deleteHouse, createInitialInvoice, sendLineReminder } from "../actions";
@@ -33,7 +33,7 @@ export default function HouseActionsClient({ house, customFieldsSchema }: { hous
       const qrDataUrl = await QRCode.toDataURL(url, {
         width: 300,
         margin: 2,
-        color: { dark: '#1F2E22', light: '#FFFFFF' }
+        color: { dark: '#1E293B', light: '#FFFFFF' }
       });
       setQrModal({ isOpen: true, houseNumber: h.houseNumber, url, qrDataUrl });
     } catch (err) {
@@ -56,15 +56,21 @@ export default function HouseActionsClient({ house, customFieldsSchema }: { hous
 
   return (
     <>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+        
+        {/* QR Code Modal Button */}
         <button 
+          type="button"
           onClick={() => openQrModal(house)}
-          className="flex items-center gap-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm"
+          className="flex items-center gap-1.5 bg-white border border-slate-200/90 hover:bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer hover:border-slate-300 active:scale-98"
         >
-          <QrCode size={16} className="text-[#5B58F2]" /> QR ชำระเงิน
+          <QrCode size={15} className="text-[#5B58F2]" />
+          <span>QR ชำระเงิน</span>
         </button>
         
+        {/* Create Manual Bill */}
         <button
+          type="button"
           onClick={() => {
             setInitialBillPrompt({
               isOpen: true,
@@ -74,13 +80,16 @@ export default function HouseActionsClient({ house, customFieldsSchema }: { hous
               isManual: true
             });
           }}
-          className="flex items-center gap-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm"
+          className="flex items-center gap-1.5 bg-white border border-slate-200/90 hover:bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer hover:border-slate-300 active:scale-98"
         >
-          <FilePlus size={16} className="text-amber-500" /> สร้างบิล (แมนนวล)
+          <FilePlus size={15} className="text-amber-500" />
+          <span>ออกบิลรายหลัง</span>
         </button>
 
+        {/* Send LINE Notification (If connected) */}
         {(house as any).lineUserId && (
           <button
+            type="button"
             onClick={async () => {
               setLineSendModal({ isOpen: true, phase: "sending", houseNumber: house.houseNumber });
               setSendingLine(house.id!);
@@ -93,39 +102,45 @@ export default function HouseActionsClient({ house, customFieldsSchema }: { hous
               }
             }}
             disabled={sendingLine === house.id}
-            className="flex items-center gap-1.5 bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-50 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm"
+            className="flex items-center gap-1.5 bg-white border border-emerald-200 hover:bg-emerald-50 text-emerald-700 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-98"
           >
-            {sendingLine === house.id ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-            แจ้งเตือนผ่าน LINE
+            {sendingLine === house.id ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
+            <span>แจ้งเตือน LINE</span>
           </button>
         )}
 
+        {/* Edit Button */}
         <button
+          type="button"
           onClick={() => setShowForm(true)}
-          className="flex items-center gap-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm"
+          className="flex items-center gap-1.5 bg-white border border-slate-200/90 hover:bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer hover:border-slate-300 active:scale-98"
         >
-          <Edit2 size={16} className="text-blue-500" /> แก้ไข
+          <Edit2 size={14} className="text-blue-600" />
+          <span>แก้ไข</span>
         </button>
 
+        {/* Delete Button */}
         <button
+          type="button"
           onClick={() => setDeletingHouse({ id: house.id!, houseNumber: house.houseNumber })}
-          className="flex items-center gap-1.5 bg-white border border-red-200 text-red-600 hover:bg-red-50 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm"
+          className="flex items-center gap-1.5 bg-white border border-red-200/80 hover:bg-red-50 text-red-600 px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-98"
         >
-          <Trash2 size={16} /> ลบ
+          <Trash2 size={14} />
+          <span>ลบ</span>
         </button>
       </div>
 
       {error && (
-        <div className="fixed top-4 right-4 z-[200] p-4 bg-red-50 text-red-700 rounded-xl shadow-lg border border-red-200 flex items-center gap-3 animate-in slide-in-from-top-2">
-          <X size={20} className="cursor-pointer" onClick={() => setError(null)} />
-          <span className="font-medium">{error}</span>
+        <div className="fixed top-4 right-4 z-[200] p-4 bg-red-50 text-red-700 rounded-2xl shadow-xl border border-red-200 flex items-center gap-3 animate-in slide-in-from-top-2">
+          <X size={18} className="cursor-pointer" onClick={() => setError(null)} />
+          <span className="text-xs font-bold">{error}</span>
         </div>
       )}
       
       {successMsg && (
-        <div className="fixed top-4 right-4 z-[200] p-4 bg-emerald-50 text-emerald-700 rounded-xl shadow-lg border border-emerald-200 flex items-center gap-3 animate-in slide-in-from-top-2">
-          <CheckCircle2 size={20} className="cursor-pointer" onClick={() => setSuccessMsg(null)} />
-          <span className="font-medium">{successMsg}</span>
+        <div className="fixed top-4 right-4 z-[200] p-4 bg-emerald-50 text-emerald-700 rounded-2xl shadow-xl border border-emerald-200 flex items-center gap-3 animate-in slide-in-from-top-2">
+          <CheckCircle2 size={18} className="cursor-pointer" onClick={() => setSuccessMsg(null)} />
+          <span className="text-xs font-bold">{successMsg}</span>
         </div>
       )}
 
@@ -147,96 +162,148 @@ export default function HouseActionsClient({ house, customFieldsSchema }: { hous
           title="ยืนยันการลบข้อมูลบ้าน"
           description={<>คุณต้องการลบข้อมูลบ้านเลขที่ <strong className="text-slate-900">{deletingHouse.houseNumber}</strong> ใช่หรือไม่?</>}
           warningText="ข้อมูลบิลและประวัติการชำระเงินทั้งหมดที่เกี่ยวข้องจะถูกลบออกด้วย และไม่สามารถกู้คืนได้"
-          confirmText="ลบข้อมูล"
+          confirmText="ลบข้อมูลทันที"
           onConfirm={handleDelete}
           onCancel={() => setDeletingHouse(null)}
           isLoading={isDeleting}
+          variant="danger"
         />
       )}
 
-      {qrModal && qrModal.isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setQrModal(null)}>
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden p-8 flex flex-col items-center animate-in zoom-in-95 duration-200 relative" onClick={e => e.stopPropagation()}>
+      {/* QR Code Modal */}
+      {qrModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150" onClick={() => setQrModal(null)}>
+          <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-2xl max-w-sm w-full relative text-center border border-slate-200/90 animate-in zoom-in-95 duration-150" onClick={e => e.stopPropagation()}>
+            
             <button 
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 p-2 rounded-full transition-colors"
-              onClick={() => setQrModal(null)}
+              onClick={() => setQrModal(null)} 
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
             >
-              <X size={20} />
+              <X size={18} />
             </button>
-            <div className="w-16 h-16 bg-[#1F2E22] text-white rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-[#1F2E22]/20">
-              <QrCode size={32} />
+
+            <div className="w-12 h-12 rounded-2xl bg-indigo-100 text-[#5B58F2] flex items-center justify-center mx-auto mb-3">
+              <QrCode size={24} />
             </div>
-            <h3 className="text-2xl font-bold text-center text-slate-800 mb-1">บ้านเลขที่ {qrModal.houseNumber}</h3>
-            <p className="text-slate-500 text-sm mb-6 text-center">สแกนเพื่อเข้าสู่หน้าชำระเงินของบ้านหลังนี้</p>
-            <div className="bg-white p-2 rounded-2xl border-2 border-slate-100 shadow-sm mb-6">
-              <img src={qrModal.qrDataUrl} alt={`QR Code บ้าน ${qrModal.houseNumber}`} className="w-48 h-48 rounded-xl" />
+
+            <h3 className="font-bold text-lg text-slate-900">QR Code ชำระเงิน</h3>
+            <p className="text-xs text-slate-500 mt-0.5 mb-4">บ้านเลขที่ {qrModal.houseNumber}</p>
+
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 inline-block shadow-inner mb-4">
+              <img src={qrModal.qrDataUrl} alt="House Payment QR" className="w-48 h-48 mx-auto rounded-xl" />
             </div>
-            <a href={qrModal.qrDataUrl} download={`qrcode_house_${qrModal.houseNumber.replace(/\//g, '-')}.png`} className="w-full py-3 bg-[#1F2E22] hover:bg-slate-800 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md shadow-[#1F2E22]/20 mb-3">
-              <Download size={18} /> บันทึกรูป QR Code
-            </a>
-            <button onClick={() => { navigator.clipboard.writeText(qrModal.url); setCopiedLink(true); setTimeout(() => setCopiedLink(false), 2000); }} className="w-full py-3 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-xl border border-slate-200 transition-colors flex items-center justify-center gap-2 shadow-sm">
-              {copiedLink ? <Check size={18} className="text-emerald-500" /> : <Copy size={18} />}
-              {copiedLink ? 'คัดลอกลิงก์สำเร็จ' : 'คัดลอกลิงก์ชำระเงิน'}
-            </button>
+
+            <div className="space-y-2">
+              <a
+                href={qrModal.qrDataUrl}
+                download={`QR_House_${qrModal.houseNumber}.png`}
+                className="w-full py-2.5 bg-gradient-to-r from-[#5B58F2] to-indigo-600 hover:from-[#4A47D1] hover:to-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-indigo-500/20 flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Download size={14} /> ดาวน์โหลดภาพ QR Code
+              </a>
+
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(qrModal.url);
+                  setCopiedLink(true);
+                  setTimeout(() => setCopiedLink(false), 2000);
+                }}
+                className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                {copiedLink ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
+                {copiedLink ? "คัดลอกลิงก์เรียบร้อย!" : "คัดลอกลิงก์หน้าเว็บบ้าน"}
+              </button>
+            </div>
+
           </div>
         </div>
       )}
 
-      {lineSendModal.isOpen && (
-        <LineSendingModal isOpen={lineSendModal.isOpen} phase={lineSendModal.phase} houseNumber={lineSendModal.houseNumber} onClose={() => setLineSendModal({ isOpen: false, phase: 'sending' })} />
-      )}
-
+      {/* Manual Single Bill Modal */}
       {initialBillPrompt && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-in zoom-in-95 duration-200 relative">
-            <div className="bg-slate-50 px-6 py-4 border-b flex justify-between items-center shrink-0 rounded-t-2xl">
-              <h3 className="font-semibold text-slate-800 text-lg flex items-center gap-2">
-                <FileText className="text-blue-600" size={20} />
-                สร้างบิลค้างชำระแบบแมนนวล
-              </h3>
-              {!isGeneratingBill && (
-                <button onClick={() => setInitialBillPrompt(null)} className="text-slate-400 hover:text-slate-600 hover:bg-slate-200 p-1 rounded-full transition-colors">
-                  <X size={20} />
-                </button>
-              )}
-            </div>
-            <div className="p-6">
-              <p className="text-slate-600 mb-6 leading-relaxed">ระบุยอดเงินและประจำเดือนที่ต้องการสร้างบิลค้างชำระ (เพิ่มยอดหนี้) ให้กับบ้านหลังนี้</p>
-              <div className="space-y-4 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">ประจำเดือน <span className="text-red-500">*</span></label>
-                  <MonthPicker value={initialBillPrompt.monthYear} onChange={(val) => setInitialBillPrompt(prev => prev ? { ...prev, monthYear: val } : null)} disabled={isGeneratingBill} />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150" onClick={() => setInitialBillPrompt(null)}>
+          <div className="bg-white rounded-3xl p-6 shadow-2xl max-w-sm w-full relative border border-slate-200/90 animate-in zoom-in-95 duration-150" onClick={e => e.stopPropagation()}>
+            
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold">
+                  <FilePlus size={16} />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">ยอดเงิน (บาท) <span className="text-red-500">*</span></label>
-                  <input type="number" value={initialBillPrompt.amount} onChange={(e) => setInitialBillPrompt(prev => prev ? { ...prev, amount: e.target.value } : null)} disabled={isGeneratingBill} className="block w-full rounded-xl border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 border px-3" step="0.01" min="0" />
-                </div>
+                <h3 className="font-bold text-base text-slate-800">ออกบิลรายหลัง</h3>
               </div>
-              <div className="flex gap-3">
-                <button onClick={() => setInitialBillPrompt(null)} disabled={isGeneratingBill} className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition-colors disabled:opacity-50">
+              <button 
+                onClick={() => setInitialBillPrompt(null)} 
+                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-3.5">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">รอบเดือนที่ต้องการออกบิล</label>
+                <MonthPicker
+                  value={initialBillPrompt.monthYear}
+                  onChange={(val) => setInitialBillPrompt({ ...initialBillPrompt, monthYear: val })}
+                  disabled={isGeneratingBill}
+                  placement="bottom"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">ยอดเงินเรียกเก็บ (บาท)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={initialBillPrompt.amount}
+                  onChange={(e) => setInitialBillPrompt({ ...initialBillPrompt, amount: e.target.value })}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 focus:ring-2 focus:ring-[#5B58F2]/30 focus:border-[#5B58F2] outline-hidden"
+                />
+              </div>
+
+              <div className="pt-2 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setInitialBillPrompt(null)}
+                  className="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all cursor-pointer"
+                >
                   ยกเลิก
                 </button>
-                <button onClick={async () => {
-                    if (!initialBillPrompt.monthYear || !initialBillPrompt.amount) return;
+
+                <button
+                  type="button"
+                  disabled={isGeneratingBill}
+                  onClick={async () => {
                     setIsGeneratingBill(true);
-                    const res = await createInitialInvoice(initialBillPrompt.houseId, initialBillPrompt.monthYear, initialBillPrompt.amount, "monthly", null);
+                    const res = await createInitialInvoice(initialBillPrompt.houseId, initialBillPrompt.monthYear, initialBillPrompt.amount);
                     setIsGeneratingBill(false);
                     if (res.success) {
-                      setSuccessMsg("สร้างบิลสำเร็จ");
                       setInitialBillPrompt(null);
                       router.refresh();
                     } else {
                       setError(res.error || "เกิดข้อผิดพลาดในการสร้างบิล");
-                      setInitialBillPrompt(null);
                     }
-                  }} disabled={isGeneratingBill} className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors flex items-center justify-center disabled:opacity-50">
-                  {isGeneratingBill ? <><Loader2 size={16} className="animate-spin mr-2" /> กำลังสร้าง...</> : "สร้างบิลทันที"}
+                  }}
+                  className="px-5 py-2 text-xs font-bold text-white bg-gradient-to-r from-[#5B58F2] to-indigo-600 hover:from-[#4A47D1] hover:to-indigo-700 rounded-xl transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
+                >
+                  {isGeneratingBill ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+                  <span>ยืนยันออกบิล</span>
                 </button>
               </div>
             </div>
+
           </div>
         </div>
       )}
+
+      {/* LINE Sending Indicator Modal */}
+      <LineSendingModal
+        isOpen={lineSendModal.isOpen}
+        phase={lineSendModal.phase}
+        houseNumber={lineSendModal.houseNumber}
+        onClose={() => setLineSendModal({ isOpen: false, phase: "sending" })}
+      />
     </>
   );
 }
