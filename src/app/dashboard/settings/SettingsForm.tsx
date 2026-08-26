@@ -35,7 +35,6 @@ export default function SettingsForm({
 
   // Tab 2: LINE Bot & Announcements
   const [healthDeptPhone, setHealthDeptPhone] = useState(initialLineConfig?.healthDeptPhone || "044-631405");
-  const [emergencyPhone, setEmergencyPhone] = useState(initialLineConfig?.emergencyPhone || "044-631405");
   const [announcementText, setAnnouncementText] = useState(initialLineConfig?.announcementText || "เทศบาลเมืองนางรอง ขอขอบคุณทุกท่านที่ร่วมชำระค่าธรรมเนียมขยะตรงเวลา");
   const [isAnnouncementActive, setIsAnnouncementActive] = useState(initialLineConfig?.isAnnouncementActive ?? true);
 
@@ -65,7 +64,6 @@ export default function SettingsForm({
           autoRemindDays: autoRemindDays ? parseInt(autoRemindDays) : null,
           lineConfig: {
             healthDeptPhone,
-            emergencyPhone,
             announcementText,
             isAnnouncementActive,
           },
@@ -314,20 +312,6 @@ export default function SettingsForm({
                   value={healthDeptPhone}
                   onChange={(e) => setHealthDeptPhone(e.target.value)}
                   placeholder="เช่น 044-631405"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-semibold text-slate-800 focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-hidden"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
-                  <Phone size={13} className="text-emerald-600" />
-                  เบอร์โทรศัพท์สายด่วน / เหตุฉุกเฉิน
-                </label>
-                <input
-                  type="text"
-                  value={emergencyPhone}
-                  onChange={(e) => setEmergencyPhone(e.target.value)}
-                  placeholder="เช่น 044-631405 หรือ 199"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-semibold text-slate-800 focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-hidden"
                 />
               </div>

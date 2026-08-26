@@ -1177,9 +1177,7 @@ export function generateReportProblemFlexMessage(appUrl: string): any {
 
 export function generateContactFlexMessage(appUrl: string, lineConfig?: any): any {
   const healthPhone = lineConfig?.healthDeptPhone || "044-631405";
-  const emergencyPhone = lineConfig?.emergencyPhone || "044-631405";
   const cleanHealthPhone = healthPhone.replace(/[^0-9]/g, "");
-  const cleanEmergencyPhone = emergencyPhone.replace(/[^0-9]/g, "");
   const announcementText = lineConfig?.isAnnouncementActive ? lineConfig?.announcementText : null;
 
   return {
@@ -1230,17 +1228,8 @@ export function generateContactFlexMessage(appUrl: string, lineConfig?: any): an
             layout: "horizontal",
             margin: "lg",
             contents: [
-              { type: "text", text: "กองสาธารณสุข", color: "#64748B", size: "xs", flex: 2 },
+              { type: "text", text: "เบอร์โทรศัพท์", color: "#64748B", size: "xs", flex: 2 },
               { type: "text", text: healthPhone, color: "#0F172A", size: "sm", weight: "bold", align: "end", flex: 3 }
-            ]
-          },
-          {
-            type: "box",
-            layout: "horizontal",
-            margin: "sm",
-            contents: [
-              { type: "text", text: "เหตุฉุกเฉิน/สายด่วน", color: "#64748B", size: "xs", flex: 2 },
-              { type: "text", text: emergencyPhone, color: "#DC2626", size: "sm", weight: "bold", align: "end", flex: 3 }
             ]
           },
           {
@@ -1257,7 +1246,6 @@ export function generateContactFlexMessage(appUrl: string, lineConfig?: any): an
       footer: {
         type: "box",
         layout: "vertical",
-        spacing: "sm",
         paddingAll: "20px",
         paddingTop: "none",
         contents: [
@@ -1267,12 +1255,6 @@ export function generateContactFlexMessage(appUrl: string, lineConfig?: any): an
             color: "#059669",
             height: "sm",
             action: { type: "uri", label: `โทร. กองสาธารณสุข (${healthPhone})`, uri: `tel:${cleanHealthPhone}` }
-          },
-          {
-            type: "button",
-            style: "secondary",
-            height: "sm",
-            action: { type: "uri", label: `โทร. สายด่วน (${emergencyPhone})`, uri: `tel:${cleanEmergencyPhone}` }
           }
         ]
       }
