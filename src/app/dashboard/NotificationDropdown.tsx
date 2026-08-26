@@ -11,41 +11,49 @@ import {
   ExternalLink, 
   Smartphone,
   ChevronRight,
-  ShieldCheck
+  ShieldCheck,
+  QrCode,
+  AlertCircle,
+  Sparkles,
+  FileCheck
 } from "lucide-react";
+import CurrencyDisplay from "@/components/CurrencyDisplay";
 
-interface PendingSlip {
+export interface PendingNotificationItem {
   id: number;
-  lineMessageId?: string;
-  lineUserId: string;
+  source: "line" | "web" | "qr_intent";
+  status: "pending_review" | "waiting_qr";
+  title: string;
   amount?: string;
   senderName?: string;
   houseNumber?: string;
-  imageUrl?: string;
+  imageUrl?: string | null;
+  months?: string[];
   createdAt: string;
 }
 
-interface VerifiedItem {
+export interface VerifiedNotificationItem {
   id: number;
   amount: string;
   paidAt: string;
   receiptCode?: string;
   houseNumber: string;
   ownerName: string;
+  slipImageUrl?: string;
 }
 
 export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"all" | "pending" | "verified">("all");
-  const [pendingSlips, setPendingSlips] = useState<PendingSlip[]>([]);
-  const [recentVerified, setRecentVerified] = useState<VerifiedItem[]>([]);
+  const [pendingItems, setPendingItems] = useState<PendingNotificationItem[]>([]);
+  const [recentVerified, setRecentVerified] = useState<VerifiedNotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [browserNotifyEnabled, setBrowserNotifyEnabled] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const lastCountRef = useRef(0);
 
-  // Play audio chime
+  // Play gentle audio chime
   const playChime = () => {
     if (!soundEnabled) return;
     try {
@@ -65,7 +73,7 @@ export default function NotificationDropdown() {
         osc.stop(ctx.currentTime + 0.35);
       }
     } catch {
-      // ignore
+      // ignore audio errors
     }
   };
 
@@ -90,7 +98,7 @@ export default function NotificationDropdown() {
     }
   }, []);
 
-  // Fetch notifications
+  // Fetch notifications from server
   const fetchNotifications = async () => {
     if (typeof document !== "undefined" && document.visibilityState !== "visible") return;
 
@@ -105,8 +113,8 @@ export default function NotificationDropdown() {
           playChime();
           if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
             const diff = totalPending - lastCountRef.current;
-            new Notification("🔔 มีสลิปใหม่รอตรวจสอบ", {
-              body: `พบสลิปใหม่จาก LINE จำนวน ${diff} รายการ กรุณาเข้าตรวจสอบ`,
+            new Notification("🔔 มีการชำระเงินใหม่รอตรวจสอบ", {
+              body: `พบรายการใหม่ ${diff} รายการ กรุณาเข้าตรวจสอบ`,
               icon: "/icons/mainiconweb.png"
             });
           }
@@ -114,7 +122,7 @@ export default function NotificationDropdown() {
 
         lastCountRef.current = totalPending;
         setUnreadCount(totalPending);
-        setPendingSlips(data.pendingSlips || []);
+        setPendingItems(data.pendingItems || []);
         setRecentVerified(data.recentVerified || []);
       }
     } catch {
@@ -122,10 +130,10 @@ export default function NotificationDropdown() {
     }
   };
 
-  // Polling every 20s
+  // Polling every 15s + immediate visibility check
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 20000);
+    const interval = setInterval(fetchNotifications, 15000);
 
     const handleVisibility = () => {
       if (document.visibilityState === "visible") fetchNotifications();
@@ -157,7 +165,7 @@ export default function NotificationDropdown() {
     };
   }, []);
 
-  const totalItems = pendingSlips.length + recentVerified.length;
+  const totalItems = pendingItems.length + recentVerified.length;
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -165,11 +173,13 @@ export default function NotificationDropdown() {
       <button 
         onClick={() => setIsOpen(!isOpen)}
         aria-label="การแจ้งเตือน"
-        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-colors relative cursor-pointer"
+        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-slate-200/90 flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors relative cursor-pointer active:scale-95"
       >
-        <Bell size={18} strokeWidth={1.5} />
+        <Bell size={18} strokeWidth={1.5} className={unreadCount > 0 ? "text-[#5B58F2]" : "text-slate-500"} />
+        
+        {/* Unread Badge on Bell Icon */}
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-rose-500 text-white rounded-full text-[10px] font-black flex items-center justify-center border-2 border-white shadow-xs animate-pulse">
+          <span className="absolute -top-1 -right-1 min-w-[19px] h-[19px] px-1 bg-red-500 text-white rounded-full text-[10px] font-black flex items-center justify-center border-2 border-white shadow-sm animate-pulse pointer-events-none">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
@@ -177,18 +187,25 @@ export default function NotificationDropdown() {
 
       {/* Floating Notification Popover */}
       {isOpen && (
-        <div className="fixed sm:absolute top-16 sm:top-12 left-4 right-4 sm:left-auto sm:right-0 w-auto sm:w-[380px] md:w-[420px] bg-white rounded-2xl shadow-2xl border border-slate-200/80 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed sm:absolute top-16 sm:top-12 left-3 right-3 sm:left-auto sm:right-0 w-auto sm:w-[400px] md:w-[440px] bg-white rounded-3xl shadow-2xl border border-slate-200/90 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150 font-sans">
           
           {/* Header */}
-          <div className="px-4 py-3.5 bg-slate-900 text-white flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center">
-                <Bell size={15} className="text-amber-400" />
+          <div className="px-5 py-4 bg-slate-900 text-white flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center font-bold">
+                <Bell size={16} className="text-amber-400" />
               </div>
               <div>
-                <h3 className="font-bold text-sm leading-tight">ศูนย์การแจ้งเตือน</h3>
+                <h3 className="font-bold text-sm leading-tight flex items-center gap-1.5">
+                  <span>ศูนย์การแจ้งเตือน</span>
+                  {unreadCount > 0 && (
+                    <span className="bg-rose-500 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full">
+                      {unreadCount}
+                    </span>
+                  )}
+                </h3>
                 <p className="text-[11px] text-slate-300">
-                  {unreadCount > 0 ? `มี ${unreadCount} รายการรอตรวจสอบ` : "ไม่มีรายการค้างตรวจสอบ"}
+                  {unreadCount > 0 ? `มี ${unreadCount} รายการที่ต้องดำเนินการ` : "ไม่มีรายการค้างตรวจสอบ"}
                 </p>
               </div>
             </div>
@@ -196,20 +213,22 @@ export default function NotificationDropdown() {
             {/* Quick Controls */}
             <div className="flex items-center gap-1.5">
               <button
+                type="button"
                 onClick={() => setSoundEnabled(!soundEnabled)}
                 title={soundEnabled ? "ปิดเสียงเตือน" : "เปิดเสียงเตือน"}
-                className={`p-1.5 rounded-lg transition-colors text-xs flex items-center gap-1 ${
+                className={`p-2 rounded-xl transition-colors text-xs flex items-center gap-1 cursor-pointer ${
                   soundEnabled ? "bg-white/15 text-emerald-300" : "bg-white/5 text-slate-400"
                 }`}
               >
-                {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
+                {soundEnabled ? <Volume2 size={15} /> : <VolumeX size={15} />}
               </button>
               
               {!browserNotifyEnabled && (
                 <button
+                  type="button"
                   onClick={requestBrowserPermission}
                   title="เปิดแจ้งเตือนบนเบราว์เซอร์"
-                  className="px-2 py-1 bg-indigo-500/30 hover:bg-indigo-500/50 text-indigo-200 text-[11px] font-semibold rounded-lg transition-colors"
+                  className="px-2.5 py-1.5 bg-indigo-500/30 hover:bg-indigo-500/50 text-indigo-200 text-[11px] font-semibold rounded-xl transition-colors cursor-pointer"
                 >
                   เปิดแจ้งเตือน
                 </button>
@@ -218,28 +237,31 @@ export default function NotificationDropdown() {
           </div>
 
           {/* Filter Tabs */}
-          <div className="flex items-center border-b border-slate-100 bg-slate-50/70 px-3 py-1.5 gap-1 text-xs">
+          <div className="flex items-center border-b border-slate-100 bg-slate-50/80 px-4 py-2 gap-1.5 text-xs">
             <button
+              type="button"
               onClick={() => setActiveTab("all")}
-              className={`px-3 py-1 rounded-lg font-bold transition-all ${
-                activeTab === "all" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-700"
+              className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
+                activeTab === "all" ? "bg-white text-slate-900 shadow-2xs border border-slate-200/60" : "text-slate-500 hover:text-slate-800"
               }`}
             >
               ทั้งหมด ({totalItems})
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab("pending")}
-              className={`px-3 py-1 rounded-lg font-bold transition-all flex items-center gap-1.5 ${
-                activeTab === "pending" ? "bg-white text-rose-600 shadow-xs" : "text-slate-500 hover:text-slate-700"
+              className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                activeTab === "pending" ? "bg-white text-rose-600 shadow-2xs border border-slate-200/60" : "text-slate-500 hover:text-slate-800"
               }`}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-              รอตรวจ ({pendingSlips.length})
+              รอตรวจ ({pendingItems.length})
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab("verified")}
-              className={`px-3 py-1 rounded-lg font-bold transition-all flex items-center gap-1.5 ${
-                activeTab === "verified" ? "bg-white text-emerald-600 shadow-xs" : "text-slate-500 hover:text-slate-700"
+              className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                activeTab === "verified" ? "bg-white text-emerald-600 shadow-2xs border border-slate-200/60" : "text-slate-500 hover:text-slate-800"
               }`}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
@@ -248,60 +270,82 @@ export default function NotificationDropdown() {
           </div>
 
           {/* Notification List Container */}
-          <div className="max-h-[340px] overflow-y-auto divide-y divide-slate-100 p-1">
+          <div className="max-h-[360px] overflow-y-auto divide-y divide-slate-100 p-1.5 custom-scrollbar">
             
-            {/* 1. Pending Slips */}
-            {(activeTab === "all" || activeTab === "pending") && pendingSlips.length > 0 && (
-              <div className="space-y-1 p-1">
-                {pendingSlips.map((slip) => (
-                  <Link
-                    key={slip.id}
-                    href="/dashboard/review"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-rose-50/60 transition-colors border border-transparent hover:border-rose-100 group"
-                  >
-                    <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5">
-                      <Smartphone size={18} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="text-xs font-bold text-slate-900 truncate">
-                          สลิปใหม่จาก LINE {slip.houseNumber ? `(บ้าน ${slip.houseNumber})` : "(ยังไม่ระบุบ้าน)"}
-                        </span>
-                        {slip.amount && (
-                          <span className="text-xs font-mono font-black text-rose-600 shrink-0">
-                            ฿{parseFloat(slip.amount).toLocaleString()}
+            {/* 1. Pending Review Items & QR Intents */}
+            {(activeTab === "all" || activeTab === "pending") && pendingItems.length > 0 && (
+              <div className="space-y-1.5 p-1">
+                {pendingItems.map((item) => {
+                  const isWaitingQr = item.status === "waiting_qr";
+
+                  return (
+                    <Link
+                      key={`${item.source}-${item.id}`}
+                      href="/dashboard/review"
+                      onClick={() => setIsOpen(false)}
+                      className={`flex items-start gap-3 p-3 rounded-2xl transition-all border group ${
+                        isWaitingQr 
+                          ? "bg-amber-50/40 hover:bg-amber-50 border-amber-200/70" 
+                          : "bg-rose-50/40 hover:bg-rose-50 border-rose-200/70"
+                      }`}
+                    >
+                      {/* Icon */}
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
+                        isWaitingQr ? "bg-amber-100 text-amber-700" : "bg-rose-100 text-rose-600"
+                      }`}>
+                        {isWaitingQr ? <QrCode size={18} /> : (item.source === "line" ? <Smartphone size={18} /> : <FileCheck size={18} />)}
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="text-xs font-bold text-slate-900 truncate">
+                            {isWaitingQr ? "กำลังสแกนจ่าย QR Code" : "สลิปใหม่รอตรวจสอบ"} 
+                            {item.houseNumber ? ` • บ้าน ${item.houseNumber}` : ""}
                           </span>
-                        )}
+                          {item.amount && (
+                            <CurrencyDisplay 
+                              amount={item.amount} 
+                              size="xs" 
+                              variant={isWaitingQr ? "warning" : "danger"} 
+                            />
+                          )}
+                        </div>
+
+                        <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                          {item.senderName || "ผู้ใช้งาน"} {item.months && item.months.length > 0 ? `(งวด: ${item.months.join(", ")})` : ""}
+                        </p>
+
+                        <div className="flex items-center justify-between mt-1.5">
+                          <span className="text-[10px] text-slate-400 flex items-center gap-1 font-medium">
+                            <Clock size={11} /> {new Date(item.createdAt).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })} น.
+                          </span>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-lg transition-colors ${
+                            isWaitingQr 
+                              ? "text-amber-800 bg-amber-100 group-hover:bg-amber-600 group-hover:text-white" 
+                              : "text-rose-700 bg-rose-100 group-hover:bg-rose-600 group-hover:text-white"
+                          }`}>
+                            {isWaitingQr ? "ดูสถานะ →" : "ตรวจทันที →"}
+                          </span>
+                        </div>
                       </div>
-                      <p className="text-[11px] text-slate-500 truncate mt-0.5">
-                        ผู้โอน: {slip.senderName || "กำลังตรวจสอบ"} • รอการอนุมัติ
-                      </p>
-                      <div className="flex items-center gap-2 mt-1.5">
-                        <span className="text-[10px] text-slate-400 flex items-center gap-1 font-medium">
-                          <Clock size={11} /> {new Date(slip.createdAt).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })} น.
-                        </span>
-                        <span className="text-[10px] font-bold text-rose-600 bg-rose-100/70 px-1.5 py-0.5 rounded group-hover:bg-rose-600 group-hover:text-white transition-colors">
-                          ตรวจทันที →
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  );
+                })}
               </div>
             )}
 
             {/* 2. Recent Verified Items */}
             {(activeTab === "all" || activeTab === "verified") && recentVerified.length > 0 && (
-              <div className="space-y-1 p-1">
+              <div className="space-y-1.5 p-1">
                 {recentVerified.map((item) => (
                   <Link
                     key={item.id}
                     href={`/dashboard/history/${item.id}/receipt`}
                     onClick={() => setIsOpen(false)}
-                    className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-emerald-50/60 transition-colors border border-transparent hover:border-emerald-100 group"
+                    className="flex items-start gap-3 p-3 rounded-2xl hover:bg-emerald-50/60 transition-all border border-transparent hover:border-emerald-200 group"
                   >
-                    <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
                       <CheckCircle2 size={18} />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -309,9 +353,11 @@ export default function NotificationDropdown() {
                         <span className="text-xs font-bold text-slate-900 truncate">
                           ชำระสำเร็จ • บ้าน {item.houseNumber}
                         </span>
-                        <span className="text-xs font-mono font-black text-emerald-600 shrink-0">
-                          ฿{parseFloat(item.amount).toLocaleString()}
-                        </span>
+                        <CurrencyDisplay 
+                          amount={item.amount} 
+                          size="xs" 
+                          variant="success" 
+                        />
                       </div>
                       <p className="text-[11px] text-slate-500 truncate mt-0.5">
                         {item.ownerName} • {item.receiptCode || `บิล #${item.id}`}
@@ -332,34 +378,32 @@ export default function NotificationDropdown() {
 
             {/* Empty State */}
             {totalItems === 0 && (
-              <div className="py-10 text-center px-4">
-                <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-2">
-                  <ShieldCheck size={24} className="text-emerald-500" />
+              <div className="py-12 text-center px-4 space-y-1.5">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-2 border border-emerald-100">
+                  <ShieldCheck size={24} />
                 </div>
-                <p className="text-sm font-bold text-slate-700">ไม่มีรายการแจ้งเตือนใหม่</p>
-                <p className="text-xs text-slate-400 mt-0.5">ระบบตัดยอดและทำงานปกติ 100%</p>
+                <p className="text-sm font-bold text-slate-800">ไม่มีรายการแจ้งเตือนใหม่</p>
+                <p className="text-xs text-slate-400">ระบบทำงานปกติและตัดยอดสลิปเรียบร้อย 100%</p>
               </div>
             )}
           </div>
 
           {/* Footer Shortcuts */}
-          <div className="p-2.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
+          <div className="p-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
             <Link
               href="/dashboard/review"
               onClick={() => setIsOpen(false)}
-              className="font-bold text-[#5B58F2] hover:text-indigo-700 flex items-center gap-1 py-1 px-2 rounded-lg hover:bg-indigo-50 transition-colors"
+              className="font-bold text-[#5B58F2] hover:text-indigo-700 flex items-center gap-1 py-1 px-2.5 rounded-xl hover:bg-indigo-50 transition-colors"
             >
-              ไปยังหน้ารายการตรวจสอบ <ChevronRight size={14} />
+              <span>ไปที่หน้าตรวจสอบสลิปทั้งหมด</span>
+              <ChevronRight size={13} />
             </Link>
 
-            <Link
-              href="/dashboard/line-slips"
-              onClick={() => setIsOpen(false)}
-              className="text-slate-500 hover:text-slate-800 font-semibold py-1 px-2 rounded-lg hover:bg-slate-200/60 transition-colors"
-            >
-              สลิป LINE ทั้งหมด
-            </Link>
+            <span className="text-[11px] text-slate-400">
+              อัปเดตอัตโนมัติ
+            </span>
           </div>
+
         </div>
       )}
     </div>
