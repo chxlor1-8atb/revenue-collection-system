@@ -132,17 +132,27 @@ export async function POST(request: Request) {
         if (event.message.type === "image") {
           console.log(`[Webhook] Image received – messageId: ${event.message.id}`);
 
-          // Idempotency check
-          const existingMsg = await db.select().from(lineMessages).where(eq(lineMessages.lineMessageId, event.message.id)).limit(1);
-          if (existingMsg.length > 0) {
-            console.log(`[Webhook] Message ${event.message.id} already processed, skipping.`);
+          // Atomic Idempotency Lock: Reserve this messageId immediately to prevent ANY concurrent Slip2Go duplicate calls
+          let msgRowId: number;
+          try {
+            const [inserted] = await db.insert(lineMessages).values({
+              lineMessageId: event.message.id,
+              lineUserId: userId,
+              type: "image",
+              status: "processing",
+            }).returning({ id: lineMessages.id });
+            msgRowId = inserted.id;
+          } catch {
+            // Already processing or processed by another concurrent webhook invocation
+            console.log(`[Webhook] Message ${event.message.id} is already registered/processed, skipping Slip2Go verification.`);
             continue;
           }
 
           // 1. Download image from LINE
           const imageBuffer = await getMessageContent(event.message.id);
-          if (!imageBuffer) {
-            console.error("[Webhook] Failed to download image from LINE");
+          if (!imageBuffer || imageBuffer.length < 500) {
+            console.error("[Webhook] Failed to download valid image from LINE");
+            await db.update(lineMessages).set({ status: 'rejected' }).where(eq(lineMessages.id, msgRowId));
             await replyMessage(replyToken, "ขออภัยค่ะ ระบบไม่สามารถดาวน์โหลดรูปภาพได้ กรุณาส่งใหม่อีกครั้งค่ะ");
             continue;
           }
@@ -160,27 +170,21 @@ export async function POST(request: Request) {
             console.log("[Webhook] Blob upload success:", blobUrl);
           } catch (blobError: any) {
             console.error("[Webhook] Blob upload FAILED:", blobError?.message || blobError);
-            // Continue without blob URL – we still want to verify & save to DB
-            blobUrl = `line://message/${event.message.id}`; // fallback reference
+            blobUrl = `line://message/${event.message.id}`;
           }
 
-          // 3. Verify with Slip2Go
+          await db.update(lineMessages).set({ imageUrl: blobUrl }).where(eq(lineMessages.id, msgRowId));
+
+          // 3. Verify with Slip2Go EXACTLY ONCE
           console.log("[Webhook] Sending to Slip2Go for verification...");
           const verification = await verifySlipWithBuffer(imageBuffer);
           console.log("[Webhook] Slip2Go result:", JSON.stringify(verification));
 
           if (!verification.success) {
-            // Save the image to DB even if slip verification fails, for manual admin review
-            try {
-              await db.insert(lineMessages).values({
-                lineMessageId: event.message.id,
-                lineUserId: userId,
-                type: "image",
-                imageUrl: blobUrl,
-                status: "rejected",
-                isVerified: false,
-              });
-            } catch {}
+            await db.update(lineMessages).set({
+              status: "rejected",
+              isVerified: false,
+            }).where(eq(lineMessages.id, msgRowId));
             
             let title = "สลิปไม่ถูกต้อง";
             let subtitle = "กรุณาตรวจสอบว่าส่งรูปสลิปที่ชัดเจน";
@@ -219,12 +223,10 @@ export async function POST(request: Request) {
             continue;
           }
 
-
           const slipAmount = verification.data?.amount.toString();
-
           const transRef = verification.data?.transRef;
           
-          // Dedup: Check if this transfer reference has already been processed
+          // Dedup: Check if this transfer reference has already been processed in transactions table
           if (transRef) {
             const existingRefTx = await db.select({ id: transactions.id })
               .from(transactions)
@@ -232,6 +234,13 @@ export async function POST(request: Request) {
               .limit(1);
             
             if (existingRefTx.length > 0) {
+              await db.update(lineMessages).set({
+                status: "rejected",
+                isVerified: false,
+                amount: slipAmount,
+                senderName: verification.data?.sender?.name
+              }).where(eq(lineMessages.id, msgRowId));
+
               const orig: any = verification.data || {};
               const senderName = orig.sender?.name || orig.senderName || orig.sender?.account?.name || orig.senderAccount;
               const senderAccount = orig.sender?.account?.number || orig.senderAccountNumber;
@@ -257,135 +266,120 @@ export async function POST(request: Request) {
               continue;
             }
           }
-          
-          // 3.5 (Secured): Blind FIFO amount matching removed to prevent cross-user collision.
-          // LINE slips are only auto-approved if matched to the verified LINE User's house intent or linked debt.
 
-        // 3.5.5 Auto-match with Web Intent Transaction
-        if (slipAmount && slipAmount !== "0") {
-          const linkedHouses = await db.select().from(houses).where(eq(houses.lineUserId, userId));
-          if (linkedHouses.length > 0) {
-            const houseIds = linkedHouses.map(h => h.id);
-            
-            const activeIntents = await db.select({
-              txId: transactions.id,
-              amount: transactions.amount,
-              houseId: invoices.houseId
-            })
-            .from(transactions)
-            .innerJoin(invoices, eq(invoices.transactionId, transactions.id))
-            .where(
-              and(
-                eq(transactions.slipStatus, 'waiting_for_slip'),
-                inArray(invoices.houseId, houseIds)
-              )
-            );
-            
-            const uniqueIntents = Array.from(new Map(activeIntents.map(item => [item.txId, item])).values());
-            const matchingIntent = uniqueIntents.find(intent => 
-              intent.amount && Math.abs(parseFloat(intent.amount) - parseFloat(slipAmount)) < 0.01
-            );
-            
-            if (matchingIntent) {
-              await db.update(transactions).set({
-                slipImageUrl: blobUrl,
-                slipStatus: "verified",
-                slipRefId: transRef || null,
-                paidAt: new Date(),
-                verifiedBy: "line_bot_auto"
-              }).where(eq(transactions.id, matchingIntent.txId));
+          // 3.5.5 Auto-match with Web Intent Transaction
+          if (slipAmount && slipAmount !== "0") {
+            const linkedHouses = await db.select().from(houses).where(eq(houses.lineUserId, userId));
+            if (linkedHouses.length > 0) {
+              const houseIds = linkedHouses.map(h => h.id);
               
-              await db.update(invoices).set({ status: 'paid' }).where(eq(invoices.transactionId, matchingIntent.txId));
-              
-              const matchedHouse = linkedHouses.find(h => h.id === matchingIntent.houseId);
-              
-              await db.insert(lineMessages).values({
-                lineMessageId: event.message.id,
-                lineUserId: userId,
-                type: "image",
-                imageUrl: blobUrl,
-                status: "verified_auto",
-                amount: slipAmount,
-                senderName: verification.data?.sender.name,
-                isVerified: true,
-                transactionId: matchingIntent.txId,
-                houseNumber: matchedHouse?.houseNumber
-              });
-              
-              const flexMsg = generateSlipVerificationSuccessFlexMessage(
-                verification.data?.amount || 0,
-                verification.data?.sender?.name || "",
-                verification.data?.sender?.accountNumber || "",
-                verification.data?.receiver?.name || "",
-                verification.data?.receiver?.accountNumber || "",
-                verification.data?.transDate || ""
+              const activeIntents = await db.select({
+                txId: transactions.id,
+                amount: transactions.amount,
+                houseId: invoices.houseId
+              })
+              .from(transactions)
+              .innerJoin(invoices, eq(invoices.transactionId, transactions.id))
+              .where(
+                and(
+                  eq(transactions.slipStatus, 'waiting_for_slip'),
+                  inArray(invoices.houseId, houseIds)
+                )
               );
               
-              await safeReplyOrPush(userId, replyToken, [
-                flexMsg,
-                {
-                  type: "text",
-                  text: `✅ ระบบได้ทำการชำระบิลตามที่คุณทำรายการไว้บนหน้าเว็บเรียบร้อยแล้วค่ะ (ยอด ${slipAmount} บาท บ้านเลขที่ ${matchedHouse?.houseNumber || ''}) ขอบคุณที่ใช้บริการ 💚`
-                }
-              ]);
-              continue;
-            }
-          }
-        }
-
-        // 3.6 Auto-match with linked house (supports exact match AND advance payment matching)
-        if (slipAmount && slipAmount !== "0") {
-          const linkedHouses = await db.select().from(houses).where(eq(houses.lineUserId, userId)).limit(1);
-          if (linkedHouses.length > 0) {
-            const house = linkedHouses[0];
-            const approveResult = await attemptAutoApprove(house, slipAmount, blobUrl, transRef || null);
-            
-            if (approveResult.success && approveResult.newTxId) {
-              await db.insert(lineMessages).values({
-                lineMessageId: event.message.id,
-                lineUserId: userId,
-                type: "image",
-                imageUrl: blobUrl,
-                status: "verified_auto",
-                amount: slipAmount,
-                senderName: verification.data?.sender.name,
-                isVerified: true,
-                transactionId: approveResult.newTxId,
-                houseNumber: house.houseNumber
-              });
-              
-              const flexMsg = generateSlipVerificationSuccessFlexMessage(
-                verification.data?.amount || 0,
-                verification.data?.sender?.name || "",
-                verification.data?.sender?.accountNumber || "",
-                verification.data?.receiver?.name || "",
-                verification.data?.receiver?.accountNumber || "",
-                verification.data?.transDate || ""
+              const uniqueIntents = Array.from(new Map(activeIntents.map(item => [item.txId, item])).values());
+              const matchingIntent = uniqueIntents.find(intent => 
+                intent.amount && Math.abs(parseFloat(intent.amount) - parseFloat(slipAmount)) < 0.01
               );
               
-              await safeReplyOrPush(userId, replyToken, [
-                flexMsg,
-                {
-                  type: "text",
-                  text: `✅ ระบบได้ทำการตัดยอดชำระเงิน ${parseFloat(slipAmount).toLocaleString()} บาท สำหรับบ้านเลขที่ ${house.houseNumber} ให้เรียบร้อยแล้วค่ะ ขอบคุณที่ใช้บริการ 💚`
-                }
-              ]);
-              continue;
+              if (matchingIntent) {
+                await db.update(transactions).set({
+                  slipImageUrl: blobUrl,
+                  slipStatus: "verified",
+                  slipRefId: transRef || null,
+                  paidAt: new Date(),
+                  verifiedBy: "line_bot_auto"
+                }).where(eq(transactions.id, matchingIntent.txId));
+                
+                await db.update(invoices).set({ status: 'paid' }).where(eq(invoices.transactionId, matchingIntent.txId));
+                
+                const matchedHouse = linkedHouses.find(h => h.id === matchingIntent.houseId);
+                
+                await db.update(lineMessages).set({
+                  status: "verified_auto",
+                  amount: slipAmount,
+                  senderName: verification.data?.sender.name,
+                  isVerified: true,
+                  transactionId: matchingIntent.txId,
+                  houseNumber: matchedHouse?.houseNumber
+                }).where(eq(lineMessages.id, msgRowId));
+                
+                const flexMsg = generateSlipVerificationSuccessFlexMessage(
+                  verification.data?.amount || 0,
+                  verification.data?.sender?.name || "",
+                  verification.data?.sender?.accountNumber || "",
+                  verification.data?.receiver?.name || "",
+                  verification.data?.receiver?.accountNumber || "",
+                  verification.data?.transDate || ""
+                );
+                
+                await safeReplyOrPush(userId, replyToken, [
+                  flexMsg,
+                  {
+                    type: "text",
+                    text: `✅ ระบบได้ทำการชำระบิลตามที่คุณทำรายการไว้บนหน้าเว็บเรียบร้อยแล้วค่ะ (ยอด ${slipAmount} บาท บ้านเลขที่ ${matchedHouse?.houseNumber || ''}) ขอบคุณที่ใช้บริการ 💚`
+                  }
+                ]);
+                continue;
+              }
             }
           }
-        }
-          
-        // 4. Save to database (Normal fallback flow)
-          await db.insert(lineMessages).values({
-            lineMessageId: event.message.id,
-            lineUserId: userId,
-            type: "image",
-            imageUrl: blobUrl,
+
+          // 3.6 Auto-match with linked house (supports exact match AND advance payment matching)
+          if (slipAmount && slipAmount !== "0") {
+            const linkedHouses = await db.select().from(houses).where(eq(houses.lineUserId, userId)).limit(1);
+            if (linkedHouses.length > 0) {
+              const house = linkedHouses[0];
+              const approveResult = await attemptAutoApprove(house, slipAmount, blobUrl, transRef || null);
+              
+              if (approveResult.success && approveResult.newTxId) {
+                await db.update(lineMessages).set({
+                  status: "verified_auto",
+                  amount: slipAmount,
+                  senderName: verification.data?.sender.name,
+                  isVerified: true,
+                  transactionId: approveResult.newTxId,
+                  houseNumber: house.houseNumber
+                }).where(eq(lineMessages.id, msgRowId));
+                
+                const flexMsg = generateSlipVerificationSuccessFlexMessage(
+                  verification.data?.amount || 0,
+                  verification.data?.sender?.name || "",
+                  verification.data?.sender?.accountNumber || "",
+                  verification.data?.receiver?.name || "",
+                  verification.data?.receiver?.accountNumber || "",
+                  verification.data?.transDate || ""
+                );
+                
+                await safeReplyOrPush(userId, replyToken, [
+                  flexMsg,
+                  {
+                    type: "text",
+                    text: `✅ ระบบได้ทำการตัดยอดชำระเงิน ${parseFloat(slipAmount).toLocaleString()} บาท สำหรับบ้านเลขที่ ${house.houseNumber} ให้เรียบร้อยแล้วค่ะ ขอบคุณที่ใช้บริการ 💚`
+                  }
+                ]);
+                continue;
+              }
+            }
+          }
+            
+          // 4. Save verified data to lineMessages (Normal fallback flow: waiting for resident to type house number)
+          await db.update(lineMessages).set({
             status: "pending",
             amount: slipAmount,
             senderName: verification.data?.sender.name,
             isVerified: true,
-          });
+          }).where(eq(lineMessages.id, msgRowId));
 
           // 5. Reply asking for house number
           const flexMsg = generateSlipVerificationSuccessFlexMessage(
