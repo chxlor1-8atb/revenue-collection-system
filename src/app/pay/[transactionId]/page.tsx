@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import generatePayload from "promptpay-qr";
 import qrcode from "qrcode";
 import CountdownTimer from "@/components/CountdownTimer";
+import CurrencyDisplay from "@/components/CurrencyDisplay";
 
 export default async function PayPage({ params }: { params: Promise<{ transactionId: string }> }) {
   const transactionId = parseInt((await params).transactionId, 10);
@@ -71,11 +72,16 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
           <div className="p-8 sm:p-10 flex flex-col items-center">
             
             <div className="mb-8 text-center">
-              <p className="font-sans text-sm font-semibold text-slate-400 tracking-widest uppercase mb-2">ยอดชำระสุทธิ</p>
-              <h1 className="font-mono text-5xl font-bold text-slate-900 tracking-tighter flex items-end justify-center gap-1">
-                ฿{Math.floor(totalAmount)}
-              </h1>
-              <p className="text-xs text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full mt-3 font-medium">
+              <p className="font-sans text-xs font-bold text-slate-400 tracking-widest uppercase mb-2">ยอดชำระสุทธิ</p>
+              <div className="flex justify-center">
+                <CurrencyDisplay
+                  amount={totalAmount}
+                  size="4xl"
+                  variant="default"
+                  className="font-black"
+                />
+              </div>
+              <p className="text-xs text-emerald-600 bg-emerald-50 px-3.5 py-1 rounded-full mt-3 font-semibold inline-block border border-emerald-100">
                 กรุณาโอนเงินตามยอดที่แสดง
               </p>
             </div>

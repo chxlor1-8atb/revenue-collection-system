@@ -30,6 +30,7 @@ import SlipModalButton from "@/components/SlipModalButton";
 import CashPaymentButton from "./CashPaymentButton";
 import WalletModalButton from "./WalletModalButton";
 import HouseActionsClient from "./HouseActionsClient";
+import CurrencyDisplay from "@/components/CurrencyDisplay";
 
 export const dynamic = "force-dynamic";
 
@@ -171,11 +172,11 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
             </div>
           </div>
           <div className="mt-3">
-            <div className={`text-2xl sm:text-3xl font-black font-mono tracking-tight ${
-              totalUnpaid > 0 ? "text-rose-600" : "text-slate-800"
-            }`}>
-              ฿{totalUnpaid.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
-            </div>
+            <CurrencyDisplay
+              amount={totalUnpaid}
+              size="2xl"
+              variant={totalUnpaid > 0 ? "danger" : "default"}
+            />
             <div className="flex items-center gap-1.5 mt-1">
               <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${
                 totalUnpaid > 0 ? "bg-rose-100/80 text-rose-800" : "bg-slate-100 text-slate-500"
@@ -195,9 +196,11 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl sm:text-3xl font-black text-emerald-700 font-mono tracking-tight">
-              ฿{totalPaid.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
-            </div>
+            <CurrencyDisplay
+              amount={totalPaid}
+              size="2xl"
+              variant="success"
+            />
             <div className="flex items-center gap-1.5 mt-1">
               <span className="text-[11px] font-bold bg-emerald-100/80 text-emerald-800 px-2 py-0.5 rounded-md">
                 {paidInvoices.length} งวดชำระครบแล้ว
@@ -216,9 +219,11 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
           </div>
           <div className="mt-3 flex items-end justify-between">
             <div>
-              <div className="text-2xl sm:text-3xl font-black text-indigo-700 font-mono tracking-tight">
-                ฿{walletBalanceNum.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
-              </div>
+              <CurrencyDisplay
+                amount={walletBalanceNum}
+                size="2xl"
+                variant="primary"
+              />
               <div className="text-[11px] text-slate-500 mt-1">
                 {walletBalanceNum > 0 ? "มีเงินคงเหลือตัดบิลอัตโนมัติ" : "ไม่มีเงินคงเหลือในกระเป๋า"}
               </div>
@@ -268,9 +273,12 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
                 <Banknote size={15} className="text-emerald-600 mt-0.5 shrink-0" />
                 <div>
                   <span className="text-[11px] font-semibold text-slate-400 block">เรทค่าจัดเก็บประจำเดือน</span>
-                  <span className="font-mono font-bold text-slate-900 text-sm">
-                    ฿{parseFloat(house.defaultBillingAmount || "20").toFixed(2)} / เดือน
-                  </span>
+                  <CurrencyDisplay
+                    amount={house.defaultBillingAmount || "20"}
+                    size="sm"
+                    variant="default"
+                    suffix="/ เดือน"
+                  />
                 </div>
               </div>
 
@@ -375,8 +383,8 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
                       </td>
 
                       {/* Amount */}
-                      <td className="px-5 py-4 font-mono font-black text-sm text-slate-900">
-                        ฿{parseFloat(inv.amount).toFixed(2)}
+                      <td className="px-5 py-4">
+                        <CurrencyDisplay amount={inv.amount} size="sm" variant="default" />
                       </td>
 
                       {/* Status & Quick Action */}

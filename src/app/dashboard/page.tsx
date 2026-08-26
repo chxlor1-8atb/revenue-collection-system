@@ -9,6 +9,7 @@ import { eq, desc, inArray, or, and, sql } from "drizzle-orm";
 import RevenueChart from "./RevenueChart";
 import { StaggerContainer, StaggerItem } from "@/components/animations/Stagger";
 import LottieIcon from "@/components/LottieIcon";
+import CurrencyDisplay from "@/components/CurrencyDisplay";
 import { 
   Banknote, 
   Home, 
@@ -203,16 +204,18 @@ export default async function DashboardPage() {
               </div>
             </div>
             <span className="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full text-[11px] font-bold border border-emerald-200/80 whitespace-nowrap">
-              ปี {currentYear + 543}: ฿{currentYearRevenue.toLocaleString("th-TH", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              ปี {currentYear + 543}: <CurrencyDisplay amount={currentYearRevenue} size="xs" decimals={0} variant="success" />
             </span>
           </div>
 
           <div className="mt-auto pt-2 sm:pt-2.5 border-t border-slate-100 flex items-end justify-between gap-2">
             <div>
-              <div className="text-2xl xl:text-3xl font-extrabold text-slate-900 tracking-tight leading-none">
-                <span className="text-lg xl:text-xl font-bold text-slate-400 mr-1">฿</span>
-                {totalVerifiedRevenue.toLocaleString("th-TH", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-              </div>
+              <CurrencyDisplay 
+                amount={totalVerifiedRevenue} 
+                size="3xl" 
+                decimals={0} 
+                variant="default"
+              />
             </div>
             <span className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -398,9 +401,7 @@ export default async function DashboardPage() {
                       <h3 className="text-sm font-semibold text-slate-800 truncate group-hover:text-[#5B58F2] transition-colors">
                         {tx.houseNumber} - {tx.ownerName}
                       </h3>
-                      <span className="text-xs font-bold text-slate-700">
-                        ฿{parseFloat(tx.amount || "0").toLocaleString("th-TH")}
-                      </span>
+                      <CurrencyDisplay amount={tx.amount} size="xs" variant="success" />
                     </div>
                     <div className="flex items-center gap-3 text-[11px] font-medium text-slate-400">
                       <span className="flex items-center gap-1">

@@ -31,6 +31,7 @@ import {
   X,
   MapPin
 } from "lucide-react";
+import CurrencyDisplay from "@/components/CurrencyDisplay";
 import ConfirmModal from "@/components/ConfirmModal";
 
 interface BroadcastClientProps {
@@ -308,9 +309,11 @@ export default function BroadcastClient({
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-xl sm:text-2xl lg:text-3xl font-black text-rose-700 font-mono tracking-tight truncate">
-              ฿{totalOverdueDebt.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
-            </div>
+            <CurrencyDisplay
+              amount={totalOverdueDebt}
+              size="2xl"
+              variant="danger"
+            />
             <div className="text-[11px] text-rose-600/90 mt-0.5">ยอดค้างชำระสะสม</div>
           </div>
         </div>

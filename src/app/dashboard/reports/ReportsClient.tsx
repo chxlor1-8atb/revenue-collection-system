@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { BarChart3, TrendingUp, Download, Building2, DollarSign, ArrowUpRight, CheckCircle2, AlertTriangle, FileSpreadsheet, Calendar, Sparkles } from "lucide-react";
 import LottieIcon from "@/components/LottieIcon";
+import CurrencyDisplay from "@/components/CurrencyDisplay";
 
 interface CommunityStat {
   zone: string;
@@ -73,8 +74,8 @@ export default function ReportsClient({
             <span>รายรับวันนี้</span>
             <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-semibold">Today</span>
           </div>
-          <div className="text-2xl font-bold text-slate-800 mt-1 font-mono">
-            ฿{todayRevenue.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+          <div className="mt-1">
+            <CurrencyDisplay amount={todayRevenue} size="xl" variant="default" />
           </div>
           <div className="text-[11px] text-slate-400 mt-1">บันทึกรับเงินวันนี้</div>
         </div>
@@ -84,8 +85,8 @@ export default function ReportsClient({
             <span>รายรับสะสมทั้งหมด</span>
             <TrendingUp size={14} className="text-emerald-600" />
           </div>
-          <div className="text-2xl font-bold text-emerald-700 mt-1 font-mono">
-            ฿{totalPaidRevenue.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+          <div className="mt-1">
+            <CurrencyDisplay amount={totalPaidRevenue} size="xl" variant="success" />
           </div>
           <div className="text-[11px] text-emerald-600 mt-1 font-medium">จัดเก็บเข้าคลังสำเร็จ</div>
         </div>
@@ -95,8 +96,8 @@ export default function ReportsClient({
             <span>ลูกหนี้ค้างชำระสะสม</span>
             <AlertTriangle size={14} className="text-amber-600" />
           </div>
-          <div className="text-2xl font-bold text-amber-700 mt-1 font-mono">
-            ฿{totalUnpaidDebt.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+          <div className="mt-1">
+            <CurrencyDisplay amount={totalUnpaidDebt} size="xl" variant="warning" />
           </div>
           <div className="text-[11px] text-amber-600 mt-1">รอการชำระ/ติดตาม</div>
         </div>
@@ -172,11 +173,11 @@ export default function ReportsClient({
                   <td className="py-3.5 px-4 text-center text-slate-600 font-mono">
                     {c.totalHouses} หลัง
                   </td>
-                  <td className="py-3.5 px-4 text-right font-mono font-bold text-emerald-700">
-                    ฿{c.paidAmount.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+                  <td className="py-3.5 px-4 text-right">
+                    <CurrencyDisplay amount={c.paidAmount} size="xs" variant="success" />
                   </td>
-                  <td className="py-3.5 px-4 text-right font-mono font-bold text-amber-600">
-                    ฿{c.unpaidAmount.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+                  <td className="py-3.5 px-4 text-right">
+                    <CurrencyDisplay amount={c.unpaidAmount} size="xs" variant="warning" />
                   </td>
                   <td className="py-3.5 px-4 text-right">
                     <div className="flex items-center justify-end gap-2.5">
