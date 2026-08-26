@@ -3,10 +3,28 @@
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import SlipReviewForm from "./SlipReviewForm";
-import { FileSignature, Loader2, QrCode, CheckCircle2, Clock, Sparkles, RefreshCw, Layers, LayoutGrid, List, User, MapPin, ExternalLink, Calendar, CheckSquare } from "lucide-react";
+import { 
+  FileSignature, 
+  Loader2, 
+  QrCode, 
+  CheckCircle2, 
+  Clock, 
+  Sparkles, 
+  RefreshCw, 
+  Layers, 
+  LayoutGrid, 
+  List, 
+  User, 
+  MapPin, 
+  ExternalLink, 
+  Calendar, 
+  CheckSquare 
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import LottieIcon from "@/components/LottieIcon";
+import LiveQrCountdown from "@/components/LiveQrCountdown";
+import CurrencyDisplay from "@/components/CurrencyDisplay";
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -32,7 +50,6 @@ export default function ReviewClient() {
     }
   }, []);
 
-  
   const [isBulking, setIsBulking] = useState(false);
 
   const handleBulkApprove = async () => {
@@ -45,11 +62,11 @@ export default function ReviewClient() {
     });
 
     if (safeToApprove.length === 0) {
-      alert("�������Ի�˹����ʹ�Թ�ç�Ѻ��� 100% ��¤�Ѻ ��سҵ�Ǩ�ͺ������¡�����ͻ�ͧ�ѹ�����Դ��Ҵ�ҧ�ѭ��");
+      alert("ไม่พบสลิปที่ยอดเงินตรงกับบิล 100% เลยครับ กรุณาตรวจสอบและอนุมัติรายรายการเพื่อป้องกันข้อผิดพลาดทางบัญชี");
       return;
     }
 
-    if (!confirm(`�к���Ǩ�ͺ����Ի����ʹ�Թ�͹�ç�Ѻ��žʹըӹǹ ${safeToApprove.length} ��¡�� �س��ͧ���͹��ѵԷ�����������ѹ�������?`)) {
+    if (!confirm(`ระบบตรวจพบสลิปที่ยอดเงินโอนตรงกับบิลพอดีจำนวน ${safeToApprove.length} รายการ คุณต้องการอนุมัติทั้งหมดพร้อมกันทันทีใช่หรือไม่?`)) {
       return;
     }
 
@@ -75,7 +92,7 @@ export default function ReviewClient() {
     
     setIsBulking(false);
     mutate();
-    alert(`͹��ѵ������ ${successCount} ��¡��`);
+    alert(`อนุมัติสำเร็จ ${successCount} รายการ`);
   };
 
   const setViewMode = (mode: "grid" | "detailed") => {
@@ -101,7 +118,7 @@ export default function ReviewClient() {
       {/* Unified Master Container */}
       <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col">
         
-        {/* 1. Header Section (Desktop only - mobile goes straight to tabs & slips) */}
+        {/* 1. Header Section */}
         <div className="hidden sm:flex p-6 lg:p-7 border-b border-slate-100 flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
           <div className="flex items-center gap-4">
             <LottieIcon src="/icons/icons8-document.json" size={54} className="shrink-0" loop autoplay />
@@ -110,6 +127,17 @@ export default function ReviewClient() {
               <p className="text-slate-500 text-sm mt-0.5">ตรวจสอบและยืนยันยอดเงินที่ผู้ใช้งานโอนผ่าน QR Code</p>
             </div>
           </div>
+
+          {activeTab === "pending" && pending.length > 1 && (
+            <button
+              onClick={handleBulkApprove}
+              disabled={isBulking}
+              className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-500/20 disabled:opacity-50 cursor-pointer"
+            >
+              {isBulking ? <Loader2 size={15} className="animate-spin" /> : <CheckSquare size={15} />}
+              <span>อนุมัติสลิปที่ยอดตรงทั้งหมด ({pending.length})</span>
+            </button>
+          )}
         </div>
 
         {/* 2. Toolbar & Segmented Tabs Bar */}
@@ -118,7 +146,7 @@ export default function ReviewClient() {
           <div className="flex items-center gap-1.5 bg-slate-200/70 p-1 rounded-xl border border-slate-200/80">
             <button
               onClick={() => setActiveTab("pending")}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 activeTab === "pending"
                   ? "bg-white text-slate-900 shadow-xs"
                   : "text-slate-500 hover:text-slate-800"
@@ -139,14 +167,14 @@ export default function ReviewClient() {
 
             <button
               onClick={() => setActiveTab("waiting")}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 activeTab === "waiting"
                   ? "bg-white text-slate-900 shadow-xs"
                   : "text-slate-500 hover:text-slate-800"
               }`}
             >
-              <QrCode size={14} className={activeTab === "waiting" ? "text-amber-600" : "text-slate-400"} />
-              <span>กำลังทำรายการ</span>
+              <QrCode size={14} className={activeTab === "waiting" ? "text-amber-500" : "text-slate-400"} />
+              <span>กำลังทำรายการ (QR Code)</span>
               {waiting.length > 0 ? (
                 <span className="bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full shadow-2xs">
                   {waiting.length}
@@ -159,13 +187,13 @@ export default function ReviewClient() {
             </button>
           </div>
 
-          {/* View Mode Switcher (Visible on both mobile & desktop) */}
+          {/* View Mode Switcher */}
           <div className="flex items-center gap-3">
             <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/60">
               <button
                 onClick={() => setViewMode("detailed")}
                 aria-label="มุมมองละเอียด"
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                   viewMode === "detailed" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-800"
                 }`}
               >
@@ -174,7 +202,7 @@ export default function ReviewClient() {
               <button
                 onClick={() => setViewMode("grid")}
                 aria-label="มุมมองการ์ด"
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                   viewMode === "grid" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-800"
                 }`}
               >
@@ -186,6 +214,7 @@ export default function ReviewClient() {
 
         {/* 3. Master Content Body */}
         <div className="p-6 lg:p-8 bg-slate-50/30">
+          
           {/* Waiting View: Live Scanning Grid Cards or Table */}
           {activeTab === "waiting" && (
             <div>
@@ -278,23 +307,22 @@ export default function ReviewClient() {
                               </div>
                             </div>
 
-                            {/* Card Bottom: Amount & Live Timer */}
+                            {/* Card Bottom: Amount & Live QR Countdown */}
                             <div className="pt-3 border-t border-slate-100">
                               <div className="flex items-center justify-between mb-3">
                                 <span className="text-[10px] font-bold text-slate-400 uppercase">ยอดเงิน</span>
-                                <span className="font-mono font-bold text-lg text-amber-600">
-                                  ฿{parseFloat(tx.amount || "0").toLocaleString("th-TH", { minimumFractionDigits: 2 })}
-                                </span>
+                                <CurrencyDisplay amount={tx.amount} size="lg" variant="warning" />
                               </div>
 
+                              {/* Bottom Status & Live Countdown */}
                               <div className="flex items-center justify-between text-xs text-amber-700 bg-amber-50/70 -mx-5 -mb-5 p-2.5 px-4 rounded-b-2xl border-t border-amber-100">
                                 <span className="flex items-center gap-1.5 font-semibold text-[11px]">
                                   <Loader2 size={12} className="animate-spin text-amber-500" />
                                   กำลังรอแนบสลิป
                                 </span>
-                                <span className="text-[11px] font-mono text-amber-600">
-                                  {new Date(tx.createdAt).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
-                                </span>
+                                
+                                {/* Live Countdown Badge */}
+                                <LiveQrCountdown createdAt={tx.createdAt} durationSeconds={180} />
                               </div>
                             </div>
                           </motion.div>
@@ -313,7 +341,7 @@ export default function ReviewClient() {
                             <th className="px-5 py-3.5">งวดบิล</th>
                             <th className="px-5 py-3.5 text-right">ยอดเงิน</th>
                             <th className="px-5 py-3.5 text-center">สถานะ</th>
-                            <th className="px-5 py-3.5 text-right">เวลา</th>
+                            <th className="px-5 py-3.5 text-right">นับถอยหลัง QR</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 text-sm">
@@ -324,7 +352,7 @@ export default function ReviewClient() {
                               <tr key={tx.id} className="hover:bg-slate-50/80 transition-colors">
                                 <td className="px-5 py-3.5 font-mono text-xs font-bold text-slate-500">#{tx.id}</td>
                                 <td className="px-5 py-3.5 font-mono font-bold text-slate-900">
-                                  {firstInv ? firstInv.houseNumber : "-"}
+                                  {firstInv ? `บ้าน ${firstInv.houseNumber}` : "-"}
                                   {totalInvoices > 1 && (
                                     <span className="ml-1.5 text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded-md">
                                       +{totalInvoices - 1}
@@ -334,7 +362,7 @@ export default function ReviewClient() {
                                 <td className="px-5 py-3.5 font-semibold text-slate-800">{firstInv?.ownerName || "ผู้ชำระเงิน"}</td>
                                 <td className="px-5 py-3.5 text-slate-600 text-xs">{firstInv ? formatThaiMonth(firstInv.monthYear) : "-"}</td>
                                 <td className="px-5 py-3.5 text-right font-mono font-bold text-amber-600">
-                                  ฿{parseFloat(tx.amount || "0").toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+                                  <CurrencyDisplay amount={tx.amount} size="sm" variant="warning" />
                                 </td>
                                 <td className="px-5 py-3.5 text-center">
                                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
@@ -343,7 +371,12 @@ export default function ReviewClient() {
                                   </span>
                                 </td>
                                 <td className="px-5 py-3.5 text-right text-xs font-mono text-slate-500">
-                                  {new Date(tx.createdAt).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
+                                  <div className="flex flex-col items-end gap-0.5">
+                                    <LiveQrCountdown createdAt={tx.createdAt} durationSeconds={180} />
+                                    <span className="text-[10px] text-slate-400">
+                                      เริ่ม {new Date(tx.createdAt).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} น.
+                                    </span>
+                                  </div>
                                 </td>
                               </tr>
                             );

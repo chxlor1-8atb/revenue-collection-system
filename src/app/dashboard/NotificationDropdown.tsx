@@ -18,6 +18,7 @@ import {
   FileCheck
 } from "lucide-react";
 import CurrencyDisplay from "@/components/CurrencyDisplay";
+import LiveQrCountdown from "@/components/LiveQrCountdown";
 
 export interface PendingNotificationItem {
   id: number;
@@ -317,9 +318,13 @@ export default function NotificationDropdown() {
                         </p>
 
                         <div className="flex items-center justify-between mt-1.5">
-                          <span className="text-[10px] text-slate-400 flex items-center gap-1 font-medium">
-                            <Clock size={11} /> {new Date(item.createdAt).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })} น.
-                          </span>
+                          {isWaitingQr ? (
+                            <LiveQrCountdown createdAt={item.createdAt} durationSeconds={180} />
+                          ) : (
+                            <span className="text-[10px] text-slate-400 flex items-center gap-1 font-medium">
+                              <Clock size={11} /> {new Date(item.createdAt).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })} น.
+                            </span>
+                          )}
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-lg transition-colors ${
                             isWaitingQr 
                               ? "text-amber-800 bg-amber-100 group-hover:bg-amber-600 group-hover:text-white" 
