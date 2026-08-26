@@ -89,7 +89,12 @@ export default function SettingsForm({
           },
           receiptBookConfig: {
             itemsPerBook: parseInt(itemsPerBook) || 50,
-            fiscalYear,
+            fiscalYear: (() => {
+              const now = new Date();
+              const m = now.getMonth() + 1;
+              const y = now.getFullYear();
+              return (m >= 10 ? y + 544 : y + 543).toString();
+            })(),
           },
         }),
       });
@@ -344,19 +349,37 @@ export default function SettingsForm({
           {activeTab === "receipt" && (
             <div className="space-y-3.5 animate-in fade-in duration-150">
               
-              {/* Fiscal Year Input */}
-              <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                  <Calendar size={13} className="text-amber-600" />
-                  ปีงบประมาณทางราชการ
-                </label>
-                <input
-                  type="text"
-                  value={fiscalYear}
-                  onChange={(e) => setFiscalYear(e.target.value)}
-                  placeholder="เช่น 2569"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 outline-hidden"
-                />
+              {/* Auto Fiscal Year Card */}
+              <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                    <Calendar size={13} className="text-amber-600" />
+                    ปีงบประมาณทางราชการ (Thai Fiscal Year)
+                  </label>
+                  <span className="inline-flex items-center gap-1 text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/70">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> เดินตามจริงอัตโนมัติ
+                  </span>
+                </div>
+                
+                <div className="flex items-center justify-between p-3 rounded-xl bg-amber-50/60 border border-amber-200/60">
+                  <div>
+                    <div className="text-[11px] text-slate-500 font-medium">ปีงบประมาณปัจจุบัน:</div>
+                    <div className="text-lg font-black text-amber-950 font-mono">
+                      พ.ศ. {(() => {
+                        const now = new Date();
+                        const m = now.getMonth() + 1;
+                        const y = now.getFullYear();
+                        return (m >= 10 ? y + 544 : y + 543).toString();
+                      })()}
+                    </div>
+                  </div>
+                  <div className="text-[10px] text-right text-slate-500 max-w-[180px] leading-tight">
+                    รอบปีงบประมาณไทย <br/>(1 ต.ค. - 30 ก.ย.)
+                  </div>
+                </div>
+                <p className="text-[10px] text-slate-400 leading-relaxed">
+                  * เมื่อถึงวันที่ 1 ตุลาคมของทุกปี ระบบจะตัดขึ้นปีงบประมาณใหม่และรีเซ็ตเล่มที่ 01 ให้อัตโนมัติทันที
+                </p>
               </div>
 
               {/* Items per Book */}
@@ -370,7 +393,7 @@ export default function SettingsForm({
                   onChange={(e) => setItemsPerBook(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 outline-hidden cursor-pointer"
                 >
-                  <option value="50">50 ฉบับ / เล่ม (มาตรฐานกองคลัง)</option>
+                  <option value="50">50 ฉบับ / เล่ม (มาตรฐานกองคลัง อปท.)</option>
                   <option value="100">100 ฉบับ / เล่ม</option>
                   <option value="25">25 ฉบับ / เล่ม</option>
                 </select>
@@ -387,7 +410,12 @@ export default function SettingsForm({
                   </span>
                 </div>
                 <div className="font-mono font-black text-sm text-amber-950 bg-white/80 p-2.5 rounded-xl border border-amber-200/60 text-center tracking-wide shadow-2xs">
-                  เล่มที่ 01 เลขที่ 01/{fiscalYear}
+                  เล่มที่ 01 เลขที่ 01/{(() => {
+                    const now = new Date();
+                    const m = now.getMonth() + 1;
+                    const y = now.getFullYear();
+                    return (m >= 10 ? y + 544 : y + 543).toString();
+                  })()}
                 </div>
                 <p className="text-[10px] text-amber-700 leading-relaxed text-center">
                   เมื่อครบฉบับที่ {itemsPerBook} ระบบจะขึ้นเล่มที่ 02 ให้อัตโนมัติตามระเบียบ สถ.
