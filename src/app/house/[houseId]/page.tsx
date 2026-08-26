@@ -6,6 +6,9 @@ import InvoiceSelectionForm from "@/components/InvoiceSelectionForm";
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function HouseDashboard({ params }: { params: Promise<{ houseId: string }> }) {
   const houseId = parseInt((await params).houseId, 10);
   
