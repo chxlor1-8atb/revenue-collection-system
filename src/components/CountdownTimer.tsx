@@ -1,15 +1,15 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Clock, RefreshCw, CheckCircle2, AlertCircle } from "lucide-react";
+import { Clock, RefreshCw, CheckCircle2, AlertCircle, Sparkles } from "lucide-react";
 import { useRealtimeEvents } from "@/hooks/useRealtimeEvents";
 
 export default function CountdownTimer({ initialTimeLeft, transactionId }: { initialTimeLeft: number, transactionId?: number }) {
   const [timeLeft, setTimeLeft] = useState<number>(initialTimeLeft);
-  const [isExpired, setIsExpired] = useState(false);
-  const [isRegenerating, setIsRegenerating] = useState(false);
-  const isRegeneratingRef = useRef(false);
+  const [isAutoRenewing, setIsAutoRenewing] = useState(false);
+  const [renewError, setRenewError] = useState<string | null>(null);
   const [isVerified, setIsVerified] = useState(false);
+  const isRenewingRef = useRef(false);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleSuccessfulVerification = useCallback(() => {
@@ -53,9 +53,46 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
     };
   }, [transactionId, isVerified, handleSuccessfulVerification]);
 
+  // Automatic Background Renewal Function
+  const autoRenewQrCode = useCallback(async () => {
+    if (!transactionId || isRenewingRef.current || isVerified) return;
+
+    isRenewingRef.current = true;
+    setIsAutoRenewing(true);
+    setRenewError(null);
+
+    try {
+      const res = await fetch(`/api/transactions/regenerate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ transactionId }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.transactionId) {
+        // Smoothly replace URL with new transaction ID without reload flash
+        window.location.replace(`/pay/${data.transactionId}`);
+      } else if (data.isVerified) {
+        handleSuccessfulVerification();
+      } else {
+        setRenewError(data.error || "ไม่สามารถต่อเวลาอัตโนมัติได้");
+        setIsAutoRenewing(false);
+        isRenewingRef.current = false;
+      }
+    } catch (e) {
+      console.error("Auto renew failed:", e);
+      setRenewError("การเชื่อมต่อขัดข้อง กรุณากดลองใหม่");
+      setIsAutoRenewing(false);
+      isRenewingRef.current = false;
+    }
+  }, [transactionId, isVerified, handleSuccessfulVerification]);
+
+  // Live Second-by-Second Countdown
   useEffect(() => {
     if (initialTimeLeft <= 0) {
-      handleExpiry();
+      // If already expired on page load -> auto-renew immediately!
+      autoRenewQrCode();
       return;
     }
 
@@ -69,86 +106,79 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
       
       if (remaining <= 0) {
         clearInterval(timer);
-        handleExpiry();
+        // Time is up -> seamlessly auto-renew in the background!
+        autoRenewQrCode();
       }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [initialTimeLeft]);
-
-  const handleExpiry = () => {
-    setIsExpired(true);
-  };
-
-  const handleRegenerate = async () => {
-    if (!transactionId || isRegeneratingRef.current) return;
-    
-    isRegeneratingRef.current = true;
-    setIsRegenerating(true);
-    try {
-      const res = await fetch(`/api/transactions/regenerate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ transactionId }),
-      });
-
-      if (res.ok) {
-        window.location.reload();
-      } else {
-        const err = await res.json();
-        alert(err.error || "เกิดข้อผิดพลาดในการต่อเวลา กรุณาลองใหม่อีกครั้ง");
-        isRegeneratingRef.current = false;
-        setIsRegenerating(false);
-      }
-    } catch (e) {
-      console.error(e);
-      alert("เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง");
-      isRegeneratingRef.current = false;
-      setIsRegenerating(false);
-    }
-  };
+  }, [initialTimeLeft, autoRenewQrCode]);
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
   const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
+  // 1. Success / Verified View
   if (isVerified) {
     return (
-      <div className="w-full bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center justify-center gap-3 text-emerald-800 animate-in zoom-in-95 duration-200">
+      <div className="w-full bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center justify-center gap-3 text-emerald-800 animate-in zoom-in-95 duration-200">
         <CheckCircle2 size={24} className="text-emerald-600 animate-bounce" />
         <span className="font-sans font-bold text-sm">ยืนยันการชำระเงินเรียบร้อยแล้ว กำลังพาไปยังใบเสร็จ...</span>
       </div>
     );
   }
 
-  if (isExpired) {
+  // 2. Auto-Renewing State View (Smooth & Seamless)
+  if (isAutoRenewing) {
     return (
-      <div className="w-full bg-rose-50 border border-rose-200 rounded-xl p-4 flex flex-col items-center justify-center gap-2 text-rose-800">
+      <div className="w-full bg-indigo-50/80 border border-indigo-200/80 text-indigo-950 px-4 py-3 rounded-2xl text-xs font-sans font-semibold flex items-center justify-center gap-2.5 mb-6 animate-pulse">
+        <RefreshCw size={15} className="animate-spin text-[#5B58F2]" />
+        <span>ระบบกำลังต่ออายุ QR Code ให้อัตโนมัติ...</span>
+      </div>
+    );
+  }
+
+  // 3. Fallback Error State (If network dropped during auto-renew)
+  if (renewError) {
+    return (
+      <div className="w-full bg-rose-50 border border-rose-200 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 text-rose-800 mb-6">
         <div className="flex items-center gap-2 font-sans font-bold text-sm">
           <AlertCircle size={18} className="text-rose-600" />
-          <span>QR Code หมดอายุแล้ว</span>
+          <span>{renewError}</span>
         </div>
-        <p className="text-xs text-rose-600 text-center font-sans">
-          กรุณากดปุ่มด้านล่างเพื่อสร้าง QR Code ใหม่สำหรับชำระเงิน
-        </p>
         <button
-          onClick={handleRegenerate}
-          disabled={isRegenerating}
-          className="mt-2 flex items-center gap-2 bg-rose-600 hover:bg-rose-700 active:scale-95 text-white text-xs font-sans font-bold py-2 px-4 rounded-lg shadow-sm transition-all disabled:opacity-50"
+          type="button"
+          onClick={() => {
+            isRenewingRef.current = false;
+            autoRenewQrCode();
+          }}
+          className="mt-1 flex items-center gap-2 bg-rose-600 hover:bg-rose-700 active:scale-95 text-white text-xs font-sans font-bold py-2 px-4 rounded-xl shadow-xs transition-all cursor-pointer"
         >
-          <RefreshCw size={14} className={isRegenerating ? "animate-spin" : ""} />
-          <span>{isRegenerating ? "กำลังสร้าง QR Code ใหม่..." : "สร้าง QR Code ใหม่"}</span>
+          <RefreshCw size={14} />
+          <span>กดเพื่อสร้าง QR Code ใหม่</span>
         </button>
       </div>
     );
   }
 
+  // 4. Normal Live Countdown View
+  const isUrgent = timeLeft <= 60 && timeLeft > 0;
+
   return (
-    <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-900 px-4 py-2 rounded-xl text-sm font-sans font-medium mb-6">
-      <Clock size={16} className="text-amber-600 animate-pulse" />
-      <span>กรุณาชำระเงินภายใน:</span>
-      <span className="font-mono font-bold text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded text-base">
+    <div className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-sans font-medium mb-6 transition-all border ${
+      isUrgent 
+        ? "bg-red-50 border-red-200 text-red-900 animate-pulse" 
+        : "bg-amber-50 border-amber-200/80 text-amber-900"
+    }`}>
+      <Clock size={16} className={isUrgent ? "text-red-600 animate-spin" : "text-amber-600 animate-pulse"} />
+      <span>{isUrgent ? "เหลือเวลาสแกน:" : "กรุณาชำระเงินภายใน:"}</span>
+      <span className={`font-mono font-bold px-2 py-0.5 rounded-lg text-sm sm:text-base ${
+        isUrgent ? "text-red-700 bg-red-100/90" : "text-amber-700 bg-amber-100/90"
+      }`}>
         {formattedTime}
+      </span>
+      <span className="text-[11px] text-slate-400 font-normal hidden sm:inline">
+        (ต่ออายุให้อัตโนมัติเมื่อครบกำหนด)
       </span>
     </div>
   );
