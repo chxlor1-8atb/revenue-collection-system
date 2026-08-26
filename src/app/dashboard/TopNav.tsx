@@ -20,6 +20,7 @@ import { useState, useEffect } from "react";
 import SettingsForm from "./settings/SettingsForm";
 import ConfirmModal from "@/components/ConfirmModal";
 import LottieIcon from "@/components/LottieIcon";
+import NotificationDropdown from "./NotificationDropdown";
 
 export default function TopNav({ userName, settings }: { userName: string, settings?: any }) {
   const pathname = usePathname();
@@ -141,13 +142,7 @@ export default function TopNav({ userName, settings }: { userName: string, setti
               >
                 <Settings size={15} strokeWidth={1.5} />
               </button>
-              <button 
-                aria-label="การแจ้งเตือน"
-                className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-colors relative"
-              >
-                <Bell size={15} strokeWidth={1.5} />
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full border border-white"></span>
-              </button>
+              <NotificationDropdown />
               <button 
                 aria-label={`ข้อมูลผู้ใช้ (${userName})`}
                 className="flex items-center cursor-pointer ml-0.5" 
@@ -216,13 +211,7 @@ export default function TopNav({ userName, settings }: { userName: string, setti
             >
               <Settings size={18} strokeWidth={1.5} />
             </button>
-            <button 
-              aria-label="การแจ้งเตือน"
-              className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-colors relative"
-            >
-              <Bell size={18} strokeWidth={1.5} />
-              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
-            </button>
+            <NotificationDropdown />
             
             <button 
               aria-label={`ข้อมูลผู้ใช้และออกจากระบบ (${userName})`}
