@@ -37,6 +37,11 @@ export default function TopNav({ userName, settings }: { userName: string, setti
     return () => window.removeEventListener("keydown", handleEsc);
   }, []);
 
+  // Close settings drawer on route change
+  useEffect(() => {
+    setIsSettingsOpen(false);
+  }, [pathname]);
+
   // Visibility-aware smart poller for pending review items & audio alert
   useEffect(() => {
     let lastCount = 0;

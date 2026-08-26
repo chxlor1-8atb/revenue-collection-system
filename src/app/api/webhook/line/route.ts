@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { generateBillFlexMessage, generateSlipErrorFlexMessage, generateSlipVerificationSuccessFlexMessage, replyMessage, replyWithMessages, safeReplyOrPush, getMessageContent, generateReceiptFlexMessage, generateDuplicateHouseSelectionFlexMessage, generateHowToUseFlexMessage, generateReportProblemFlexMessage, generateContactFlexMessage, generateMyInfoFlexMessage, generateWelcomeFlexMessage, generateAdvanceOptionsFlexMessage, generateAdvanceQrFlexMessage } from "@/lib/line";
 import { db } from "@/lib/db";
-import { lineMessages, houses, invoices, transactions } from "@/lib/schema";
+import { lineMessages, houses, invoices, transactions, systemSettings } from "@/lib/schema";
 import { eq, and, desc, gte, inArray } from "drizzle-orm";
 import { put } from "@vercel/blob";
 import { verifySlipWithBuffer } from "@/lib/slip2go";
@@ -524,8 +524,10 @@ export async function POST(request: Request) {
             await replyMessage(replyToken, "💬 คุณสามารถพิมพ์ข้อความที่ต้องการสอบถาม หรือส่งรูปสลิปโอนเงินเข้ามาในแชทนี้ได้เลยครับ เจ้าหน้าที่จะรีบตอบกลับโดยเร็วที่สุดครับ 🙏");
             continue;
           }
-          if (text === "ติดต่อเจ้าหน้าที่") {
-            await replyWithMessages(replyToken, [generateContactFlexMessage(appUrl)]);
+          if (text === "ติดต่อเจ้าหน้าที่" || text === "ติดต่อ" || text === "เบอร์โทร" || text === "เบอร์โทรศัพท์") {
+            const settings = await db.select().from(systemSettings).limit(1);
+            const lineConfig = settings[0]?.lineConfig;
+            await replyWithMessages(replyToken, [generateContactFlexMessage(appUrl, lineConfig)]);
             continue;
           }
 

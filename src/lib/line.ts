@@ -1175,48 +1175,81 @@ export function generateReportProblemFlexMessage(appUrl: string): any {
   };
 }
 
-export function generateContactFlexMessage(appUrl: string): any {
+export function generateContactFlexMessage(appUrl: string, lineConfig?: any): any {
+  const healthPhone = lineConfig?.healthDeptPhone || "044-631405";
+  const emergencyPhone = lineConfig?.emergencyPhone || "044-631405";
+  const cleanHealthPhone = healthPhone.replace(/[^0-9]/g, "");
+  const cleanEmergencyPhone = emergencyPhone.replace(/[^0-9]/g, "");
+  const announcementText = lineConfig?.isAnnouncementActive ? lineConfig?.announcementText : null;
+
   return {
     type: "flex",
-    altText: "ติดต่อเจ้าหน้าที่",
+    altText: "📞 ติดต่อเจ้าหน้าที่เทศบาล",
     contents: {
       type: "bubble",
       size: "kilo",
       body: {
         type: "box",
         layout: "vertical",
-        paddingAll: "25px",
+        paddingAll: "22px",
         contents: [
           {
             type: "box",
             layout: "horizontal",
             alignItems: "center",
             contents: [
-
               {
-                type: "box", layout: "vertical", contents: [{ type: "text", text: "ติดต่อเจ้าหน้าที่", weight: "bold", size: "xl", color: "#111111" },
-                  { type: "text", text: "เทศบาลเมืองนางรอง", size: "xs", color: "#888888" }
+                type: "box", 
+                layout: "vertical", 
+                contents: [
+                  { type: "text", text: "📞 ติดต่อเจ้าหน้าที่", weight: "bold", size: "xl", color: "#111827" },
+                  { type: "text", text: "กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองนางรอง", size: "xs", color: "#64748B", margin: "xs" }
                 ]
               }
             ]
           },
-          { type: "separator", margin: "xl" },
+          { type: "separator", margin: "lg" },
+          
+          ...(announcementText ? [
+            {
+              type: "box",
+              layout: "vertical",
+              margin: "md",
+              paddingAll: "10px",
+              backgroundColor: "#EFF6FF",
+              cornerRadius: "10px",
+              contents: [
+                { type: "text", text: "📢 ข่าวสารประชาสัมพันธ์", weight: "bold", size: "xxs", color: "#1D4ED8" },
+                { type: "text", text: announcementText, size: "xs", color: "#1E3A8A", wrap: true, margin: "xs" }
+              ]
+            }
+          ] : []),
+
           {
             type: "box",
             layout: "horizontal",
             margin: "lg",
             contents: [
-              { type: "text", text: "เบอร์โทร", color: "#888888", size: "sm", flex: 1 },
-              { type: "text", text: "044-631-419", color: "#111111", size: "sm", weight: "bold", align: "end", flex: 2 }
+              { type: "text", text: "กองสาธารณสุข", color: "#64748B", size: "xs", flex: 2 },
+              { type: "text", text: healthPhone, color: "#0F172A", size: "sm", weight: "bold", align: "end", flex: 3 }
             ]
           },
           {
             type: "box",
             layout: "horizontal",
-            margin: "md",
+            margin: "sm",
             contents: [
-              { type: "text", text: "เวลาทำการ", color: "#888888", size: "sm", flex: 1 },
-              { type: "text", text: "จ.-ศ. (08:30-16:30)", color: "#111111", size: "xs", weight: "bold", align: "end", flex: 2 }
+              { type: "text", text: "เหตุฉุกเฉิน/สายด่วน", color: "#64748B", size: "xs", flex: 2 },
+              { type: "text", text: emergencyPhone, color: "#DC2626", size: "sm", weight: "bold", align: "end", flex: 3 }
+            ]
+          },
+          {
+            type: "box",
+            layout: "horizontal",
+            margin: "sm",
+            contents: [
+              { type: "text", text: "เวลาทำการ", color: "#64748B", size: "xs", flex: 2 },
+              { type: "text", text: "จ.-ศ. (08:30-16:30)", color: "#0F172A", size: "xs", weight: "bold", align: "end", flex: 3 }
             ]
           }
         ]
@@ -1224,15 +1257,22 @@ export function generateContactFlexMessage(appUrl: string): any {
       footer: {
         type: "box",
         layout: "vertical",
+        spacing: "sm",
         paddingAll: "20px",
         paddingTop: "none",
         contents: [
           {
             type: "button",
             style: "primary",
-            color: "#0ea5e9",
+            color: "#059669",
             height: "sm",
-            action: { type: "uri", label: "โทรเลย", uri: "tel:044631419" }
+            action: { type: "uri", label: `โทร. กองสาธารณสุข (${healthPhone})`, uri: `tel:${cleanHealthPhone}` }
+          },
+          {
+            type: "button",
+            style: "secondary",
+            height: "sm",
+            action: { type: "uri", label: `โทร. สายด่วน (${emergencyPhone})`, uri: `tel:${cleanEmergencyPhone}` }
           }
         ]
       }
