@@ -13,7 +13,9 @@ export async function addHouse(formData: FormData) {
   const soi = formData.get("soi")?.toString() || null;
   const road = formData.get("road")?.toString() || null;
   const defaultBillingAmountRaw = formData.get("defaultBillingAmount")?.toString();
-  const defaultBillingAmount = defaultBillingAmountRaw ? parseFloat(defaultBillingAmountRaw).toString() : null;
+  const defaultBillingAmount = defaultBillingAmountRaw && defaultBillingAmountRaw.trim() !== "" && !isNaN(parseFloat(defaultBillingAmountRaw))
+    ? parseFloat(defaultBillingAmountRaw).toFixed(2)
+    : "20.00";
   const customFieldsRaw = formData.get("customFields")?.toString();
 
   let customFields = {};
@@ -64,7 +66,9 @@ export async function updateHouse(id: number, formData: FormData) {
   const soi = formData.get("soi")?.toString() || null;
   const road = formData.get("road")?.toString() || null;
   const defaultBillingAmountRaw = formData.get("defaultBillingAmount")?.toString();
-  const defaultBillingAmount = defaultBillingAmountRaw ? parseFloat(defaultBillingAmountRaw).toString() : null;
+  const defaultBillingAmount = defaultBillingAmountRaw && defaultBillingAmountRaw.trim() !== "" && !isNaN(parseFloat(defaultBillingAmountRaw))
+    ? parseFloat(defaultBillingAmountRaw).toFixed(2)
+    : "20.00";
   const customFieldsRaw = formData.get("customFields")?.toString();
 
   let customFields = {};
