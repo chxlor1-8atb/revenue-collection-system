@@ -292,15 +292,60 @@ export default function SettingsForm({
               </div>
 
               {/* Auto Billing Schedule Grid */}
-              <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs space-y-2.5">
-                <div className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                  <Calendar size={13} className="text-[#5B58F2]" /> รอบออกบิลอัตโนมัติประจำเดือน
+              <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                    <Calendar size={13} className="text-[#5B58F2]" /> รอบออกบิลอัตโนมัติประจำเดือน
+                  </div>
+                  {autoBillingDay ? (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/70">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                      ทุกวันที่ {autoBillingDay}
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
+                      ออกบิลด้วยตนเอง
+                    </span>
+                  )}
                 </div>
 
+                {/* Live Current Schedule Status Banner */}
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-slate-700">สถานะรอบบิลปัจจุบัน:</span>
+                    <span className={`text-[11px] font-mono font-bold ${autoBillingDay ? "text-indigo-600" : "text-slate-500"}`}>
+                      {autoBillingDay ? `ออกบิลอัตโนมัติ ทุกวันที่ ${autoBillingDay} ของเดือน` : "ยังไม่ได้เปิดรอบบิลอัตโนมัติ (ออกบิลเอง)"}
+                    </span>
+                  </div>
+                  {autoBillingDay && (
+                    <div className="text-[10px] text-slate-500 flex items-center gap-2 pt-1 border-t border-slate-200/60">
+                      <span>⏳ ครบกำหนด: {dueDateDays ? `ภายใน ${dueDateDays} วัน` : "10 วัน"}</span>
+                      <span>•</span>
+                      <span>📢 ทวงหนี้: {autoRemindDays ? `หลังเกิน ${autoRemindDays} วัน` : "3 วัน"}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Input Fields */}
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-1">
-                    วันที่ออกบิลอัตโนมัติ (วันที่ 1 - 28 ของทุกเดือน)
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-[11px] font-semibold text-slate-600">
+                      วันที่ออกบิลอัตโนมัติ (วันที่ 1 - 28 ของทุกเดือน)
+                    </label>
+                    {!autoBillingDay && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAutoBillingDay("25");
+                          if (!dueDateDays) setDueDateDays("10");
+                          if (!autoRemindDays) setAutoRemindDays("3");
+                        }}
+                        className="text-[10px] font-bold text-[#5B58F2] hover:text-indigo-800 underline cursor-pointer"
+                      >
+                        ⚡ ตั้งเป็นวันที่ 25
+                      </button>
+                    )}
+                  </div>
                   <input
                     type="number"
                     min="1"
@@ -308,7 +353,7 @@ export default function SettingsForm({
                     value={autoBillingDay}
                     onChange={(e) => setAutoBillingDay(e.target.value)}
                     placeholder="เช่น 25 (เว้นว่างถ้าออกบิลเอง)"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#5B58F2]/30 focus:border-[#5B58F2] outline-hidden"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#5B58F2]/30 focus:border-[#5B58F2] outline-hidden transition-all"
                   />
                 </div>
 
@@ -323,7 +368,7 @@ export default function SettingsForm({
                       value={dueDateDays}
                       onChange={(e) => setDueDateDays(e.target.value)}
                       placeholder="เช่น 10"
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#5B58F2]/30 focus:border-[#5B58F2] outline-hidden"
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#5B58F2]/30 focus:border-[#5B58F2] outline-hidden"
                     />
                   </div>
 
@@ -337,7 +382,7 @@ export default function SettingsForm({
                       value={autoRemindDays}
                       onChange={(e) => setAutoRemindDays(e.target.value)}
                       placeholder="เช่น 3"
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#5B58F2]/30 focus:border-[#5B58F2] outline-hidden"
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#5B58F2]/30 focus:border-[#5B58F2] outline-hidden"
                     />
                   </div>
                 </div>
