@@ -874,57 +874,7 @@ export default function BlobClient({
                 <span>ล้างสลิปตกค้างไร้บิล</span>
               </button>
 
-              <div className="relative">
-                <button
-                  onClick={() => setShowCleanupMenu(prev => !prev)}
-                  disabled={actionProgress !== null}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100/80 text-amber-700 border border-amber-200/80 text-xs font-semibold transition-all disabled:opacity-50 cursor-pointer"
-                >
-                  <Clock size={13} />
-                  <span>ลบไฟล์สลิปเก่า ({oldDays} วัน)</span>
-                  <ChevronDown size={12} />
-                </button>
 
-                {showCleanupMenu && (
-                  <div className="absolute left-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl p-4 shadow-xl z-50 space-y-3">
-                    <div className="text-xs font-bold text-slate-800">ล้างไฟล์เก่ากว่าที่กำหนด</div>
-                    <div className="flex gap-1.5">
-                      {[15, 30, 60, 90].map(d => (
-                        <button
-                          key={d}
-                          onClick={() => setOldDays(d)}
-                          className={`flex-1 py-1 text-xs rounded-lg font-bold border transition-all cursor-pointer ${
-                            oldDays === d 
-                              ? 'bg-amber-500 text-white border-amber-500' 
-                              : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                          }`}
-                        >
-                          {d} วัน
-                        </button>
-                      ))}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="number"
-                        value={oldDays}
-                        onChange={(e) => setOldDays(Math.max(1, parseInt(e.target.value) || 1))}
-                        className="w-20 px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-center"
-                        min={1}
-                      />
-                      <span className="text-xs text-slate-500">วันขึ้นไป</span>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setShowCleanupMenu(false);
-                        promptDelete('old', { days: oldDays });
-                      }}
-                      className="w-full py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-amber-500/20 cursor-pointer"
-                    >
-                      เริ่มค้นหาและลบ
-                    </button>
-                  </div>
-                )}
-              </div>
             </div>
 
             {/* Batch Selection */}
