@@ -103,7 +103,6 @@ export default function InvoiceSelectionForm({ invoices, house }: { invoices: an
                 <motion.div
                   onClick={() => handleToggle(inv.id)}
                   animate={{ 
-                    x: isSelected ? 8 : 0,
                     x: isSelected ? 4 : 0,
                     backgroundColor: isSelected ? "#F0FDF4" : "#FFFFFF",
                     borderColor: isSelected ? "#059669" : "#E2E8F0"
