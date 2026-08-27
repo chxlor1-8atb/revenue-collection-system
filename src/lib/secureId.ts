@@ -5,7 +5,8 @@
 const SALT_MULTIPLIER = 54321;
 const SALT_ADDER = 12348;
 
-export function encodeSecureId(id: number | string): string {
+export function encodeSecureId(id: number | string | undefined | null): string {
+  if (id === undefined || id === null) return '';
   const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
   if (isNaN(numericId)) return '';
   
