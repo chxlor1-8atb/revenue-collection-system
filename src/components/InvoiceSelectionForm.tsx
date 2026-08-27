@@ -104,13 +104,13 @@ export default function InvoiceSelectionForm({ invoices, house }: { invoices: an
                   onClick={() => handleToggle(inv.id)}
                   animate={{ 
                     x: isSelected ? 8 : 0,
+                    x: isSelected ? 4 : 0,
                     backgroundColor: isSelected ? "#F0FDF4" : "#FFFFFF",
                     borderColor: isSelected ? "#059669" : "#E2E8F0"
                   }}
-                  whileHover={{ x: isSelected ? 8 : 4 }}
-                  className={`group relative flex items-center justify-between p-4 rounded-2xl border cursor-pointer overflow-hidden transition-shadow ${isSelected ? 'shadow-md shadow-emerald-600/10' : 'hover:shadow-sm hover:border-slate-300'}`}
+                  whileHover={{ x: isSelected ? 4 : 2 }}
+                  className={`group relative flex items-center justify-between p-3 rounded-xl border cursor-pointer overflow-hidden transition-shadow ${isSelected ? 'shadow-sm shadow-emerald-600/10' : 'hover:shadow-sm hover:border-slate-300'}`}
                 >
-                  {/* Subtle selection indicator bar */}
                   <AnimatePresence>
                     {isSelected && (
                       <motion.div
@@ -122,12 +122,12 @@ export default function InvoiceSelectionForm({ invoices, house }: { invoices: an
                     )}
                   </AnimatePresence>
 
-                  <div className="flex items-center gap-4 z-10 pl-2">
-                    <div className={`w-6 h-6 flex items-center justify-center rounded-md border transition-colors ${isSelected ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 text-transparent group-hover:border-slate-400'}`}>
-                      <Check size={14} strokeWidth={3} />
+                  <div className="flex items-center gap-3 z-10 pl-1">
+                    <div className={`w-5 h-5 flex items-center justify-center rounded-md border transition-colors ${isSelected ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 text-transparent group-hover:border-slate-400'}`}>
+                      <Check size={12} strokeWidth={3} />
                     </div>
                     <div>
-                      <p className={`font-sans font-medium text-sm transition-colors ${isSelected ? 'text-emerald-900' : 'text-slate-700'}`}>
+                      <p className={`font-medium text-sm transition-colors ${isSelected ? 'text-emerald-900' : 'text-slate-700'}`}>
                         ประจำเดือน {formatThaiMonth(inv.monthYear)}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
@@ -141,8 +141,8 @@ export default function InvoiceSelectionForm({ invoices, house }: { invoices: an
                   </div>
                   
                   <div className="z-10 text-right">
-                    <p className={`font-mono text-lg font-bold transition-colors ${isSelected ? 'text-emerald-700' : 'text-slate-900'}`}>
-                      {Math.floor(parseFloat(inv.amount))} <span className="text-sm font-sans font-medium">บาท</span>
+                    <p className={`font-mono text-sm font-bold transition-colors ${isSelected ? 'text-emerald-700' : 'text-slate-900'}`}>
+                      {Math.floor(parseFloat(inv.amount))} <span className="text-[10px] font-sans font-medium">บาท</span>
                     </p>
                   </div>
                 </motion.div>
@@ -152,17 +152,16 @@ export default function InvoiceSelectionForm({ invoices, house }: { invoices: an
         )}
       </div>
 
-      {/* Advance Payment Section */}
-      <div className="mb-8 p-5 bg-emerald-50 rounded-2xl border border-emerald-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="mb-6 p-4 bg-emerald-50 rounded-xl border border-emerald-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h3 className="font-semibold text-emerald-900 flex items-center gap-2">
+          <h3 className="font-semibold text-sm text-emerald-900 flex items-center gap-2">
             <span className="text-emerald-600">✨</span> ชำระเงินล่วงหน้า
           </h3>
-          <p className="text-xs text-emerald-700 mt-1">
-            จ่ายล่วงหน้าเพื่อความสะดวก เดือนต่อไปไม่ต้องกังวล (เรท {getAdvanceRate()} บาท/เดือน)
+          <p className="text-[11px] text-emerald-700 mt-0.5">
+            จ่ายล่วงหน้าเรท {getAdvanceRate()} บาท/เดือน
           </p>
         </div>
-        <div className="flex items-center gap-3 self-start sm:self-auto bg-white p-1 rounded-xl border border-emerald-200 shadow-sm">
+        <div className="flex items-center gap-2 self-start sm:self-auto bg-white p-1 rounded-xl border border-emerald-200 shadow-sm">
           <button 
             onClick={() => setAdvanceMonths(Math.max(0, advanceMonths - 1))}
             className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 disabled:opacity-50"
@@ -170,8 +169,8 @@ export default function InvoiceSelectionForm({ invoices, house }: { invoices: an
           >
             -
           </button>
-          <div className="w-16 text-center font-bold text-emerald-800">
-            {advanceMonths} <span className="text-xs font-normal text-emerald-600">เดือน</span>
+          <div className="w-12 text-center font-bold text-emerald-800 text-sm">
+            {advanceMonths}
           </div>
           <button 
             onClick={() => setAdvanceMonths(advanceMonths + 1)}
@@ -183,23 +182,22 @@ export default function InvoiceSelectionForm({ invoices, house }: { invoices: an
         </div>
       </div>
 
-      {/* Ticket Footer / Total */}
-      <div className="mt-auto pt-6 border-t-2 border-dashed border-slate-200">
-        <div className="flex justify-between items-end mb-6">
-          <p className="font-sans text-sm font-medium text-slate-500 uppercase tracking-widest">ยอดรวมที่ต้องชำระ</p>
+      <div className="mt-auto pt-4 border-t-2 border-dashed border-slate-200">
+        <div className="flex justify-between items-end mb-4">
+          <p className="font-medium text-xs text-slate-500 uppercase tracking-widest">ยอดรวม</p>
           <div className="text-right">
-            <p className="font-mono text-4xl font-bold text-slate-900 tracking-tighter">
-              {Math.floor(calculateTotal())} <span className="text-lg font-sans font-medium text-slate-500">บาท</span>
+            <p className="font-mono text-2xl font-bold text-slate-900">
+              {Math.floor(calculateTotal())} <span className="text-sm font-sans font-medium text-slate-500">บาท</span>
             </p>
           </div>
         </div>
 
         <button 
-          className="w-full relative overflow-hidden group bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 rounded-xl transition-all duration-200 shadow-lg shadow-emerald-600/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full relative overflow-hidden group bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3.5 rounded-xl transition-all duration-200 shadow-lg shadow-emerald-600/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
           disabled={(selectedInvoices.length === 0 && advanceMonths === 0) || isLoading || calculateTotal() === 0}
           onClick={handleProceedToPayment}
         >
-          <QrCode size={20} />
+          <QrCode size={18} />
           <span>{isLoading ? "กำลังประมวลผล..." : "สร้าง QR Code ชำระเงิน"}</span>
           <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
         </button>

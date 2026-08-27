@@ -138,7 +138,7 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
       {/* The Ticket (Right side on desktop, centered on mobile) */}
       <div className="w-full max-w-lg relative z-10 flex flex-col drop-shadow-2xl lg:hover:-translate-y-2 transition-transform duration-500">
         {/* TOP SECTION: Identity Stub (Deep Navy) */}
-        <div className="bg-slate-900 rounded-t-3xl p-8 sm:p-10 text-white relative overflow-hidden">
+        <div className="bg-slate-900 rounded-t-3xl p-6 sm:p-8 text-white relative overflow-hidden">
           
           {/* Diagonal Watermark (คาดสะพาย) */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden">
@@ -148,7 +148,7 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
           </div>
 
           {/* Small Logo in Top Right (Mobile only, hidden on Desktop since it's in left col) */}
-          <div className="lg:hidden absolute top-8 right-8 z-10 opacity-90 drop-shadow-md">
+          <div className="lg:hidden absolute top-6 right-6 z-10 opacity-90 drop-shadow-md">
              <img src="/nangrong-logo.png" alt="Municipal Logo" className="w-10 h-10 object-contain" />
           </div>
           
@@ -157,11 +157,11 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
               <p className="text-[length:10px] font-sans text-slate-400 uppercase tracking-widest mb-1 font-semibold">
                 กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองนางรอง
               </p>
-              <h1 className="font-mono text-4xl sm:text-5xl font-bold tracking-tight mb-6">
+              <h1 className="font-mono text-4xl sm:text-5xl font-bold tracking-tight mb-4">
                 {house.houseNumber}
               </h1>
               
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <div>
                   <p className="text-[length:10px] text-slate-500 uppercase tracking-widest font-semibold">ชื่อเจ้าบ้าน / Owner</p>
                   <p className="font-sans text-lg font-medium text-slate-100">{house.ownerName}</p>
@@ -174,7 +174,7 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
             </div>
             
             {/* Decorative Barcode */}
-            <div className="hidden sm:flex h-32 items-center justify-end origin-right opacity-80 mix-blend-screen ml-4 mt-8">
+            <div className="hidden sm:flex h-32 items-center justify-end origin-right opacity-80 mix-blend-screen ml-4 mt-4">
               {generateBarcode()}
             </div>
           </div>
@@ -195,37 +195,38 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
         </div>
 
         {/* BOTTOM SECTION: Transaction Ledger (White) */}
-        <div className="bg-white rounded-b-3xl p-8 sm:p-10 relative shadow-inner">
-          <div className="mb-6 flex items-baseline justify-between border-b border-slate-100 pb-4">
+        <div className="bg-white rounded-b-3xl p-6 sm:p-8 relative shadow-inner">
+          <div className="mb-5 flex items-baseline justify-between border-b border-slate-100 pb-3">
             <div>
-              <h2 className="text-xl font-bold text-slate-900">รายการค่าธรรมเนียมเก็บขนมูลฝอย</h2>
-              <p className="text-xs text-slate-500 mt-1">กำหนดชำระภายในวันที่ 15 ของทุกเดือน</p>
+              <h2 className="text-xl font-bold text-slate-900">รายการค่าธรรมเนียม</h2>
+              <p className="text-[11px] text-slate-500 mt-0.5">กำหนดชำระภายในวันที่ 15 ของทุกเดือน</p>
             </div>
-            <span className="text-xs font-semibold text-slate-400 tracking-wider">INVOICES</span>
+            <span className="text-[10px] font-semibold text-slate-400 tracking-wider">INVOICES</span>
           </div>
+          
           <InvoiceSelectionForm invoices={houseInvoices} house={house} />
           
           {recentTransactions.length > 0 && (
-            <div className="mt-8 pt-8 border-t border-slate-100">
-              <div className="mb-4 flex items-center justify-between">
-                <h3 className="font-semibold text-slate-900 flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+            <div className="mt-5 pt-5 border-t border-slate-100">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="font-semibold text-sm text-slate-900 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                   ประวัติการชำระเงิน (30 วันล่าสุด)
                 </h3>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {recentTransactions.map((tx) => (
-                  <div key={tx.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+                  <div key={tx.id} className="flex justify-between items-center px-3 py-2 bg-slate-50 rounded-lg border border-slate-100">
                     <div>
-                      <p className="text-sm font-medium text-slate-700">
-                        {formatThaiDate(new Date(tx.paidAt))}
+                      <p className="text-xs font-medium text-slate-700">
+                        {formatThaiDate(tx.paidAt)}
                       </p>
-                      <p className="text-xs text-slate-500 mt-0.5">
+                      <p className="text-[10px] text-slate-500 mt-0.5">
                         ผ่าน {tx.verifiedBy === 'line_bot_auto' ? 'ระบบอัตโนมัติ' : tx.verifiedBy === 'line_bot' ? 'LINE Bot' : 'เจ้าหน้าที่'}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="font-mono font-bold text-emerald-600">
+                      <p className="font-mono text-sm font-bold text-emerald-600">
                         +{parseFloat(tx.amount || "0").toFixed(2)} ฿
                       </p>
                     </div>
@@ -235,8 +236,8 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
             </div>
           )}
 
-          <div className="mt-8 pt-4 border-t border-slate-100 text-center">
-            <p className="text-xs text-slate-400">
+          <div className="mt-6 pt-3 border-t border-slate-100 text-center">
+            <p className="text-[11px] text-slate-400">
               กรณีมีข้อสงสัย ติดต่อ <strong>กองสาธารณสุขและสิ่งแวดล้อม</strong><br/>
               โทร: 044-631-419 (เทศบาลเมืองนางรอง)
             </p>
