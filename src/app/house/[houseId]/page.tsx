@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import InvoiceSelectionForm from "@/components/InvoiceSelectionForm";
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
+import { redis } from "@/lib/redis";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -16,42 +17,74 @@ export default async function HouseDashboard({ params }: { params: Promise<{ hou
     notFound();
   }
 
-  const [result, houseInvoices] = await Promise.all([
-    db.select().from(houses).where(eq(houses.id, houseId)).limit(1),
-    db.select().from(invoices).where(eq(invoices.houseId, houseId)).orderBy(asc(invoices.monthYear))
-  ]);
+  const cacheKey = `house_dashboard_data:${houseId}`;
+  let cachedData: any = null;
+
+  if (redis) {
+    try {
+      cachedData = await redis.get(cacheKey);
+    } catch (e) {
+      console.error("[Redis GET Error]", e);
+    }
+  }
+
+  let result: any[];
+  let houseInvoices: any[];
+  let recentTransactions: any[] = [];
+
+  if (cachedData) {
+    result = cachedData.result;
+    houseInvoices = cachedData.houseInvoices;
+    recentTransactions = cachedData.recentTransactions;
+  } else {
+    [result, houseInvoices] = await Promise.all([
+      db.select().from(houses).where(eq(houses.id, houseId)).limit(1),
+      db.select().from(invoices).where(eq(invoices.houseId, houseId)).orderBy(asc(invoices.monthYear))
+    ]);
+
+    if (result.length > 0) {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      const txIds = houseInvoices.filter(inv => inv.transactionId).map(inv => inv.transactionId) as number[];
+      const uniqueTxIds = [...new Set(txIds)];
+      
+      if (uniqueTxIds.length > 0) {
+        // @ts-ignore
+        recentTransactions = await db.select()
+          .from(transactions)
+          .where(
+            and(
+              inArray(transactions.id, uniqueTxIds),
+              eq(transactions.slipStatus, 'verified'),
+              // @ts-ignore
+              gte(transactions.paidAt, thirtyDaysAgo)
+            )
+          )
+          .orderBy(desc(transactions.paidAt));
+      }
+
+      if (redis) {
+        try {
+          // EX: 300 = 5 minutes cache
+          await redis.set(cacheKey, { result, houseInvoices, recentTransactions }, { ex: 300 });
+        } catch (e) {
+          console.error("[Redis SET Error]", e);
+        }
+      }
+    }
+  }
 
   if (result.length === 0) {
     notFound();
   }
 
   const house = result[0];
-  
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  
-  const txIds = houseInvoices.filter(inv => inv.transactionId).map(inv => inv.transactionId) as number[];
-  const uniqueTxIds = [...new Set(txIds)];
-  
-  let recentTransactions: any[] = [];
-  if (uniqueTxIds.length > 0) {
-    // @ts-ignore
-    recentTransactions = await db.select()
-      .from(transactions)
-      .where(
-        and(
-          inArray(transactions.id, uniqueTxIds),
-          eq(transactions.slipStatus, 'verified'),
-          // @ts-ignore
-          gte(transactions.paidAt, thirtyDaysAgo)
-        )
-      )
-      .orderBy(desc(transactions.paidAt));
-  }
 
-  const formatThaiDate = (date: Date) => {
+  const formatThaiDate = (date: Date | string) => {
     if (!date) return "";
-    return date.toLocaleDateString('th-TH', { 
+    const d = typeof date === 'string' ? new Date(date) : date;
+    return d.toLocaleDateString('th-TH', { 
       year: 'numeric', month: 'short', day: 'numeric',
       hour: '2-digit', minute: '2-digit',
       timeZone: 'Asia/Bangkok'

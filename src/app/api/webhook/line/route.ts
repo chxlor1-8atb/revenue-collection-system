@@ -335,6 +335,9 @@ export async function POST(request: Request) {
                 if (pusherServer) {
                   pusherServer.trigger(`transaction-${matchingIntent.txId}`, 'payment-verified', { status: 'verified' }).catch(console.error);
                 }
+                if (redis) {
+                  redis.del(`house_dashboard_data:${matchingIntent.houseId}`).catch(console.error);
+                }
 
                 const matchedHouse = linkedHouses.find(h => h.id === matchingIntent.houseId);
                 
@@ -378,6 +381,9 @@ export async function POST(request: Request) {
               if (approveResult.success && approveResult.newTxId) {
                 if (pusherServer) {
                   pusherServer.trigger(`transaction-${approveResult.newTxId}`, 'payment-verified', { status: 'verified' }).catch(console.error);
+                }
+                if (redis) {
+                  redis.del(`house_dashboard_data:${house.id}`).catch(console.error);
                 }
 
                 await db.update(lineMessages).set({
@@ -677,6 +683,9 @@ export async function POST(request: Request) {
                   
                   if (pusherServer) {
                     pusherServer.trigger(`transaction-${slipData.transactionId}`, 'payment-verified', { status: 'verified' }).catch(console.error);
+                  }
+                  if (redis) {
+                    redis.del(`house_dashboard_data:${house.id}`).catch(console.error);
                   }
 
                   const thaiMonths = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];

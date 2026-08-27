@@ -124,6 +124,7 @@ export async function POST(request: Request) {
       amount: transactions.amountClaimedByPayer,
       houseNumber: houses.houseNumber,
       lineUserId: houses.lineUserId,
+      houseId: houses.id,
     })
     .from(transactions)
     .innerJoin(invoices, eq(invoices.transactionId, transactions.id))
@@ -163,6 +164,16 @@ export async function POST(request: Request) {
       await db.update(invoices)
         .set({ status: 'paid' })
         .where(eq(invoices.transactionId, transactionId));
+        
+      // Invalidate Redis Cache
+      if (txInfo) {
+        try {
+          const { redis } = await import("@/lib/redis");
+          if (redis) {
+             await redis.del(`house_dashboard_data:${txInfo.houseId}`);
+          }
+        } catch(e) { console.error("Cache clear error", e); }
+      }
     } else {
       // Delete any pending_advance invoices
       await db.delete(invoices)
