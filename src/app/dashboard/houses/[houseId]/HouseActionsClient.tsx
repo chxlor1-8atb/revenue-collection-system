@@ -1,5 +1,5 @@
-import { encodeSecureId } from "@/lib/secureId";
 "use client";
+import { encodeSecureId } from "@/lib/secureId";
 
 import { useState } from "react";
 import { QrCode, FilePlus, Send, Edit2, Trash2, X, Download, Copy, Check, Loader2, FileText, CheckCircle2, AlertCircle, ExternalLink } from "lucide-react";
