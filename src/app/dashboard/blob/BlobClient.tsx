@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { 
   Trash2, 
@@ -951,10 +952,12 @@ export default function BlobClient({
                       className="relative aspect-4/3 sm:aspect-square w-full bg-slate-100/80 overflow-hidden cursor-pointer flex items-center justify-center"
                       onClick={() => setLightboxIndex(idx)}
                     >
-                      <img
+                      <Image
                         src={file.url}
                         alt="File Thumbnail"
-                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                        fill
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                        className="object-cover object-top group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="%23cbd5e1" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="2" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>'; }}
                       />
 
@@ -1096,12 +1099,7 @@ export default function BlobClient({
                           onClick={() => setLightboxIndex(idx)}
                           className="w-10 h-10 rounded-xl border border-slate-200/80 overflow-hidden cursor-zoom-in group relative bg-slate-100"
                         >
-                          <img
-                            src={file.url}
-                            alt=""
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200"
-                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                          />
+                          <Image src={file.url} alt="" width={80} height={80} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                             <Eye size={12} className="text-white opacity-0 group-hover:opacity-100" />
                           </div>
@@ -1248,11 +1246,7 @@ export default function BlobClient({
                 className="flex flex-col items-center justify-center shrink min-w-0"
                 onClick={(e) => e.stopPropagation()}
               >
-                <img
-                  src={paginatedFiles[lightboxIndex].url}
-                  alt={paginatedFiles[lightboxIndex].pathname}
-                  className="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-2xl"
-                />
+                <Image src={paginatedFiles[lightboxIndex].url} alt={paginatedFiles[lightboxIndex].pathname} width={1200} height={1200} className="max-w-full max-h-[75vh] w-auto h-auto object-contain rounded-2xl shadow-2xl" />
                 <div className="mt-4 flex items-center gap-3 sm:gap-4 text-[10px] sm:text-xs text-white/80 bg-black/40 px-4 py-1.5 rounded-full backdrop-blur-md whitespace-nowrap">
                   <span>ขนาด: <strong>{formatSize(paginatedFiles[lightboxIndex].size)}</strong></span>
                   <span>•</span>
