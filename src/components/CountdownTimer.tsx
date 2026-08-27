@@ -198,9 +198,6 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
           {formattedTime}
         </span>
       </div>
-      <span className={`text-[11px] font-normal leading-tight hidden sm:block ${isUrgent ? "text-red-900/60" : "text-amber-900/60"}`}>
-        (ต่ออายุให้อัตโนมัติเมื่อหมดเวลา)
-      </span>
     </div>
   );
 }
