@@ -1,3 +1,4 @@
+import { encodeSecureId } from "@/lib/secureId";
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useTransition, useMemo } from "react";
@@ -124,7 +125,7 @@ export default function HousesClient({
   // Generate QR for preview drawer
   useEffect(() => {
     if (previewHouse?.id) {
-      const houseUrl = `${window.location.origin}/house/${previewHouse.id}`;
+      const houseUrl = `${window.location.origin}/house/${encodeSecureId(previewHouse.id)}`;
       QRCode.toDataURL(houseUrl, { width: 220, margin: 2, color: { dark: '#1E293B', light: '#FFFFFF' } })
         .then(url => setPreviewQrUrl(url))
         .catch(() => setPreviewQrUrl(null));
@@ -360,7 +361,7 @@ export default function HousesClient({
 
   const openQrModal = async (house: HouseData) => {
     try {
-      const houseUrl = `${window.location.origin}/house/${house.id}`;
+      const houseUrl = `${window.location.origin}/house/${encodeSecureId(house.id)}`;
       const dataUrl = await QRCode.toDataURL(houseUrl, { width: 300, margin: 2, color: { dark: '#1F2E22', light: '#FFFFFF' } });
       setQrModal({ isOpen: true, houseNumber: house.houseNumber, url: houseUrl, qrDataUrl: dataUrl });
     } catch (err) {
@@ -1005,7 +1006,7 @@ export default function HousesClient({
                     <div className="flex items-center justify-center gap-2">
                       <button
                         onClick={() => {
-                          const url = `${window.location.origin}/house/${previewHouse.id}`;
+                          const url = `${window.location.origin}/house/${encodeSecureId(previewHouse.id)}`;
                           navigator.clipboard.writeText(url);
                           setPreviewCopied(true);
                           setTimeout(() => setPreviewCopied(false), 2000);
@@ -1017,7 +1018,7 @@ export default function HousesClient({
                       </button>
 
                       <a
-                        href={`/house/${previewHouse.id}`}
+                        href={`/house/${encodeSecureId(previewHouse.id)}`}
                         target="_blank"
                         rel="noreferrer"
                         className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all"

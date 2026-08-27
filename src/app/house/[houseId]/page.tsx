@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { houses, invoices, transactions } from "@/lib/schema";
 import { eq, asc, desc, and, inArray, gte } from "drizzle-orm";
 import { notFound } from "next/navigation";
+import { decodeSecureId } from "@/lib/secureId";
 import InvoiceSelectionForm from "@/components/InvoiceSelectionForm";
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
@@ -11,9 +12,10 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function HouseDashboard({ params }: { params: Promise<{ houseId: string }> }) {
-  const houseId = parseInt((await params).houseId, 10);
+  const secureHouseId = (await params).houseId;
+  const houseId = decodeSecureId(secureHouseId);
   
-  if (isNaN(houseId)) {
+  if (houseId === null) {
     notFound();
   }
 

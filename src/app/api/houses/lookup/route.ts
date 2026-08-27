@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { houses } from "@/lib/schema";
 import { eq, or, ilike } from "drizzle-orm";
+import { encodeSecureId } from "@/lib/secureId";
 
 function maskName(name: string) {
   if (!name || name.length <= 2) return name;
@@ -42,9 +43,10 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "House not found" }, { status: 404 });
     }
 
-    // Mask owner names
+    // Mask owner names and encode IDs
     const maskedResult = result.map(house => ({
       ...house,
+      id: encodeSecureId(house.id),
       ownerName: maskName(house.ownerName)
     }));
 

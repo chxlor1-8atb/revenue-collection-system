@@ -1,3 +1,4 @@
+import { encodeSecureId } from "@/lib/secureId";
 "use server";
 
 import { db } from "@/lib/db";
@@ -170,7 +171,7 @@ export async function approveLineSlip(
     if (lineUserId && lineUserId.startsWith("U")) {
       try {
         const appUrl = process.env.NEXTAUTH_URL || "https://revenue.local";
-        const receiptUrl = `${appUrl}/house/${houseId}`;
+        const receiptUrl = `${appUrl}/house/${encodeSecureId(houseId)}`;
         const flexMsg = generateReceiptFlexMessage(
           house?.houseNumber || "-",
           new Date().toLocaleDateString("th-TH", { month: "short", year: "numeric" }),

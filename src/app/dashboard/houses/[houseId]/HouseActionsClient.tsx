@@ -1,3 +1,4 @@
+import { encodeSecureId } from "@/lib/secureId";
 "use client";
 
 import { useState } from "react";
@@ -29,7 +30,7 @@ export default function HouseActionsClient({ house, customFieldsSchema }: { hous
 
   const openQrModal = async (h: HouseData) => {
     try {
-      const url = `${window.location.origin}/house/${h.id}`;
+      const url = `${window.location.origin}/house/${encodeSecureId(h.id)}`;
       const qrDataUrl = await QRCode.toDataURL(url, {
         width: 300,
         margin: 2,
@@ -60,7 +61,7 @@ export default function HouseActionsClient({ house, customFieldsSchema }: { hous
         
         {/* View Citizen Bill Portal */}
         <a 
-          href={`/house/${house.id}`}
+          href={`/house/${encodeSecureId(house.id)}`}
           target="_blank"
           rel="noreferrer"
           className="flex items-center gap-1.5 bg-indigo-50 border border-indigo-200/80 hover:bg-indigo-100 text-[#5B58F2] px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-98"
