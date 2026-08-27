@@ -43,6 +43,7 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
     qrDataUri = await qrcode.toDataURL(payload, {
       errorCorrectionLevel: 'H',
       type: 'image/png',
+      width: 600,
       margin: 1,
       color: {
         dark: '#0F172A',
