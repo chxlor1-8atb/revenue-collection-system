@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Clock, RefreshCw, CheckCircle2, AlertCircle } from "lucide-react";
+import { getPusherClient } from "@/lib/pusher";
 
 export default function CountdownTimer({ initialTimeLeft, transactionId }: { initialTimeLeft: number, transactionId?: number }) {
   const [timeLeft, setTimeLeft] = useState<number>(initialTimeLeft);
@@ -19,9 +20,25 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
     }, 1200);
   }, [transactionId]);
 
-  // Fast Polling (every 2.5 seconds + on visibility change)
+  // Pusher Real-time Subscriptions + Fallback Polling
   useEffect(() => {
     if (!transactionId || isVerified) return;
+
+    let pusherClient = null;
+    try {
+      pusherClient = getPusherClient();
+    } catch (e) {
+      console.warn("Pusher client failed to initialize", e);
+    }
+
+    if (pusherClient) {
+      const channel = pusherClient.subscribe(`transaction-${transactionId}`);
+      channel.bind('payment-verified', (data: any) => {
+        if (data.status === 'verified') {
+          handleSuccessfulVerification();
+        }
+      });
+    }
 
     const pollStatus = async () => {
       try {
@@ -35,7 +52,10 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
       }
     };
 
-    pollingRef.current = setInterval(pollStatus, 2500);
+    // If Pusher is configured, we can poll less frequently (e.g. 10s fallback)
+    // If not, we keep the fast 2.5s poll
+    const pollInterval = pusherClient ? 10000 : 2500;
+    pollingRef.current = setInterval(pollStatus, pollInterval);
     pollStatus();
 
     const handleVisibility = () => {
@@ -46,6 +66,9 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
       document.removeEventListener("visibilitychange", handleVisibility);
+      if (pusherClient) {
+        pusherClient.unsubscribe(`transaction-${transactionId}`);
+      }
     };
   }, [transactionId, isVerified, handleSuccessfulVerification]);
 

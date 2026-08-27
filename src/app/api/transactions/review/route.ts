@@ -102,7 +102,7 @@ export async function POST(request: Request) {
 
     // 1. Concurrency control: prevent duplicate simultaneous reviews
     idempotencyKey = generateIdempotencyKey("review_tx", transactionId);
-    const lockAcquired = acquireInFlightLock(idempotencyKey, 8);
+    const lockAcquired = await acquireInFlightLock(idempotencyKey, 8);
     if (!lockAcquired) {
       return NextResponse.json({ error: "รายการนี้กำลังถูกดำเนินการ กรุณารอสักครู่" }, { status: 429 });
     }
@@ -199,7 +199,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   } finally {
     if (idempotencyKey) {
-      releaseInFlightLock(idempotencyKey);
+      await releaseInFlightLock(idempotencyKey);
     }
   }
 }

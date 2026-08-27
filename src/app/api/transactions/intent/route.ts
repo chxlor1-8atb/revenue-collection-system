@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
     // 1. Concurrency / Idempotency protection against rapid duplicate bursts
     idempotencyKey = generateIdempotencyKey("intent", houseId, advanceMonths, ...(invoiceIds || []));
-    const lockAcquired = acquireInFlightLock(idempotencyKey, 6); // 6 seconds lock
+    const lockAcquired = await acquireInFlightLock(idempotencyKey, 6); // 6 seconds lock
     if (!lockAcquired) {
       return NextResponse.json(
         { error: "กำลังประมวลผลการสร้าง QR Code กรุณารอสักครู่..." },
@@ -223,7 +223,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   } finally {
     if (idempotencyKey) {
-      releaseInFlightLock(idempotencyKey);
+      await releaseInFlightLock(idempotencyKey);
     }
   }
 }

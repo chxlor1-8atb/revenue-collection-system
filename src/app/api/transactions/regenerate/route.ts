@@ -16,7 +16,7 @@ export async function POST(request: Request) {
 
     // 1. Concurrency control on regenerate
     idempotencyKey = generateIdempotencyKey("regenerate", transactionId);
-    const lockAcquired = acquireInFlightLock(idempotencyKey, 6);
+    const lockAcquired = await acquireInFlightLock(idempotencyKey, 6);
     if (!lockAcquired) {
       return NextResponse.json({ error: "กำลังต่อเวลา QR Code กรุณารอสักครู่..." }, { status: 429 });
     }
@@ -95,7 +95,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   } finally {
     if (idempotencyKey) {
-      releaseInFlightLock(idempotencyKey);
+      await releaseInFlightLock(idempotencyKey);
     }
   }
 }

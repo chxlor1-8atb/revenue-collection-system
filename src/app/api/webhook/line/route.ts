@@ -1,3 +1,6 @@
+import { pusherServer } from "@/lib/pusher";
+import { slip2goCircuitBreaker } from "@/lib/circuit-breaker";
+import { waitUntil } from "@vercel/functions";
 import { NextResponse } from "next/server";
 import { generateBillFlexMessage, generateSlipErrorFlexMessage, generateSlipVerificationSuccessFlexMessage, replyMessage, replyWithMessages, safeReplyOrPush, getMessageContent, generateReceiptFlexMessage, generateDuplicateHouseSelectionFlexMessage, generateHowToUseFlexMessage, generateReportProblemFlexMessage, generateContactFlexMessage, generateMyInfoFlexMessage, generateWelcomeFlexMessage, generateAdvanceOptionsFlexMessage, generateAdvanceQrFlexMessage } from "@/lib/line";
 import { db } from "@/lib/db";
@@ -121,16 +124,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ status: "ok" });
     }
 
-    for (const event of body.events) {
-      try {
-        if (event.type === "follow") {
+    waitUntil((async () => {
+      for (const event of body.events) {
+        try {
+          if (event.type === "follow") {
+            const replyToken = event.replyToken;
+            if (replyToken) {
+              await replyWithMessages(replyToken, [generateWelcomeFlexMessage()]);
+            }
+          } else if (event.type === "message") {
+          const userId = event.source.userId;
           const replyToken = event.replyToken;
-          if (replyToken) {
-            await replyWithMessages(replyToken, [generateWelcomeFlexMessage()]);
-          }
-        } else if (event.type === "message") {
-        const userId = event.source.userId;
-        const replyToken = event.replyToken;
 
         if (event.message.type === "image") {
           console.log(`[Webhook] Image received – messageId: ${event.message.id}`);
@@ -178,10 +182,27 @@ export async function POST(request: Request) {
 
           await db.update(lineMessages).set({ imageUrl: blobUrl }).where(eq(lineMessages.id, msgRowId));
 
-          // 3. Verify with Slip2Go EXACTLY ONCE
+          // 3. Verify with Slip2Go EXACTLY ONCE (using Circuit Breaker)
           console.log("[Webhook] Sending to Slip2Go for verification...");
-          const verification = await verifySlipWithBuffer(imageBuffer);
-          console.log("[Webhook] Slip2Go result:", JSON.stringify(verification));
+          
+          let verification: any;
+          try {
+            verification = await slip2goCircuitBreaker.execute(async () => {
+              return await verifySlipWithBuffer(imageBuffer);
+            });
+            console.log("[Webhook] Slip2Go result:", JSON.stringify(verification));
+          } catch (cbError: any) {
+            console.warn("[Webhook] Circuit Breaker triggered or Verification Failed:", cbError.message);
+            // FALLBACK LOGIC
+            await db.update(lineMessages).set({
+              status: "pending",
+              isVerified: false,
+              amount: null // Amount unknown since OCR failed
+            }).where(eq(lineMessages.id, msgRowId));
+            
+            await replyMessage(replyToken, "รับทราบค่ะ ระบบได้บันทึกสลิปของท่านไว้แล้ว\n(ขณะนี้ระบบตรวจสอบอัตโนมัติอาจล่าช้า เจ้าหน้าที่จะทำการตรวจสอบยืนยันยอดให้อีกครั้งค่ะ) 🙏");
+            continue;
+          }
 
           if (!verification.success) {
             await db.update(lineMessages).set({
@@ -311,6 +332,10 @@ export async function POST(request: Request) {
                 
                 await db.update(invoices).set({ status: 'paid' }).where(eq(invoices.transactionId, matchingIntent.txId));
                 
+                if (pusherServer) {
+                  pusherServer.trigger(`transaction-${matchingIntent.txId}`, 'payment-verified', { status: 'verified' }).catch(console.error);
+                }
+
                 const matchedHouse = linkedHouses.find(h => h.id === matchingIntent.houseId);
                 
                 await db.update(lineMessages).set({
@@ -351,6 +376,10 @@ export async function POST(request: Request) {
               const approveResult = await attemptAutoApprove(house, slipAmount, blobUrl, transRef || null);
               
               if (approveResult.success && approveResult.newTxId) {
+                if (pusherServer) {
+                  pusherServer.trigger(`transaction-${approveResult.newTxId}`, 'payment-verified', { status: 'verified' }).catch(console.error);
+                }
+
                 await db.update(lineMessages).set({
                   status: "verified_auto",
                   amount: slipAmount,
@@ -646,6 +675,10 @@ export async function POST(request: Request) {
                   await db.update(invoices).set({ status: 'paid', transactionId: slipData.transactionId }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
                   
                   
+                  if (pusherServer) {
+                    pusherServer.trigger(`transaction-${slipData.transactionId}`, 'payment-verified', { status: 'verified' }).catch(console.error);
+                  }
+
                   const thaiMonths = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
                   let monthStr = "";
                   if (unpaidInvoices.length === 1) {
@@ -823,6 +856,7 @@ export async function POST(request: Request) {
       console.error(`[Webhook] Error processing event (${event?.type}):`, eventError?.message || eventError);
     }
   }
+  })());
 
     return NextResponse.json({ status: "ok" });
   } catch (error) {

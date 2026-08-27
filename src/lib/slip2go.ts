@@ -45,6 +45,10 @@ export async function verifySlipWithBuffer(imageBuffer: Buffer): Promise<Slip2Go
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Slip2Go verification failed:", errorText);
+      // For 5xx errors or serious failures, throw to trip the circuit breaker
+      if (response.status >= 500 || response.status === 429) {
+        throw new Error(`Slip2Go API Failure: ${response.status}`);
+      }
       return { success: false, error: "Verification API failed" };
     }
 
@@ -87,6 +91,7 @@ export async function verifySlipWithBuffer(imageBuffer: Buffer): Promise<Slip2Go
     };
   } catch (error) {
     console.error("Slip2Go API error:", error);
-    return { success: false, error: "Internal Server Error during verification" };
+    // Rethrow network/timeout errors to trip the circuit breaker
+    throw error;
   }
 }

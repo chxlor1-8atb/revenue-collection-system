@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { redis } from "./redis";
 
 // Fast memory-level deduplication cache to block concurrent burst requests (< 10 seconds)
 const inFlightLocks = new Map<string, number>();
@@ -17,7 +18,17 @@ export function generateIdempotencyKey(prefix: string, ...identifiers: (string |
  * @param ttlSeconds Lock expiry in seconds (default: 10s)
  * @returns true if lock acquired successfully, false if duplicate in-flight request is detected
  */
-export function acquireInFlightLock(key: string, ttlSeconds: number = 10): boolean {
+export async function acquireInFlightLock(key: string, ttlSeconds: number = 10): Promise<boolean> {
+  if (redis) {
+    try {
+      const result = await redis.set(key, "locked", { nx: true, ex: ttlSeconds });
+      return result === "OK";
+    } catch (e) {
+      console.error("Redis lock error:", e);
+      // fallback to memory
+    }
+  }
+
   const now = Date.now();
   const existing = inFlightLocks.get(key);
 
@@ -40,6 +51,14 @@ export function acquireInFlightLock(key: string, ttlSeconds: number = 10): boole
 /**
  * Release an in-flight lock
  */
-export function releaseInFlightLock(key: string) {
+export async function releaseInFlightLock(key: string) {
+  if (redis) {
+    try {
+      await redis.del(key);
+      return;
+    } catch (e) {
+      console.error("Redis del error:", e);
+    }
+  }
   inFlightLocks.delete(key);
 }
