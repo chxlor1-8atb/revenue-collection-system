@@ -152,6 +152,8 @@ export async function POST(request: Request) {
         slipStatus: status,
         verifiedBy: session.user?.name || "admin",
         rejectReason: status === 'rejected' ? rejectReason : null,
+        amount: status === 'verified' && verifiedAmount ? verifiedAmount : undefined,
+        amountClaimedByPayer: status === 'verified' && verifiedAmount ? verifiedAmount : undefined,
         lockKey: null,
         lockedBy: null,
         lockedAt: null,
@@ -159,11 +161,54 @@ export async function POST(request: Request) {
       })
       .where(eq(transactions.id, transactionId));
 
-    // Update Related Invoices Status
+    // Update Related Invoices Status and Wallet
     if (status === 'verified') {
+      // 3.1 Unlink and delete advance invoices (if any)
+      // Since admin might have changed the verified amount, we rely on the wallet instead of advance invoices for excess
+      await db.delete(invoices)
+        .where(
+          and(
+            eq(invoices.transactionId, transactionId),
+            eq(invoices.status, 'pending_advance')
+          )
+        );
+
+      // 3.2 Mark regular invoices as paid
       await db.update(invoices)
         .set({ status: 'paid' })
         .where(eq(invoices.transactionId, transactionId));
+
+      // 3.3 Calculate overpayment and add to wallet
+      if (txInfo && verifiedAmount) {
+        const actualPaid = parseFloat(verifiedAmount);
+        // Find total debt of the invoices just paid
+        const paidInvoices = await db.select({ amount: invoices.amount })
+          .from(invoices)
+          .where(
+            and(
+              eq(invoices.transactionId, transactionId),
+              eq(invoices.status, 'paid')
+            )
+          );
+        const totalDebt = paidInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
+        
+        if (actualPaid > totalDebt) {
+          const excess = actualPaid - totalDebt;
+          const houseRecord = await db.select({ walletBalance: houses.walletBalance })
+            .from(houses)
+            .where(eq(houses.id, txInfo.houseId))
+            .limit(1);
+          
+          if (houseRecord.length > 0) {
+            const currentWallet = parseFloat(houseRecord[0].walletBalance || "0");
+            const newWallet = currentWallet + excess;
+            
+            await db.update(houses)
+              .set({ walletBalance: newWallet.toFixed(2) })
+              .where(eq(houses.id, txInfo.houseId));
+          }
+        }
+      }
         
       // Invalidate Redis Cache
       if (txInfo) {
