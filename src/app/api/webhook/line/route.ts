@@ -9,6 +9,7 @@ import { eq, and, desc, gte, inArray } from "drizzle-orm";
 import { put } from "@vercel/blob";
 import { verifySlipWithBuffer } from "@/lib/slip2go";
 import { generateNextReceiptSeries } from "@/lib/receiptSeries";
+import { redis } from "@/lib/redis";
 
 import crypto from 'crypto';
 
