@@ -126,7 +126,7 @@ export default function NotificationDropdown() {
                 </div>
                 <div className="flex-1 min-w-0 flex flex-col justify-center">
                   <div className="flex items-center justify-between gap-1 mb-0.5">
-                    <span className="text-sm font-bold text-slate-800">มีการชำระเงินใหม่ ${diff} รายการ</span>
+                    <span className="text-sm font-bold text-slate-800">มีการชำระเงินใหม่ {diff} รายการ</span>
                   </div>
                   <div className="flex items-center justify-between mt-1">
                     <span className="text-xs font-semibold text-rose-600/90 flex items-center gap-1">รอแอดมินตรวจสอบ <span className="relative flex h-2 w-2 ml-1"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span></span></span>
