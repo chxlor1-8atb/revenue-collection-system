@@ -184,20 +184,22 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
   const isUrgent = timeLeft <= 60 && timeLeft > 0;
 
   return (
-    <div className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-sans font-medium mb-6 transition-all border ${
+    <div className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-3 px-4 py-3 rounded-2xl text-xs sm:text-sm font-sans font-medium mb-6 transition-all border text-center ${
       isUrgent 
         ? "bg-red-50 border-red-200 text-red-900 animate-pulse" 
         : "bg-amber-50 border-amber-200/80 text-amber-900"
     }`}>
-      <Clock size={16} className={isUrgent ? "text-red-600 animate-spin" : "text-amber-600 animate-pulse"} />
-      <span>{isUrgent ? "เหลือเวลาสแกน:" : "กรุณาชำระเงินภายใน:"}</span>
-      <span className={`font-mono font-bold px-2 py-0.5 rounded-lg text-sm sm:text-base ${
-        isUrgent ? "text-red-700 bg-red-100/90" : "text-amber-700 bg-amber-100/90"
-      }`}>
-        {formattedTime}
-      </span>
-      <span className="text-[11px] text-slate-400 font-normal hidden sm:inline">
-        (ต่ออายุให้อัตโนมัติเมื่อครบกำหนด)
+      <div className="flex items-center gap-2 shrink-0">
+        <Clock size={16} className={isUrgent ? "text-red-600 animate-spin" : "text-amber-600 animate-pulse"} />
+        <span className="whitespace-nowrap">{isUrgent ? "เหลือเวลาสแกนอีก" : "กรุณาชำระเงินภายใน"}</span>
+        <span className={`font-mono font-bold px-2.5 py-1 rounded-xl text-sm ${
+          isUrgent ? "text-red-700 bg-red-100/90" : "text-amber-700 bg-amber-100/90"
+        }`}>
+          {formattedTime}
+        </span>
+      </div>
+      <span className={`text-[11px] font-normal leading-tight hidden sm:block ${isUrgent ? "text-red-900/60" : "text-amber-900/60"}`}>
+        (ต่ออายุให้อัตโนมัติเมื่อหมดเวลา)
       </span>
     </div>
   );
