@@ -3,11 +3,19 @@ import { db } from "@/lib/db";
 import { transactions, invoices, systemSettings, houses } from "@/lib/schema";
 import { inArray, eq, and, lt, isNull, desc } from "drizzle-orm";
 import { generateIdempotencyKey, acquireInFlightLock, releaseInFlightLock } from "@/lib/idempotency";
+import { checkRateLimit } from "@/lib/redis";
 
 export async function POST(request: Request) {
   let idempotencyKey: string | null = null;
 
   try {
+    // 0. IP Rate Limiting (Prevent DoS)
+    const ip = request.headers.get('x-forwarded-for') || 'anonymous';
+    const rateLimit = await checkRateLimit(`intent_${ip}`);
+    if (!rateLimit.success) {
+      return NextResponse.json({ error: "คำขอเยอะเกินไป กรุณารอสักครู่" }, { status: 429 });
+    }
+
     const { invoiceIds, advanceMonths = 0, houseId } = await request.json();
 
     if ((!invoiceIds || invoiceIds.length === 0) && advanceMonths === 0) {
