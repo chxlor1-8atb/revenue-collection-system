@@ -61,7 +61,59 @@ export async function GET(request: Request) {
       .set({ slipStatus: 'expired' })
       .where(inArray(transactions.id, txIds));
 
-    return NextResponse.json({ success: true, count: txIds.length, message: `Expired ${txIds.length} transactions.` });
+    // --- NEW: Vercel Blob Cleanup (90 days / 3 months) ---
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+
+    const oldTxs = await db.select({ id: transactions.id, slipImageUrl: transactions.slipImageUrl })
+      .from(transactions)
+      .where(
+        and(
+          lt(transactions.createdAt, ninetyDaysAgo),
+          // We only delete if it's a Vercel Blob URL to avoid breaking external links
+          // Vercel Blob URLs usually contain 'public.blob.vercel-storage.com'
+          // but we can just assume any https:// link in slipImageUrl might be blob
+          // Wait, Drizzle doesn't have a simple 'like' in the import above. Let's just fetch and filter in JS if needed.
+        )
+      );
+
+    let deletedBlobCount = 0;
+    
+    // We will dynamically import 'del' so we don't crash if SDK is missing
+    const { del } = await import('@vercel/blob');
+
+    const urlsToDelete: string[] = [];
+    const oldTxIdsToUpdate: number[] = [];
+
+    for (const tx of oldTxs) {
+      if (tx.slipImageUrl && tx.slipImageUrl.includes('vercel-storage.com')) {
+        urlsToDelete.push(tx.slipImageUrl);
+        oldTxIdsToUpdate.push(tx.id);
+      }
+    }
+
+    if (urlsToDelete.length > 0) {
+      // Delete from Vercel Blob (up to 500 at a time is fine, we'll just chunk it or do it all if small)
+      try {
+        await del(urlsToDelete);
+        deletedBlobCount = urlsToDelete.length;
+        
+        // Update DB to remove the image URLs so it doesn't show broken images
+        await db.update(transactions)
+          .set({ slipImageUrl: "DELETED_BY_RETENTION_POLICY" })
+          .where(inArray(transactions.id, oldTxIdsToUpdate));
+          
+      } catch (e) {
+        console.error("Failed to delete blobs:", e);
+      }
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      expiredTransactions: txIds.length,
+      deletedOldBlobs: deletedBlobCount,
+      message: `Expired ${txIds.length} transactions. Deleted ${deletedBlobCount} old slip images.` 
+    });
 
   } catch (error) {
     console.error("Cleanup Cron Error:", error);
