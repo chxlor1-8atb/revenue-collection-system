@@ -52,7 +52,7 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center py-12 px-4 sm:px-6 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center py-6 px-4 relative overflow-hidden">
       {/* Background grid */}
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
            style={{ backgroundImage: 'radial-gradient(#0F172A 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
@@ -62,35 +62,35 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
         <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden">
           
           {/* Top Info Banner */}
-          <div className="bg-slate-900 px-6 py-3 flex justify-center items-center text-white">
+          <div className="bg-slate-900 px-6 py-2.5 flex justify-center items-center text-white">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="text-xs font-medium tracking-widest uppercase text-slate-300">SECURE PAYMENT</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="text-[11px] font-medium tracking-widest uppercase text-slate-300">SECURE PAYMENT</span>
             </div>
           </div>
 
-          <div className="p-8 sm:p-10 flex flex-col items-center">
+          <div className="p-5 sm:p-6 flex flex-col items-center">
             
-            <div className="mb-8 text-center">
-              <p className="font-sans text-xs font-bold text-slate-400 tracking-widest uppercase mb-2">ยอดชำระสุทธิ</p>
+            <div className="mb-4 text-center">
+              <p className="font-sans text-[11px] font-bold text-slate-400 tracking-widest uppercase mb-1">ยอดชำระสุทธิ</p>
               <div className="flex justify-center">
                 <CurrencyDisplay
                   amount={totalAmount}
-                  size="4xl"
+                  size="3xl"
                   variant="default"
                   className="font-black"
                 />
               </div>
-              <p className="text-xs text-emerald-600 bg-emerald-50 px-3.5 py-1 rounded-full mt-3 font-semibold inline-block border border-emerald-100">
+              <p className="text-[11px] text-emerald-600 bg-emerald-50 px-3 py-0.5 rounded-full mt-2 font-semibold inline-block border border-emerald-100">
                 กรุณาโอนเงินตามยอดที่แสดง
               </p>
             </div>
 
             {/* QR Code Frame */}
             {qrDataUri && (
-              <div className="relative p-1 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 mb-6">
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-emerald-100">
-                  <img src={qrDataUri} alt="PromptPay QR Code" className="w-56 h-56 object-contain" />
+              <div className="relative p-1 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 mb-4">
+                <div className="bg-white p-3 rounded-xl shadow-sm border border-emerald-100">
+                  <img src={qrDataUri} alt="PromptPay QR Code" className="w-44 h-44 sm:w-48 sm:h-48 object-contain" />
                 </div>
                 
                 {/* Corner brackets */}
@@ -111,10 +111,10 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
               })()
             )}
 
-            <div className="w-full text-center mb-8 mt-2 px-4 py-3 bg-slate-50 rounded-xl border border-slate-100">
-              <p className="font-sans text-xs text-slate-500 uppercase tracking-widest mb-1">โอนเงินเข้าบัญชี</p>
-              <h3 className="font-bold text-slate-800 text-lg mb-1">{system?.accountName || "เทศบาลเมืองนางรอง"}</h3>
-              <p className="text-slate-500 font-medium">พร้อมเพย์: {system?.promptPayId || "-"}</p>
+            <div className="w-full text-center mb-4 mt-0 px-3 py-2 bg-slate-50 rounded-xl border border-slate-100">
+              <p className="font-sans text-[10px] text-slate-500 uppercase tracking-widest mb-0.5">โอนเงินเข้าบัญชี</p>
+              <h3 className="font-bold text-slate-800 text-base mb-0.5">{system?.accountName || "เทศบาลเมืองนางรอง"}</h3>
+              <p className="text-slate-500 text-sm font-medium">พร้อมเพย์: {system?.promptPayId || "-"}</p>
             </div>
 
             <div className="w-full text-center">
@@ -122,11 +122,11 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
                 href={process.env.NEXT_PUBLIC_LINE_BOT_URL || "https://line.me/R/ti/p/@618apcbm"}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full flex items-center justify-center gap-2 bg-[#06C755] hover:bg-[#05b34c] text-white font-sans font-semibold py-4 px-6 rounded-xl shadow-lg shadow-[#06C755]/30 transition-all transform hover:-translate-y-1 active:translate-y-0"
+                className="w-full flex items-center justify-center gap-2 bg-[#06C755] hover:bg-[#05b34c] text-white font-sans font-semibold py-3 px-4 rounded-xl shadow-lg shadow-[#06C755]/30 transition-all transform hover:-translate-y-1 active:translate-y-0 text-sm"
               >
                 <span>คลิกเพื่อส่งสลิปผ่านทาง LINE</span>
               </a>
-              <p className="mt-4 text-xs font-sans text-slate-500 bg-slate-50 p-3 rounded-lg border border-slate-100">
+              <p className="mt-3 text-[10.5px] leading-relaxed font-sans text-slate-500 bg-slate-50 p-2.5 rounded-lg border border-slate-100">
                 โอนเงินเรียบร้อยแล้ว กรุณากดปุ่มสีเขียวด้านบนเพื่อกลับไปยังแชท LINE<br/>และ <b>"ส่งรูปสลิปให้ระบบตัดยอดอัตโนมัติ"</b>
               </p>
             </div>
