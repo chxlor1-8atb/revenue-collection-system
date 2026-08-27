@@ -114,17 +114,29 @@ export default function NotificationDropdown() {
         if (totalPending > lastCountRef.current && lastCountRef.current >= 0) {
           const diff = totalPending - lastCountRef.current;
           if (lastCountRef.current > 0 || totalPending > 0) {
-            toast.success(`มีการชำระเงินใหม่รอตรวจสอบ ${diff} รายการ`, {
-              description: "คลิกเพื่อไปที่หน้าตรวจสอบสลิป",
-              duration: 5000,
-              action: {
-                label: "เปิดดู",
-                onClick: () => {
-                  setIsOpen(false);
-                  window.location.href = '/dashboard/review';
-                }
-              }
-            });
+            toast.custom((t) => (
+              <div className="flex items-start gap-3 p-3.5 rounded-2xl border bg-white shadow-xl shadow-rose-900/5 border-rose-100 group cursor-pointer w-full"
+                   onClick={() => {
+                     toast.dismiss(t);
+                     setIsOpen(false);
+                     window.location.href = '/dashboard/review';
+                   }}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5 bg-rose-50 text-rose-500">
+                  <Smartphone size={20} />
+                </div>
+                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                  <div className="flex items-center justify-between gap-1 mb-0.5">
+                    <span className="text-sm font-bold text-slate-800">มีการชำระเงินใหม่ ${diff} รายการ</span>
+                  </div>
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="text-xs font-semibold text-rose-600/90 flex items-center gap-1">รอแอดมินตรวจสอบ <span className="relative flex h-2 w-2 ml-1"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span></span></span>
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg text-rose-700 bg-rose-100 group-hover:bg-rose-600 group-hover:text-white transition-colors">
+                      ตรวจทันที →
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ), { duration: 5000 });
           }
           playChime();
           if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
