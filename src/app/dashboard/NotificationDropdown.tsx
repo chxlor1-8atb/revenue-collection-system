@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { toast } from "sonner";
 import Link from "next/link";
 import { 
   Bell, 
@@ -110,7 +111,21 @@ export default function NotificationDropdown() {
         const totalPending = data.unreadCount || 0;
         
         // Trigger alert if new pending items arrived
-        if (totalPending > lastCountRef.current && lastCountRef.current > 0) {
+        if (totalPending > lastCountRef.current && lastCountRef.current >= 0) {
+          const diff = totalPending - lastCountRef.current;
+          if (lastCountRef.current > 0 || totalPending > 0) {
+            toast.success(`มีการชำระเงินใหม่รอตรวจสอบ ${diff} รายการ`, {
+              description: "คลิกเพื่อไปที่หน้าตรวจสอบสลิป",
+              duration: 5000,
+              action: {
+                label: "เปิดดู",
+                onClick: () => {
+                  setIsOpen(false);
+                  window.location.href = '/dashboard/review';
+                }
+              }
+            });
+          }
           playChime();
           if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
             const diff = totalPending - lastCountRef.current;

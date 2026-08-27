@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import TopNav from "./TopNav";
 import { db } from "@/lib/db";
 import { systemSettings } from "@/lib/schema";
+import { Toaster } from "sonner";
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
   const session = await auth();
@@ -17,6 +18,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
 
   return (
     <div className="flex justify-center items-center h-screen w-full overflow-hidden bg-gradient-to-br from-[#EAE9F5] to-[#F5F4FA] p-0 md:p-6 lg:p-10 relative print:h-auto print:overflow-visible print:bg-white print:p-0 print:m-0 print:block">
+      <Toaster position="bottom-right" richColors theme="light" />
       {/* Decorative background pills (approximate from video) */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-40 print:hidden">
         <div className="absolute -top-20 -left-20 w-96 h-[600px] rounded-full bg-white/40 rotate-45 blur-3xl"></div>
