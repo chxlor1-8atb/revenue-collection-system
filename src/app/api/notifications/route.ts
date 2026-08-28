@@ -168,10 +168,14 @@ export async function GET() {
       ...waitingTxsWithHouses,
     ];
 
+    const pendingReviewCount = pendingTxsWithHouses.length + pendingLineSlips.length;
+    const waitingQrCount = waitingTxsWithHouses.length;
     const unreadCount = allPendingItems.length;
 
     return NextResponse.json({
       unreadCount,
+      pendingReviewCount,
+      waitingQrCount,
       pendingItems: allPendingItems,
       recentVerified,
     });

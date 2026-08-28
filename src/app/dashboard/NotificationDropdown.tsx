@@ -53,7 +53,8 @@ export default function NotificationDropdown() {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [browserNotifyEnabled, setBrowserNotifyEnabled] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const lastCountRef = useRef(0);
+  const lastCountRef = useRef(-1);
+  const lastPendingRef = useRef(-1);
 
   // Play gentle audio chime
   const playChime = () => {
@@ -109,11 +110,13 @@ export default function NotificationDropdown() {
       if (res.ok) {
         const data = await res.json();
         const totalPending = data.unreadCount || 0;
+        const pendingReview = data.pendingReviewCount !== undefined ? data.pendingReviewCount : 0;
         
-        // Trigger alert if new pending items arrived
-        if (totalPending > lastCountRef.current && lastCountRef.current >= 0) {
-          const diff = totalPending - lastCountRef.current;
-          if (lastCountRef.current > 0 || totalPending > 0) {
+        // Trigger alert ONLY if new slips need admin review (ignore QR generations)
+        if (pendingReview > lastPendingRef.current && lastPendingRef.current >= 0) {
+          const diff = pendingReview - lastPendingRef.current;
+          lastPendingRef.current = pendingReview; // Set immediately to prevent double trigger
+          if (diff > 0) {
             toast.custom((t) => (
               <div className="flex items-start gap-3 p-3.5 rounded-2xl border bg-white shadow-xl shadow-rose-900/5 border-rose-100 group cursor-pointer w-full"
                    onClick={() => {
@@ -137,15 +140,16 @@ export default function NotificationDropdown() {
                 </div>
               </div>
             ), { duration: 5000 });
+            playChime();
+            if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
+              new Notification("🔔 มีการชำระเงินใหม่รอตรวจสอบ", {
+                body: `พบรายการใหม่ ${diff} รายการ กรุณาเข้าตรวจสอบ`,
+                icon: "/icons/mainiconweb.png"
+              });
+            }
           }
-          playChime();
-          if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
-            const diff = totalPending - lastCountRef.current;
-            new Notification("🔔 มีการชำระเงินใหม่รอตรวจสอบ", {
-              body: `พบรายการใหม่ ${diff} รายการ กรุณาเข้าตรวจสอบ`,
-              icon: "/icons/mainiconweb.png"
-            });
-          }
+        } else if (lastPendingRef.current === -1) {
+          lastPendingRef.current = pendingReview;
         }
 
         lastCountRef.current = totalPending;
