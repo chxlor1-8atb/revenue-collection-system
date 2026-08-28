@@ -117,6 +117,19 @@ export default function NotificationDropdown() {
           const diff = pendingReview - lastPendingRef.current;
           lastPendingRef.current = pendingReview; // Set immediately to prevent double trigger
           if (diff > 0) {
+            // Find the latest item
+            const pendingReviewItems = (data.pendingItems || []).filter((item: any) => item.status === "pending_review");
+            pendingReviewItems.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            const latestItem = pendingReviewItems[0];
+            
+            const titleText = diff === 1 && latestItem 
+              ? `สลิปใหม่ • บ้าน ${latestItem.houseNumber}` 
+              : `มีการชำระเงินใหม่ ${diff} รายการ`;
+              
+            const amountText = diff === 1 && latestItem && latestItem.amount 
+              ? ` ฿${parseFloat(latestItem.amount).toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+              : '';
+
             toast.custom((t) => (
               <div className="flex items-start gap-3 p-3.5 rounded-2xl border bg-white shadow-xl shadow-rose-900/5 border-rose-100 group cursor-pointer w-full"
                    onClick={() => {
@@ -129,7 +142,8 @@ export default function NotificationDropdown() {
                 </div>
                 <div className="flex-1 min-w-0 flex flex-col justify-center">
                   <div className="flex items-center justify-between gap-1 mb-0.5">
-                    <span className="text-sm font-bold text-slate-800">มีการชำระเงินใหม่ {diff} รายการ</span>
+                    <span className="text-sm font-bold text-slate-800 truncate">{titleText}</span>
+                    {amountText && <span className="text-xs font-bold text-rose-600 shrink-0">{amountText}</span>}
                   </div>
                   <div className="flex items-center justify-between mt-1">
                     <span className="text-xs font-semibold text-rose-600/90 flex items-center gap-1">รอแอดมินตรวจสอบ <span className="relative flex h-2 w-2 ml-1"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span></span></span>
@@ -143,7 +157,7 @@ export default function NotificationDropdown() {
             playChime();
             if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
               new Notification("🔔 มีการชำระเงินใหม่รอตรวจสอบ", {
-                body: `พบรายการใหม่ ${diff} รายการ กรุณาเข้าตรวจสอบ`,
+                body: diff === 1 && latestItem ? `บ้าน ${latestItem.houseNumber} ส่งสลิปใหม่ จำนวน ฿${parseFloat(latestItem.amount || "0").toLocaleString("th-TH")}` : `พบรายการใหม่ ${diff} รายการ กรุณาเข้าตรวจสอบ`,
                 icon: "/icons/mainiconweb.png"
               });
             }
