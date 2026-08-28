@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import Link from "next/link";
 import Image from "next/image";
 import { db } from "@/lib/db";
+import { redis } from "@/lib/redis";
 import { transactions, invoices, houses, lineMessages, systemSettings } from "@/lib/schema";
 import { CalendarClock, BellRing } from "lucide-react";
 import { eq, desc, inArray, or, and, sql } from "drizzle-orm";
@@ -44,8 +45,130 @@ function formatThaiMonth(monthYear: string) {
 export default async function DashboardPage() {
   const currentYear = new Date().getFullYear();
 
-  // High-performance concurrent queries: Execute all metrics in parallel with SQL aggregation
-  const [
+  const cacheKey = "admin_dashboard_stats";
+  let dashboardData: any = null;
+
+  if (redis) {
+    try {
+      dashboardData = await redis.get(cacheKey);
+      if (dashboardData) {
+        if (dashboardData.recentVerifiedTxs) {
+          dashboardData.recentVerifiedTxs = dashboardData.recentVerifiedTxs.map((tx: any) => ({
+            ...tx,
+            paidAt: tx.paidAt ? new Date(tx.paidAt) : null,
+            createdAt: tx.createdAt ? new Date(tx.createdAt) : null,
+          }));
+        }
+        if (dashboardData.chartTxs) {
+          dashboardData.chartTxs = dashboardData.chartTxs.map((tx: any) => ({
+            ...tx,
+            paidAt: tx.paidAt ? new Date(tx.paidAt) : null,
+            createdAt: tx.createdAt ? new Date(tx.createdAt) : null,
+          }));
+        }
+      }
+    } catch (e) {
+      console.error("Redis get error:", e);
+    }
+  }
+
+  if (!dashboardData) {
+    const [
+      totalRevenueResult,
+      yearRevenueResult,
+      settingsResult,
+      unpaidHousesResult,
+      totalHousesResult,
+      reviewTxsResult,
+      pendingLineSlipsResult,
+      recentVerifiedTxs,
+      chartTxs
+    ] = await Promise.all([
+      // 1. Total verified revenue
+      db.select({
+        total: sql<string>`COALESCE(SUM(${transactions.amount}::numeric), 0)`
+      }).from(transactions).where(eq(transactions.slipStatus, "verified")),
+
+      // 2. Current year verified revenue
+      db.select({
+        total: sql<string>`COALESCE(SUM(${transactions.amount}::numeric), 0)`
+      }).from(transactions).where(
+        and(
+          eq(transactions.slipStatus, "verified"),
+          sql`EXTRACT(YEAR FROM COALESCE(${transactions.paidAt}, ${transactions.createdAt})) = ${currentYear}`
+        )
+      ),
+
+      // 3. System settings
+      db.select().from(systemSettings).limit(1),
+
+      // 4. Number of houses with unpaid invoices
+      db.select({
+        count: sql<number>`COUNT(DISTINCT ${invoices.houseId})`
+      }).from(invoices).where(eq(invoices.status, "unpaid")),
+
+      // 5. Total registered houses count
+      db.select({
+        count: sql<number>`COUNT(*)`
+      }).from(houses),
+
+      // 6. Number of transactions waiting for review
+      db.select({
+        count: sql<number>`COUNT(*)`
+      }).from(transactions).where(eq(transactions.slipStatus, "pending")),
+
+      // 7. Number of LINE slips pending
+      db.select({
+        count: sql<number>`COUNT(*)`
+      }).from(lineMessages).where(eq(lineMessages.status, "pending")),
+
+      // 8. Recent 5 verified transactions
+      db.select({
+        id: transactions.id,
+        amount: transactions.amount,
+        paidAt: transactions.paidAt,
+        createdAt: transactions.createdAt,
+        verifiedBy: transactions.verifiedBy,
+      })
+        .from(transactions)
+        .where(eq(transactions.slipStatus, "verified"))
+        .orderBy(desc(transactions.paidAt), desc(transactions.createdAt))
+        .limit(5),
+
+      // 9. Chart transactions (up to 2000 recent)
+      db.select({
+        amount: transactions.amount,
+        paidAt: transactions.paidAt,
+        createdAt: transactions.createdAt,
+      })
+        .from(transactions)
+        .where(eq(transactions.slipStatus, "verified"))
+        .orderBy(desc(transactions.paidAt), desc(transactions.createdAt))
+        .limit(2000)
+    ]);
+
+    dashboardData = {
+      totalRevenueResult,
+      yearRevenueResult,
+      settingsResult,
+      unpaidHousesResult,
+      totalHousesResult,
+      reviewTxsResult,
+      pendingLineSlipsResult,
+      recentVerifiedTxs,
+      chartTxs
+    };
+
+    if (redis) {
+      try {
+        await redis.set(cacheKey, dashboardData, { ex: 300 });
+      } catch (e) {
+        console.error("Redis set error:", e);
+      }
+    }
+  }
+
+  const {
     totalRevenueResult,
     yearRevenueResult,
     settingsResult,
@@ -55,69 +178,7 @@ export default async function DashboardPage() {
     pendingLineSlipsResult,
     recentVerifiedTxs,
     chartTxs
-  ] = await Promise.all([
-    // 1. Total verified revenue
-    db.select({
-      total: sql<string>`COALESCE(SUM(${transactions.amount}::numeric), 0)`
-    }).from(transactions).where(eq(transactions.slipStatus, "verified")),
-
-    // 2. Current year verified revenue
-    db.select({
-      total: sql<string>`COALESCE(SUM(${transactions.amount}::numeric), 0)`
-    }).from(transactions).where(
-      and(
-        eq(transactions.slipStatus, "verified"),
-        sql`EXTRACT(YEAR FROM COALESCE(${transactions.paidAt}, ${transactions.createdAt})) = ${currentYear}`
-      )
-    ),
-
-    // 3. System settings
-    db.select().from(systemSettings).limit(1),
-
-    // 4. Number of houses with unpaid invoices
-    db.select({
-      count: sql<number>`COUNT(DISTINCT ${invoices.houseId})`
-    }).from(invoices).where(eq(invoices.status, "unpaid")),
-
-    // 5. Total registered houses count
-    db.select({
-      count: sql<number>`COUNT(*)`
-    }).from(houses),
-
-    // 6. Number of transactions waiting for review
-    db.select({
-      count: sql<number>`COUNT(*)`
-    }).from(transactions).where(eq(transactions.slipStatus, "pending")),
-
-    // 7. Number of LINE slips pending
-    db.select({
-      count: sql<number>`COUNT(*)`
-    }).from(lineMessages).where(eq(lineMessages.status, "pending")),
-
-    // 8. Recent 5 verified transactions
-    db.select({
-      id: transactions.id,
-      amount: transactions.amount,
-      paidAt: transactions.paidAt,
-      createdAt: transactions.createdAt,
-      verifiedBy: transactions.verifiedBy,
-    })
-      .from(transactions)
-      .where(eq(transactions.slipStatus, "verified"))
-      .orderBy(desc(transactions.paidAt), desc(transactions.createdAt))
-      .limit(5),
-
-    // 9. Chart transactions (up to 2000 recent)
-    db.select({
-      amount: transactions.amount,
-      paidAt: transactions.paidAt,
-      createdAt: transactions.createdAt,
-    })
-      .from(transactions)
-      .where(eq(transactions.slipStatus, "verified"))
-      .orderBy(desc(transactions.paidAt), desc(transactions.createdAt))
-      .limit(2000)
-  ]);
+  } = dashboardData;
 
   const totalVerifiedRevenue = parseFloat(totalRevenueResult[0]?.total || "0");
   const currentYearRevenue = parseFloat(yearRevenueResult[0]?.total || "0");
@@ -139,7 +200,7 @@ export default async function DashboardPage() {
   }> = [];
 
   if (recentVerifiedTxs.length > 0) {
-    const txIds = recentVerifiedTxs.map((t) => t.id);
+    const txIds = recentVerifiedTxs.map((t: any) => t.id);
 
     const relatedInvoices = await db
       .select({
@@ -163,7 +224,7 @@ export default async function DashboardPage() {
 
     const lineMsgMap = new Map(relatedLineMsgs.map((m) => [m.transactionId, m]));
 
-    recentTransactions = recentVerifiedTxs.map((tx) => {
+    recentTransactions = recentVerifiedTxs.map((tx: any) => {
       const txInvoices = relatedInvoices.filter((inv) => inv.transactionId === tx.id);
       const lineData = lineMsgMap.get(tx.id);
 
@@ -332,7 +393,7 @@ export default async function DashboardPage() {
         {/* Left Column (Real Graph Area) */}
         <StaggerItem className="xl:col-span-2">
           <RevenueChart 
-            transactions={chartTxs.map(tx => ({
+            transactions={chartTxs.map((tx: any) => ({
               amount: tx.amount,
               date: (tx.paidAt || tx.createdAt)?.toISOString() || null
             }))} 

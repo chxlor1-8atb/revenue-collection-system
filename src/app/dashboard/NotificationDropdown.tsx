@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
+import { getPusherClient } from "@/lib/pusher";
 import Link from "next/link";
 import { 
   Bell, 
@@ -176,19 +177,38 @@ export default function NotificationDropdown() {
     }
   };
 
-  // Polling every 15s + immediate visibility check (fallback)
+  // Real-time Pusher + 60s fallback polling
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 15000);
+    const interval = setInterval(fetchNotifications, 60000); // Reduce polling to 60s
 
     const handleVisibility = () => {
       if (document.visibilityState === "visible") fetchNotifications();
     };
     document.addEventListener("visibilitychange", handleVisibility);
 
+    // Setup Pusher for instant notifications
+    let pusherClient: any = null;
+    try {
+      pusherClient = getPusherClient();
+    } catch (e) {
+      console.warn("Pusher client failed to initialize", e);
+    }
+
+    if (pusherClient) {
+      const channel = pusherClient.subscribe('admin-notifications');
+      channel.bind('new-slip', () => {
+        // Wait 1 second to ensure DB is written before fetching
+        setTimeout(fetchNotifications, 1000);
+      });
+    }
+
     return () => {
       clearInterval(interval);
       document.removeEventListener("visibilitychange", handleVisibility);
+      if (pusherClient) {
+        pusherClient.unsubscribe('admin-notifications');
+      }
     };
   }, [soundEnabled]);
 

@@ -201,7 +201,8 @@ export async function POST(request: Request) {
               amount: null // Amount unknown since OCR failed
             }).where(eq(lineMessages.id, msgRowId));
             
-            await replyMessage(replyToken, "รับทราบค่ะ ระบบได้บันทึกสลิปของท่านไว้แล้ว\n(ขณะนี้ระบบตรวจสอบอัตโนมัติอาจล่าช้า เจ้าหน้าที่จะทำการตรวจสอบยืนยันยอดให้อีกครั้งค่ะ) 🙏");
+            if (pusherServer) { pusherServer.trigger('admin-notifications', 'new-slip', {}).catch(console.error); }
+              await replyMessage(replyToken, "รับทราบค่ะ ระบบได้บันทึกสลิปของท่านไว้แล้ว\n(ขณะนี้ระบบตรวจสอบอัตโนมัติอาจล่าช้า เจ้าหน้าที่จะทำการตรวจสอบยืนยันยอดให้อีกครั้งค่ะ) 🙏");
             continue;
           }
 
@@ -338,6 +339,7 @@ export async function POST(request: Request) {
                 }
                 if (redis) {
                   redis.del(`house_dashboard_data:${matchingIntent.houseId}`).catch(console.error);
+                  redis.del("admin_dashboard_stats").catch(console.error);
                 }
 
                 const matchedHouse = linkedHouses.find(h => h.id === matchingIntent.houseId);
@@ -385,6 +387,7 @@ export async function POST(request: Request) {
                 }
                 if (redis) {
                   redis.del(`house_dashboard_data:${house.id}`).catch(console.error);
+                  redis.del("admin_dashboard_stats").catch(console.error);
                 }
 
                 await db.update(lineMessages).set({
@@ -687,6 +690,7 @@ export async function POST(request: Request) {
                   }
                   if (redis) {
                     redis.del(`house_dashboard_data:${house.id}`).catch(console.error);
+                    redis.del("admin_dashboard_stats").catch(console.error);
                   }
 
                   const thaiMonths = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
@@ -719,7 +723,8 @@ export async function POST(request: Request) {
             }
 
             // If not auto-approved and not duplicate (or other reason)
-            await replyMessage(replyToken, `ขอบคุณค่ะ! ระบบได้บันทึกสลิปสำหรับบ้านเลขที่ ${text} แล้ว\n\nเจ้าหน้าที่จะทำการตรวจสอบและอัปเดตยอดในระบบให้ภายใน 24 ชั่วโมงค่ะ 💚`);
+            if (pusherServer) { pusherServer.trigger('admin-notifications', 'new-slip', {}).catch(console.error); }
+              await replyMessage(replyToken, `ขอบคุณค่ะ! ระบบได้บันทึกสลิปสำหรับบ้านเลขที่ ${text} แล้ว\n\nเจ้าหน้าที่จะทำการตรวจสอบและอัปเดตยอดในระบบให้ภายใน 24 ชั่วโมงค่ะ 💚`);
           } else {
             // User sent text without a prior pending image
             // Maybe they are trying to link their account
@@ -783,6 +788,10 @@ export async function POST(request: Request) {
                     await db.update(lineMessages).set({ status: 'verified_auto', transactionId: newTx[0].id }).where(eq(lineMessages.id, slipData.id));
                     await db.update(invoices).set({ status: 'paid', transactionId: newTx[0].id }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
                     
+                    if (redis) {
+                      redis.del(`house_dashboard_data:${house.id}`).catch(console.error);
+                      redis.del("admin_dashboard_stats").catch(console.error);
+                    }
                     
                     const thaiMonths = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
                     let monthStr = "";

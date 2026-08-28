@@ -216,6 +216,7 @@ export async function POST(request: Request) {
           const { redis } = await import("@/lib/redis");
           if (redis) {
              await redis.del(`house_dashboard_data:${txInfo.houseId}`);
+             await redis.del("admin_dashboard_stats");
           }
         } catch(e) { console.error("Cache clear error", e); }
       }
