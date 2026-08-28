@@ -76,7 +76,7 @@ export async function GET(req: Request) {
       if (existing.length === 0) {
         // Create bill and handle wallet balance
         const amount = house.defaultBillingAmount || "20.00";
-        let amountToPay = parseFloat(amount);
+        const amountToPay = parseFloat(amount);
         let wallet = parseFloat(house.walletBalance || "0");
         let invStatus = 'unpaid';
         let invPaid = 0;

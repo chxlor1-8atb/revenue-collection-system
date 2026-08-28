@@ -20,7 +20,7 @@ export async function GET() {
       return NextResponse.json(defaultSchema);
     }
 
-    let schema = settings[0].houseCustomFieldsSchema as any[];
+    const schema = settings[0].houseCustomFieldsSchema as any[];
     // Inject defaultBillingAmount if missing in existing database
     if (!schema.find(s => s.id === 'defaultBillingAmount')) {
       schema.splice(2, 0, { id: "defaultBillingAmount", name: "ยอดเก็บประจำเดือน (บาท)", placeholder: "เช่น 100", type: "number", required: false, isSystem: true, isHidden: false });
