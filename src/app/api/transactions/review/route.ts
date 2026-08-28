@@ -147,94 +147,96 @@ export async function POST(request: Request) {
     }
 
     // 3. Update Transaction and Invoices Status
-    await db.update(transactions)
-      .set({ 
-        slipStatus: status,
-        verifiedBy: session.user?.name || "admin",
-        rejectReason: status === 'rejected' ? rejectReason : null,
-        amount: status === 'verified' && verifiedAmount ? verifiedAmount : undefined,
-        amountClaimedByPayer: status === 'verified' && verifiedAmount ? verifiedAmount : undefined,
-        lockKey: null,
-        lockedBy: null,
-        lockedAt: null,
-        ...seriesData
-      })
-      .where(eq(transactions.id, transactionId));
+    await db.transaction(async (tx) => {
+      await tx.update(transactions)
+        .set({ 
+          slipStatus: status,
+          verifiedBy: session.user?.name || "admin",
+          rejectReason: status === 'rejected' ? rejectReason : null,
+          amount: status === 'verified' && verifiedAmount ? verifiedAmount : undefined,
+          amountClaimedByPayer: status === 'verified' && verifiedAmount ? verifiedAmount : undefined,
+          lockKey: null,
+          lockedBy: null,
+          lockedAt: null,
+          ...seriesData
+        })
+        .where(eq(transactions.id, transactionId));
 
-    // Update Related Invoices Status and Wallet
-    if (status === 'verified') {
-      // 3.1 Unlink and delete advance invoices (if any)
-      // Since admin might have changed the verified amount, we rely on the wallet instead of advance invoices for excess
-      await db.delete(invoices)
-        .where(
-          and(
-            eq(invoices.transactionId, transactionId),
-            eq(invoices.status, 'pending_advance')
-          )
-        );
-
-      // 3.2 Mark regular invoices as paid
-      await db.update(invoices)
-        .set({ status: 'paid' })
-        .where(eq(invoices.transactionId, transactionId));
-
-      // 3.3 Calculate overpayment and add to wallet
-      if (txInfo && verifiedAmount) {
-        const actualPaid = parseFloat(verifiedAmount);
-        // Find total debt of the invoices just paid
-        const paidInvoices = await db.select({ amount: invoices.amount })
-          .from(invoices)
+      // Update Related Invoices Status and Wallet
+      if (status === 'verified') {
+        // 3.1 Unlink and delete advance invoices (if any)
+        // Since admin might have changed the verified amount, we rely on the wallet instead of advance invoices for excess
+        await tx.delete(invoices)
           .where(
             and(
               eq(invoices.transactionId, transactionId),
-              eq(invoices.status, 'paid')
+              eq(invoices.status, 'pending_advance')
             )
           );
-        const totalDebt = paidInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
-        
-        if (actualPaid > totalDebt) {
-          const excess = actualPaid - totalDebt;
-          const houseRecord = await db.select({ walletBalance: houses.walletBalance })
-            .from(houses)
-            .where(eq(houses.id, txInfo.houseId))
-            .limit(1);
+
+        // 3.2 Mark regular invoices as paid
+        await tx.update(invoices)
+          .set({ status: 'paid' })
+          .where(eq(invoices.transactionId, transactionId));
+
+        // 3.3 Calculate overpayment and add to wallet
+        if (txInfo && verifiedAmount) {
+          const actualPaid = parseFloat(verifiedAmount);
+          // Find total debt of the invoices just paid
+          const paidInvoices = await tx.select({ amount: invoices.amount })
+            .from(invoices)
+            .where(
+              and(
+                eq(invoices.transactionId, transactionId),
+                eq(invoices.status, 'paid')
+              )
+            );
+          const totalDebt = paidInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
           
-          if (houseRecord.length > 0) {
-            const currentWallet = parseFloat(houseRecord[0].walletBalance || "0");
-            const newWallet = currentWallet + excess;
+          if (actualPaid > totalDebt) {
+            const excess = actualPaid - totalDebt;
+            const houseRecord = await tx.select({ walletBalance: houses.walletBalance })
+              .from(houses)
+              .where(eq(houses.id, txInfo.houseId))
+              .limit(1);
             
-            await db.update(houses)
-              .set({ walletBalance: newWallet.toFixed(2) })
-              .where(eq(houses.id, txInfo.houseId));
+            if (houseRecord.length > 0) {
+              const currentWallet = parseFloat(houseRecord[0].walletBalance || "0");
+              const newWallet = currentWallet + excess;
+              
+              await tx.update(houses)
+                .set({ walletBalance: newWallet.toFixed(2) })
+                .where(eq(houses.id, txInfo.houseId));
+            }
           }
         }
-      }
-        
-      // Invalidate Redis Cache
-      if (txInfo) {
-        try {
-          const { redis } = await import("@/lib/redis");
-          if (redis) {
-             await redis.del(`house_dashboard_data:${txInfo.houseId}`);
-             await redis.del("admin_dashboard_stats");
-          }
-        } catch(e) { console.error("Cache clear error", e); }
-      }
-    } else {
-      // Delete any pending_advance invoices
-      await db.delete(invoices)
-        .where(
-          and(
-            eq(invoices.transactionId, transactionId),
-            eq(invoices.status, 'pending_advance')
-          )
-        );
+          
+        // Invalidate Redis Cache
+        if (txInfo) {
+          try {
+            const { redis } = await import("@/lib/redis");
+            if (redis) {
+               await redis.del(`house_dashboard_data:${txInfo.houseId}`);
+               await redis.del("admin_dashboard_stats");
+            }
+          } catch(e) { console.error("Cache clear error", e); }
+        }
+      } else {
+        // Delete any pending_advance invoices
+        await tx.delete(invoices)
+          .where(
+            and(
+              eq(invoices.transactionId, transactionId),
+              eq(invoices.status, 'pending_advance')
+            )
+          );
 
-      // Unlink regular invoices
-      await db.update(invoices)
-        .set({ status: 'unpaid', transactionId: null })
-        .where(eq(invoices.transactionId, transactionId));
-    }
+        // Unlink regular invoices
+        await tx.update(invoices)
+          .set({ status: 'unpaid', transactionId: null })
+          .where(eq(invoices.transactionId, transactionId));
+      }
+    });
 
     // 4. Send LINE Push Notification if lineUserId exists
     if (txInfo && txInfo.lineUserId) {

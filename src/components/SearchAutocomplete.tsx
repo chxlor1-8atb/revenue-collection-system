@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Search, MapPin, User } from "lucide-react";
+import { Search, MapPin, User, Loader2 } from "lucide-react";
 
 interface House {
   id: number;
@@ -16,10 +16,11 @@ interface SearchAutocompleteProps {
   onSelect?: (house: House) => void;
   onSubmit?: () => void;
   placeholder?: string;
-  className?: string; 
+  className?: string;
+  isLoading?: boolean;
 }
 
-export default function SearchAutocomplete({ value, onChange, onSelect, onSubmit, placeholder = "ค้นหา...", className }: SearchAutocompleteProps) {
+export default function SearchAutocomplete({ value, onChange, onSelect, onSubmit, placeholder = "ค้นหา...", className, isLoading }: SearchAutocompleteProps) {
   const [predictions, setPredictions] = useState<House[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -77,8 +78,12 @@ export default function SearchAutocomplete({ value, onChange, onSelect, onSubmit
 
   return (
     <div className="relative group w-full" ref={wrapperRef}>
-      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors z-10">
-        <Search size={18} />
+      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none transition-colors z-10">
+        {isLoading ? (
+          <Loader2 size={18} className="text-[#5B58F2] animate-spin" />
+        ) : (
+          <Search size={18} className="text-slate-400 group-focus-within:text-[#5B58F2]" />
+        )}
       </div>
       <input
         type="text"

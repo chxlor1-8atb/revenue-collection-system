@@ -49,50 +49,52 @@ async function attemptAutoApprove(house: any, slipAmountStr: string, slipImageUr
     let txId: number | undefined;
     const series = await generateNextReceiptSeries(new Date());
 
-    const newTx = await db.insert(transactions).values({
-      amount: slipAmountStr,
-      amountClaimedByPayer: slipAmountStr,
-      slipImageUrl: slipImageUrl,
-      slipStatus: "verified",
-      slipRefId: transRef,
-      paidAt: new Date(),
-      verifiedBy: "line_bot_auto",
-      receiptCode: series.receiptCode,
-      bookNumber: series.bookNumber,
-      receiptNumber: series.receiptNumber,
-      fiscalYear: series.fiscalYear,
-    }).returning();
+    await db.transaction(async (tx) => {
+      const newTx = await tx.insert(transactions).values({
+        amount: slipAmountStr,
+        amountClaimedByPayer: slipAmountStr,
+        slipImageUrl: slipImageUrl,
+        slipStatus: "verified",
+        slipRefId: transRef,
+        paidAt: new Date(),
+        verifiedBy: "line_bot_auto",
+        receiptCode: series.receiptCode,
+        bookNumber: series.bookNumber,
+        receiptNumber: series.receiptNumber,
+        fiscalYear: series.fiscalYear,
+      }).returning();
 
-    txId = newTx[0].id;
+      txId = newTx[0].id;
 
-    // MARK EXISTING INVOICES AS PAID
-    if (unpaidInvoices.length > 0) {
-      await db.update(invoices).set({ status: 'paid', transactionId: txId }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
-    }
-
-    // GENERATE ADVANCE INVOICES
-    if (advanceMonthsCount > 0) {
-      let lastMonthDate = new Date();
-      const latestInvoiceList = await db.select().from(invoices).where(eq(invoices.houseId, house.id)).orderBy(desc(invoices.monthYear)).limit(1);
-      if (latestInvoiceList.length > 0) {
-        const [year, month] = latestInvoiceList[0].monthYear.split("-");
-        lastMonthDate = new Date(parseInt(year), parseInt(month) - 1, 1);
+      // MARK EXISTING INVOICES AS PAID
+      if (unpaidInvoices.length > 0) {
+        await tx.update(invoices).set({ status: 'paid', transactionId: txId }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
       }
-      
-      for (let i = 1; i <= advanceMonthsCount; i++) {
-        const advanceDate = new Date(lastMonthDate);
-        advanceDate.setMonth(advanceDate.getMonth() + i);
-        const advanceMonthYear = `${advanceDate.getFullYear()}-${String(advanceDate.getMonth() + 1).padStart(2, "0")}`;
+
+      // GENERATE ADVANCE INVOICES
+      if (advanceMonthsCount > 0) {
+        let lastMonthDate = new Date();
+        const latestInvoiceList = await tx.select().from(invoices).where(eq(invoices.houseId, house.id)).orderBy(desc(invoices.monthYear)).limit(1);
+        if (latestInvoiceList.length > 0) {
+          const [year, month] = latestInvoiceList[0].monthYear.split("-");
+          lastMonthDate = new Date(parseInt(year), parseInt(month) - 1, 1);
+        }
         
-        await db.insert(invoices).values({
-          houseId: house.id,
-          amount: defaultBill.toString(),
-          status: 'paid', // immediately paid
-          monthYear: advanceMonthYear,
-          transactionId: txId
-        });
+        for (let i = 1; i <= advanceMonthsCount; i++) {
+          const advanceDate = new Date(lastMonthDate);
+          advanceDate.setMonth(advanceDate.getMonth() + i);
+          const advanceMonthYear = `${advanceDate.getFullYear()}-${String(advanceDate.getMonth() + 1).padStart(2, "0")}`;
+          
+          await tx.insert(invoices).values({
+            houseId: house.id,
+            amount: defaultBill.toString(),
+            status: 'paid', // immediately paid
+            monthYear: advanceMonthYear,
+            transactionId: txId
+          });
+        }
       }
-    }
+    });
 
     return { success: true, newTxId: txId, totalDebt };
   } catch (error) {
@@ -320,19 +322,33 @@ export async function POST(request: Request) {
               
               if (matchingIntent) {
                 const series = await generateNextReceiptSeries(new Date());
-                await db.update(transactions).set({
-                  slipImageUrl: blobUrl,
-                  slipStatus: "verified",
-                  slipRefId: transRef || null,
-                  paidAt: new Date(),
-                  verifiedBy: "line_bot_auto",
-                  receiptCode: series.receiptCode,
-                  bookNumber: series.bookNumber,
-                  receiptNumber: series.receiptNumber,
-                  fiscalYear: series.fiscalYear,
-                }).where(eq(transactions.id, matchingIntent.txId));
                 
-                await db.update(invoices).set({ status: 'paid' }).where(eq(invoices.transactionId, matchingIntent.txId));
+                await db.transaction(async (tx) => {
+                  await tx.update(transactions).set({
+                    slipImageUrl: blobUrl,
+                    slipStatus: "verified",
+                    slipRefId: transRef || null,
+                    paidAt: new Date(),
+                    verifiedBy: "line_bot_auto",
+                    receiptCode: series.receiptCode,
+                    bookNumber: series.bookNumber,
+                    receiptNumber: series.receiptNumber,
+                    fiscalYear: series.fiscalYear,
+                  }).where(eq(transactions.id, matchingIntent.txId));
+                  
+                  await tx.update(invoices).set({ status: 'paid' }).where(eq(invoices.transactionId, matchingIntent.txId));
+                  
+                  const matchedHouse = linkedHouses.find(h => h.id === matchingIntent.houseId);
+                  
+                  await tx.update(lineMessages).set({
+                    status: "verified_auto",
+                    amount: slipAmount,
+                    senderName: verification.data?.sender.name,
+                    isVerified: true,
+                    transactionId: matchingIntent.txId,
+                    houseNumber: matchedHouse?.houseNumber
+                  }).where(eq(lineMessages.id, msgRowId));
+                });
                 
                 if (pusherServer) {
                   pusherServer.trigger(`transaction-${matchingIntent.txId}`, 'payment-verified', { status: 'verified' }).catch(console.error);
@@ -343,15 +359,6 @@ export async function POST(request: Request) {
                 }
 
                 const matchedHouse = linkedHouses.find(h => h.id === matchingIntent.houseId);
-                
-                await db.update(lineMessages).set({
-                  status: "verified_auto",
-                  amount: slipAmount,
-                  senderName: verification.data?.sender.name,
-                  isVerified: true,
-                  transactionId: matchingIntent.txId,
-                  houseNumber: matchedHouse?.houseNumber
-                }).where(eq(lineMessages.id, msgRowId));
                 
                 const flexMsg = generateSlipVerificationSuccessFlexMessage(
                   verification.data?.amount || 0,
@@ -681,8 +688,10 @@ export async function POST(request: Request) {
               if (totalDebt > 0 && slipData.isVerified && slipData.amount && Math.abs(parseFloat(slipData.amount) - totalDebt) < 0.01) {
                 // Perfect match! Auto-approve using existing transaction
                 if (slipData.transactionId) {
-                  await db.update(lineMessages).set({ status: 'verified_auto' }).where(eq(lineMessages.id, slipData.id));
-                  await db.update(invoices).set({ status: 'paid', transactionId: slipData.transactionId }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
+                  await db.transaction(async (tx) => {
+                    await tx.update(lineMessages).set({ status: 'verified_auto' }).where(eq(lineMessages.id, slipData.id));
+                    await tx.update(invoices).set({ status: 'paid', transactionId: slipData.transactionId }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
+                  });
                   
                   
                   if (pusherServer) {
@@ -776,17 +785,21 @@ export async function POST(request: Request) {
                   const totalDebt = unpaidInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
                   
                   if (totalDebt > 0 && slipData.isVerified && slipData.amount && Math.abs(parseFloat(slipData.amount) - totalDebt) < 0.01) {
-                    const newTx = await db.insert(transactions).values({
-                      amount: slipData.amount,
-                      amountClaimedByPayer: slipData.amount,
-                      slipImageUrl: slipData.imageUrl || "",
-                      slipStatus: "verified",
-                      paidAt: new Date(),
-                      verifiedBy: "line_bot_auto",
-                    }).returning();
-
-                    await db.update(lineMessages).set({ status: 'verified_auto', transactionId: newTx[0].id }).where(eq(lineMessages.id, slipData.id));
-                    await db.update(invoices).set({ status: 'paid', transactionId: newTx[0].id }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
+                    let newTxId: number | undefined;
+                    await db.transaction(async (tx) => {
+                      const newTx = await tx.insert(transactions).values({
+                        amount: slipData.amount,
+                        amountClaimedByPayer: slipData.amount,
+                        slipImageUrl: slipData.imageUrl || "",
+                        slipStatus: "verified",
+                        paidAt: new Date(),
+                        verifiedBy: "line_bot_auto",
+                      }).returning();
+                      
+                      newTxId = newTx[0].id;
+                      await tx.update(lineMessages).set({ status: 'verified_auto', transactionId: newTxId }).where(eq(lineMessages.id, slipData.id));
+                      await tx.update(invoices).set({ status: 'paid', transactionId: newTxId }).where(and(eq(invoices.houseId, house.id), eq(invoices.status, 'unpaid')));
+                    });
                     
                     if (redis) {
                       redis.del(`house_dashboard_data:${house.id}`).catch(console.error);
@@ -808,7 +821,7 @@ export async function POST(request: Request) {
                       house.houseNumber,
                       monthStr,
                       totalDebt,
-                      `${appUrl}/dashboard/history/${newTx[0].id}/receipt`,
+                      `${appUrl}/dashboard/history/${newTxId}/receipt`,
                       new Date(),
                       slipData.imageUrl
                     );
