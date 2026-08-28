@@ -55,10 +55,14 @@ export async function deleteAdminUser(id: number) {
   const session = await auth();
   if (!session) return { success: false, error: "Unauthorized" };
 
-  // Don't allow deleting the last user or oneself if we want to be safe, but for now just delete.
-  // We can check if it's the current user if session user ID matches, but next-auth session doesn't easily expose DB ID without mapping.
-  
   try {
+    // Check total users
+    const allUsers = await db.select({ id: adminUsers.id }).from(adminUsers);
+    
+    if (allUsers.length <= 1) {
+      return { success: false, error: "Cannot delete the last administrator account" };
+    }
+    
     await db.delete(adminUsers).where(eq(adminUsers.id, id));
     return { success: true };
   } catch (error) {

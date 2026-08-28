@@ -22,7 +22,18 @@ import ConfirmModal from "@/components/ConfirmModal";
 import LottieIcon from "@/components/LottieIcon";
 import NotificationDropdown from "./NotificationDropdown";
 
-export default function TopNav({ userName, settings }: { userName: string, settings?: any }) {
+export interface SystemSettings {
+  id?: number;
+  accountName?: string;
+  promptPayId?: string;
+  autoBillingDay?: number | null;
+  dueDateDays?: number | null;
+  autoRemindDays?: number | null;
+  lineConfig?: any;
+  receiptBookConfig?: any;
+}
+
+export default function TopNav({ userName, settings }: { userName: string, settings?: SystemSettings }) {
   const pathname = usePathname();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);

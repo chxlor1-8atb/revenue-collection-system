@@ -12,12 +12,30 @@ function formatThaiMonth(monthYear: string) {
   return `${thaiMonths[parseInt(month, 10)]} ${parseInt(year, 10) + 543}`;
 }
 
+export interface TransactionReview {
+  id: number;
+  slipStatus: string;
+  amountClaimedByPayer?: string;
+  slipImageUrl?: string;
+  slipRefId?: string;
+  createdAt: string;
+  amount: string;
+  payerNote?: string;
+  invoices: {
+    id: number;
+    houseNumber: string;
+    ownerName?: string;
+    monthYear: string;
+    amount: string;
+  }[];
+}
+
 export default function SlipReviewForm({ 
   transaction, 
   onReviewed,
   layout = "detailed"
 }: { 
-  transaction: any;
+  transaction: TransactionReview;
   onReviewed?: () => void;
   layout?: "detailed" | "grid";
 }) {
@@ -121,7 +139,7 @@ export default function SlipReviewForm({
                   className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center p-2">
-                  <SlipModalButton imageUrl={transaction.slipImageUrl}>
+                  <SlipModalButton imageUrl={transaction.slipImageUrl || ""}>
                     <span className="px-3 py-1.5 bg-white/95 text-slate-900 rounded-lg text-xs font-bold shadow-md flex items-center gap-1 cursor-pointer hover:scale-105 transition-transform">
                       <Eye size={13} /> ขยายดู
                     </span>
@@ -223,7 +241,7 @@ export default function SlipReviewForm({
                 className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300" 
               />
               <div className="absolute inset-0 bg-slate-950/30 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center p-4">
-                <SlipModalButton imageUrl={transaction.slipImageUrl}>
+                <SlipModalButton imageUrl={transaction.slipImageUrl || ""}>
                   <span className="px-3.5 py-2 bg-white/95 hover:bg-white text-slate-900 rounded-xl text-xs font-bold shadow-lg backdrop-blur-xs flex items-center gap-1.5 cursor-pointer transition-transform hover:scale-105">
                     <Eye size={14} /> ขยายดูสลิป
                   </span>

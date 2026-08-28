@@ -75,6 +75,13 @@ export default function NotificationDropdown() {
         gain.connect(ctx.destination);
         osc.start();
         osc.stop(ctx.currentTime + 0.35);
+        
+        // Clean up audio context
+        setTimeout(() => {
+          if (ctx.state !== "closed") {
+            ctx.close().catch(() => {});
+          }
+        }, 500);
       }
     } catch {
       // ignore audio errors
@@ -101,6 +108,12 @@ export default function NotificationDropdown() {
       setBrowserNotifyEnabled(Notification.permission === "granted");
     }
   }, []);
+
+  // Use a ref for soundEnabled so we don't have to put it in useEffect deps
+  const soundEnabledRef = useRef(soundEnabled);
+  useEffect(() => {
+    soundEnabledRef.current = soundEnabled;
+  }, [soundEnabled]);
 
   // Fetch notifications from server
   const fetchNotifications = async () => {
@@ -155,7 +168,10 @@ export default function NotificationDropdown() {
                 </div>
               </div>
             ), { duration: 5000 });
-            playChime();
+            
+            // Use ref for sound check so we don't recreate the function
+            if (soundEnabledRef.current) playChime();
+            
             if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
               new Notification("🔔 มีการชำระเงินใหม่รอตรวจสอบ", {
                 body: diff === 1 && latestItem ? `บ้าน ${latestItem.houseNumber} ส่งสลิปใหม่ จำนวน ฿${parseFloat(latestItem.amount || "0").toLocaleString("th-TH")}` : `พบรายการใหม่ ${diff} รายการ กรุณาเข้าตรวจสอบ`,
@@ -180,7 +196,8 @@ export default function NotificationDropdown() {
   // Real-time Pusher + 60s fallback polling
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 60000); // Reduce polling to 60s
+    const POLLING_INTERVAL_MS = 60000;
+    const interval = setInterval(fetchNotifications, POLLING_INTERVAL_MS);
 
     const handleVisibility = () => {
       if (document.visibilityState === "visible") fetchNotifications();
@@ -189,6 +206,8 @@ export default function NotificationDropdown() {
 
     // Setup Pusher for instant notifications
     let pusherClient: any = null;
+    let pusherTimeout: NodeJS.Timeout | null = null;
+    
     try {
       pusherClient = getPusherClient();
     } catch (e) {
@@ -199,18 +218,20 @@ export default function NotificationDropdown() {
       const channel = pusherClient.subscribe('admin-notifications');
       channel.bind('new-slip', () => {
         // Wait 1 second to ensure DB is written before fetching
-        setTimeout(fetchNotifications, 1000);
+        if (pusherTimeout) clearTimeout(pusherTimeout);
+        pusherTimeout = setTimeout(fetchNotifications, 1000);
       });
     }
 
     return () => {
       clearInterval(interval);
+      if (pusherTimeout) clearTimeout(pusherTimeout);
       document.removeEventListener("visibilitychange", handleVisibility);
       if (pusherClient) {
         pusherClient.unsubscribe('admin-notifications');
       }
     };
-  }, [soundEnabled]);
+  }, []);
 
   // Close when clicking outside or pressing Escape
   useEffect(() => {
