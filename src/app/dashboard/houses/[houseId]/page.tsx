@@ -104,7 +104,7 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
       <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-5 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-bl from-indigo-100/40 via-purple-50/20 to-transparent rounded-full blur-3xl pointer-events-none -mr-16 -mt-16"></div>
 
-        <div className="relative z-10 space-y-2">
+        <div className="relative space-y-2">
           <Link 
             href="/dashboard/houses" 
             className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-indigo-600 transition-colors bg-slate-100/80 hover:bg-indigo-50 px-2.5 py-1 rounded-lg"
@@ -137,7 +137,7 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
         </div>
 
         {/* Top Actions Bar */}
-        <div className="relative z-10 flex flex-wrap items-center justify-end gap-2 w-full md:w-auto mt-4 md:mt-0">
+        <div className="relative flex flex-wrap items-center justify-end gap-2 w-full md:w-auto mt-4 md:mt-0">
           <HouseActionsClient house={house as any} customFieldsSchema={schema} />
         </div>
       </div>
