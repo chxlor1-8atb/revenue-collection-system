@@ -447,56 +447,59 @@ export default function HousesClient({
               accept=".csv, .xlsx, .xls" 
               className="hidden" 
             />
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isImporting}
-              aria-label="นำเข้าข้อมูลจากไฟล์ Excel หรือ CSV"
-              className="h-10 flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 px-3.5 rounded-xl text-xs font-semibold transition-all shadow-xs disabled:opacity-50 cursor-pointer"
-            >
-              <Upload size={15} className="text-slate-500" />
-              <span>{isImporting ? 'กำลังนำเข้า...' : 'นำเข้า Excel / CSV'}</span>
-            </button>
+            {/* Group 1: Data Operations */}
+            <div className="flex items-center bg-white border border-slate-200/90 rounded-xl shadow-2xs overflow-hidden h-10">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isImporting}
+                className="h-full flex items-center gap-1.5 hover:bg-slate-50 text-slate-700 px-3.5 text-xs font-bold transition-colors disabled:opacity-50 cursor-pointer border-r border-slate-200/90"
+              >
+                <Upload size={14} className="text-slate-500" />
+                <span className="hidden xl:inline">{isImporting ? 'กำลังนำเข้า...' : 'นำเข้า Excel / CSV'}</span>
+              </button>
+  
+              <a
+                href="/api/houses/template"
+                title="ดาวน์โหลดไฟล์ตัวอย่าง Excel"
+                className="h-full flex items-center gap-1.5 hover:bg-slate-50 text-emerald-700 px-3.5 text-xs font-bold transition-colors cursor-pointer border-r border-slate-200/90"
+              >
+                <FileSpreadsheet size={14} className="text-emerald-600" />
+                <span className="hidden xl:inline">เทมเพลต Excel</span>
+              </a>
+              
+              <a
+                href="/api/houses/export"
+                title="ส่งออกข้อมูลเป็นไฟล์ Excel"
+                className="h-full flex items-center gap-1.5 hover:bg-slate-50 text-slate-700 px-3.5 text-xs font-bold transition-colors cursor-pointer"
+              >
+                <Download size={14} className="text-slate-500" />
+                <span className="hidden xl:inline">ส่งออก Excel</span>
+              </a>
+            </div>
 
-            <a
-              href="/api/houses/template"
-              aria-label="ดาวน์โหลดไฟล์ตัวอย่าง Excel ภาษาไทย"
-              className="h-10 flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200 text-emerald-800 px-3.5 rounded-xl text-xs font-semibold transition-all shadow-xs cursor-pointer"
-              title="ดาวน์โหลดไฟล์ต้นแบบ Excel ภาษาไทยสำหรับกรอกข้อมูล"
-            >
-              <FileSpreadsheet size={15} className="text-emerald-700" />
-              <span>เทมเพลต Excel</span>
-            </a>
-            
-            <a
-              href="/api/houses/export"
-              aria-label="ส่งออกข้อมูลเป็นไฟล์ Excel"
-              className="h-10 flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 px-3.5 rounded-xl text-xs font-semibold transition-all shadow-xs cursor-pointer"
-            >
-              <Download size={15} className="text-slate-500" />
-              <span>ส่งออก Excel</span>
-            </a>
+            {/* Group 2: Settings */}
+            <div className="flex items-center bg-slate-100/80 p-1 rounded-xl border border-slate-200/80 h-10">
+              <button
+                onClick={() => setShowSettings(true)}
+                title="ตั้งค่าฟิลด์เพิ่มเติม"
+                className="flex items-center justify-center w-8 h-8 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-600 rounded-lg transition-colors shadow-2xs cursor-pointer"
+              >
+                <Settings size={14} />
+              </button>
+            </div>
 
-            <button
-              onClick={() => setShowSettings(true)}
-              aria-label="ตั้งค่าฟิลด์ข้อมูลเพิ่มเติม"
-              className="h-10 w-10 flex items-center justify-center bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 rounded-xl transition-all shadow-xs"
-              title="ตั้งค่าฟิลด์เพิ่มเติม"
-            >
-              <Settings size={16} />
-            </button>
-
-            <button
-              onClick={handleAdd}
-              aria-label="เพิ่มบ้านหลังใหม่"
-              className="h-10 flex items-center gap-2 bg-[#5B58F2] hover:bg-[#4A47D1] text-white px-4 rounded-xl text-xs font-semibold transition-all shadow-sm shadow-[#5B58F2]/20 hover:shadow-md"
-            >
-              <Plus size={16} strokeWidth={2.5} />
-              เพิ่มบ้านใหม่
-            </button>
-            
-            <div className="w-[1px] bg-slate-200 h-6 mx-1 hidden sm:block"></div>
-
-            <GenerateInvoiceButton />
+            {/* Group 3: Primary Actions */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleAdd}
+                className="h-10 flex items-center gap-1.5 bg-[#5B58F2] hover:bg-[#4A47D1] text-white px-4 rounded-xl text-xs font-bold transition-all shadow-sm shadow-[#5B58F2]/20 hover:shadow-md cursor-pointer active:scale-98"
+              >
+                <Plus size={14} strokeWidth={2.5} />
+                <span>เพิ่มบ้านใหม่</span>
+              </button>
+              
+              <GenerateInvoiceButton />
+            </div>
           </div>
         </div>
 
