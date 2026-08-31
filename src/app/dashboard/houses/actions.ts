@@ -290,6 +290,7 @@ export async function markInvoiceAsPaidCash(invoiceId: number) {
 
     revalidatePath(`/dashboard/houses/${inv.houseId}`);
     revalidatePath(`/dashboard/houses`);
+    revalidatePath(`/house/${encodeSecureId(inv.houseId)}`);
 
     return { success: true, transactionId: tx[0].id };
   } catch (error: any) {
@@ -340,6 +341,7 @@ export async function markAllInvoicesAsPaidCash(houseId: number) {
 
     revalidatePath(`/dashboard/houses/${houseId}`);
     revalidatePath(`/dashboard/houses`);
+    revalidatePath(`/house/${encodeSecureId(houseId)}`);
 
     return { success: true, transactionId: tx[0].id };
   } catch (error: any) {
