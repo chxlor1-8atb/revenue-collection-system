@@ -218,11 +218,15 @@ export default function NotificationDropdown() {
 
     if (pusherClient) {
       const channel = pusherClient.subscribe('admin-notifications');
-      channel.bind('new-slip', () => {
-        // Wait 1 second to ensure DB is written before fetching
+      
+      const fastFetch = () => {
         if (pusherTimeout) clearTimeout(pusherTimeout);
-        pusherTimeout = setTimeout(fetchNotifications, 1000);
-      });
+        pusherTimeout = setTimeout(fetchNotifications, 200);
+      };
+
+      channel.bind('new-slip', fastFetch);
+      channel.bind('new-qr', fastFetch);
+      channel.bind('slip-processed', fastFetch);
       
       channel.bind('dashboard-update', () => {
         router.refresh();

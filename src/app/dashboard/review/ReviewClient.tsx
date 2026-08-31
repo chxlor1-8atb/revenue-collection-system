@@ -126,16 +126,57 @@ export default function ReviewClient() {
       const channel = pusherClient.subscribe('admin-notifications');
       
       const refreshQueue = () => {
-        // Debounce slightly to ensure DB changes are readable
-        setTimeout(() => mutate(), 500);
+        setTimeout(() => mutate(), 300);
       };
 
-      channel.bind('new-slip', refreshQueue);
-      channel.bind('slip-processed', refreshQueue);
+      const handleNewQr = (payload: any) => {
+        if (!payload || !payload.transactionId) {
+          refreshQueue();
+          return;
+        }
+        mutate((currentData: any) => {
+          if (!currentData) return currentData;
+          
+          const newWaiting = {
+            id: payload.transactionId,
+            amountClaimedByPayer: payload.amount?.toString() || "0",
+            slipStatus: 'waiting_for_slip',
+            createdAt: new Date().toISOString(),
+            houseNumber: payload.houseNumber || "-",
+            ownerName: payload.ownerName || "-",
+            invoices: []
+          };
+          
+          return {
+            ...currentData,
+            waiting: [newWaiting, ...(currentData.waiting || []).filter((w: any) => w.id !== payload.transactionId)]
+          };
+        }, { revalidate: false });
+      };
+
+      const handleSlipProcessed = (payload: any) => {
+        if (!payload || !payload.transactionId) {
+          refreshQueue();
+          return;
+        }
+        mutate((currentData: any) => {
+          if (!currentData) return currentData;
+          return {
+            ...currentData,
+            pending: (currentData.pending || []).filter((p: any) => p.id !== payload.transactionId),
+            waiting: (currentData.waiting || []).filter((w: any) => w.id !== payload.transactionId)
+          };
+        }, { revalidate: false });
+      };
+
+      channel.bind('new-slip', refreshQueue); // Usually needs full object, so we just fetch fast
+      channel.bind('new-qr', handleNewQr);
+      channel.bind('slip-processed', handleSlipProcessed);
 
       return () => {
         channel.unbind('new-slip', refreshQueue);
-        channel.unbind('slip-processed', refreshQueue);
+        channel.unbind('new-qr', handleNewQr);
+        channel.unbind('slip-processed', handleSlipProcessed);
         pusherClient.unsubscribe('admin-notifications');
       };
     }

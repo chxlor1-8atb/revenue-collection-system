@@ -218,6 +218,21 @@ export async function POST(request: Request) {
       await db.insert(invoices).values(advanceInvoicesWithTx);
     }
 
+    // Trigger Real-Time Notification for Admin QR Queue
+    try {
+      const { pusherServer } = await import('@/lib/pusher');
+      if (pusherServer) {
+        await pusherServer.trigger('admin-notifications', 'new-qr', {
+          transactionId,
+          houseNumber,
+          ownerName,
+          amount: finalAmount
+        });
+      }
+    } catch (e) {
+      console.warn("Could not trigger new-qr pusher event", e);
+    }
+
     return NextResponse.json({ 
       transactionId, 
       amount: finalAmount 
