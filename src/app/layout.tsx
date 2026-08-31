@@ -23,7 +23,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "เทศบาลเมืองนางรอง - จ่ายค่าขยะ",
   description: "ระบบจัดเก็บรายได้ออนไลน์ เทศบาลเมืองนางรอง",
-  manifest: "/manifest.json",
+  
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

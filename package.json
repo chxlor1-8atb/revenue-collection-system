@@ -17,6 +17,7 @@
     "@sentry/nextjs": "^10.71.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/file-saver": "^2.0.7",
+    "@upstash/qstash": "^2.11.3",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.2",
     "@vercel/analytics": "^2.0.1",

@@ -31,7 +31,7 @@ export async function GET(
       <!DOCTYPE html>
       <html>
       <head>
-        <title>������Ѻ�Թ - ${tx.houseNumber}</title>
+        <title>ใบเสร็จรับเงิน - ${tx.houseNumber}</title>
         <meta charset="utf-8">
         <style>
           @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap');
@@ -46,28 +46,35 @@ export async function GET(
           .details td { font-weight: 700; color: #0f172a; }
           .total { font-size: 24px; font-weight: bold; text-align: right; color: #10B981; padding: 20px; background: #ecfdf5; border-radius: 8px; }
           .footer { text-align: center; margin-top: 50px; font-size: 13px; color: #94a3b8; }
-          @media print { body { padding: 0; background: white; } .receipt-box { border: none; box-shadow: none; padding: 0; } }
+          @media print { 
+            body { padding: 0; background: white; } 
+            .receipt-box { border: none; box-shadow: none; padding: 0; } 
+            .no-print { display: none; }
+          }
         </style>
       </head>
-      <body onload="window.print()">
+      <body>
         <div class="receipt-box">
           <div class="header">
-            <h1>������Ѻ�Թ (e-Receipt)</h1>
-            <p style="margin-top: 5px; color: #64748b;">�к����¡���Թ�����ǹ��ҧ</p>
+            <h1>ใบเสร็จรับเงิน (e-Receipt)</h1>
+            <p style="margin-top: 5px; color: #64748b;">เทศบาลเมืองนางรอง</p>
           </div>
           <div class="details">
             <table>
-              <tr><th>�Ţ�����ҧ�ԧ (Ref No.):</th><td>RC-${tx.id.toString().padStart(6, '0')}</td></tr>
-              <tr><th>�ѹ�������Թ:</th><td>${tx.paidAt ? new Date(tx.paidAt).toLocaleString('th-TH') : '-'}</td></tr>
-              <tr><th>��ҹ�Ţ���:</th><td>${tx.houseNumber}</td></tr>
-              <tr><th>���ͼ�����:</th><td>${tx.ownerName}</td></tr>
+              <tr><th>เลขที่อ้างอิง (Ref No.):</th><td>RC-${tx.id.toString().padStart(6, '0')}</td></tr>
+              <tr><th>วันที่รับเงิน:</th><td>${tx.paidAt ? new Date(tx.paidAt).toLocaleString('th-TH') : '-'}</td></tr>
+              <tr><th>บ้านเลขที่:</th><td>${tx.houseNumber}</td></tr>
+              <tr><th>ชื่อผู้ชำระ:</th><td>${tx.ownerName}</td></tr>
             </table>
           </div>
           <div class="total">
-            �ʹ�����ط��: �${parseFloat(tx.amount || "0").toLocaleString('th-TH', { minimumFractionDigits: 2 })}
+            ยอดเงินสุทธิ: ฿${parseFloat(tx.amount || "0").toLocaleString('th-TH', { minimumFractionDigits: 2 })}
+          </div>
+          <div style="text-align: center; margin-top: 20px;" class="no-print">
+            <button onclick="window.print()" style="background: #5B58F2; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-family: 'Sarabun'; font-size: 16px; cursor: pointer; font-weight: bold;">🖨️ พิมพ์ / บันทึกเป็น PDF</button>
           </div>
           <div class="footer">
-            �͡��é�Ѻ������ҧ���к��ѵ��ѵ� ����ͧ�������<br/>
+            ออกโดยระบบรับชำระเงินอิเล็กทรอนิกส์<br/>
             (Auto-generated electronic receipt)
           </div>
         </div>

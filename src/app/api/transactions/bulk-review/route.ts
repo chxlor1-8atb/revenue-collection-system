@@ -3,7 +3,8 @@ import { db } from "@/lib/db";
 import { transactions, invoices, houses } from "@/lib/schema";
 import { eq, inArray, and } from "drizzle-orm";
 import { auth } from "@/lib/auth";
-import { pushMessage, generateSlipApprovedFlexMessage } from "@/lib/line";
+import { generateSlipApprovedFlexMessage } from "@/lib/line";
+import { enqueueLineMessage } from "@/lib/queue";
 import { generateNextReceiptSeries } from "@/lib/receiptSeries";
 
 export async function POST(request: Request) {
@@ -91,7 +92,7 @@ export async function POST(request: Request) {
         if (info && info.lineUserId) {
           const receiptUrl = `${baseUrl}/api/transactions/${t.id}/receipt`;
           const msg = generateSlipApprovedFlexMessage(info.houseNumber, parseFloat(info.amount || "0"), receiptUrl);
-          await pushMessage(info.lineUserId, [msg]).catch(console.error);
+          await enqueueLineMessage(info.lineUserId, [msg]);
         }
       }
     } catch(e) {}
