@@ -59,87 +59,88 @@ export default function HouseActionsClient({ house, customFieldsSchema }: { hous
     <>
       <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
         
-        {/* View Citizen Bill Portal */}
+        {/* 1. Citizen Portal Primary Link */}
         <a 
           href={`/house/${encodeSecureId(house.id)}`}
           target="_blank"
           rel="noreferrer"
-          className="flex items-center gap-1.5 bg-indigo-50 border border-indigo-200/80 hover:bg-indigo-100 text-[#5B58F2] px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-98"
+          className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-600/20 active:scale-98 cursor-pointer"
         >
-          <ExternalLink size={14} />
-          <span>หน้าบิลประชาชน ↗</span>
+          <span>หน้าเว็บบ้านลูกบ้าน</span>
+          <ExternalLink size={13} />
         </a>
 
-        {/* QR Code Modal Button */}
-        <button 
-          type="button"
-          onClick={() => openQrModal(house)}
-          className="flex items-center gap-1.5 bg-white border border-slate-200/90 hover:bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer hover:border-slate-300 active:scale-98"
-        >
-          <QrCode size={15} className="text-[#5B58F2]" />
-          <span>QR ชำระเงิน</span>
-        </button>
-        
-        {/* Create Manual Bill */}
-        <button
-          type="button"
-          onClick={() => {
-            setInitialBillPrompt({
-              isOpen: true,
-              houseId: house.id!,
-              monthYear: new Date().toISOString().slice(0, 7),
-              amount: house.defaultBillingAmount || "20.00",
-              isManual: true
-            });
-          }}
-          className="flex items-center gap-1.5 bg-white border border-slate-200/90 hover:bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer hover:border-slate-300 active:scale-98"
-        >
-          <FilePlus size={15} className="text-amber-500" />
-          <span>ออกบิลรายหลัง</span>
-        </button>
-
-        {/* Send LINE Notification (If connected) */}
-        {(house as any).lineUserId && (
+        {/* 2. Billing Actions Group */}
+        <div className="flex items-center bg-white border border-slate-200/90 rounded-xl shadow-2xs overflow-hidden">
+          <button 
+            type="button"
+            onClick={() => openQrModal(house)}
+            className="flex items-center gap-1.5 hover:bg-slate-50 text-slate-700 px-3.5 py-2 text-xs font-bold transition-colors cursor-pointer border-r border-slate-200/90"
+          >
+            <QrCode size={15} className="text-[#5B58F2]" />
+            <span className="hidden sm:inline">QR ชำระเงิน</span>
+          </button>
+          
           <button
             type="button"
-            onClick={async () => {
-              setLineSendModal({ isOpen: true, phase: "sending", houseNumber: house.houseNumber });
-              setSendingLine(house.id!);
-              const res = await sendLineReminder(house.id!, window.location.origin);
-              setSendingLine(null);
-              if (res.success) {
-                setLineSendModal({ isOpen: true, phase: "success", houseNumber: house.houseNumber });
-              } else {
-                setLineSendModal({ isOpen: true, phase: "error", houseNumber: house.houseNumber });
-              }
+            onClick={() => {
+              setInitialBillPrompt({
+                isOpen: true,
+                houseId: house.id!,
+                monthYear: new Date().toISOString().slice(0, 7),
+                amount: house.defaultBillingAmount || "20.00",
+                isManual: true
+              });
             }}
-            disabled={sendingLine === house.id}
-            className="flex items-center gap-1.5 bg-white border border-emerald-200 hover:bg-emerald-50 text-emerald-700 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-98"
+            className="flex items-center gap-1.5 hover:bg-slate-50 text-slate-700 px-3.5 py-2 text-xs font-bold transition-colors cursor-pointer"
           >
-            {sendingLine === house.id ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
-            <span>แจ้งเตือน LINE</span>
+            <FilePlus size={15} className="text-amber-500" />
+            <span className="hidden sm:inline">ออกบิลรายหลัง</span>
           </button>
-        )}
+        </div>
 
-        {/* Edit Button */}
-        <button
-          type="button"
-          onClick={() => setShowForm(true)}
-          className="flex items-center gap-1.5 bg-white border border-slate-200/90 hover:bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer hover:border-slate-300 active:scale-98"
-        >
-          <Edit2 size={14} className="text-blue-600" />
-          <span>แก้ไข</span>
-        </button>
+        {/* 3. Management & Danger Actions Group */}
+        <div className="flex items-center gap-1.5 bg-slate-100/80 p-1 rounded-xl border border-slate-200/80">
+          {(house as any).lineUserId && (
+            <button
+              type="button"
+              onClick={async () => {
+                setLineSendModal({ isOpen: true, phase: "sending", houseNumber: house.houseNumber });
+                setSendingLine(house.id!);
+                const res = await sendLineReminder(house.id!, window.location.origin);
+                setSendingLine(null);
+                if (res.success) {
+                  setLineSendModal({ isOpen: true, phase: "success", houseNumber: house.houseNumber });
+                } else {
+                  setLineSendModal({ isOpen: true, phase: "error", houseNumber: house.houseNumber });
+                }
+              }}
+              disabled={sendingLine === house.id}
+              title="ส่งแจ้งเตือน LINE"
+              className="flex items-center justify-center w-8 h-8 bg-white border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50 text-emerald-600 rounded-lg transition-colors shadow-2xs disabled:opacity-50"
+            >
+              {sendingLine === house.id ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+            </button>
+          )}
 
-        {/* Delete Button */}
-        <button
-          type="button"
-          onClick={() => setDeletingHouse({ id: house.id!, houseNumber: house.houseNumber })}
-          className="flex items-center gap-1.5 bg-white border border-red-200/80 hover:bg-red-50 text-red-600 px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-98"
-        >
-          <Trash2 size={14} />
-          <span>ลบ</span>
-        </button>
+          <button
+            type="button"
+            onClick={() => setShowForm(true)}
+            title="แก้ไขข้อมูลบ้าน"
+            className="flex items-center justify-center w-8 h-8 bg-white border border-slate-200 hover:border-blue-300 hover:bg-blue-50 text-blue-600 rounded-lg transition-colors shadow-2xs"
+          >
+            <Edit2 size={14} />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setDeletingHouse({ id: house.id!, houseNumber: house.houseNumber })}
+            title="ลบข้อมูลบ้าน"
+            className="flex items-center justify-center w-8 h-8 bg-white border border-slate-200 hover:border-red-300 hover:bg-red-50 text-red-600 rounded-lg transition-colors shadow-2xs"
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
       </div>
 
       {error && (
