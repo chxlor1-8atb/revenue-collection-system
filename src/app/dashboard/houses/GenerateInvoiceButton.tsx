@@ -21,6 +21,7 @@ import {
   Globe
 } from "lucide-react";
 import MonthPicker from "@/components/MonthPicker";
+import CustomSelect from "@/components/CustomSelect";
 
 const DEFAULT_ZONES = [
   "หนองรี", "หนองกราด", "หนองเสม็ด", "บ้านเก่า", "วัดขุนก้อง", "วัดกลาง", 
@@ -126,8 +127,8 @@ export default function GenerateInvoiceButton() {
             {/* Modal Header */}
             <div className="bg-slate-50/80 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-indigo-100 text-[#5B58F2] flex items-center justify-center font-black text-sm">
-                  📄
+                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center">
+                  <FileText size={16} />
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-900 text-base sm:text-lg">
@@ -261,21 +262,13 @@ export default function GenerateInvoiceButton() {
                         {selectedZone === "ALL" && <Check size={14} className="text-slate-700" />}
                       </button>
 
-                      <div className="relative">
-                        <select
+                      <div className="relative z-[60] w-full">
+                        <CustomSelect
                           value={selectedZone === "ALL" ? "" : selectedZone}
-                          onChange={(e) => setSelectedZone(e.target.value || "ALL")}
-                          className={`w-full p-2.5 rounded-lg border text-xs font-medium appearance-none cursor-pointer outline-hidden transition-all ${
-                            selectedZone !== "ALL"
-                              ? "bg-slate-50 border-slate-800 ring-1 ring-slate-800 text-slate-900 font-bold shadow-sm"
-                              : "bg-slate-50/60 border-slate-200 text-slate-600 hover:bg-slate-100/60"
-                          }`}
-                        >
-                          <option value="">📍 เลือกเฉพาะชุมชน...</option>
-                          {DEFAULT_ZONES.map((z) => (
-                            <option key={z} value={z}>ชุมชน{z}</option>
-                          ))}
-                        </select>
+                          onChange={(val) => setSelectedZone(val || "ALL")}
+                          placeholder="📍 เลือกเฉพาะชุมชน..."
+                          options={DEFAULT_ZONES.map(z => ({ value: z, label: "ชุมชน" + z }))}
+                        />
                       </div>
                     </div>
                   </div>
