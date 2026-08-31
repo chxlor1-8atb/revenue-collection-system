@@ -1,14 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, QrCode } from "lucide-react";
+import { getPusherClient } from "@/lib/pusher";
 
 export default function InvoiceSelectionForm({ invoices, house }: { invoices: any[], house: any }) {
   const [selectedInvoices, setSelectedInvoices] = useState<number[]>([]);
   const [advanceMonths, setAdvanceMonths] = useState(0);
   const router = useRouter();
+
+  useEffect(() => {
+    const pusher = getPusherClient();
+    if (!pusher) return;
+
+    const channel = pusher.subscribe(`house-${house.id}`);
+    channel.bind("payment-update", () => {
+      // Refresh the page automatically when payment is received via backoffice/webhook
+      router.refresh();
+    });
+
+    return () => {
+      channel.unbind("payment-update");
+      pusher.unsubscribe(`house-${house.id}`);
+    };
+  }, [house.id, router]);
 
   const handleToggle = (invoiceId: number) => {
     setSelectedInvoices(prev => 

@@ -292,6 +292,15 @@ export async function markInvoiceAsPaidCash(invoiceId: number) {
     revalidatePath(`/dashboard/houses`);
     revalidatePath(`/house/${encodeSecureId(inv.houseId)}`);
 
+    try {
+      const { pusherServer } = await import("@/lib/pusher");
+      if (pusherServer) {
+        pusherServer.trigger(`house-${inv.houseId}`, 'payment-update', { invoiceId });
+      }
+    } catch (e) {
+      console.error("Pusher error", e);
+    }
+
     return { success: true, transactionId: tx[0].id };
   } catch (error: any) {
     console.error("Failed to mark invoice as paid (cash):", error);
@@ -342,6 +351,15 @@ export async function markAllInvoicesAsPaidCash(houseId: number) {
     revalidatePath(`/dashboard/houses/${houseId}`);
     revalidatePath(`/dashboard/houses`);
     revalidatePath(`/house/${encodeSecureId(houseId)}`);
+
+    try {
+      const { pusherServer } = await import("@/lib/pusher");
+      if (pusherServer) {
+        pusherServer.trigger(`house-${houseId}`, 'payment-update', { action: 'pay-all' });
+      }
+    } catch (e) {
+      console.error("Pusher error", e);
+    }
 
     return { success: true, transactionId: tx[0].id };
   } catch (error: any) {
