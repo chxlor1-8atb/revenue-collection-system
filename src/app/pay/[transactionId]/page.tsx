@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { systemSettings, transactions } from "@/lib/schema";
+import { systemSettings, transactions, invoices } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
 import generatePayload from "promptpay-qr";
