@@ -296,6 +296,7 @@ export async function markInvoiceAsPaidCash(invoiceId: number) {
       const { pusherServer } = await import("@/lib/pusher");
       if (pusherServer) {
         pusherServer.trigger(`house-${inv.houseId}`, 'payment-update', { invoiceId });
+        pusherServer.trigger('admin-notifications', 'dashboard-update', {});
       }
     } catch (e) {
       console.error("Pusher error", e);
@@ -356,6 +357,7 @@ export async function markAllInvoicesAsPaidCash(houseId: number) {
       const { pusherServer } = await import("@/lib/pusher");
       if (pusherServer) {
         pusherServer.trigger(`house-${houseId}`, 'payment-update', { action: 'pay-all' });
+        pusherServer.trigger('admin-notifications', 'dashboard-update', {});
       }
     } catch (e) {
       console.error("Pusher error", e);

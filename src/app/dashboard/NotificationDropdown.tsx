@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { getPusherClient } from "@/lib/pusher";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { 
   Bell, 
   CheckCircle2, 
@@ -46,6 +47,7 @@ export interface VerifiedNotificationItem {
 }
 
 export default function NotificationDropdown() {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"all" | "pending" | "verified">("all");
   const [pendingItems, setPendingItems] = useState<PendingNotificationItem[]>([]);
@@ -220,6 +222,10 @@ export default function NotificationDropdown() {
         // Wait 1 second to ensure DB is written before fetching
         if (pusherTimeout) clearTimeout(pusherTimeout);
         pusherTimeout = setTimeout(fetchNotifications, 1000);
+      });
+      
+      channel.bind('dashboard-update', () => {
+        router.refresh();
       });
     }
 

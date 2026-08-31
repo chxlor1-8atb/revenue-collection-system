@@ -252,6 +252,23 @@ export async function POST(request: Request) {
       }
     }
 
+    // 5. Send Pusher Events for Real-Time UI
+    try {
+      const { pusherServer } = await import("@/lib/pusher");
+      if (pusherServer) {
+        // Update Citizen Portal (CountdownTimer & PayPage) instantly
+        pusherServer.trigger(`transaction-${transactionId}`, 'payment-verified', { status }).catch(console.error);
+        
+        // Notify all admins to remove this slip from their review queue (prevent double-work)
+        pusherServer.trigger('admin-notifications', 'slip-processed', { transactionId, status }).catch(console.error);
+
+        // Notify dashboard to refresh live stats (Revenue, counts, etc.)
+        pusherServer.trigger('admin-notifications', 'dashboard-update', {}).catch(console.error);
+      }
+    } catch (e) {
+      console.error("Pusher error in review route", e);
+    }
+
     return NextResponse.json({ success: true, receiptCode: seriesData.receiptCode });
   } catch (error) {
     console.error("Review Error:", error);

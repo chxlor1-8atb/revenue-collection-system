@@ -111,6 +111,35 @@ export default function ReviewClient() {
     revalidateOnReconnect: true,
   });
 
+  // 4. Pusher Real-Time Updates for Admin Review Queue
+  useEffect(() => {
+    let pusherClient: any = null;
+    try {
+      const { getPusherClient } = require("@/lib/pusher");
+      pusherClient = getPusherClient();
+    } catch (e) {
+      console.warn("Pusher not loaded in ReviewClient", e);
+    }
+
+    if (pusherClient) {
+      const channel = pusherClient.subscribe('admin-notifications');
+      
+      const refreshQueue = () => {
+        // Debounce slightly to ensure DB changes are readable
+        setTimeout(() => mutate(), 500);
+      };
+
+      channel.bind('new-slip', refreshQueue);
+      channel.bind('slip-processed', refreshQueue);
+
+      return () => {
+        channel.unbind('new-slip', refreshQueue);
+        channel.unbind('slip-processed', refreshQueue);
+        pusherClient.unsubscribe('admin-notifications');
+      };
+    }
+  }, [mutate]);
+
   const pending = data?.pending || [];
   const waiting = data?.waiting || [];
 

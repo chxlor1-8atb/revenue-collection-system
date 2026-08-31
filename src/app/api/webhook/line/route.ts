@@ -352,6 +352,8 @@ export async function POST(request: Request) {
                 
                 if (pusherServer) {
                   pusherServer.trigger(`transaction-${matchingIntent.txId}`, 'payment-verified', { status: 'verified' }).catch(console.error);
+                  pusherServer.trigger('admin-notifications', 'dashboard-update', {}).catch(console.error);
+                  pusherServer.trigger('admin-notifications', 'slip-processed', { transactionId: matchingIntent.txId, status: 'verified' }).catch(console.error);
                 }
                 if (redis) {
                   redis.del(`house_dashboard_data:${matchingIntent.houseId}`).catch(console.error);
@@ -391,6 +393,8 @@ export async function POST(request: Request) {
               if (approveResult.success && approveResult.newTxId) {
                 if (pusherServer) {
                   pusherServer.trigger(`transaction-${approveResult.newTxId}`, 'payment-verified', { status: 'verified' }).catch(console.error);
+                  pusherServer.trigger('admin-notifications', 'dashboard-update', {}).catch(console.error);
+                  pusherServer.trigger('admin-notifications', 'slip-processed', { transactionId: approveResult.newTxId, status: 'verified' }).catch(console.error);
                 }
                 if (redis) {
                   redis.del(`house_dashboard_data:${house.id}`).catch(console.error);
@@ -696,6 +700,8 @@ export async function POST(request: Request) {
                   
                   if (pusherServer) {
                     pusherServer.trigger(`transaction-${slipData.transactionId}`, 'payment-verified', { status: 'verified' }).catch(console.error);
+                  pusherServer.trigger('admin-notifications', 'dashboard-update', {}).catch(console.error);
+                  pusherServer.trigger('admin-notifications', 'slip-processed', { transactionId: slipData.transactionId, status: 'verified' }).catch(console.error);
                   }
                   if (redis) {
                     redis.del(`house_dashboard_data:${house.id}`).catch(console.error);
