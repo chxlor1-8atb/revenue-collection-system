@@ -403,12 +403,7 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
                             <Clock size={13} /> รอตรวจสอบสลิป
                           </span>
                         ) : (
-                          <div className="flex items-center gap-2">
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200/70">
-                              <AlertCircle size={13} /> ค้างชำระ
-                            </span>
-                            <CashPaymentButton invoiceId={inv.id} monthYear={inv.monthYear} />
-                          </div>
+                          <CashPaymentButton invoiceId={inv.id} monthYear={inv.monthYear} />
                         )}
                       </td>
 

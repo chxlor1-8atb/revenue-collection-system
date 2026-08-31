@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { markInvoiceAsPaidCash } from "../actions";
-import { Banknote, Loader2 } from "lucide-react";
+import { Banknote, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ConfirmModal from "@/components/ConfirmModal";
 
 export default function CashPaymentButton({ invoiceId, monthYear }: { invoiceId: number, monthYear?: string }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isPaid, setIsPaid] = useState(false);
   const router = useRouter();
 
   const handleCashPayment = async () => {
@@ -16,6 +17,7 @@ export default function CashPaymentButton({ invoiceId, monthYear }: { invoiceId:
     try {
       const res = await markInvoiceAsPaidCash(invoiceId);
       if (res.success) {
+        setIsPaid(true); // Optimistic Instant UI Update
         setIsConfirmOpen(false);
         router.refresh();
       } else {
@@ -30,8 +32,19 @@ export default function CashPaymentButton({ invoiceId, monthYear }: { invoiceId:
     }
   };
 
+  if (isPaid) {
+    return (
+      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/70">
+        <CheckCircle2 size={13} /> ชำระแล้ว
+      </span>
+    );
+  }
+
   return (
-    <>
+    <div className="flex items-center gap-2">
+      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200/70">
+        <AlertCircle size={13} /> ค้างชำระ
+      </span>
       <button
         onClick={() => setIsConfirmOpen(true)}
         disabled={isLoading}
@@ -51,6 +64,6 @@ export default function CashPaymentButton({ invoiceId, monthYear }: { invoiceId:
         onCancel={() => setIsConfirmOpen(false)}
         isLoading={isLoading}
       />
-    </>
+    </div>
   );
 }
