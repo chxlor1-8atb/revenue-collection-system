@@ -288,6 +288,9 @@ export async function markInvoiceAsPaidCash(invoiceId: number) {
       details: { houseNumber: houseData[0].houseNumber, amount: inv.amount, method: "cash", receiptCode: series.receiptCode }
     });
 
+    revalidatePath(`/dashboard/houses/${inv.houseId}`);
+    revalidatePath(`/dashboard/houses`);
+
     return { success: true, transactionId: tx[0].id };
   } catch (error: any) {
     console.error("Failed to mark invoice as paid (cash):", error);
@@ -334,6 +337,9 @@ export async function markAllInvoicesAsPaidCash(houseId: number) {
       entityId: tx[0].id,
       details: { houseNumber: houseData[0].houseNumber, amount: totalDebt, method: "cash_all", receiptCode: series.receiptCode }
     });
+
+    revalidatePath(`/dashboard/houses/${houseId}`);
+    revalidatePath(`/dashboard/houses`);
 
     return { success: true, transactionId: tx[0].id };
   } catch (error: any) {
