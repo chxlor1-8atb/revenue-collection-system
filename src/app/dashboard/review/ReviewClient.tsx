@@ -71,28 +71,29 @@ export default function ReviewClient() {
     }
 
     setIsBulking(true);
-    let successCount = 0;
     
-    for (const tx of safeToApprove as any[]) {
-      try {
-        const res = await fetch("/api/transactions/review", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
-            transactionId: tx.id, 
-            status: 'verified',
-            verifiedAmount: tx.amountClaimedByPayer
-          })
-        });
-        if (res.ok) successCount++;
-      } catch (e) {
-        console.error("Bulk approve failed for", tx.id);
+    try {
+      const res = await fetch("/api/transactions/bulk-review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          transactionIds: safeToApprove.map((tx: any) => tx.id),
+          status: 'verified'
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        alert(`อนุมัติสำเร็จ ${data.count} รายการ`);
+      } else {
+        alert("เกิดข้อผิดพลาดในการอนุมัติ: " + (data.error || "Unknown error"));
       }
+    } catch (e) {
+      console.error("Bulk approve failed", e);
+      alert("เกิดข้อผิดพลาดในการเชื่อมต่อ");
     }
     
     setIsBulking(false);
     mutate();
-    alert(`อนุมัติสำเร็จ ${successCount} รายการ`);
   };
 
   const setViewMode = (mode: "grid" | "detailed") => {
@@ -106,7 +107,7 @@ export default function ReviewClient() {
 
   // Smart Poll every 3 seconds with instant revalidation on focus
   const { data, error, isLoading, mutate, isValidating } = useSWR('/api/transactions/review', fetcher, {
-    refreshInterval: 3000,
+    
     revalidateOnFocus: true,
     revalidateOnReconnect: true,
   });

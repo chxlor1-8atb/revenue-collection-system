@@ -14,14 +14,23 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
     redirect("/");
   }
 
-  // Find the pending transaction
-  const result = await db.select().from(transactions).where(eq(transactions.id, transactionId)).limit(1);
+  // Find the pending transaction and related houseId
+  const result = await db.select({
+    tx: transactions,
+    houseId: invoices.houseId
+  })
+  .from(transactions)
+  .leftJoin(invoices, eq(invoices.transactionId, transactions.id))
+  .where(eq(transactions.id, transactionId))
+  .limit(1);
 
   if (result.length === 0) {
     notFound();
   }
 
-  const tx = result[0];
+  const tx = result[0].tx;
+  const houseId = result[0].houseId;
+
   const settings = await db.select().from(systemSettings).limit(1);
   const system = settings[0];
 
@@ -108,7 +117,7 @@ export default async function PayPage({ params }: { params: Promise<{ transactio
                 const expiryTime = new Date(tx.createdAt.getTime() + 3 * 60000);
                 const difference = Math.floor((expiryTime.getTime() - now.getTime()) / 1000);
                 const initialTimeLeft = difference > 0 ? difference : 0;
-                return <CountdownTimer initialTimeLeft={initialTimeLeft} transactionId={transactionId} />;
+                return <CountdownTimer initialTimeLeft={initialTimeLeft} transactionId={transactionId} houseId={houseId || undefined} />;
               })()
             )}
 

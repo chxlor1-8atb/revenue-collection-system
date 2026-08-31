@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Clock, RefreshCw, CheckCircle2, AlertCircle } from "lucide-react";
 import { getPusherClient } from "@/lib/pusher";
 
-export default function CountdownTimer({ initialTimeLeft, transactionId }: { initialTimeLeft: number, transactionId?: number }) {
+export default function CountdownTimer({ initialTimeLeft, transactionId, houseId }: { initialTimeLeft: number, transactionId?: number, houseId?: number }) {
   const [timeLeft, setTimeLeft] = useState<number>(initialTimeLeft);
   const [isAutoRenewing, setIsAutoRenewing] = useState(false);
   const [renewError, setRenewError] = useState<string | null>(null);
@@ -30,14 +30,25 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
   useEffect(() => {
     if (!transactionId || isVerified || isRejected) return;
 
-    let pusherClient = null;
+    let pusherClient: any = null;
     try {
       pusherClient = getPusherClient();
     } catch (e) {
       console.warn("Pusher client failed to initialize", e);
     }
 
-    if (pusherClient) {
+    if (pusherClient && houseId) {
+      // Listen to the HOUSE channel so that if they pay an older QR, it still succeeds here!
+      const channel = pusherClient.subscribe(`house-${houseId}`);
+      channel.bind('payment-verified', (data: any) => {
+        if (data.status === 'verified') {
+          handleSuccessfulVerification();
+        } else if (data.status === 'rejected') {
+          handleRejection();
+        }
+      });
+    } else if (pusherClient && !houseId) {
+      // Fallback if no houseId is provided
       const channel = pusherClient.subscribe(`transaction-${transactionId}`);
       channel.bind('payment-verified', (data: any) => {
         if (data.status === 'verified') {
@@ -66,9 +77,10 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
     // If not, we keep the fast 2.5s poll
     const pollInterval = pusherClient ? 10000 : 2500;
     pollingRef.current = setInterval(pollStatus, pollInterval);
-    pollStatus();
+    pollStatus(); // Initial poll
 
     const handleVisibility = () => {
+      // Force aggressive polling when user switches back from banking app
       if (document.visibilityState === "visible") pollStatus();
     };
     document.addEventListener("visibilitychange", handleVisibility);
@@ -77,10 +89,11 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
       if (pollingRef.current) clearInterval(pollingRef.current);
       document.removeEventListener("visibilitychange", handleVisibility);
       if (pusherClient) {
-        pusherClient.unsubscribe(`transaction-${transactionId}`);
+        if (houseId) pusherClient.unsubscribe(`house-${houseId}`);
+        else pusherClient.unsubscribe(`transaction-${transactionId}`);
       }
     };
-  }, [transactionId, isVerified, handleSuccessfulVerification]);
+  }, [transactionId, houseId, isVerified, isRejected, handleSuccessfulVerification, handleRejection]);
 
   // Automatic Background Renewal Function
   const autoRenewQrCode = useCallback(async () => {

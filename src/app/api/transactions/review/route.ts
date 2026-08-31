@@ -258,6 +258,9 @@ export async function POST(request: Request) {
       if (pusherServer) {
         // Update Citizen Portal (CountdownTimer & PayPage) instantly
         pusherServer.trigger(`transaction-${transactionId}`, 'payment-verified', { status }).catch(console.error);
+        if (txInfo?.houseId) {
+          pusherServer.trigger(`house-${txInfo.houseId}`, 'payment-verified', { status }).catch(console.error);
+        }
         
         // Notify all admins to remove this slip from their review queue (prevent double-work)
         pusherServer.trigger('admin-notifications', 'slip-processed', { transactionId, status }).catch(console.error);
