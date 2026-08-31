@@ -111,7 +111,7 @@ export default function GenerateInvoiceButton() {
     <>
       <button 
         onClick={handleOpenModal} 
-        className="flex items-center gap-2 bg-gradient-to-r from-[#5B58F2] to-indigo-600 hover:from-[#4A47D1] hover:to-indigo-700 text-white px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md shadow-indigo-500/20 active:scale-98 cursor-pointer"
+        className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all shadow-md shadow-slate-900/20 active:scale-98 cursor-pointer"
       >
         <FileText size={16} />
         <span>สร้างบิลประจำเดือน</span>
@@ -326,7 +326,7 @@ export default function GenerateInvoiceButton() {
                       type="button"
                       onClick={handleGenerate}
                       disabled={isGenerating}
-                      className="px-6 py-2.5 bg-gradient-to-r from-[#5B58F2] to-indigo-600 hover:from-[#4A47D1] hover:to-indigo-700 text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md shadow-indigo-500/20 flex items-center gap-2 cursor-pointer disabled:opacity-50 active:scale-98"
+                      className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm rounded-lg transition-all shadow-md shadow-slate-900/20 flex items-center gap-2 cursor-pointer disabled:opacity-50 active:scale-98"
                     >
                       {isGenerating ? (
                         <>

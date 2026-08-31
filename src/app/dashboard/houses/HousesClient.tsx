@@ -428,7 +428,7 @@ export default function HousesClient({
                 <h1 className="font-bold text-2xl lg:text-3xl text-slate-800 tracking-tight">
                   ทะเบียนบ้านและลูกบ้าน
                 </h1>
-                <span className="bg-indigo-50 text-[#5B58F2] text-xs font-bold px-2.5 py-0.5 rounded-full border border-indigo-100">
+                <span className="bg-slate-100 text-slate-600 text-xs font-bold px-2.5 py-0.5 rounded-md border border-slate-200">
                   {totalHouses.toLocaleString()} หลัง
                 </span>
               </div>
@@ -448,7 +448,7 @@ export default function HousesClient({
               className="hidden" 
             />
             {/* Group 1: Data Operations */}
-            <div className="flex items-center bg-white border border-slate-200/90 rounded-xl shadow-2xs overflow-hidden h-10">
+            <div className="flex items-center bg-white border border-slate-200/90 rounded-lg shadow-sm overflow-hidden h-10">
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isImporting}
@@ -461,7 +461,7 @@ export default function HousesClient({
               <a
                 href="/api/houses/template"
                 title="ดาวน์โหลดไฟล์ตัวอย่าง Excel"
-                className="h-full flex items-center gap-1.5 hover:bg-slate-50 text-emerald-700 px-3.5 text-xs font-bold transition-colors cursor-pointer border-r border-slate-200/90"
+                className="h-full flex items-center gap-1.5 hover:bg-slate-50 text-slate-700 px-3.5 text-xs font-bold transition-colors cursor-pointer border-r border-slate-200/90"
               >
                 <FileSpreadsheet size={14} className="text-emerald-600" />
                 <span className="hidden xl:inline">เทมเพลต Excel</span>
@@ -478,7 +478,7 @@ export default function HousesClient({
             </div>
 
             {/* Group 2: Settings */}
-            <div className="flex items-center bg-slate-100/80 p-1 rounded-xl border border-slate-200/80 h-10">
+            <div className="flex items-center bg-slate-100/80 p-1 rounded-lg border border-slate-200/80 h-10">
               <button
                 onClick={() => setShowSettings(true)}
                 title="ตั้งค่าฟิลด์เพิ่มเติม"
@@ -492,7 +492,7 @@ export default function HousesClient({
             <div className="flex items-center gap-2">
               <button
                 onClick={handleAdd}
-                className="h-10 flex items-center gap-1.5 bg-[#5B58F2] hover:bg-[#4A47D1] text-white px-4 rounded-xl text-xs font-bold transition-all shadow-sm shadow-[#5B58F2]/20 hover:shadow-md cursor-pointer active:scale-98"
+                className="h-10 flex items-center gap-1.5 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 px-4 rounded-lg text-xs font-bold transition-all shadow-sm cursor-pointer active:scale-98"
               >
                 <Plus size={14} strokeWidth={2.5} />
                 <span>เพิ่มบ้านใหม่</span>
@@ -508,13 +508,13 @@ export default function HousesClient({
           {/* Mobile Quick Action Bar */}
           <div className="flex sm:hidden items-center justify-between w-full gap-2 pb-2 border-b border-slate-200/60">
             <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#5B58F2]"></span>
+              <span className="w-2 h-2 rounded-full bg-slate-400"></span>
               จัดการบ้าน ({totalHouses} หลัง)
             </span>
             <div className="flex items-center gap-1.5">
               <button
                 onClick={handleAdd}
-                className="h-8 flex items-center gap-1 bg-[#5B58F2] text-white px-2.5 rounded-lg text-xs font-semibold shadow-xs"
+                className="h-8 flex items-center gap-1 bg-slate-900 text-white px-2.5 rounded-md text-xs font-bold shadow-sm"
               >
                 <Plus size={14} strokeWidth={2.5} /> เพิ่มบ้าน
               </button>
@@ -534,7 +534,7 @@ export default function HousesClient({
                 value={searchQuery}
                 onChange={setSearchQuery}
                 placeholder="ค้นหาบ้านเลขที่, ชื่อ, หมู่, ชุมชน..."
-                className="w-full sm:w-80 focus:w-full sm:focus:w-80 !bg-white hover:!bg-slate-50 border-slate-200 focus:!bg-white focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none text-sm rounded-xl transition-all"
+                className="w-full sm:w-80 focus:w-full sm:focus:w-80 !bg-white hover:!bg-slate-50 border-slate-200 focus:!bg-white focus:border-slate-400 focus:ring-2 focus:ring-slate-400/20 shadow-none text-sm rounded-lg transition-all"
               />
             </div>
             <div className="w-full sm:w-48">
@@ -542,7 +542,7 @@ export default function HousesClient({
                 value={selectedZone || ""}
                 onChange={setSelectedZone}
                 placeholder="ทุกชุมชน (20 ชุมชน)"
-                icon={<MapPin size={15} className="text-[#5B58F2]" />}
+                icon={<MapPin size={15} className="text-slate-500" />}
                 options={[
                   { value: "", label: "ทุกชุมชน" },
                   ...ALL_ZONES.map(z => ({ value: z, label: z }))
@@ -566,7 +566,7 @@ export default function HousesClient({
 
           <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
             {/* View Mode Switcher */}
-            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/60">
+            <div className="flex items-center bg-slate-100/80 p-0.5 rounded-lg border border-slate-200">
               <button
                 onClick={() => setViewMode("table")}
                 aria-label="มุมมองตาราง"
@@ -588,7 +588,7 @@ export default function HousesClient({
             </div>
 
             <div className="text-xs text-slate-500 font-semibold flex gap-4 shrink-0">
-              <span className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl text-slate-700">
+              <span className="flex items-center gap-2 bg-white border border-slate-200 px-3 py-1.5 rounded-lg text-slate-600 shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-emerald-500"></span> 
                 พบ {totalHouses} หลัง
               </span>
@@ -774,7 +774,7 @@ export default function HousesClient({
                           </button>
                           <Link 
                             href={`/dashboard/houses/${house.id}`} 
-                            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-[#5B58F2] bg-[#EEF0FF] hover:bg-[#5B58F2] hover:text-white rounded-xl transition-all border border-[#D5D9FF] hover:border-transparent shadow-2xs group/btn"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-[#5B58F2] bg-white hover:bg-slate-900 hover:text-white rounded-lg transition-all border border-slate-200 hover:border-slate-900 shadow-sm group/btn"
                           >
                             <span>จัดการ</span>
                             <ArrowRight size={13} className="group-hover/btn:translate-x-0.5 transition-transform" />
@@ -800,13 +800,13 @@ export default function HousesClient({
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.15 }}
                     onClick={() => setPreviewHouse(house)}
-                    className="bg-white rounded-2xl border border-slate-200/90 hover:border-[#5B58F2]/50 hover:shadow-md transition-all p-5 flex flex-col justify-between cursor-pointer group relative"
+                    className="bg-white rounded-xl border border-slate-200/60 hover:border-slate-300 hover:shadow-md transition-all p-5 flex flex-col justify-between cursor-pointer group relative"
                   >
                     <div>
                       {/* Card Header */}
                       <div className="flex items-start justify-between gap-2 mb-3">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono font-bold text-slate-900 bg-slate-100 px-3 py-1 rounded-xl border border-slate-200 text-sm">
+                          <span className="font-mono font-bold text-slate-900 bg-slate-50 px-3 py-1 rounded-lg border border-slate-200 text-sm">
                             {house.houseNumber}
                           </span>
                         </div>
@@ -854,14 +854,14 @@ export default function HousesClient({
                       <div className="flex items-center gap-1.5" onClick={e => e.stopPropagation()}>
                         <button
                           onClick={() => setPreviewHouse(house)}
-                          className="h-8 w-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-all"
+                          className="h-8 w-8 rounded-lg bg-slate-50 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-all"
                           title="ดู QR Code ด่วน"
                         >
                           <QrCode size={15} />
                         </button>
                         <Link
                           href={`/dashboard/houses/${house.id}`}
-                          className="h-8 px-3 rounded-xl bg-[#5B58F2] hover:bg-[#4A47D1] text-white text-xs font-semibold flex items-center gap-1 transition-all shadow-xs"
+                          className="h-8 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1 transition-all shadow-sm rounded-lg"
                         >
                           จัดการ <ArrowRight size={12} />
                         </Link>
@@ -1046,7 +1046,7 @@ export default function HousesClient({
                   </button>
                   <Link
                     href={`/dashboard/houses/${previewHouse.id}`}
-                    className="flex-1 h-11 bg-[#5B58F2] hover:bg-[#4A47D1] text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-sm shadow-[#5B58F2]/25"
+                    className="flex-1 h-11 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm"
                   >
                     <span>เปิดหน้าจัดการเต็ม</span>
                     <ArrowRight size={14} />
