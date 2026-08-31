@@ -88,6 +88,21 @@ export default function HousesClient({
     }
   }, []);
 
+  // Auto-dismiss modals after 3 seconds
+  useEffect(() => {
+    if (successMsg) {
+      const timer = setTimeout(() => setSuccessMsg(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMsg]);
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   const setViewMode = (mode: "table" | "grid") => {
     setViewModeState(mode);
     try {
@@ -399,23 +414,43 @@ export default function HousesClient({
 
   return (
     <div className="font-sans pb-12 space-y-4">
-      {error && (
-        <div className="p-4 bg-red-50 text-red-800 rounded-2xl text-sm border border-red-200 flex items-center gap-3">
-          <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center shrink-0">
-            <X size={14} className="text-red-600" />
+      <AnimatePresence>
+        {error && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: -10 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              className="bg-white text-red-800 p-4 sm:px-6 sm:py-5 rounded-2xl shadow-2xl shadow-red-900/20 border border-red-100 flex items-center gap-3 pointer-events-auto"
+            >
+              <div className="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center shrink-0">
+                <X size={20} className="text-red-500" />
+              </div>
+              <span className="font-bold text-base pr-4">{error}</span>
+            </motion.div>
           </div>
-          <span className="font-semibold">{error}</span>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
 
-      {successMsg && (
-        <div className="p-4 bg-emerald-50 text-emerald-800 rounded-2xl text-sm border border-emerald-200 flex items-center gap-3">
-          <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center shrink-0">
-            <CheckCircle2 size={14} className="text-emerald-600" />
+      <AnimatePresence>
+        {successMsg && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: -10 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              className="bg-white text-emerald-800 p-4 sm:px-6 sm:py-5 rounded-2xl shadow-2xl shadow-emerald-900/20 border border-emerald-100 flex items-center gap-3 pointer-events-auto"
+            >
+              <div className="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center shrink-0">
+                <CheckCircle2 size={20} className="text-emerald-500" />
+              </div>
+              <span className="font-bold text-base pr-4">{successMsg}</span>
+            </motion.div>
           </div>
-          <span className="font-semibold">{successMsg}</span>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
 
       {/* Unified Master Card Container */}
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200/80 flex flex-col overflow-hidden">
