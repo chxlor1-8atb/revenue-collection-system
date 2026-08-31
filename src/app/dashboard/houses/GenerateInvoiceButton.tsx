@@ -16,10 +16,9 @@ import {
   ChevronRight,
   Info,
   Layers,
-  Check
-  CalendarClock,
-  Globe,
   Check,
+  CalendarClock,
+  Globe
 } from "lucide-react";
 import MonthPicker from "@/components/MonthPicker";
 
