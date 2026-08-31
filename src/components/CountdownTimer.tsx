@@ -9,6 +9,7 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
   const [isAutoRenewing, setIsAutoRenewing] = useState(false);
   const [renewError, setRenewError] = useState<string | null>(null);
   const [isVerified, setIsVerified] = useState(false);
+  const [isRejected, setIsRejected] = useState(false);
   const isRenewingRef = useRef(false);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -20,9 +21,14 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
     }, 1200);
   }, [transactionId]);
 
+  const handleRejection = useCallback(() => {
+    setIsRejected(true);
+    if (pollingRef.current) clearInterval(pollingRef.current);
+  }, []);
+
   // Pusher Real-time Subscriptions + Fallback Polling
   useEffect(() => {
-    if (!transactionId || isVerified) return;
+    if (!transactionId || isVerified || isRejected) return;
 
     let pusherClient = null;
     try {
@@ -36,6 +42,8 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
       channel.bind('payment-verified', (data: any) => {
         if (data.status === 'verified') {
           handleSuccessfulVerification();
+        } else if (data.status === 'rejected') {
+          handleRejection();
         }
       });
     }
@@ -46,6 +54,8 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
         const data = await res.json();
         if (data.slipStatus === "verified") {
           handleSuccessfulVerification();
+        } else if (data.slipStatus === "rejected") {
+          handleRejection();
         }
       } catch (e) {
         // Ignore polling errors
@@ -143,6 +153,25 @@ export default function CountdownTimer({ initialTimeLeft, transactionId }: { ini
       <div className="w-full bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center justify-center gap-3 text-emerald-800 animate-in zoom-in-95 duration-200">
         <CheckCircle2 size={24} className="text-emerald-600 animate-bounce" />
         <span className="font-sans font-bold text-sm">ยืนยันการชำระเงินเรียบร้อยแล้ว กำลังพาไปยังใบเสร็จ...</span>
+      </div>
+    );
+  }
+
+  // 1.5 Rejected View
+  if (isRejected) {
+    return (
+      <div className="w-full bg-rose-50 border border-rose-200 rounded-2xl p-4 flex flex-col items-center justify-center gap-3 text-rose-800 animate-in zoom-in-95 duration-200 mb-6">
+        <div className="flex items-center gap-2">
+          <AlertCircle size={20} className="text-rose-600" />
+          <span className="font-sans font-bold text-sm">สลิปของคุณถูกปฏิเสธ กรุณาอัปโหลดใหม่</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => window.location.href = "/"}
+          className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold py-2 px-4 rounded-xl shadow-xs transition-colors"
+        >
+          กลับหน้าหลัก
+        </button>
       </div>
     );
   }
