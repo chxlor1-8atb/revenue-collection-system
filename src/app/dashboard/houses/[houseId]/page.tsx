@@ -4,6 +4,7 @@ import { houses, invoices, transactions, systemSettings } from "@/lib/schema";
 import { eq, desc } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import LottieIcon from "@/components/LottieIcon";
 import { 
   ArrowLeft, 
   Home, 
@@ -113,8 +114,8 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
           </Link>
 
           <div className="flex items-center gap-3 flex-wrap">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#5B58F2] to-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20 shrink-0 font-bold">
-              <Home size={22} />
+            <div className="flex items-center justify-center shrink-0">
+              <LottieIcon src="/icons/icons8-home.json" size={48} loop autoplay />
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
