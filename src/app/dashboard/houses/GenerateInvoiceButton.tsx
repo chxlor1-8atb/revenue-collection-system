@@ -17,6 +17,9 @@ import {
   Info,
   Layers,
   Check
+  CalendarClock,
+  Globe,
+  Check,
 } from "lucide-react";
 import MonthPicker from "@/components/MonthPicker";
 
@@ -119,12 +122,12 @@ export default function GenerateInvoiceButton() {
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-200/90 animate-in zoom-in-95 duration-150 relative">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-200/90 animate-in zoom-in-95 duration-150 relative">
             
             {/* Modal Header */}
             <div className="bg-slate-50/80 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-indigo-100 text-[#5B58F2] flex items-center justify-center font-black text-sm">
+                <div className="w-8 h-8 rounded-lg bg-indigo-100 text-[#5B58F2] flex items-center justify-center font-black text-sm">
                   📄
                 </div>
                 <div>
@@ -162,14 +165,14 @@ export default function GenerateInvoiceButton() {
 
                   {/* Summary Metric Badges */}
                   <div className="grid grid-cols-2 gap-2.5 pt-1 text-left">
-                    <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/80">
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-200/80">
                       <div className="text-[11px] text-slate-500 font-medium">สร้างบิลใหม่</div>
                       <div className="text-lg font-black text-emerald-700 font-mono">
                         {resultData.createdCount.toLocaleString()} <span className="text-xs font-normal text-slate-500">หลัง</span>
                       </div>
                     </div>
 
-                    <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/80">
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-200/80">
                       <div className="text-[11px] text-slate-500 font-medium">ยอดเรียกเก็บรวม</div>
                       <div className="text-lg font-black text-slate-900 font-mono">
                         ฿{resultData.totalBilledAmount.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
@@ -177,14 +180,14 @@ export default function GenerateInvoiceButton() {
                     </div>
 
                     {resultData.skippedCount > 0 && (
-                      <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 col-span-2 text-[11px] text-slate-600 flex items-center justify-between">
+                      <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200/80 col-span-2 text-[11px] text-slate-600 flex items-center justify-between">
                         <span>ข้ามบ้านที่มีบิลเดือนนี้อยู่แล้ว:</span>
                         <span className="font-bold text-slate-800">{resultData.skippedCount.toLocaleString()} หลัง</span>
                       </div>
                     )}
 
                     {resultData.lineNotifiedCount > 0 && (
-                      <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-200/70 col-span-2 text-[11px] text-emerald-900 flex items-center justify-between">
+                      <div className="bg-emerald-50 p-2.5 rounded-lg border border-emerald-200/70 col-span-2 text-[11px] text-emerald-900 flex items-center justify-between">
                         <span className="flex items-center gap-1.5">
                           <Send size={13} className="text-emerald-600" /> ส่งแจ้งเตือน LINE สำเร็จ:
                         </span>
@@ -195,7 +198,7 @@ export default function GenerateInvoiceButton() {
 
                   <button
                     onClick={handleCloseModal}
-                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md shadow-emerald-600/20 cursor-pointer"
+                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm rounded-lg transition-all shadow-md shadow-emerald-600/20 cursor-pointer"
                   >
                     เสร็จสิ้น & ปิดหน้าต่าง
                   </button>
@@ -207,7 +210,7 @@ export default function GenerateInvoiceButton() {
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
                       <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                        <Calendar size={14} className="text-[#5B58F2]" /> รอบเดือนที่จะสร้างบิล
+                        <Calendar size={14} className="text-slate-500" /> รอบเดือนที่จะสร้างบิล
                       </label>
                       <div className="flex items-center gap-1">
                         <button
@@ -215,23 +218,19 @@ export default function GenerateInvoiceButton() {
                           onClick={() => setMonth(currentMonthStr)}
                           className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border transition-all cursor-pointer ${
                             month === currentMonthStr
-                              ? "bg-indigo-50 text-indigo-700 border-indigo-200 font-bold"
+                              ? "bg-slate-800 text-white border-slate-800 font-bold"
                               : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100"
                           }`}
-                        >
-                          ⚡ เดือนนี้
-                        </button>
+                        ><Zap size={10} className="inline mr-1" /> เดือนนี้</button>
                         <button
                           type="button"
                           onClick={() => setMonth(nextMonthStr)}
                           className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border transition-all cursor-pointer ${
                             month === nextMonthStr
-                              ? "bg-indigo-50 text-indigo-700 border-indigo-200 font-bold"
+                              ? "bg-slate-800 text-white border-slate-800 font-bold"
                               : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100"
                           }`}
-                        >
-                          ⚡ เดือนหน้า
-                        </button>
+                        ><CalendarClock size={10} className="inline mr-1" /> เดือนหน้า</button>
                       </div>
                     </div>
 
@@ -246,34 +245,34 @@ export default function GenerateInvoiceButton() {
                   {/* 2. Target Scope Selector */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                      <Building2 size={14} className="text-[#5B58F2]" /> ขอบเขตพื้นที่เป้าหมาย
+                      <Building2 size={14} className="text-slate-500" /> ขอบเขตพื้นที่เป้าหมาย
                     </label>
 
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         type="button"
                         onClick={() => setSelectedZone("ALL")}
-                        className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                        className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer flex items-center justify-between ${
                           selectedZone === "ALL"
-                            ? "bg-indigo-50/80 border-[#5B58F2] text-indigo-900 font-bold shadow-2xs"
+                            ? "bg-slate-50 border-slate-800 ring-1 ring-slate-800 text-slate-900 font-bold shadow-sm"
                             : "bg-slate-50/60 border-slate-200 text-slate-600 hover:bg-slate-100/60"
                         }`}
                       >
-                        <div className="text-xs">🌐 ทุกชุมชน (20 ชุมชน)</div>
-                        {selectedZone === "ALL" && <Check size={14} className="text-[#5B58F2]" />}
+                        <div className="text-xs"><Globe size={13} className="inline mr-1.5 text-slate-500" /> ทุกชุมชน (20)</div>
+                        {selectedZone === "ALL" && <Check size={14} className="text-slate-700" />}
                       </button>
 
                       <div className="relative">
                         <select
                           value={selectedZone === "ALL" ? "" : selectedZone}
                           onChange={(e) => setSelectedZone(e.target.value || "ALL")}
-                          className={`w-full p-2.5 rounded-xl border text-xs font-medium appearance-none cursor-pointer outline-hidden transition-all ${
+                          className={`w-full p-2.5 rounded-lg border text-xs font-medium appearance-none cursor-pointer outline-hidden transition-all ${
                             selectedZone !== "ALL"
-                              ? "bg-indigo-50/80 border-[#5B58F2] text-indigo-900 font-bold shadow-2xs"
+                              ? "bg-slate-50 border-slate-800 ring-1 ring-slate-800 text-slate-900 font-bold shadow-sm"
                               : "bg-slate-50/60 border-slate-200 text-slate-600 hover:bg-slate-100/60"
                           }`}
                         >
-                          <option value="">🏘️ เลือกเฉพาะชุมชน...</option>
+                          <option value="">📍 เลือกเฉพาะชุมชน...</option>
                           {DEFAULT_ZONES.map((z) => (
                             <option key={z} value={z}>ชุมชน{z}</option>
                           ))}
@@ -305,7 +304,7 @@ export default function GenerateInvoiceButton() {
 
                   {/* Error Message */}
                   {status === "error" && (
-                    <div className="p-3 bg-red-50 text-red-700 rounded-xl text-xs border border-red-200 flex items-start gap-2 animate-in fade-in duration-150">
+                    <div className="p-3 bg-red-50 text-red-700 rounded-lg text-xs border border-red-200 flex items-start gap-2 animate-in fade-in duration-150">
                       <AlertCircle size={15} className="mt-0.5 shrink-0" />
                       <span>{errorMessage}</span>
                     </div>
@@ -317,7 +316,7 @@ export default function GenerateInvoiceButton() {
                       type="button"
                       onClick={handleCloseModal}
                       disabled={isGenerating}
-                      className="px-4 py-2.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all disabled:opacity-50 cursor-pointer"
+                      className="px-4 py-2.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-all disabled:opacity-50 cursor-pointer"
                     >
                       ยกเลิก
                     </button>
