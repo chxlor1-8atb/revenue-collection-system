@@ -8,7 +8,7 @@ export const getPusherClient = async () => {
   if (!isPusherConfigured) return null;
   
   const PusherClient = (await import('pusher-js')).default;
-  return new PusherClient(process.env.NEXT_PUBLIC_PUSHER_KEY, {
-    cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
+  return new PusherClient(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
+    cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
   });
 };
