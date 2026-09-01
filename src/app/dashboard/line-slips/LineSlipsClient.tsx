@@ -241,10 +241,28 @@ export default function LineSlipsClient({
   };
 
   const toggleInvoice = (id: number) => {
+    let newSelected;
     if (selectedInvoices.includes(id)) {
-      setSelectedInvoices(selectedInvoices.filter(i => i !== id));
+      newSelected = selectedInvoices.filter(i => i !== id);
     } else {
-      setSelectedInvoices([...selectedInvoices, id]);
+      newSelected = [...selectedInvoices, id];
+    }
+    setSelectedInvoices(newSelected);
+
+    // Auto-adjust advanceMonths if it becomes unaffordable
+    if (foundHouse && selectedSlip) {
+      const newTotalInvoices = unpaidInvoices
+        .filter((inv: any) => newSelected.includes(inv.id))
+        .reduce((sum: number, inv: any) => sum + parseFloat(inv.amount), 0);
+      const slipAmt = parseFloat(selectedSlip.amount || "0");
+      const defaultBill = parseFloat(foundHouse.defaultBillingAmount || "20");
+      const remaining = slipAmt - newTotalInvoices;
+      
+      if (defaultBill > 0 && (advanceMonths * defaultBill > remaining)) {
+        const maxAffordable = Math.max(0, Math.floor(remaining / defaultBill));
+        const validOptions = [12, 6, 3, 1, 0].filter(n => n <= maxAffordable);
+        setAdvanceMonths(validOptions.length > 0 ? validOptions[0] : 0);
+      }
     }
   };
 
@@ -1087,20 +1105,26 @@ export default function LineSlipsClient({
                       </div>
 
                       <div className="flex flex-wrap gap-1.5 pt-1">
-                        {[0, 1, 3, 6, 12].map(num => (
-                          <button
-                            key={num}
-                            type="button"
-                            onClick={() => setAdvanceMonths(num)}
-                            className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                              advanceMonths === num
-                                ? "bg-blue-600 text-white shadow-2xs"
-                                : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-100"
-                            }`}
-                          >
-                            {num === 0 ? "ไม่จ่ายล่วงหน้า" : num === 12 ? "เหมาทั้งปี (12 เดือน)" : `+${num} เดือน`}
-                          </button>
-                        ))}
+                        {[0, 1, 3, 6, 12].map(num => {
+                          const isAffordable = num === 0 || (slipAmount - selectedInvoicesTotal >= num * defaultHouseBill);
+                          return (
+                            <button
+                              key={num}
+                              type="button"
+                              disabled={!isAffordable}
+                              onClick={() => setAdvanceMonths(num)}
+                              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+                                advanceMonths === num
+                                  ? "bg-blue-600 text-white shadow-2xs cursor-default"
+                                  : isAffordable
+                                    ? "bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 cursor-pointer"
+                                    : "bg-slate-50 border border-slate-100 text-slate-300 cursor-not-allowed"
+                              }`}
+                            >
+                              {num === 0 ? "ไม่จ่ายล่วงหน้า" : num === 12 ? "เหมาทั้งปี (12 เดือน)" : `+${num} เดือน`}
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
@@ -1132,7 +1156,7 @@ export default function LineSlipsClient({
                 </button>
                 <button 
                   onClick={handleApprove}
-                  disabled={isLoading || !foundHouse || (selectedInvoices.length === 0 && advanceMonths === 0)}
+                  disabled={isLoading || !foundHouse || (selectedInvoices.length === 0 && advanceMonths === 0) || difference < 0}
                   className="flex-1 sm:flex-initial px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all font-bold text-xs disabled:opacity-50 shadow-md shadow-blue-600/25 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {isLoading ? "กำลังบันทึก..." : (
