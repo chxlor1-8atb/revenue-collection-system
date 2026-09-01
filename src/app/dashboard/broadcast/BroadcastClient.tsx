@@ -47,6 +47,30 @@ interface BroadcastClientProps {
   };
 }
 
+
+const OFFICIAL_ZONES: Record<string, string> = {
+  "หนองรี": "ชุมชนหนองรี",
+  "หนองกราด": "ชุมชนบ้านหนองกราด",
+  "หนองเสม็ด": "ชุมชนบ้านหนองเสม็ด",
+  "บ้านเก่า": "ชุมชนบ้านเก่า",
+  "วัดขุนก้อง": "ชุมชนวัดขุนก้อง",
+  "วัดกลาง": "ชุมชนวัดกลาง",
+  "ป่าเรไร": "ชุมชนวัดป่าเรไร",
+  "วัดร่องมันเทศ": "ชุมชนวัดร่องมันเทศ",
+  "บ้านถนนหัก": "ชุมชนบ้านถนนหัก",
+  "วัดถนนหัก": "ชุมชนวัดถนนหัก",
+  "ถนนหักพัฒนา": "ชุมชนถนนหักพัฒนา",
+  "ทุ่งแหลม": "ชุมชนทุ่งแหลม",
+  "หนองโพรง": "ชุมชนหนองโพรง",
+  "วัดใหม่เรไรทอง": "ชุมชนวัดใหม่เรไรทอง",
+  "จะบวก": "ชุมชนบ้านจะบวก",
+  "หัวสะพาน": "ชุมชนวัดหัวสะพาน",
+  "ป่าตาเส็ง": "ชุมชนป่าตาเส็ง",
+  "ป่ารักน้ำ": "ชุมชนวัดสวนป่ารักน้ำ",
+  "ดอนแสลงพันธ์": "ชุมชนบ้านดอนแสลงพันธ์",
+  "โคกหลวงพ่อ": "ชุมชนโคกหลวงพ่อ"
+};
+
 export default function BroadcastClient({
   zones,
   totalHouses,
@@ -81,7 +105,7 @@ export default function BroadcastClient({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const filteredZones = zones.filter(z => z.toLowerCase().includes(zoneSearch.trim().toLowerCase()) || `ชุมชน${z}`.includes(zoneSearch.trim()));
+  const filteredZones = zones.filter(z => z.toLowerCase().includes(zoneSearch.trim().toLowerCase()) || (OFFICIAL_ZONES[z] || `ชุมชน${z}`).includes(zoneSearch.trim()));
 
   // LINE Bot Announcement & Phone State
   const [healthDeptPhone, setHealthDeptPhone] = useState<string>(initialLineConfig?.healthDeptPhone || "044-631405");
@@ -352,7 +376,7 @@ export default function BroadcastClient({
                   <h2 className="text-sm sm:text-base font-bold text-slate-800">เลือกชุมชนเป้าหมาย</h2>
                 </div>
                 <span className="text-[11px] font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
-                  {selectedZone === "ALL" ? "ครอบคลุม 20 ชุมชน" : `ชุมชน${selectedZone}`}
+                  {selectedZone === "ALL" ? "ครอบคลุม 20 ชุมชน" : (OFFICIAL_ZONES[selectedZone] || `ชุมชน${selectedZone}`)}
                 </span>
               </div>
 
@@ -385,7 +409,7 @@ export default function BroadcastClient({
                           <div className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">
                             🏘️
                           </div>
-                          <span className="text-slate-900 font-bold">ชุมชน{selectedZone}</span>
+                          <span className="text-slate-900 font-bold">{OFFICIAL_ZONES[selectedZone] || `ชุมชน${selectedZone}`}</span>
                         </>
                       )}
                     </div>
@@ -463,7 +487,7 @@ export default function BroadcastClient({
                             >
                               <div className="flex items-center gap-2">
                                 <span className="text-slate-400">🏘️</span>
-                                <span>ชุมชน{z}</span>
+                                <span>{OFFICIAL_ZONES[z] || `ชุมชน${z}`}</span>
                               </div>
                               {selectedZone === z && <Check size={14} className="text-[blue-600]" />}
                             </button>
@@ -495,7 +519,7 @@ export default function BroadcastClient({
                           : "bg-slate-100 hover:bg-slate-200/70 text-slate-600 border-slate-200/70"
                       }`}
                     >
-                      {zKey === "ALL" ? "🌐 ทุกชุมชน" : `ชุมชน${zKey}`}
+                      {zKey === "ALL" ? "🌐 ทุกชุมชน" : (OFFICIAL_ZONES[zKey] || `ชุมชน${zKey}`)}
                     </button>
                   ))}
                 </div>
@@ -659,7 +683,7 @@ export default function BroadcastClient({
                         <span className="text-[8px] bg-white/25 px-2 py-0.5 rounded-full font-bold">กองสาธารณสุข</span>
                       </div>
                       <div className="text-sm sm:text-base font-black mt-1 leading-tight">แจ้งเตือนยอดค้างชำระ</div>
-                      <div className="text-[10px] opacity-90 mt-0.5">บ้านเลขที่ 101/1 • ชุมชน{selectedZone === "ALL" ? "หนองรี" : selectedZone}</div>
+                      <div className="text-[10px] opacity-90 mt-0.5">บ้านเลขที่ 101/1 • {selectedZone === "ALL" ? "ชุมชนหนองรี" : (OFFICIAL_ZONES[selectedZone] || `ชุมชน${selectedZone}`)}</div>
                     </div>
 
                     {/* Body */}
@@ -949,7 +973,7 @@ export default function BroadcastClient({
         onClose={() => setShowConfirm(false)}
         onConfirm={handleSendBroadcast}
         title="ยืนยันการส่งข้อความแจ้งเตือนผ่าน LINE"
-        description={`คุณต้องการส่งข้อความแจ้งเตือนยอดค้างชำระไปยังลูกบ้าน (${selectedZone === "ALL" ? "ทุกชุมชน" : `ชุมชน${selectedZone}`}, ค้าง ${minMonths} เดือนขึ้นไป) ใช่หรือไม่?`}
+        description={`คุณต้องการส่งข้อความแจ้งเตือนยอดค้างชำระไปยังลูกบ้าน (${selectedZone === "ALL" ? "ทุกชุมชน" : (OFFICIAL_ZONES[selectedZone] || `ชุมชน${selectedZone}`)}, ค้าง ${minMonths} เดือนขึ้นไป) ใช่หรือไม่?`}
         confirmText="ยืนยันการส่งทันที"
         variant="primary"
       />

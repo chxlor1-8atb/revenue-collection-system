@@ -128,6 +128,30 @@ export default function HousesClient({
   const [selectedPaymentStatus, setSelectedPaymentStatus] = useState(initialPaymentStatus);
   const [sortConfig, setSortConfig] = useState(initialSort);
 
+  
+  const OFFICIAL_ZONES: Record<string, string> = {
+    "หนองรี": "ชุมชนหนองรี",
+    "หนองกราด": "ชุมชนบ้านหนองกราด",
+    "หนองเสม็ด": "ชุมชนบ้านหนองเสม็ด",
+    "บ้านเก่า": "ชุมชนบ้านเก่า",
+    "วัดขุนก้อง": "ชุมชนวัดขุนก้อง",
+    "วัดกลาง": "ชุมชนวัดกลาง",
+    "ป่าเรไร": "ชุมชนวัดป่าเรไร",
+    "วัดร่องมันเทศ": "ชุมชนวัดร่องมันเทศ",
+    "บ้านถนนหัก": "ชุมชนบ้านถนนหัก",
+    "วัดถนนหัก": "ชุมชนวัดถนนหัก",
+    "ถนนหักพัฒนา": "ชุมชนถนนหักพัฒนา",
+    "ทุ่งแหลม": "ชุมชนทุ่งแหลม",
+    "หนองโพรง": "ชุมชนหนองโพรง",
+    "วัดใหม่เรไรทอง": "ชุมชนวัดใหม่เรไรทอง",
+    "จะบวก": "ชุมชนบ้านจะบวก",
+    "หัวสะพาน": "ชุมชนวัดหัวสะพาน",
+    "ป่าตาเส็ง": "ชุมชนป่าตาเส็ง",
+    "ป่ารักน้ำ": "ชุมชนวัดสวนป่ารักน้ำ",
+    "ดอนแสลงพันธ์": "ชุมชนบ้านดอนแสลงพันธ์",
+    "โคกหลวงพ่อ": "ชุมชนโคกหลวงพ่อ"
+  };
+
   const ALL_ZONES = useMemo(() => [
     "หนองรี", "หนองกราด", "หนองเสม็ด", "บ้านเก่า", "วัดขุนก้อง", "วัดกลาง", 
     "ป่าเรไร", "วัดร่องมันเทศ", "บ้านถนนหัก", "วัดถนนหัก", "ถนนหักพัฒนา", 
@@ -580,10 +604,10 @@ export default function HousesClient({
                 value={selectedZone || ""}
                 onChange={setSelectedZone}
                 placeholder="ทุกชุมชน (20 ชุมชน)"
-                icon={<Building2 size={15} className="text-slate-500" />}
+                icon={<MapPin size={15} className="text-slate-500" />}
                 options={[
                   { value: "", label: "ทุกชุมชน" },
-                  ...ALL_ZONES.map(z => ({ value: z, label: `ชุมชน${z}` }))
+                  ...ALL_ZONES.map(z => ({ value: z, label: OFFICIAL_ZONES[z] || `ชุมชน${z}` }))
                 ]}
               />
             </div>
@@ -650,7 +674,7 @@ export default function HousesClient({
                 {selectedZone && (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[blue-50] border border-[blue-200] rounded-full text-[blue-600] font-semibold shadow-2xs">
                     <MapPin size={12} />
-                    <span>ชุมชน{selectedZone}</span>
+                    <span>{OFFICIAL_ZONES[selectedZone] || `ชุมชน${selectedZone}`}</span>
                     <button onClick={() => setSelectedZone("")} className="hover:text-red-500 cursor-pointer"><X size={12} /></button>
                   </span>
                 )}
@@ -865,7 +889,7 @@ export default function HousesClient({
                           <MapPin size={13} className="text-red-600 shrink-0" />
                           <span className="truncate">
                             {[
-                              house.zone && `ชุมชน${house.zone}`,
+                              house.zone && (OFFICIAL_ZONES[house.zone] || `ชุมชน${house.zone}`),
                               (house as any).moo && `หมู่ ${(house as any).moo}`,
                               (house as any).soi && `ซอย${(house as any).soi}`,
                               (house as any).road && `ถ.${(house as any).road}`
