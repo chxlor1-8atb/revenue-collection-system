@@ -80,9 +80,9 @@ export default function SearchAutocomplete({ value, onChange, onSelect, onSubmit
     <div className="relative group w-full" ref={wrapperRef}>
       <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none transition-colors z-10">
         {isLoading ? (
-          <Loader2 size={18} className="text-[blue-600] animate-spin" />
+          <Loader2 size={18} className="text-blue-600 animate-spin" />
         ) : (
-          <Search size={18} className="text-slate-400 group-focus-within:text-[blue-600]" />
+          <Search size={18} className="text-slate-400 group-focus-within:text-blue-600" />
         )}
       </div>
       <input

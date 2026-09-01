@@ -992,7 +992,7 @@ export default function LineSlipsClient({
                         onChange={setSearchHouseNumber}
                         onSubmit={() => handleSearchHouseForSlip(searchHouseNumber, slipAmount)}
                         placeholder="ใส่บ้านเลขที่ เช่น 123/4..."
-                        className="w-full placeholder:text-slate-400 text-sm focus:ring-blue-600 cursor-text rounded-xl border-slate-200"
+                        className="w-full placeholder:text-slate-400 text-sm focus:ring-blue-600 cursor-text rounded-xl border border-slate-200"
                       />
                     </div>
                     <button 
