@@ -210,28 +210,31 @@ export default function NotificationDropdown() {
     let pusherClient: any = null;
     let pusherTimeout: NodeJS.Timeout | null = null;
     
-    try {
-      pusherClient = getPusherClient();
-    } catch (e) {
-      console.warn("Pusher client failed to initialize", e);
-    }
+    const setupPusher = async () => {
+      try {
+        pusherClient = await getPusherClient();
+      } catch (e) {
+        console.warn("Pusher client failed to initialize", e);
+      }
 
-    if (pusherClient) {
-      const channel = pusherClient.subscribe('admin-notifications');
-      
-      const fastFetch = () => {
-        if (pusherTimeout) clearTimeout(pusherTimeout);
-        pusherTimeout = setTimeout(fetchNotifications, 200);
-      };
+      if (pusherClient) {
+        const channel = pusherClient.subscribe('admin-notifications');
+        
+        const fastFetch = () => {
+          if (pusherTimeout) clearTimeout(pusherTimeout);
+          pusherTimeout = setTimeout(fetchNotifications, 200);
+        };
 
-      channel.bind('new-slip', fastFetch);
-      channel.bind('new-qr', fastFetch);
-      channel.bind('slip-processed', fastFetch);
-      
-      channel.bind('dashboard-update', () => {
-        router.refresh();
-      });
-    }
+        channel.bind('new-slip', fastFetch);
+        channel.bind('new-qr', fastFetch);
+        channel.bind('slip-processed', fastFetch);
+        
+        channel.bind('dashboard-update', () => {
+          router.refresh();
+        });
+      }
+    };
+    setupPusher();
 
     return () => {
       clearInterval(interval);

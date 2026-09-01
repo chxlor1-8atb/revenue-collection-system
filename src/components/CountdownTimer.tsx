@@ -28,11 +28,12 @@ export default function CountdownTimer({ initialTimeLeft, transactionId, houseId
 
   // Pusher Real-time Subscriptions + Fallback Polling
   useEffect(() => {
+    const setupPusher = async () => {
     if (!transactionId || isVerified || isRejected) return;
 
     let pusherClient: any = null;
     try {
-      pusherClient = getPusherClient();
+      pusherClient = await getPusherClient();
     } catch (e) {
       console.warn("Pusher client failed to initialize", e);
     }

@@ -115,12 +115,13 @@ export default function ReviewClient() {
   // 4. Pusher Real-Time Updates for Admin Review Queue
   useEffect(() => {
     let pusherClient: any = null;
-    try {
-      const { getPusherClient } = require("@/lib/pusher");
-      pusherClient = getPusherClient();
-    } catch (e) {
-      console.warn("Pusher not loaded in ReviewClient", e);
-    }
+    const setupPusher = async () => {
+      try {
+        const { getPusherClient } = await import("@/lib/pusher");
+        pusherClient = await getPusherClient();
+      } catch (e) {
+        console.warn("Pusher not loaded in ReviewClient", e);
+      }
 
     if (pusherClient) {
       const channel = pusherClient.subscribe('admin-notifications');
@@ -179,7 +180,8 @@ export default function ReviewClient() {
         channel.unbind('slip-processed', handleSlipProcessed);
         pusherClient.unsubscribe('admin-notifications');
       };
-    }
+    };
+    setupPusher();
   }, [mutate]);
 
   const pending = data?.pending || [];

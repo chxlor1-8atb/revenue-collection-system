@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import lottie, { AnimationItem } from "lottie-web";
+import type { AnimationItem } from "lottie-web";
 
 interface LottieIconProps {
   src: string | object;
@@ -26,27 +26,34 @@ export default function LottieIcon({
 
   useEffect(() => {
     if (!containerRef.current) return;
+    let isMounted = true;
 
     // Clear previous animation if any
     if (animRef.current) {
       animRef.current.destroy();
     }
 
-    try {
-      const anim = lottie.loadAnimation({
-        container: containerRef.current,
-        renderer: "svg",
-        loop: playOnHover ? false : loop,
-        autoplay: playOnHover ? false : autoplay,
-        ...(typeof src === "string" ? { path: src } : { animationData: src }),
-      });
+    import("lottie-web").then((lottieModule) => {
+      if (!isMounted || !containerRef.current) return;
+      const lottie = lottieModule.default;
+      
+      try {
+        const anim = lottie.loadAnimation({
+          container: containerRef.current,
+          renderer: "svg",
+          loop: playOnHover ? false : loop,
+          autoplay: playOnHover ? false : autoplay,
+          ...(typeof src === "string" ? { path: src } : { animationData: src }),
+        });
 
-      animRef.current = anim;
-    } catch (err) {
-      console.error("Lottie load error:", err);
-    }
+        animRef.current = anim;
+      } catch (err) {
+        console.error("Lottie load error:", err);
+      }
+    });
 
     return () => {
+      isMounted = false;
       if (animRef.current) {
         animRef.current.destroy();
         animRef.current = null;

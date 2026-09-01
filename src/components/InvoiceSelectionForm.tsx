@@ -12,7 +12,8 @@ export default function InvoiceSelectionForm({ invoices, house }: { invoices: an
   const router = useRouter();
 
   useEffect(() => {
-    const pusher = getPusherClient();
+    const setupPusher = async () => {
+    const pusher = await getPusherClient();
     if (!pusher) return;
 
     const channel = pusher.subscribe(`house-${house.id}`);
