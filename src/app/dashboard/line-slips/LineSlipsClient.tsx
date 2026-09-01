@@ -990,18 +990,11 @@ export default function LineSlipsClient({
                       <SearchAutocomplete 
                         value={searchHouseNumber}
                         onChange={setSearchHouseNumber}
-                        onSubmit={() => handleSearchHouseForSlip(searchHouseNumber, slipAmount)}
+                        onSubmit={(val) => handleSearchHouseForSlip(val || searchHouseNumber, slipAmount)}
                         placeholder="ใส่บ้านเลขที่ เช่น 123/4..."
                         className="w-full placeholder:text-slate-400 text-sm focus:ring-blue-600 cursor-text rounded-xl border border-slate-200"
                       />
                     </div>
-                    <button 
-                      onClick={() => handleSearchHouseForSlip(searchHouseNumber, slipAmount)}
-                      disabled={isLoading || !searchHouseNumber}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-5 h-[42px] rounded-xl font-bold text-xs transition-all shadow-md shadow-blue-600/20 disabled:opacity-50 shrink-0 cursor-pointer flex items-center gap-1.5"
-                    >
-                      <Search size={14} /> ค้นหา
-                    </button>
                   </div>
                 </div>
 

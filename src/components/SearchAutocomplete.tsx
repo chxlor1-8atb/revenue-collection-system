@@ -14,7 +14,7 @@ interface SearchAutocompleteProps {
   value: string;
   onChange: (val: string) => void;
   onSelect?: (house: House) => void;
-  onSubmit?: () => void;
+  onSubmit?: (val?: string) => void;
   placeholder?: string;
   className?: string;
   isLoading?: boolean;
@@ -65,14 +65,14 @@ export default function SearchAutocomplete({ value, onChange, onSelect, onSubmit
     onChange(house.houseNumber);
     setIsOpen(false);
     if (onSelect) onSelect(house);
-    if (onSubmit) onSubmit();
+    if (onSubmit) onSubmit(house.houseNumber);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
       setIsOpen(false);
-      if (onSubmit) onSubmit();
+      if (onSubmit) onSubmit(e.currentTarget.value);
     }
   };
 
