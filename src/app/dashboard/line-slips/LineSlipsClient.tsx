@@ -37,7 +37,8 @@ import {
   TrendingUp,
   CreditCard,
   House,
-  CornerDownLeft
+  CornerDownLeft,
+  Check
 } from "lucide-react";
 import AnimatedLineIcon from "@/components/AnimatedLineIcon";
 import SlipModalButton from "@/components/SlipModalButton";
