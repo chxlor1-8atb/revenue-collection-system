@@ -53,8 +53,8 @@ export default function CustomSelect({
         aria-label={selectedOption ? selectedOption.label : placeholder}
         aria-expanded={isOpen}
         className={`w-full flex items-center justify-between ${icon ? 'pl-10 pr-3' : 'px-3'} h-[42px] bg-white border ${
-          isOpen ? 'border-[#5B58F2] ring-2 ring-[#5B58F2]/20' : 'border-slate-200 hover:border-slate-300'
-        } rounded-[12px] shadow-none focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 transition-all ${
+          isOpen ? 'border-slate-400 ring-2 ring-slate-900/10' : 'border-slate-200 hover:border-slate-300'
+        } rounded-lg shadow-none focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-900/10 transition-all ${
           disabled ? 'opacity-50 cursor-not-allowed bg-slate-50' : 'cursor-pointer'
         }`}
       >
@@ -76,7 +76,7 @@ export default function CustomSelect({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
             transition={{ duration: 0.15 }}
-            className="absolute z-50 w-full mt-1.5 bg-white border border-slate-200 rounded-[12px] shadow-lg overflow-hidden flex flex-col"
+            className="absolute z-50 w-full mt-1.5 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden flex flex-col"
           >
             <div className="max-h-60 overflow-y-auto custom-scrollbar p-1 flex flex-col gap-0.5">
               {options.map((option) => (
@@ -87,10 +87,10 @@ export default function CustomSelect({
                     onChange(option.value);
                     setIsOpen(false);
                   }}
-                  className={`w-full text-left px-3 py-2.5 text-[13px] rounded-[8px] transition-colors shrink-0 ${
+                  className={`w-full text-left px-3 py-2.5 text-[13px] rounded-md transition-colors shrink-0 ${
                     value === option.value
-                      ? 'bg-[#5B58F2] text-white font-medium'
-                      : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+                      ? 'bg-slate-900 text-white font-medium'
+                      : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                   }`}
                 >
                   {option.label}

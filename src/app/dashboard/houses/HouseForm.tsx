@@ -119,7 +119,7 @@ export default function HouseForm({
         {/* Header */}
         <div className="bg-slate-50/90 px-6 py-4 border-b border-slate-100 flex justify-between items-center shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-indigo-100 text-[#5B58F2] flex items-center justify-center font-bold">
+            <div className="w-9 h-9 rounded-xl bg-indigo-100 text-[blue-600] flex items-center justify-center font-bold">
               <Home size={18} />
             </div>
             <div>
@@ -154,7 +154,7 @@ export default function HouseForm({
                   <div key={field.id} className="p-3.5 bg-slate-50/80 rounded-2xl border border-slate-200/90 space-y-2.5">
                     <div className="flex items-center justify-between">
                       <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                        <Banknote size={15} className="text-[#5B58F2]" />
+                        <Banknote size={15} className="text-[blue-600]" />
                         {field.name}
                       </label>
                       
@@ -183,7 +183,7 @@ export default function HouseForm({
                           onClick={() => setBillingAmount(preset.val)}
                           className={`text-[10px] font-semibold px-2 py-0.8 rounded-lg border transition-all cursor-pointer ${
                             effectiveBillingAmount === parseFloat(preset.val)
-                              ? "bg-[#5B58F2] text-white border-[#5B58F2] shadow-2xs"
+                              ? "bg-[blue-600] text-white border-[blue-600] shadow-2xs"
                               : "bg-white hover:bg-slate-100 text-slate-600 border-slate-200"
                           }`}
                         >
@@ -204,7 +204,7 @@ export default function HouseForm({
                         name="defaultBillingAmount"
                         value={billingAmount}
                         onChange={(e) => setBillingAmount(e.target.value)}
-                        className="pl-8 pr-16 block w-full rounded-xl border-slate-200 text-xs sm:text-sm font-mono font-bold text-slate-900 bg-white py-2.5 border focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 outline-hidden transition-all"
+                        className="pl-8 pr-16 block w-full rounded-xl border-slate-200 text-xs sm:text-sm font-mono font-bold text-slate-900 bg-white py-2.5 border focus:border-[blue-600] focus:ring-2 focus:ring-[blue-600]/20 outline-hidden transition-all"
                         placeholder="20.00 (เว้นว่าง = ค่าเริ่มต้น 20 บาท)"
                       />
                       <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400 text-xs font-medium">
@@ -215,7 +215,7 @@ export default function HouseForm({
                     {/* Live Clear Confirmation Note */}
                     <div className="p-2.5 rounded-xl bg-indigo-50/70 border border-indigo-100 text-[11px] text-indigo-900 flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
-                        <Sparkles size={13} className="text-[#5B58F2]" />
+                        <Sparkles size={13} className="text-[blue-600]" />
                         <span>ยอดที่จะเรียกเก็บจากบ้านหลังนี้:</span>
                       </span>
                       <strong className="font-mono text-xs font-black text-indigo-700">
@@ -260,7 +260,7 @@ export default function HouseForm({
                           name={field.isSystem ? field.id : `custom_${field.id}`}
                           required={field.required}
                           defaultValue={defaultValue}
-                          className="pl-9 block w-full rounded-xl border-slate-200 text-xs sm:text-sm text-slate-800 py-2.5 border focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 outline-hidden transition-all"
+                          className="pl-9 block w-full rounded-xl border-slate-200 text-xs sm:text-sm text-slate-800 py-2.5 border focus:border-[blue-600] focus:ring-2 focus:ring-[blue-600]/20 outline-hidden transition-all"
                           placeholder={field.placeholder || ""}
                         />
                       </>
@@ -282,7 +282,7 @@ export default function HouseForm({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-2.5 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#5B58F2] to-indigo-600 hover:from-[#4A47D1] hover:to-indigo-700 rounded-xl transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50 cursor-pointer active:scale-98"
+              className="flex items-center gap-2 px-6 py-2.5 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[blue-600] to-indigo-600 hover:from-[#4A47D1] hover:to-indigo-700 rounded-xl transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50 cursor-pointer active:scale-98"
             >
               {isSubmitting ? (
                 <>

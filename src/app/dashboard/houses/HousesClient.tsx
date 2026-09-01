@@ -4,7 +4,6 @@ import { encodeSecureId } from "@/lib/secureId";
 import { useState, useEffect, useCallback, useRef, useTransition, useMemo } from "react";
 import { Plus, Edit2, Trash2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Download, Upload, QrCode, X, Settings, Home, Loader2, FileText, CheckCircle2, FilePlus, Send, Copy, Check, Banknote, Building2, RotateCcw, ArrowRight, AlertCircle, TrendingUp, LayoutGrid, List, Eye, ExternalLink, MapPin, User, Phone, FileSpreadsheet } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import QRCode from "qrcode";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import HouseForm, { HouseData } from "./HouseForm";
@@ -141,9 +140,11 @@ export default function HousesClient({
   useEffect(() => {
     if (previewHouse?.id) {
       const houseUrl = `${window.location.origin}/house/${encodeSecureId(previewHouse.id)}`;
-      QRCode.toDataURL(houseUrl, { width: 220, margin: 2, color: { dark: '#1E293B', light: '#FFFFFF' } })
-        .then(url => setPreviewQrUrl(url))
-        .catch(() => setPreviewQrUrl(null));
+      import('qrcode').then(m => m.default).then(QRCode => {
+        QRCode.toDataURL(houseUrl, { width: 220, margin: 2, color: { dark: '#0f172a', light: '#FFFFFF' } })
+          .then(url => setPreviewQrUrl(url))
+          .catch(() => setPreviewQrUrl(null));
+      }).catch(() => setPreviewQrUrl(null));
     } else {
       setPreviewQrUrl(null);
       setPreviewCopied(false);
@@ -377,7 +378,8 @@ export default function HousesClient({
   const openQrModal = async (house: HouseData) => {
     try {
       const houseUrl = `${window.location.origin}/house/${encodeSecureId(house.id)}`;
-      const dataUrl = await QRCode.toDataURL(houseUrl, { width: 300, margin: 2, color: { dark: '#1F2E22', light: '#FFFFFF' } });
+      const QRCode = (await import('qrcode')).default;
+      const dataUrl = await QRCode.toDataURL(houseUrl, { width: 300, margin: 2, color: { dark: '#0f172a', light: '#FFFFFF' } });
       setQrModal({ isOpen: true, houseNumber: house.houseNumber, url: houseUrl, qrDataUrl: dataUrl });
     } catch (err) {
       console.error("Failed to generate QR", err);
@@ -577,10 +579,10 @@ export default function HousesClient({
                 value={selectedZone || ""}
                 onChange={setSelectedZone}
                 placeholder="ทุกชุมชน (20 ชุมชน)"
-                icon={<MapPin size={15} className="text-slate-500" />}
+                icon={<Building2 size={15} className="text-slate-500" />}
                 options={[
                   { value: "", label: "ทุกชุมชน" },
-                  ...ALL_ZONES.map(z => ({ value: z, label: z }))
+                  ...ALL_ZONES.map(z => ({ value: z, label: `ชุมชน${z}` }))
                 ]}
               />
             </div>
@@ -645,7 +647,7 @@ export default function HousesClient({
                   </span>
                 )}
                 {selectedZone && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#EEF0FF] border border-[#D5D9FF] rounded-full text-[#5B58F2] font-semibold shadow-2xs">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[blue-50] border border-[blue-200] rounded-full text-[blue-600] font-semibold shadow-2xs">
                     <MapPin size={12} />
                     <span>ชุมชน{selectedZone}</span>
                     <button onClick={() => setSelectedZone("")} className="hover:text-red-500 cursor-pointer"><X size={12} /></button>
@@ -661,7 +663,7 @@ export default function HousesClient({
                 )}
                 <button
                   onClick={handleResetFilters}
-                  className="text-[#5B58F2] hover:underline font-semibold ml-1 cursor-pointer"
+                  className="text-[blue-600] hover:underline font-semibold ml-1 cursor-pointer"
                 >
                   ล้างทั้งหมด
                 </button>
@@ -724,7 +726,7 @@ export default function HousesClient({
                       <div className="flex items-center gap-1.5">
                         {field.name}
                         {(field.id === 'houseNumber' || field.id === 'ownerName') && (
-                          <ArrowUpDown size={12} className={sortConfig.key === field.id ? 'text-[#5B58F2]' : 'opacity-40'} />
+                          <ArrowUpDown size={12} className={sortConfig.key === field.id ? 'text-[blue-600]' : 'opacity-40'} />
                         )}
                       </div>
                     </th>
@@ -809,7 +811,7 @@ export default function HousesClient({
                           </button>
                           <Link 
                             href={`/dashboard/houses/${house.id}`} 
-                            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-[#5B58F2] bg-white hover:bg-slate-900 hover:text-white rounded-lg transition-all border border-slate-200 hover:border-slate-900 shadow-sm group/btn"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-[blue-600] bg-white hover:bg-slate-900 hover:text-white rounded-lg transition-all border border-slate-200 hover:border-slate-900 shadow-sm group/btn"
                           >
                             <span>จัดการ</span>
                             <ArrowRight size={13} className="group-hover/btn:translate-x-0.5 transition-transform" />
@@ -825,7 +827,7 @@ export default function HousesClient({
         ) : (
           /* Grid Cards View */
           <div className="p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
               <AnimatePresence mode="wait">
                 {initialHouses.map((house, index) => (
                   <motion.div
@@ -846,7 +848,7 @@ export default function HousesClient({
                           </span>
                         </div>
                         {house.zone && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#EEF0FF] text-[#5B58F2] border border-[#D5D9FF]">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[blue-50] text-[blue-600] border border-[blue-200]">
                             {house.zone}
                           </span>
                         )}
@@ -854,7 +856,7 @@ export default function HousesClient({
 
                       {/* Owner & Address Info */}
                       <div className="space-y-1.5 mb-4">
-                        <div className="font-bold text-slate-900 text-base group-hover:text-[#5B58F2] transition-colors flex items-center gap-2">
+                        <div className="font-bold text-slate-900 text-base group-hover:text-[blue-600] transition-colors flex items-center gap-2">
                           <User size={15} className="text-slate-400 shrink-0" />
                           <span className="truncate">{house.ownerName}</span>
                         </div>
@@ -973,7 +975,7 @@ export default function HousesClient({
                         {previewHouse.houseNumber}
                       </span>
                       {previewHouse.zone && (
-                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#EEF0FF] text-[#5B58F2] border border-[#D5D9FF]">
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[blue-50] text-[blue-600] border border-[blue-200]">
                           {previewHouse.zone}
                         </span>
                       )}
@@ -1101,6 +1103,7 @@ export default function HousesClient({
           onSuccess={(houseId) => {
             setShowForm(false);
             if (houseId) {
+              setSuccessMsg("เพิ่มข้อมูลบ้านสำเร็จ");
               setInitialBillPrompt({
                 isOpen: true,
                 houseId,
@@ -1108,6 +1111,7 @@ export default function HousesClient({
                 amount: "20.00"
               });
             } else {
+              setSuccessMsg("อัปเดตข้อมูลบ้านสำเร็จ");
               router.refresh();
             }
           }} 
