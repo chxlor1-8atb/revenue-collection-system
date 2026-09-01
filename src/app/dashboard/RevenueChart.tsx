@@ -124,7 +124,7 @@ export default function RevenueChart({ transactions }: { transactions: Transacti
         {/* Mock Bars -> Now Real Bars! */}
         <div className="relative flex items-end justify-between gap-1 sm:gap-2 h-48 w-full z-10 px-1 sm:px-2">
           {chartData.map((data, i) => (
-            <div key={i} className="w-full h-full bg-[blue-600]/10 hover:bg-[blue-600]/20 transition-colors rounded-t-sm sm:rounded-t-md relative group flex flex-col justify-end items-center">
+            <div key={i} className="w-full h-full bg-blue-100/60 hover:bg-blue-100 transition-colors rounded-t-sm sm:rounded-t-md relative group flex flex-col justify-end items-center">
                
                {/* Tooltip */}
                <div className="absolute bottom-[calc(100%+8px)] opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 text-white text-[10px] sm:text-xs px-2.5 py-1.5 rounded-lg pointer-events-none whitespace-nowrap z-30 shadow-lg">
@@ -134,7 +134,7 @@ export default function RevenueChart({ transactions }: { transactions: Transacti
 
                {/* Bar Fill */}
                <div 
-                 className={`w-full rounded-t-sm sm:rounded-t-md transition-all duration-700 ease-out ${data.value > 0 ? 'bg-[blue-600]/60 group-hover:bg-[blue-600]' : 'bg-transparent'}`} 
+                 className={`w-full rounded-t-sm sm:rounded-t-md transition-all duration-700 ease-out ${data.value > 0 ? 'bg-blue-500/70 group-hover:bg-blue-600' : 'bg-transparent'}`} 
                  style={{ height: `${data.percent}%` }}
                ></div>
             </div>
