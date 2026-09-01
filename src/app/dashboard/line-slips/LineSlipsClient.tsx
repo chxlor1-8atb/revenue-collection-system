@@ -707,81 +707,80 @@ export default function LineSlipsClient({
 
                       {/* Smart Match Banner if detected */}
                       {activeTab === "pending" && hasSmartMatch && (
-                        <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border-b border-purple-100 p-2.5 flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-1.5 min-w-0">
-                            <Sparkles size={13} className="text-blue-600 shrink-0" />
-                            <div className="truncate text-xs">
-                              <span className="font-bold text-blue-600">แนะนำ: บ้าน {slip.smartMatch.house.houseNumber}</span>
-                              <span className="text-[10px] text-slate-500 block truncate">({slip.smartMatch.reason})</span>
-                            </div>
+                        <div className="bg-indigo-50/60 border-b border-indigo-100 px-3 py-1.5 flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5 min-w-0 truncate">
+                            <Sparkles size={11} className="text-blue-600 shrink-0" />
+                            <span className="font-bold text-blue-600 text-[11px] truncate">
+                              บ้าน {slip.smartMatch.house.houseNumber}
+                            </span>
+                            <span className="text-[10px] text-slate-400 truncate hidden sm:inline">({slip.smartMatch.reason})</span>
                           </div>
                           <button
                             onClick={() => openMatchModal(slip, slip.smartMatch.house)}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1 rounded-lg text-[11px] font-bold shadow-2xs shrink-0 cursor-pointer flex items-center gap-1"
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-0.5 rounded-md text-[10px] font-bold shadow-2xs shrink-0 cursor-pointer flex items-center gap-0.5"
                           >
-                            <Zap size={11} /> ใช้บ้านนี้
+                            <Zap size={10} /> ใช้
                           </button>
                         </div>
                       )}
 
                       {/* Bottom: Details & Action */}
-                      <div className="p-4 sm:p-5 flex flex-col justify-between flex-1 bg-white space-y-4">
-                        <div className="space-y-1.5">
-                          <div className="flex items-baseline justify-between gap-2">
-                            <span className="font-mono text-2xl font-bold text-slate-900 tracking-tight">
-                              ฿{parseFloat(slip.amount || "0").toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+                      <div className="p-3 flex flex-col gap-2 flex-1 bg-white">
+                        {/* Amount row */}
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-mono text-xl font-bold text-slate-900 tracking-tight leading-none">
+                            ฿{parseFloat(slip.amount || "0").toLocaleString("th-TH", { minimumFractionDigits: 2 })}
+                          </span>
+                          {slip.houseNumber ? (
+                            <span className="inline-flex items-center gap-1 bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200 text-slate-900 text-xs shadow-2xs">
+                              <span className="font-sans text-[10px] text-slate-500 font-medium">บ้าน</span>
+                              <span className="font-mono font-bold text-[11px]">{slip.houseNumber}</span>
                             </span>
-                            
-                            {slip.houseNumber ? (
-                              <span className="inline-flex items-center gap-1 bg-slate-100 px-3 py-1 rounded-xl border border-slate-200 text-slate-900 text-xs shadow-2xs">
-                                <span className="font-sans text-[11px] text-slate-500 font-medium">บ้าน</span>
-                                <span className="font-mono font-bold">{slip.houseNumber}</span>
-                              </span>
-                            ) : !hasSmartMatch && (
-                              <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200/60 px-2.5 py-1 rounded-xl text-[11px] font-semibold">
-                                <AlertCircle size={12} /> ยังไม่ระบุบ้าน
-                              </span>
-                            )}
-                          </div>
+                          ) : !hasSmartMatch && (
+                            <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200/60 px-2 py-0.5 rounded-lg text-[10px] font-semibold">
+                              <AlertCircle size={10} /> ยังไม่ระบุบ้าน
+                            </span>
+                          )}
+                        </div>
 
-                          <div className="text-xs text-slate-600 flex items-center gap-1.5 truncate pt-0.5">
-                            <User size={14} className="text-slate-400 shrink-0" />
+                        {/* Owner + Date on same row */}
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="text-[11px] text-slate-600 flex items-center gap-1 min-w-0">
+                            <User size={12} className="text-slate-400 shrink-0" />
                             <span className="truncate font-medium">{slip.senderName || "ไม่ระบุชื่อผู้โอน"}</span>
                           </div>
-
                           {slip.createdAt && (
-                            <div className="flex items-center gap-1 text-[11px] text-slate-400 font-mono">
-                              <Clock size={11} className="shrink-0" />
-                              <span>{new Date(slip.createdAt).toLocaleString("th-TH", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
-                            </div>
+                            <span className="text-[10px] text-slate-400 font-mono shrink-0">
+                              {new Date(slip.createdAt).toLocaleString("th-TH", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                            </span>
                           )}
                         </div>
 
                         {/* Actions */}
                         {activeTab === "pending" ? (
-                          <div className="flex gap-2 pt-3 border-t border-slate-100">
+                          <div className="flex gap-1.5 pt-2 border-t border-slate-100">
                             <button
                               onClick={() => openMatchModal(slip)}
-                              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-600/20 cursor-pointer"
+                              className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-600/20 cursor-pointer"
                             >
-                              <Link2 size={14} /> จับคู่ / อนุมัติ
+                              <Link2 size={13} /> จับคู่ / อนุมัติ
                             </button>
                             <button
                               onClick={() => handleOpenReject(slip)}
-                              className="flex items-center justify-center px-3.5 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+                              className="flex items-center justify-center px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
                               title="ปฏิเสธสลิป"
                             >
-                              <Ban size={14} />
+                              <Ban size={13} />
                             </button>
                           </div>
                         ) : activeTab === "rejected" ? (
-                          <div className="pt-3 border-t border-slate-100">
+                          <div className="pt-2 border-t border-slate-100">
                             <button
                               onClick={() => handleRestore(slip.id)}
                               disabled={isLoading}
                               className="w-full flex items-center justify-center gap-1.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors cursor-pointer"
                             >
-                              <RotateCcw size={13} /> กู้คืนสลิป (Undo)
+                              <RotateCcw size={12} /> กู้คืนสลิป (Undo)
                             </button>
                           </div>
                         ) : null}
