@@ -72,6 +72,35 @@ export async function verifySlipWithBuffer(imageBuffer: Buffer): Promise<Slip2Go
       };
     }
 
+    // Validate Recipient Account
+    try {
+      const { db } = await import("@/lib/db");
+      const { systemSettings } = await import("@/lib/schema");
+      const settings = await db.select().from(systemSettings).limit(1);
+      if (settings.length > 0 && settings[0].promptPayId) {
+        const expectedAccount = settings[0].promptPayId.replace(/\D/g, ''); // e.g. "0986485736"
+        
+        // Extract the actual receiver account from the slip data
+        let actualAccount = "";
+        const r = result.data.receiver;
+        if (r) {
+          actualAccount = (r.account?.proxy?.account || r.account?.bank?.account || r.accountNumber || r.account?.number || "").replace(/\D/g, '');
+        }
+
+        // Only enforce strict match if both are present and we extracted a valid account string
+        if (expectedAccount && actualAccount && !actualAccount.includes(expectedAccount) && !expectedAccount.includes(actualAccount)) {
+          return {
+            success: false,
+            error: "บัญชีผู้รับไม่ถูกต้อง",
+            errorCode: "invalid",
+            originalData: result.data
+          };
+        }
+      }
+    } catch (dbErr) {
+      console.warn("Failed to validate receiver account against DB config:", dbErr);
+    }
+
     // Success case
     return {
       success: true,

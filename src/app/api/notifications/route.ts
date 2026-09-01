@@ -11,25 +11,9 @@ export async function GET() {
     const session = await auth();
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    // 1. Pending slips from lineMessages (LINE webhook images pending review)
-    const lineSlipsRaw = await db.select()
-      .from(lineMessages)
-      .where(and(eq(lineMessages.type, 'image'), eq(lineMessages.status, 'pending')))
-      .orderBy(desc(lineMessages.createdAt))
-      .limit(10);
-
-    const pendingLineSlips = lineSlipsRaw.map(msg => ({
-      id: msg.id,
-      source: "line" as const,
-      status: "pending_review",
-      title: "สลิปใหม่จาก LINE",
-      lineUserId: msg.lineUserId,
-      amount: msg.amount,
-      senderName: msg.senderName,
-      houseNumber: msg.houseNumber,
-      imageUrl: msg.imageUrl,
-      createdAt: msg.createdAt ? msg.createdAt.toISOString() : new Date().toISOString(),
-    }));
+    // 1. (Removed) We no longer notify for lineMessages that haven't been linked to a house yet.
+    // They are not actionable in the Review page until the user types their house number to create a transaction.
+    const pendingLineSlips: any[] = [];
 
     // 2. Pending review transactions (uploaded slip, waiting admin approval)
     const pendingTxsRaw = await db.select()

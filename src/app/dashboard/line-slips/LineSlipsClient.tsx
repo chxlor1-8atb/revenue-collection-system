@@ -397,7 +397,7 @@ export default function LineSlipsClient({
             <div>
               <div className="flex items-center gap-2.5">
                 <h1 className="font-bold text-2xl text-slate-900 tracking-tight">สลิปจาก LINE</h1>
-                <span className="bg-[blue-50] text-[blue-600] text-xs font-bold px-2.5 py-0.5 rounded-full border border-[blue-200]">
+                <span className="bg-[blue-50] text-blue-600 text-xs font-bold px-2.5 py-0.5 rounded-full border border-blue-200">
                   {pendingCount + verifiedCount + rejectedCount} ทั้งหมด
                 </span>
               </div>
@@ -414,7 +414,7 @@ export default function LineSlipsClient({
                 onClick={() => handleTabChange("pending")}
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   activeTab === "pending" 
-                    ? "bg-white text-[blue-600] shadow-xs" 
+                    ? "bg-white text-blue-600 shadow-xs" 
                     : "text-slate-500 hover:text-slate-800"
                 }`}
               >
@@ -495,7 +495,7 @@ export default function LineSlipsClient({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="ค้นหาชื่อผู้โอน, บ้านเลขที่, หรือยอดเงิน..."
-                className="w-full pl-9 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-xs placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[blue-600]/30 focus:border-[blue-600]"
+                className="w-full pl-9 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-xs placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600"
               />
               {searchTerm && (
                 <button
@@ -512,7 +512,7 @@ export default function LineSlipsClient({
               <button
                 onClick={() => setFilterType("all")}
                 className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                  filterType === "all" ? "bg-[blue-600] text-white shadow-2xs" : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-100"
+                  filterType === "all" ? "bg-blue-600 text-white shadow-2xs" : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-100"
                 }`}
               >
                 ทั้งหมด
@@ -522,7 +522,7 @@ export default function LineSlipsClient({
                   <button
                     onClick={() => setFilterType("suggested")}
                     className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1 cursor-pointer ${
-                      filterType === "suggested" ? "bg-[blue-600] text-white shadow-2xs" : "bg-white border border-slate-200 text-purple-700 hover:bg-purple-50"
+                      filterType === "suggested" ? "bg-blue-600 text-white shadow-2xs" : "bg-white border border-slate-200 text-purple-700 hover:bg-purple-50"
                     }`}
                   >
                     <Zap size={11} /> จับคู่อัตโนมัติ
@@ -545,10 +545,10 @@ export default function LineSlipsClient({
             <div className="flex items-center gap-2 self-end md:self-center">
               <button
                 onClick={selectAllFiltered}
-                className="text-xs font-semibold text-slate-600 hover:text-[blue-600] flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-slate-600 hover:text-blue-600 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 {selectedSlipIds.length === filteredSlips.length && filteredSlips.length > 0 ? (
-                  <><CheckSquare size={14} className="text-[blue-600]" /> ยกเลิกเลือกทั้งหมด</>
+                  <><CheckSquare size={14} className="text-blue-600" /> ยกเลิกเลือกทั้งหมด</>
                 ) : (
                   <><Square size={14} /> เลือกทั้งหมด ({filteredSlips.length})</>
                 )}
@@ -582,7 +582,7 @@ export default function LineSlipsClient({
                     <div 
                       key={slip.id} 
                       className={`bg-white border rounded-3xl overflow-hidden flex flex-col justify-between shadow-2xs hover:shadow-md transition-all group relative ${
-                        isSelected ? "border-[blue-600] ring-2 ring-[blue-600]/20" : "border-slate-200/90 hover:border-[blue-600]/40"
+                        isSelected ? "border-blue-600 ring-2 ring-blue-600/20" : "border-slate-200/90 hover:border-blue-600/40"
                       }`}
                     >
                       {/* Select checkbox for pending tab */}
@@ -590,10 +590,10 @@ export default function LineSlipsClient({
                         <div className="absolute top-3 left-3 z-20">
                           <button
                             onClick={() => toggleSelectSlip(slip.id)}
-                            className="w-7 h-7 rounded-lg bg-white/90 backdrop-blur-md border border-slate-200/80 flex items-center justify-center text-slate-600 hover:text-[blue-600] shadow-2xs transition-transform active:scale-95 cursor-pointer"
+                            className="w-7 h-7 rounded-lg bg-white/90 backdrop-blur-md border border-slate-200/80 flex items-center justify-center text-slate-600 hover:text-blue-600 shadow-2xs transition-transform active:scale-95 cursor-pointer"
                           >
                             {isSelected ? (
-                              <CheckSquare size={16} className="text-[blue-600]" />
+                              <CheckSquare size={16} className="text-blue-600" />
                             ) : (
                               <Square size={16} />
                             )}
@@ -668,15 +668,15 @@ export default function LineSlipsClient({
                       {activeTab === "pending" && hasSmartMatch && (
                         <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border-b border-purple-100 p-2.5 flex items-center justify-between gap-2">
                           <div className="flex items-center gap-1.5 min-w-0">
-                            <Sparkles size={13} className="text-[blue-600] shrink-0" />
+                            <Sparkles size={13} className="text-blue-600 shrink-0" />
                             <div className="truncate text-xs">
-                              <span className="font-bold text-[blue-600]">แนะนำ: บ้าน {slip.smartMatch.house.houseNumber}</span>
+                              <span className="font-bold text-blue-600">แนะนำ: บ้าน {slip.smartMatch.house.houseNumber}</span>
                               <span className="text-[10px] text-slate-500 block truncate">({slip.smartMatch.reason})</span>
                             </div>
                           </div>
                           <button
                             onClick={() => openMatchModal(slip, slip.smartMatch.house)}
-                            className="bg-[blue-600] hover:bg-[blue-700] text-white px-2.5 py-1 rounded-lg text-[11px] font-bold shadow-2xs shrink-0 cursor-pointer flex items-center gap-1"
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1 rounded-lg text-[11px] font-bold shadow-2xs shrink-0 cursor-pointer flex items-center gap-1"
                           >
                             <Zap size={11} /> ใช้บ้านนี้
                           </button>
@@ -714,7 +714,7 @@ export default function LineSlipsClient({
                           <div className="flex gap-2 pt-3 border-t border-slate-100">
                             <button
                               onClick={() => openMatchModal(slip)}
-                              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-[blue-600] hover:bg-[blue-700] text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-[blue-600]/20 cursor-pointer"
+                              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-600/20 cursor-pointer"
                             >
                               <Link2 size={14} /> จับคู่ / อนุมัติ
                             </button>
@@ -776,9 +776,9 @@ export default function LineSlipsClient({
                             <td className="px-4 py-4">
                               <button
                                 onClick={() => toggleSelectSlip(slip.id)}
-                                className="text-slate-400 hover:text-[blue-600] cursor-pointer"
+                                className="text-slate-400 hover:text-blue-600 cursor-pointer"
                               >
-                                {isSelected ? <CheckSquare size={16} className="text-[blue-600]" /> : <Square size={16} />}
+                                {isSelected ? <CheckSquare size={16} className="text-blue-600" /> : <Square size={16} />}
                               </button>
                             </td>
                           )}
@@ -813,7 +813,7 @@ export default function LineSlipsClient({
                                 <span className="font-mono font-bold text-sm">{slip.houseNumber}</span>
                               </div>
                             ) : slip.smartMatch?.house ? (
-                              <span className="inline-flex items-center gap-1 bg-purple-50 text-[blue-600] border border-purple-200 text-xs font-bold px-2 py-0.5 rounded-lg">
+                              <span className="inline-flex items-center gap-1 bg-purple-50 text-blue-600 border border-purple-200 text-xs font-bold px-2 py-0.5 rounded-lg">
                                 <Sparkles size={11} /> แนะนำ {slip.smartMatch.house.houseNumber}
                               </span>
                             ) : (
@@ -844,7 +844,7 @@ export default function LineSlipsClient({
                               <div className="flex items-center justify-end gap-2">
                                 <button
                                   onClick={() => openMatchModal(slip)}
-                                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-[blue-600] hover:bg-[blue-700] text-white rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer"
+                                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer"
                                 >
                                   <Link2 size={12} /> จับคู่
                                 </button>
@@ -899,7 +899,7 @@ export default function LineSlipsClient({
           <button
             onClick={handleBatchApprove}
             disabled={isLoading}
-            className="flex items-center gap-1.5 bg-[blue-600] hover:bg-[blue-700] text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-md shadow-[blue-600]/30 cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-600/30 cursor-pointer disabled:opacity-50"
           >
             <Zap size={14} /> อนุมัติสลิปที่จับคู่ได้ ({selectedSlipIds.length})
           </button>
@@ -921,7 +921,7 @@ export default function LineSlipsClient({
             {/* Modal Header */}
             <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/70">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-[blue-600] flex items-center justify-center shadow-2xs">
+                <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-blue-600 flex items-center justify-center shadow-2xs">
                   <Link2 size={20} />
                 </div>
                 <div>
@@ -992,13 +992,13 @@ export default function LineSlipsClient({
                         onChange={setSearchHouseNumber}
                         onSubmit={() => handleSearchHouseForSlip(searchHouseNumber, slipAmount)}
                         placeholder="ใส่บ้านเลขที่ เช่น 123/4..."
-                        className="w-full placeholder:text-slate-400 text-sm focus:ring-[blue-600] cursor-text rounded-xl border-slate-200"
+                        className="w-full placeholder:text-slate-400 text-sm focus:ring-blue-600 cursor-text rounded-xl border-slate-200"
                       />
                     </div>
                     <button 
                       onClick={() => handleSearchHouseForSlip(searchHouseNumber, slipAmount)}
                       disabled={isLoading || !searchHouseNumber}
-                      className="bg-[blue-600] hover:bg-[blue-700] text-white px-5 h-[42px] rounded-xl font-bold text-xs transition-all shadow-md shadow-[blue-600]/20 disabled:opacity-50 shrink-0 cursor-pointer flex items-center gap-1.5"
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-5 h-[42px] rounded-xl font-bold text-xs transition-all shadow-md shadow-blue-600/20 disabled:opacity-50 shrink-0 cursor-pointer flex items-center gap-1.5"
                     >
                       <Search size={14} /> ค้นหา
                     </button>
@@ -1050,13 +1050,13 @@ export default function LineSlipsClient({
                               key={inv.id} 
                               className={`flex items-center p-2.5 rounded-xl border cursor-pointer transition-all ${
                                 selectedInvoices.includes(inv.id) 
-                                  ? "bg-indigo-50/50 border-[blue-600] ring-1 ring-[blue-600]/30" 
+                                  ? "bg-indigo-50/50 border-blue-600 ring-1 ring-blue-600/30" 
                                   : "bg-white border-slate-200 hover:bg-slate-50"
                               }`}
                             >
                               <input 
                                 type="checkbox" 
-                                className="w-4 h-4 text-[blue-600] rounded border-slate-300 focus:ring-[blue-600] cursor-pointer"
+                                className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-600 cursor-pointer"
                                 checked={selectedInvoices.includes(inv.id)}
                                 onChange={() => toggleInvoice(inv.id)}
                               />
@@ -1079,9 +1079,9 @@ export default function LineSlipsClient({
                     <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/70 space-y-2">
                       <div className="flex items-center justify-between text-xs">
                         <span className="font-bold text-slate-700 flex items-center gap-1.5">
-                          <Calendar size={14} className="text-[blue-600]" /> จ่ายล่วงหน้า (งวดถัดไป):
+                          <Calendar size={14} className="text-blue-600" /> จ่ายล่วงหน้า (งวดถัดไป):
                         </span>
-                        <span className="font-bold text-[blue-600] font-mono">
+                        <span className="font-bold text-blue-600 font-mono">
                           +{advanceMonths} เดือน (฿{advanceTotal.toFixed(2)})
                         </span>
                       </div>
@@ -1094,7 +1094,7 @@ export default function LineSlipsClient({
                             onClick={() => setAdvanceMonths(num)}
                             className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                               advanceMonths === num
-                                ? "bg-[blue-600] text-white shadow-2xs"
+                                ? "bg-blue-600 text-white shadow-2xs"
                                 : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-100"
                             }`}
                           >
@@ -1133,7 +1133,7 @@ export default function LineSlipsClient({
                 <button 
                   onClick={handleApprove}
                   disabled={isLoading || !foundHouse || (selectedInvoices.length === 0 && advanceMonths === 0)}
-                  className="flex-1 sm:flex-initial px-6 py-2.5 bg-[blue-600] hover:bg-[blue-700] text-white rounded-xl transition-all font-bold text-xs disabled:opacity-50 shadow-md shadow-[blue-600]/25 flex items-center justify-center gap-2 cursor-pointer"
+                  className="flex-1 sm:flex-initial px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all font-bold text-xs disabled:opacity-50 shadow-md shadow-blue-600/25 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {isLoading ? "กำลังบันทึก..." : (
                     <>
