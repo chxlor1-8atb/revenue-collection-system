@@ -1062,7 +1062,14 @@ export default function LineSlipsClient({
                               />
                               <div className="ml-3 flex-1 flex justify-between items-center text-xs">
                                 <div>
-                                  <div className="font-bold text-slate-800">งวดประจำเดือน {inv.monthYear}</div>
+                                  <div className="font-bold text-slate-800">
+                                    {(() => {
+                                      const parts = inv.monthYear.split("-");
+                                      if (parts.length !== 2) return inv.monthYear;
+                                      const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1);
+                                      return d.toLocaleDateString("th-TH", { month: "long", year: "numeric" });
+                                    })()}
+                                  </div>
                                   <div className="text-[10px] text-slate-400 font-mono">บิล #{inv.id}</div>
                                 </div>
                                 <div className="font-mono font-bold text-slate-800 text-sm">
