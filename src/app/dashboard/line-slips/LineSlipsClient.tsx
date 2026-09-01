@@ -703,16 +703,6 @@ export default function LineSlipsClient({
                             </span>
                           )}
                         </div>
-
-                        {/* Bottom timestamp on slip */}
-                        <div className="absolute bottom-2 left-3 flex items-center gap-1.5 text-[10px] text-slate-700 bg-white/80 font-mono pointer-events-none shadow-2xs backdrop-blur-md px-2 py-1 rounded-lg">
-                          <Clock size={10} />
-                          <span>
-                            {slip.createdAt ? new Date(slip.createdAt).toLocaleString("th-TH", {
-                              day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"
-                            }) : "-"}
-                          </span>
-                        </div>
                       </div>
 
                       {/* Smart Match Banner if detected */}
@@ -736,7 +726,7 @@ export default function LineSlipsClient({
 
                       {/* Bottom: Details & Action */}
                       <div className="p-4 sm:p-5 flex flex-col justify-between flex-1 bg-white space-y-4">
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                           <div className="flex items-baseline justify-between gap-2">
                             <span className="font-mono text-2xl font-bold text-slate-900 tracking-tight">
                               ฿{parseFloat(slip.amount || "0").toLocaleString("th-TH", { minimumFractionDigits: 2 })}
@@ -758,6 +748,13 @@ export default function LineSlipsClient({
                             <User size={14} className="text-slate-400 shrink-0" />
                             <span className="truncate font-medium">{slip.senderName || "ไม่ระบุชื่อผู้โอน"}</span>
                           </div>
+
+                          {slip.createdAt && (
+                            <div className="flex items-center gap-1 text-[11px] text-slate-400 font-mono">
+                              <Clock size={11} className="shrink-0" />
+                              <span>{new Date(slip.createdAt).toLocaleString("th-TH", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
+                            </div>
+                          )}
                         </div>
 
                         {/* Actions */}
