@@ -18,22 +18,36 @@ import ConfirmModal from "@/components/ConfirmModal";
 import LineSendingModal from "@/components/LineSendingModal";
 
 
+const ZONE_COLOR_MAP: Record<string, string> = {
+  "หนองรี":          "bg-indigo-50 text-indigo-700 border-indigo-200",
+  "หนองกราด":        "bg-emerald-50 text-emerald-700 border-emerald-200",
+  "หนองเสม็ด":        "bg-cyan-50 text-cyan-700 border-cyan-200",
+  "บ้านเก่า":         "bg-amber-50 text-amber-700 border-amber-200",
+  "วัดขุนก้อง":       "bg-orange-50 text-orange-700 border-orange-200",
+  "วัดกลาง":         "bg-rose-50 text-rose-700 border-rose-200",
+  "ป่าเรไร":          "bg-teal-50 text-teal-700 border-teal-200",
+  "วัดร่องมันเทศ":    "bg-purple-50 text-purple-700 border-purple-200",
+  "บ้านถนนหัก":       "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
+  "วัดถนนหัก":        "bg-blue-50 text-blue-700 border-blue-200",
+  "ถนนหักพัฒนา":    "bg-sky-50 text-sky-700 border-sky-200",
+  "ทุ่งแหลม":        "bg-lime-50 text-lime-700 border-lime-200",
+  "หนองโพรง":       "bg-green-50 text-green-700 border-green-200",
+  "วัดใหม่เรไรทอง":  "bg-yellow-50 text-yellow-700 border-yellow-200",
+  "จะบวก":          "bg-pink-50 text-pink-700 border-pink-200",
+  "หัวสะพาน":       "bg-red-50 text-red-700 border-red-200",
+  "ป่าตาเส็ง":       "bg-violet-50 text-violet-700 border-violet-200",
+  "ป่ารักน้ำ":       "bg-stone-50 text-stone-700 border-stone-200",
+  "ดอนแสลงพันธ์":   "bg-slate-50 text-slate-700 border-slate-200",
+  "โคกหลวงพ่อ":     "bg-neutral-50 text-neutral-700 border-neutral-200",
+};
+
 const getZoneColorClass = (zone: string) => {
   if (!zone) return "bg-slate-50 text-slate-600 border-slate-200";
-  const hash = zone.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const colors = [
-    "bg-indigo-50 text-indigo-700 border-indigo-200",
-    "bg-emerald-50 text-emerald-700 border-emerald-200",
-    "bg-amber-50 text-amber-700 border-amber-200",
-    "bg-rose-50 text-rose-700 border-rose-200",
-    "bg-cyan-50 text-cyan-700 border-cyan-200",
-    "bg-purple-50 text-purple-700 border-purple-200",
-    "bg-orange-50 text-orange-700 border-orange-200",
-    "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
-    "bg-teal-50 text-teal-700 border-teal-200",
-    "bg-blue-50 text-blue-700 border-blue-200"
-  ];
-  return colors[hash % colors.length];
+  if (ZONE_COLOR_MAP[zone]) return ZONE_COLOR_MAP[zone];
+  // Fallback for unknown zones: pick by hash from a larger palette
+  const hash = zone.split('').reduce((acc, c) => acc * 31 + c.charCodeAt(0), 0);
+  const palette = Object.values(ZONE_COLOR_MAP);
+  return palette[Math.abs(hash) % palette.length];
 };
 
 export default function HousesClient({ 
