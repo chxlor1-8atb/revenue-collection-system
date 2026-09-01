@@ -959,7 +959,7 @@ export default function LineSlipsClient({
                     <div>
                       <div className="text-[11px] text-slate-400 font-medium">เวลาที่โอน</div>
                       <div className="text-xs text-slate-600 font-mono">
-                        {selectedSlip.createdAt ? new Date(selectedSlip.createdAt).toLocaleString("th-TH") : "-"}
+                        {selectedSlip.createdAt ? new Date(selectedSlip.createdAt).toLocaleString("th-TH", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "-"}
                       </div>
                     </div>
                   </div>
