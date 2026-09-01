@@ -620,20 +620,14 @@ export default function LineSlipsClient({
                       )}
 
                       {/* Top: Large Slip Visual Showcase */}
-                      <div className="relative h-48 sm:h-52 bg-slate-900 overflow-hidden group/img">
+                      <div className="relative aspect-[4/3] sm:aspect-square bg-slate-100 border-b border-slate-100 overflow-hidden group/img">
                         {slip.imageUrl ? (
                           <>
-                            {/* Blurred background fill */}
-                            <img 
-                              src={slip.imageUrl} 
-                              alt="Slip background" 
-                              className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-40" 
-                            />
                             {/* Sharp full slip image */}
                             <img 
                               src={slip.imageUrl} 
                               alt="Slip" 
-                              className="relative w-full h-full object-contain p-2 group-hover/img:scale-105 transition-transform duration-300" 
+                              className="relative w-full h-full object-cover object-top group-hover/img:scale-105 transition-transform duration-300" 
                             />
                             {/* Hover zoom overlay */}
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
@@ -673,7 +667,8 @@ export default function LineSlipsClient({
                         </div>
 
                         {/* Bottom timestamp on slip */}
-                        <div className="absolute bottom-2 left-3 right-3 flex justify-between items-center text-[10px] text-white/90 font-mono pointer-events-none drop-shadow">
+                        <div className="absolute bottom-2 left-3 flex items-center gap-1.5 text-[10px] text-slate-700 bg-white/80 font-mono pointer-events-none shadow-2xs backdrop-blur-md px-2 py-1 rounded-lg">
+                          <Clock size={10} />
                           <span>
                             {slip.createdAt ? new Date(slip.createdAt).toLocaleString("th-TH", {
                               day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"
