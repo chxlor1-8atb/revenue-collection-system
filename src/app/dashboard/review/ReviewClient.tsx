@@ -115,6 +115,7 @@ export default function ReviewClient() {
   // 4. Pusher Real-Time Updates for Admin Review Queue
   useEffect(() => {
     let pusherClient: any = null;
+
     const setupPusher = async () => {
       try {
         const { getPusherClient } = await import("@/lib/pusher");
@@ -123,37 +124,37 @@ export default function ReviewClient() {
         console.warn("Pusher not loaded in ReviewClient", e);
       }
 
-    if (pusherClient) {
-      const channel = pusherClient.subscribe('admin-notifications');
-      
-      const refreshQueue = () => {
-        setTimeout(() => mutate(), 300);
-      };
+      if (pusherClient) {
+        const channel = pusherClient.subscribe('admin-notifications');
+        
+        const refreshQueue = () => {
+          setTimeout(() => mutate(), 300);
+        };
 
-      const handleNewQr = (payload: any) => {
-        if (!payload || !payload.transactionId) {
-          refreshQueue();
-          return;
-        }
-        mutate((currentData: any) => {
-          if (!currentData) return currentData;
-          
-          const newWaiting = {
-            id: payload.transactionId,
-            amountClaimedByPayer: payload.amount?.toString() || "0",
-            slipStatus: 'waiting_for_slip',
-            createdAt: new Date().toISOString(),
-            houseNumber: payload.houseNumber || "-",
-            ownerName: payload.ownerName || "-",
-            invoices: []
-          };
-          
-          return {
-            ...currentData,
-            waiting: [newWaiting, ...(currentData.waiting || []).filter((w: any) => w.id !== payload.transactionId)]
-          };
-        }, { revalidate: false });
-      };
+        const handleNewQr = (payload: any) => {
+          if (!payload || !payload.transactionId) {
+            refreshQueue();
+            return;
+          }
+          mutate((currentData: any) => {
+            if (!currentData) return currentData;
+            
+            const newWaiting = {
+              id: payload.transactionId,
+              amountClaimedByPayer: payload.amount?.toString() || "0",
+              slipStatus: 'waiting_for_slip',
+              createdAt: new Date().toISOString(),
+              houseNumber: payload.houseNumber || "-",
+              ownerName: payload.ownerName || "-",
+              invoices: []
+            };
+            
+            return {
+              ...currentData,
+              waiting: [newWaiting, ...(currentData.waiting || []).filter((w: any) => w.id !== payload.transactionId)]
+            };
+          }, { revalidate: false });
+        };
 
       const handleSlipProcessed = (payload: any) => {
         if (!payload || !payload.transactionId) {
@@ -173,15 +174,15 @@ export default function ReviewClient() {
       channel.bind('new-slip', refreshQueue); // Usually needs full object, so we just fetch fast
       channel.bind('new-qr', handleNewQr);
       channel.bind('slip-processed', handleSlipProcessed);
-
-      return () => {
-        channel.unbind('new-slip', refreshQueue);
-        channel.unbind('new-qr', handleNewQr);
-        channel.unbind('slip-processed', handleSlipProcessed);
-        pusherClient.unsubscribe('admin-notifications');
-      };
+      }
     };
     setupPusher();
+
+    return () => {
+      if (pusherClient) {
+        pusherClient.unsubscribe('admin-notifications');
+      }
+    };
   }, [mutate]);
 
   const pending = data?.pending || [];

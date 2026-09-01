@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, QrCode } from "lucide-react";
-import { getPusherClient } from "@/lib/pusher";
 
 export default function InvoiceSelectionForm({ invoices, house }: { invoices: any[], house: any }) {
   const [selectedInvoices, setSelectedInvoices] = useState<number[]>([]);
@@ -12,19 +11,30 @@ export default function InvoiceSelectionForm({ invoices, house }: { invoices: an
   const router = useRouter();
 
   useEffect(() => {
-    const setupPusher = async () => {
-    const pusher = await getPusherClient();
-    if (!pusher) return;
+    let pusher: any = null;
+    let channel: any = null;
 
-    const channel = pusher.subscribe(`house-${house.id}`);
-    channel.bind("payment-update", () => {
-      // Refresh the page automatically when payment is received via backoffice/webhook
-      router.refresh();
-    });
+    const setupPusher = async () => {
+      try {
+        const { getPusherClient } = await import("@/lib/pusher");
+        pusher = await getPusherClient();
+      } catch (e) {
+        console.warn("Pusher client failed to initialize", e);
+      }
+
+      if (!pusher) return;
+
+      channel = pusher.subscribe(`house-${house.id}`);
+      channel.bind("payment-update", () => {
+        // Refresh the page automatically when payment is received via backoffice/webhook
+        router.refresh();
+      });
+    };
+    setupPusher();
 
     return () => {
-      channel.unbind("payment-update");
-      pusher.unsubscribe(`house-${house.id}`);
+      if (channel) channel.unbind("payment-update");
+      if (pusher) pusher.unsubscribe(`house-${house.id}`);
     };
   }, [house.id, router]);
 

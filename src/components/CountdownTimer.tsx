@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Clock, RefreshCw, CheckCircle2, AlertCircle } from "lucide-react";
-import { getPusherClient } from "@/lib/pusher";
 
 export default function CountdownTimer({ initialTimeLeft, transactionId, houseId }: { initialTimeLeft: number, transactionId?: number, houseId?: number }) {
   const [timeLeft, setTimeLeft] = useState<number>(initialTimeLeft);
@@ -28,37 +27,42 @@ export default function CountdownTimer({ initialTimeLeft, transactionId, houseId
 
   // Pusher Real-time Subscriptions + Fallback Polling
   useEffect(() => {
-    const setupPusher = async () => {
     if (!transactionId || isVerified || isRejected) return;
 
     let pusherClient: any = null;
-    try {
-      pusherClient = await getPusherClient();
-    } catch (e) {
-      console.warn("Pusher client failed to initialize", e);
-    }
+    let channel: any = null;
 
-    if (pusherClient && houseId) {
-      // Listen to the HOUSE channel so that if they pay an older QR, it still succeeds here!
-      const channel = pusherClient.subscribe(`house-${houseId}`);
-      channel.bind('payment-verified', (data: any) => {
-        if (data.status === 'verified') {
-          handleSuccessfulVerification();
-        } else if (data.status === 'rejected') {
-          handleRejection();
-        }
-      });
-    } else if (pusherClient && !houseId) {
-      // Fallback if no houseId is provided
-      const channel = pusherClient.subscribe(`transaction-${transactionId}`);
-      channel.bind('payment-verified', (data: any) => {
-        if (data.status === 'verified') {
-          handleSuccessfulVerification();
-        } else if (data.status === 'rejected') {
-          handleRejection();
-        }
-      });
-    }
+    const setupPusher = async () => {
+      try {
+        const { getPusherClient } = await import("@/lib/pusher");
+        pusherClient = await getPusherClient();
+      } catch (e) {
+        console.warn("Pusher client failed to initialize", e);
+      }
+
+      if (pusherClient && houseId) {
+        // Listen to the HOUSE channel so that if they pay an older QR, it still succeeds here!
+        channel = pusherClient.subscribe(`house-${houseId}`);
+        channel.bind('payment-verified', (data: any) => {
+          if (data.status === 'verified') {
+            handleSuccessfulVerification();
+          } else if (data.status === 'rejected') {
+            handleRejection();
+          }
+        });
+      } else if (pusherClient && !houseId) {
+        // Fallback to transaction specific channel if no houseId
+        channel = pusherClient.subscribe(`transaction-${transactionId}`);
+        channel.bind('payment-verified', (data: any) => {
+          if (data.status === 'verified') {
+            handleSuccessfulVerification();
+          } else if (data.status === 'rejected') {
+            handleRejection();
+          }
+        });
+      }
+    };
+    setupPusher();
 
     const pollStatus = async () => {
       try {
