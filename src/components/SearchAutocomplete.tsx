@@ -24,6 +24,7 @@ export default function SearchAutocomplete({ value, onChange, onSelect, onSubmit
   const [predictions, setPredictions] = useState<House[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const justSelected = useRef(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -36,6 +37,11 @@ export default function SearchAutocomplete({ value, onChange, onSelect, onSubmit
   }, []);
 
   useEffect(() => {
+    // If user just selected from dropdown, skip re-fetching
+    if (justSelected.current) {
+      justSelected.current = false;
+      return;
+    }
     const delayDebounceFn = setTimeout(() => {
       if (value.trim().length >= 2) {
         fetchPredictions(value);
@@ -62,6 +68,7 @@ export default function SearchAutocomplete({ value, onChange, onSelect, onSubmit
   };
 
   const handleSelect = (house: House) => {
+    justSelected.current = true;
     onChange(house.houseNumber);
     setIsOpen(false);
     if (onSelect) onSelect(house);
