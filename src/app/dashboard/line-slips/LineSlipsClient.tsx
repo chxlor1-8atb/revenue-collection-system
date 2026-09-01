@@ -57,6 +57,50 @@ interface LineSlipsClientProps {
   limit?: number;
 }
 
+
+function FancyCheckbox({
+  checked,
+  indeterminate,
+  onChange,
+  disabled,
+  size = "md"
+}: {
+  checked: boolean;
+  indeterminate?: boolean;
+  onChange: () => void;
+  disabled?: boolean;
+  size?: "sm" | "md";
+}) {
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={indeterminate ? "mixed" : checked}
+      disabled={disabled}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (!disabled) onChange();
+      }}
+      className={`relative inline-flex items-center justify-center rounded-lg transition-all duration-200 cursor-pointer select-none shrink-0 ${
+        size === "sm" ? "w-4.5 h-4.5" : "w-5 h-5"
+      } ${
+        disabled
+          ? "opacity-40 cursor-not-allowed bg-slate-100 border border-slate-200"
+          : checked || indeterminate
+          ? "bg-blue-600 text-white shadow-xs shadow-blue-600/30 border border-blue-600 hover:bg-blue-700 active:scale-95"
+          : "bg-white/90 backdrop-blur-xs border-2 border-slate-300 hover:border-blue-600 hover:bg-indigo-50/30 active:scale-95"
+      }`}
+    >
+      {checked && !indeterminate && (
+        <Check size={size === "sm" ? 11 : 13} strokeWidth={3} className="text-white" />
+      )}
+      {indeterminate && (
+        <span className={`block bg-white rounded-full ${size === "sm" ? "w-2 h-0.5" : "w-2.5 h-0.5"}`} />
+      )}
+    </button>
+  );
+}
+
 export default function LineSlipsClient({ 
   slips, 
   activeTab, 
@@ -603,24 +647,17 @@ export default function LineSlipsClient({
                         isSelected ? "border-blue-600 ring-2 ring-blue-600/20" : "border-slate-200/90 hover:border-blue-600/40"
                       }`}
                     >
-                      {/* Select checkbox for pending tab */}
-                      {activeTab === "pending" && (
-                        <div className="absolute top-3 left-3 z-20">
-                          <button
-                            onClick={() => toggleSelectSlip(slip.id)}
-                            className="w-7 h-7 rounded-lg bg-white/90 backdrop-blur-md border border-slate-200/80 flex items-center justify-center text-slate-600 hover:text-blue-600 shadow-2xs transition-transform active:scale-95 cursor-pointer"
-                          >
-                            {isSelected ? (
-                              <CheckSquare size={16} className="text-blue-600" />
-                            ) : (
-                              <Square size={16} />
-                            )}
-                          </button>
-                        </div>
-                      )}
-
                       {/* Top: Large Slip Visual Showcase */}
                       <div className="relative aspect-[4/3] sm:aspect-square bg-slate-100 border-b border-slate-100 overflow-hidden group/img">
+                        {/* Floating Sleek Checkbox - visible on hover or when selected */}
+                        {activeTab === "pending" && (
+                          <div
+                            className={`absolute top-2.5 left-2.5 z-20 transition-opacity ${isSelected ? "opacity-100" : "opacity-0 group-hover/img:opacity-100"}`}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <FancyCheckbox checked={isSelected} onChange={() => toggleSelectSlip(slip.id)} size="sm" />
+                          </div>
+                        )}
                         {slip.imageUrl ? (
                           <>
                             {/* Sharp full slip image */}
@@ -787,12 +824,7 @@ export default function LineSlipsClient({
                         <tr key={slip.id} className={`hover:bg-slate-50/80 transition-colors ${isSelected ? "bg-indigo-50/30" : ""}`}>
                           {activeTab === "pending" && (
                             <td className="px-4 py-4">
-                              <button
-                                onClick={() => toggleSelectSlip(slip.id)}
-                                className="text-slate-400 hover:text-blue-600 cursor-pointer"
-                              >
-                                {isSelected ? <CheckSquare size={16} className="text-blue-600" /> : <Square size={16} />}
-                              </button>
+                              <FancyCheckbox checked={isSelected} onChange={() => toggleSelectSlip(slip.id)} size="sm" />
                             </td>
                           )}
                           <td className="px-5 py-4 font-mono text-xs text-slate-500">
