@@ -17,6 +17,25 @@ import MonthPicker from "@/components/MonthPicker";
 import ConfirmModal from "@/components/ConfirmModal";
 import LineSendingModal from "@/components/LineSendingModal";
 
+
+const getZoneColorClass = (zone: string) => {
+  if (!zone) return "bg-slate-50 text-slate-600 border-slate-200";
+  const hash = zone.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const colors = [
+    "bg-indigo-50 text-indigo-700 border-indigo-200",
+    "bg-emerald-50 text-emerald-700 border-emerald-200",
+    "bg-amber-50 text-amber-700 border-amber-200",
+    "bg-rose-50 text-rose-700 border-rose-200",
+    "bg-cyan-50 text-cyan-700 border-cyan-200",
+    "bg-purple-50 text-purple-700 border-purple-200",
+    "bg-orange-50 text-orange-700 border-orange-200",
+    "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
+    "bg-teal-50 text-teal-700 border-teal-200",
+    "bg-blue-50 text-blue-700 border-blue-200"
+  ];
+  return colors[hash % colors.length];
+};
+
 export default function HousesClient({ 
   initialHouses,
   currentPage = 1,
@@ -672,7 +691,7 @@ export default function HousesClient({
                   </span>
                 )}
                 {selectedZone && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[blue-50] border border-[blue-200] rounded-full text-[blue-600] font-semibold shadow-2xs">
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 border rounded-full ${getZoneColorClass(selectedZone)} font-semibold shadow-2xs`}>
                     <MapPin size={12} />
                     <span>{OFFICIAL_ZONES[selectedZone] || `ชุมชน${selectedZone}`}</span>
                     <button onClick={() => setSelectedZone("")} className="hover:text-red-500 cursor-pointer"><X size={12} /></button>
@@ -873,7 +892,7 @@ export default function HousesClient({
                           </span>
                         </div>
                         {house.zone && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[blue-50] text-[blue-600] border border-[blue-200]">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${getZoneColorClass(house.zone)}`}>
                             {house.zone}
                           </span>
                         )}
@@ -1000,7 +1019,7 @@ export default function HousesClient({
                         {previewHouse.houseNumber}
                       </span>
                       {previewHouse.zone && (
-                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[blue-50] text-[blue-600] border border-[blue-200]">
+                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${getZoneColorClass(previewHouse.zone)}`}>
                           {previewHouse.zone}
                         </span>
                       )}
