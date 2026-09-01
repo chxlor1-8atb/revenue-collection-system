@@ -137,7 +137,7 @@ export default function SettingsForm({
             className="group relative p-2.5 sm:p-3 rounded-2xl bg-gradient-to-br from-indigo-50/90 to-indigo-100/50 hover:from-indigo-100 hover:to-indigo-200/60 border border-indigo-200/70 hover:border-indigo-300 transition-all duration-200 shadow-2xs hover:shadow-xs active:scale-[0.98] flex flex-col justify-between overflow-hidden"
           >
             <div className="flex items-center justify-between mb-2">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#5B58F2] to-indigo-500 text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[blue-600] to-indigo-500 text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
                 <BarChart3 size={15} />
               </div>
               <ArrowRight size={13} className="text-indigo-400 group-hover:text-indigo-600 group-hover:translate-x-0.5 transition-all" />
@@ -227,7 +227,7 @@ export default function SettingsForm({
                 : "text-slate-500 hover:text-slate-900 hover:bg-white/40"
             }`}
           >
-            <CreditCard size={13} className={activeTab === "account" ? "text-[#5B58F2]" : ""} />
+            <CreditCard size={13} className={activeTab === "account" ? "text-[blue-600]" : ""} />
             <span className="truncate">บัญชี & บิล</span>
           </button>
 
@@ -257,7 +257,7 @@ export default function SettingsForm({
               {/* Account Name */}
               <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs space-y-1.5">
                 <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                  <Building2 size={13} className="text-[#5B58F2]" />
+                  <Building2 size={13} className="text-[blue-600]" />
                   ชื่อบัญชี / ชื่อหน่วยงาน
                 </label>
                 <input
@@ -266,7 +266,7 @@ export default function SettingsForm({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="เช่น เทศบาลเมืองนางรอง"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#5B58F2]/30 focus:border-[#5B58F2] outline-hidden transition-all"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[blue-600]/30 focus:border-[blue-600] outline-hidden transition-all"
                 />
               </div>
 
@@ -274,7 +274,7 @@ export default function SettingsForm({
               <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs space-y-1.5">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                    <CreditCard size={13} className="text-[#5B58F2]" />
+                    <CreditCard size={13} className="text-[blue-600]" />
                     เบอร์พร้อมเพย์ (PromptPay ID)
                   </label>
                   <span className="text-[10px] font-mono font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
@@ -287,7 +287,7 @@ export default function SettingsForm({
                   value={promptPayId}
                   onChange={(e) => setPromptPayId(e.target.value)}
                   placeholder="เช่น 0994000160759 หรือ เบอร์มือถือ 10 หลัก"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#5B58F2]/30 focus:border-[#5B58F2] outline-hidden transition-all"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[blue-600]/30 focus:border-[blue-600] outline-hidden transition-all"
                 />
               </div>
 
@@ -295,7 +295,7 @@ export default function SettingsForm({
               <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                    <Calendar size={13} className="text-[#5B58F2]" /> รอบออกบิลอัตโนมัติประจำเดือน
+                    <Calendar size={13} className="text-[blue-600]" /> รอบออกบิลอัตโนมัติประจำเดือน
                   </div>
                   {autoBillingDay ? (
                     <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/70">
@@ -340,7 +340,7 @@ export default function SettingsForm({
                           if (!dueDateDays) setDueDateDays("10");
                           if (!autoRemindDays) setAutoRemindDays("3");
                         }}
-                        className="text-[10px] font-bold text-[#5B58F2] hover:text-indigo-800 underline cursor-pointer"
+                        className="text-[10px] font-bold text-[blue-600] hover:text-indigo-800 underline cursor-pointer"
                       >
                         ⚡ ตั้งเป็นวันที่ 25
                       </button>
@@ -353,7 +353,7 @@ export default function SettingsForm({
                     value={autoBillingDay}
                     onChange={(e) => setAutoBillingDay(e.target.value)}
                     placeholder="เช่น 25 (เว้นว่างถ้าออกบิลเอง)"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#5B58F2]/30 focus:border-[#5B58F2] outline-hidden transition-all"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[blue-600]/30 focus:border-[blue-600] outline-hidden transition-all"
                   />
                 </div>
 
@@ -368,7 +368,7 @@ export default function SettingsForm({
                       value={dueDateDays}
                       onChange={(e) => setDueDateDays(e.target.value)}
                       placeholder="เช่น 10"
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#5B58F2]/30 focus:border-[#5B58F2] outline-hidden"
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[blue-600]/30 focus:border-[blue-600] outline-hidden"
                     />
                   </div>
 
@@ -382,7 +382,7 @@ export default function SettingsForm({
                       value={autoRemindDays}
                       onChange={(e) => setAutoRemindDays(e.target.value)}
                       placeholder="เช่น 3"
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#5B58F2]/30 focus:border-[#5B58F2] outline-hidden"
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[blue-600]/30 focus:border-[blue-600] outline-hidden"
                     />
                   </div>
                 </div>
@@ -485,7 +485,7 @@ export default function SettingsForm({
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-[#5B58F2] via-[#6366F1] to-[#7C3AED] hover:from-[#4A47D1] hover:to-[#6D28D9] active:scale-[0.99] text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md shadow-indigo-500/25 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 text-xs"
+            className="w-full bg-gradient-to-r from-[blue-600] via-[#6366F1] to-[#7C3AED] hover:from-[blue-700] hover:to-[#6D28D9] active:scale-[0.99] text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md shadow-indigo-500/25 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 text-xs"
           >
             {isLoading ? (
               <>

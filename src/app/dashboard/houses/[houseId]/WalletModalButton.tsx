@@ -57,7 +57,7 @@ export default function WalletModalButton({ houseId, currentWallet }: { houseId:
             
             <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
               <h3 className="font-bold text-base sm:text-lg text-slate-800 flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-indigo-100 text-[#5B58F2] flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-indigo-100 text-[blue-600] flex items-center justify-center font-bold">
                   <Wallet size={16} />
                 </div>
                 <span>ปรับยอดเงินในกระเป๋า (Wallet)</span>
@@ -86,7 +86,7 @@ export default function WalletModalButton({ houseId, currentWallet }: { houseId:
                     onClick={() => setAction("add")}
                     className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                       action === "add" 
-                        ? "bg-[#5B58F2] text-white border-[#5B58F2] shadow-2xs" 
+                        ? "bg-[blue-600] text-white border-[blue-600] shadow-2xs" 
                         : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
                     }`}
                   >
@@ -97,7 +97,7 @@ export default function WalletModalButton({ houseId, currentWallet }: { houseId:
                     onClick={() => setAction("set")}
                     className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                       action === "set" 
-                        ? "bg-[#5B58F2] text-white border-[#5B58F2] shadow-2xs" 
+                        ? "bg-[blue-600] text-white border-[blue-600] shadow-2xs" 
                         : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
                     }`}
                   >
@@ -119,7 +119,7 @@ export default function WalletModalButton({ houseId, currentWallet }: { houseId:
                     value={amount}
                     onChange={e => setAmount(e.target.value)}
                     placeholder="0.00"
-                    className="pl-8 pr-4 w-full py-2.5 rounded-xl border border-slate-200 text-sm font-mono font-bold text-slate-900 bg-white focus:ring-2 focus:ring-[#5B58F2]/30 focus:border-[#5B58F2] outline-hidden"
+                    className="pl-8 pr-4 w-full py-2.5 rounded-xl border border-slate-200 text-sm font-mono font-bold text-slate-900 bg-white focus:ring-2 focus:ring-[blue-600]/30 focus:border-[blue-600] outline-hidden"
                     autoFocus
                   />
                 </div>
@@ -137,7 +137,7 @@ export default function WalletModalButton({ houseId, currentWallet }: { houseId:
                   type="button"
                   onClick={handleUpdate}
                   disabled={isLoading}
-                  className="px-5 py-2 text-xs font-bold text-white bg-gradient-to-r from-[#5B58F2] to-indigo-600 hover:from-[#4A47D1] hover:to-indigo-700 rounded-xl transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
+                  className="px-5 py-2 text-xs font-bold text-white bg-gradient-to-r from-[blue-600] to-indigo-600 hover:from-[blue-700] hover:to-indigo-700 rounded-xl transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
                 >
                   {isLoading ? (
                     <>

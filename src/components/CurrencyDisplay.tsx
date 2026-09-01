@@ -53,7 +53,7 @@ export default function CurrencyDisplay({
   // Variant color & badge configurations
   const variantClasses = {
     default: "text-slate-900",
-    primary: "text-[#5B58F2]",
+    primary: "text-[blue-600]",
     success: "text-emerald-700",
     danger: "text-rose-600",
     warning: "text-amber-700",

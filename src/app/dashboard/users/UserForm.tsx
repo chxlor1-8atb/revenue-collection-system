@@ -57,7 +57,7 @@ export default function UserForm({
       <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden font-sans border border-slate-100 animate-in zoom-in-95">
         <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-slate-50/70">
           <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-indigo-50 text-[#5B58F2] flex items-center justify-center shadow-2xs">
+            <div className="w-9 h-9 rounded-2xl bg-indigo-50 text-[blue-600] flex items-center justify-center shadow-2xs">
               <KeyRound size={18} />
             </div>
             {initialData ? "แก้ไขผู้ใช้งาน" : "เพิ่มผู้ใช้งานใหม่"}
@@ -78,7 +78,7 @@ export default function UserForm({
               required
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 transition-all text-slate-800"
+              className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[blue-600] focus:ring-2 focus:ring-[blue-600]/20 transition-all text-slate-800"
               placeholder="ตั้งชื่อผู้ใช้งาน"
             />
           </div>
@@ -93,7 +93,7 @@ export default function UserForm({
               required={!initialData}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 transition-all text-slate-800"
+              className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[blue-600] focus:ring-2 focus:ring-[blue-600]/20 transition-all text-slate-800"
               placeholder="ตั้งรหัสผ่าน"
             />
           </div>
@@ -103,7 +103,7 @@ export default function UserForm({
             <div className="grid grid-cols-2 gap-3">
               <label className={`
                 border rounded-2xl p-3.5 flex flex-col items-center gap-1 cursor-pointer transition-all
-                ${role === 'staff' ? 'border-[#5B58F2] bg-indigo-50/50 text-[#5B58F2] ring-2 ring-[#5B58F2]/20 font-bold' : 'border-slate-200 hover:border-slate-300 text-slate-600'}
+                ${role === 'staff' ? 'border-[blue-600] bg-indigo-50/50 text-[blue-600] ring-2 ring-[blue-600]/20 font-bold' : 'border-slate-200 hover:border-slate-300 text-slate-600'}
               `}>
                 <input type="radio" name="role" value="staff" checked={role === 'staff'} onChange={() => setRole('staff')} className="sr-only" />
                 <span className="text-sm">Staff</span>
@@ -112,7 +112,7 @@ export default function UserForm({
               
               <label className={`
                 border rounded-2xl p-3.5 flex flex-col items-center gap-1 cursor-pointer transition-all
-                ${role === 'admin' ? 'border-[#5B58F2] bg-indigo-50/50 text-[#5B58F2] ring-2 ring-[#5B58F2]/20 font-bold' : 'border-slate-200 hover:border-slate-300 text-slate-600'}
+                ${role === 'admin' ? 'border-[blue-600] bg-indigo-50/50 text-[blue-600] ring-2 ring-[blue-600]/20 font-bold' : 'border-slate-200 hover:border-slate-300 text-slate-600'}
               `}>
                 <input type="radio" name="role" value="admin" checked={role === 'admin'} onChange={() => setRole('admin')} className="sr-only" />
                 <span className="text-sm">Admin</span>
@@ -140,7 +140,7 @@ export default function UserForm({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2.5 bg-[#5B58F2] hover:bg-[#4A47D1] text-white rounded-xl font-bold text-sm transition-all shadow-md shadow-[#5B58F2]/25 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+              className="flex-1 px-4 py-2.5 bg-[blue-600] hover:bg-[blue-700] text-white rounded-xl font-bold text-sm transition-all shadow-md shadow-[blue-600]/25 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
             >
               {isSubmitting ? (
                 <><Loader2 size={16} className="animate-spin" /> กำลังบันทึก...</>

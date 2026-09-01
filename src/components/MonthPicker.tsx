@@ -63,7 +63,7 @@ export default function MonthPicker({
         disabled={disabled}
         aria-label={`เลือกเดือนและปี (${displayValue})`}
         aria-expanded={isOpen}
-        className={buttonClassName || `w-full flex items-center justify-between px-4 py-3 bg-white border border-slate-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 ${colorTheme === 'blue' ? 'focus:ring-[#5B58F2] focus:border-[#5B58F2]' : 'focus:ring-emerald-500 focus:border-emerald-500'} ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-50' : 'hover:border-slate-400'}`}
+        className={buttonClassName || `w-full flex items-center justify-between px-4 py-3 bg-white border border-slate-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 ${colorTheme === 'blue' ? 'focus:ring-[blue-600] focus:border-[blue-600]' : 'focus:ring-emerald-500 focus:border-emerald-500'} ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-50' : 'hover:border-slate-400'}`}
       >
         <span className="text-[13px] text-slate-700">{displayValue}</span>
         <CalendarIcon size={16} className="text-slate-500" />
@@ -107,8 +107,8 @@ export default function MonthPicker({
             <div className="grid grid-cols-3 gap-2 p-4">
               {thaiMonths.map((m, idx) => {
                 const isSelected = viewYear === currentYear && (idx + 1) === currentMonth;
-                const selectedBg = colorTheme === 'blue' ? 'bg-[#5B58F2]' : 'bg-emerald-600';
-                const hoverTextBg = colorTheme === 'blue' ? 'hover:bg-[#EEF0FF] hover:text-[#5B58F2]' : 'hover:bg-emerald-50 hover:text-emerald-700';
+                const selectedBg = colorTheme === 'blue' ? 'bg-[blue-600]' : 'bg-emerald-600';
+                const hoverTextBg = colorTheme === 'blue' ? 'hover:bg-[blue-50] hover:text-[blue-600]' : 'hover:bg-emerald-50 hover:text-emerald-700';
                 
                 return (
                   <button

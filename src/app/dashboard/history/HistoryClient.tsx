@@ -50,8 +50,8 @@ function FancyCheckbox({
         disabled
           ? "opacity-40 cursor-not-allowed bg-slate-100 border border-slate-200"
           : checked || indeterminate
-          ? "bg-[#5B58F2] text-white shadow-xs shadow-[#5B58F2]/30 border border-[#5B58F2] hover:bg-[#4A47D1] active:scale-95"
-          : "bg-white border-2 border-slate-300 hover:border-[#5B58F2] hover:bg-indigo-50/30 active:scale-95"
+          ? "bg-[blue-600] text-white shadow-xs shadow-[blue-600]/30 border border-[blue-600] hover:bg-[blue-700] active:scale-95"
+          : "bg-white border-2 border-slate-300 hover:border-[blue-600] hover:bg-indigo-50/30 active:scale-95"
       }`}
     >
       {checked && !indeterminate && (
@@ -343,7 +343,7 @@ export default function HistoryClient() {
             <div>
               <div className="flex items-center gap-2.5 flex-wrap">
                 <h1 className="font-bold text-2xl text-slate-900 tracking-tight">ประวัติการรับชำระเงิน</h1>
-                <span className="bg-[#EEF0FF] text-[#5B58F2] text-xs font-bold px-2.5 py-0.5 rounded-full border border-[#D5D9FF]">
+                <span className="bg-[blue-50] text-[blue-600] text-xs font-bold px-2.5 py-0.5 rounded-full border border-[blue-200]">
                   {totalCount.toLocaleString()} รายการ
                 </span>
                 <span className="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-0.5 rounded-full border border-emerald-200">
@@ -470,7 +470,7 @@ export default function HistoryClient() {
                 onChange={setSearchInput}
                 onSubmit={() => { setPage(1); setSearch(searchInput); }}
                 placeholder="ค้นหาบ้านเลขที่, ชื่อ, Ref Code..."
-                className="w-full lg:w-80 focus:w-full lg:focus:w-80 !bg-white hover:!bg-slate-50 border-slate-200 focus:!bg-white focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 shadow-none text-sm rounded-xl transition-all"
+                className="w-full lg:w-80 focus:w-full lg:focus:w-80 !bg-white hover:!bg-slate-50 border-slate-200 focus:!bg-white focus:border-[blue-600] focus:ring-2 focus:ring-[blue-600]/20 shadow-none text-sm rounded-xl transition-all"
               />
             </div>
 
@@ -507,7 +507,7 @@ export default function HistoryClient() {
                   value={monthYear}
                   onChange={(val) => { setMonthYear(val); setPage(1); }}
                   colorTheme="blue"
-                  buttonClassName="w-full flex items-center justify-between px-3 h-10 bg-white border border-slate-200 hover:border-slate-300 rounded-xl text-xs font-semibold shadow-none focus:outline-none focus:border-[#5B58F2] focus:ring-2 focus:ring-[#5B58F2]/20 transition-all cursor-pointer text-slate-700"
+                  buttonClassName="w-full flex items-center justify-between px-3 h-10 bg-white border border-slate-200 hover:border-slate-300 rounded-xl text-xs font-semibold shadow-none focus:outline-none focus:border-[blue-600] focus:ring-2 focus:ring-[blue-600]/20 transition-all cursor-pointer text-slate-700"
                 />
               </div>
 
@@ -593,7 +593,7 @@ export default function HistoryClient() {
 
               <button
                 onClick={handleResetFilters}
-                className="text-[#5B58F2] hover:underline font-semibold ml-1 cursor-pointer"
+                className="text-[blue-600] hover:underline font-semibold ml-1 cursor-pointer"
               >
                 ล้างทั้งหมด
               </button>
@@ -633,7 +633,7 @@ export default function HistoryClient() {
                   onClick={handleSelectAllCurrentPage}
                   className={`inline-flex items-center gap-2.5 text-xs font-semibold px-3.5 py-2 rounded-xl border transition-all duration-200 cursor-pointer shadow-2xs select-none ${
                     isAllCurrentPageSelected || isSomeCurrentPageSelected
-                      ? "bg-indigo-50/80 border-[#5B58F2]/40 text-[#5B58F2] hover:bg-indigo-100/70"
+                      ? "bg-indigo-50/80 border-[blue-600]/40 text-[blue-600] hover:bg-indigo-100/70"
                       : "bg-white border-slate-200/90 text-slate-700 hover:bg-slate-50 hover:border-slate-300"
                   }`}
                 >
@@ -651,8 +651,8 @@ export default function HistoryClient() {
 
                 {selectedIds.length > 0 && (
                   <div className="inline-flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#5B58F2] bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-200/60 shadow-2xs">
-                      <span className="w-2 h-2 rounded-full bg-[#5B58F2] animate-pulse" />
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[blue-600] bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-200/60 shadow-2xs">
+                      <span className="w-2 h-2 rounded-full bg-[blue-600] animate-pulse" />
                       เลือกแล้ว {selectedIds.length} รายการ (฿{selectedTotalAmount.toLocaleString("th-TH", { minimumFractionDigits: 2 })})
                     </span>
                     <button
@@ -678,10 +678,10 @@ export default function HistoryClient() {
                       transition={{ duration: 0.2, delay: index * 0.04 }}
                       className={`bg-white rounded-2xl p-5 border shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group relative ${
                         isSelected 
-                          ? "border-[#5B58F2] ring-2 ring-[#5B58F2]/20 bg-indigo-50/10" 
+                          ? "border-[blue-600] ring-2 ring-[blue-600]/20 bg-indigo-50/10" 
                           : isVoided 
                           ? "border-slate-200 bg-slate-50/50 opacity-80" 
-                          : "border-slate-200/90 hover:border-[#5B58F2]/40"
+                          : "border-slate-200/90 hover:border-[blue-600]/40"
                       }`}
                     >
                       <div>
@@ -739,7 +739,7 @@ export default function HistoryClient() {
                           <div className="flex flex-wrap gap-1 pt-1">
                             {item.months && item.months.length > 0 ? (
                               item.months.map((m: string) => (
-                                <span key={m} className="text-[10px] font-bold bg-[#EEF0FF] text-[#5B58F2] px-2 py-0.5 rounded-md">
+                                <span key={m} className="text-[10px] font-bold bg-[blue-50] text-[blue-600] px-2 py-0.5 rounded-md">
                                   {formatThaiMonth(m)}
                                 </span>
                               ))
@@ -857,7 +857,7 @@ export default function HistoryClient() {
                         <div className="flex items-center gap-1">
                           <span>รหัส / สลิป</span>
                           {sortBy === "id" ? (
-                            sortOrder === "asc" ? <ArrowUp size={12} className="text-[#5B58F2]" /> : <ArrowDown size={12} className="text-[#5B58F2]" />
+                            sortOrder === "asc" ? <ArrowUp size={12} className="text-[blue-600]" /> : <ArrowDown size={12} className="text-[blue-600]" />
                           ) : (
                             <ArrowUpDown size={11} className="text-slate-300" />
                           )}
@@ -872,7 +872,7 @@ export default function HistoryClient() {
                         <div className="flex items-center gap-1">
                           <span>บ้านเลขที่</span>
                           {sortBy === "houseNumber" ? (
-                            sortOrder === "asc" ? <ArrowUp size={12} className="text-[#5B58F2]" /> : <ArrowDown size={12} className="text-[#5B58F2]" />
+                            sortOrder === "asc" ? <ArrowUp size={12} className="text-[blue-600]" /> : <ArrowDown size={12} className="text-[blue-600]" />
                           ) : (
                             <ArrowUpDown size={11} className="text-slate-300" />
                           )}
@@ -891,7 +891,7 @@ export default function HistoryClient() {
                         <div className="flex items-center gap-1">
                           <span>วันที่ชำระ</span>
                           {sortBy === "paidAt" ? (
-                            sortOrder === "asc" ? <ArrowUp size={12} className="text-[#5B58F2]" /> : <ArrowDown size={12} className="text-[#5B58F2]" />
+                            sortOrder === "asc" ? <ArrowUp size={12} className="text-[blue-600]" /> : <ArrowDown size={12} className="text-[blue-600]" />
                           ) : (
                             <ArrowUpDown size={11} className="text-slate-300" />
                           )}
@@ -906,7 +906,7 @@ export default function HistoryClient() {
                         <div className="flex items-center justify-end gap-1">
                           <span>ยอดเงิน</span>
                           {sortBy === "amount" ? (
-                            sortOrder === "asc" ? <ArrowUp size={12} className="text-[#5B58F2]" /> : <ArrowDown size={12} className="text-[#5B58F2]" />
+                            sortOrder === "asc" ? <ArrowUp size={12} className="text-[blue-600]" /> : <ArrowDown size={12} className="text-[blue-600]" />
                           ) : (
                             <ArrowUpDown size={11} className="text-slate-300" />
                           )}
@@ -987,7 +987,7 @@ export default function HistoryClient() {
                             <div className="flex flex-wrap gap-1">
                               {item.months && item.months.length > 0 ? (
                                 item.months.map((m: string) => (
-                                  <span key={m} className="text-[10px] font-bold bg-[#EEF0FF] text-[#5B58F2] px-2 py-0.5 rounded-md">
+                                  <span key={m} className="text-[10px] font-bold bg-[blue-50] text-[blue-600] px-2 py-0.5 rounded-md">
                                     {formatThaiMonth(m)}
                                   </span>
                                 ))
@@ -1001,7 +1001,7 @@ export default function HistoryClient() {
                           <td className="px-4 py-3.5">
                             <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full">
                               {item.paidVia === "LINE Bot" ? (
-                                <><Smartphone size={12} className="text-[#5B58F2]" /> LINE Bot</>
+                                <><Smartphone size={12} className="text-[blue-600]" /> LINE Bot</>
                               ) : (
                                 <><Globe size={12} className="text-slate-400" /> Web</>
                               )}
@@ -1113,7 +1113,7 @@ export default function HistoryClient() {
             className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-slate-900/95 backdrop-blur-xl text-white px-5 py-3 rounded-2xl shadow-2xl flex flex-wrap items-center gap-3.5 border border-slate-700/80"
           >
             <div className="flex items-center gap-2.5 pr-3 border-r border-slate-700/80">
-              <span className="w-6 h-6 rounded-lg bg-[#5B58F2] flex items-center justify-center text-white text-xs font-bold font-mono shadow-xs shadow-[#5B58F2]/50">
+              <span className="w-6 h-6 rounded-lg bg-[blue-600] flex items-center justify-center text-white text-xs font-bold font-mono shadow-xs shadow-[blue-600]/50">
                 {selectedValidCount}
               </span>
               <div className="text-xs">
@@ -1126,7 +1126,7 @@ export default function HistoryClient() {
             <Link
               href={`/dashboard/history/bulk-receipt?ids=${selectedIds.join(",")}`}
               target="_blank"
-              className="inline-flex items-center gap-2 bg-[#5B58F2] hover:bg-[#4A47D1] text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-md shadow-[#5B58F2]/30 active:scale-95 cursor-pointer"
+              className="inline-flex items-center gap-2 bg-[blue-600] hover:bg-[blue-700] text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-md shadow-[blue-600]/30 active:scale-95 cursor-pointer"
             >
               <Printer size={14} />
               <span>พิมพ์ใบเสร็จ ({selectedValidCount})</span>
@@ -1157,7 +1157,7 @@ export default function HistoryClient() {
       {isZipping && (
         <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl border border-slate-100 animate-in zoom-in-95">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-[#5B58F2] flex items-center justify-center mx-auto mb-4">
+            <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-[blue-600] flex items-center justify-center mx-auto mb-4">
               <Loader2 size={24} className="animate-spin" />
             </div>
             <h3 className="font-bold text-slate-800 text-base mb-1">กำลังรวบรวมรูปสลิป...</h3>
@@ -1167,7 +1167,7 @@ export default function HistoryClient() {
             {zipProgress.total > 0 && (
               <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden mb-2">
                 <div 
-                  className="bg-[#5B58F2] h-full transition-all duration-300"
+                  className="bg-[blue-600] h-full transition-all duration-300"
                   style={{ width: `${(zipProgress.current / zipProgress.total) * 100}%` }}
                 />
               </div>

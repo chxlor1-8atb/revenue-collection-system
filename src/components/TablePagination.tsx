@@ -82,7 +82,7 @@ export default function TablePagination({
           onClick={() => onPageChange(p as number)}
           className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
             isActive 
-              ? 'bg-[#5B58F2] text-white shadow-xs shadow-[#5B58F2]/25' 
+              ? 'bg-[blue-600] text-white shadow-xs shadow-[blue-600]/25' 
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
@@ -100,7 +100,7 @@ export default function TablePagination({
       
       {/* Left: Item Range */}
       <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-500 whitespace-nowrap order-1 sm:order-none">
-        <div className="bg-[#EEF0FF] text-[#5B58F2] font-semibold px-2.5 py-1 rounded-lg border border-[#D5D9FF]">
+        <div className="bg-[blue-50] text-[blue-600] font-semibold px-2.5 py-1 rounded-lg border border-[blue-200]">
           {startItem}-{isInfinite ? Math.max(startItem, startItem + totalItems - 1) : endItem}
         </div>
         {!isInfinite && (
@@ -168,12 +168,12 @@ export default function TablePagination({
               onChange={(e) => setJumpPage(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleJump()}
               aria-label="ระบุเลขหน้าเพื่อกระโดดไป"
-              className="w-8 sm:w-9 h-6 sm:h-7 text-center border border-slate-200 rounded text-slate-700 bg-white focus:outline-none focus:border-[#5B58F2] text-xs font-semibold"
+              className="w-8 sm:w-9 h-6 sm:h-7 text-center border border-slate-200 rounded text-slate-700 bg-white focus:outline-none focus:border-[blue-600] text-xs font-semibold"
             />
             <button 
               onClick={handleJump}
               aria-label="ไปที่หน้าที่ระบุ"
-              className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center bg-[#5B58F2]/10 hover:bg-[#5B58F2]/20 text-[#5B58F2] rounded transition-colors cursor-pointer"
+              className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center bg-[blue-600]/10 hover:bg-[blue-600]/20 text-[blue-600] rounded transition-colors cursor-pointer"
             >
               <ArrowRight size={13} />
             </button>
@@ -189,7 +189,7 @@ export default function TablePagination({
                 type="button"
                 onClick={() => setIsLimitOpen(!isLimitOpen)}
                 aria-label={`เลือกจำนวนรายการต่อหน้า (ปัจจุบัน ${itemsPerPage} รายการ)`}
-                className="flex items-center gap-1 font-bold text-[#5B58F2] hover:text-[#4A47D1] transition-colors focus:outline-none cursor-pointer"
+                className="flex items-center gap-1 font-bold text-[blue-600] hover:text-[blue-700] transition-colors focus:outline-none cursor-pointer"
               >
                 {itemsPerPage}
                 <ChevronDown size={13} className={`transition-transform duration-200 ${isLimitOpen ? 'rotate-180' : ''}`} />
@@ -215,7 +215,7 @@ export default function TablePagination({
                           }}
                           className={`px-2 py-1.5 text-xs font-semibold text-center rounded-lg transition-colors cursor-pointer ${
                             itemsPerPage === val 
-                              ? 'bg-[#5B58F2] text-white' 
+                              ? 'bg-[blue-600] text-white' 
                               : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                           }`}
                         >

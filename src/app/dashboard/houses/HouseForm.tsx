@@ -282,7 +282,7 @@ export default function HouseForm({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-2.5 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[blue-600] to-indigo-600 hover:from-[#4A47D1] hover:to-indigo-700 rounded-xl transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50 cursor-pointer active:scale-98"
+              className="flex items-center gap-2 px-6 py-2.5 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[blue-600] to-indigo-600 hover:from-[blue-700] hover:to-indigo-700 rounded-xl transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50 cursor-pointer active:scale-98"
             >
               {isSubmitting ? (
                 <>

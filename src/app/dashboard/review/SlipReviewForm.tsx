@@ -36,7 +36,7 @@ export default function SlipReviewForm({
   layout = "detailed"
 }: { 
   transaction: TransactionReview;
-  onReviewed?: () => void;
+  onReviewed?: (msg?: string) => void;
   layout?: "detailed" | "grid";
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -96,7 +96,7 @@ export default function SlipReviewForm({
       if (res.ok) {
         setShowRejectConfirm(false);
         if (onReviewed) {
-          onReviewed();
+          onReviewed(status === 'verified' ? 'อนุมัติสลิปสำเร็จ' : 'ปฏิเสธสลิปสำเร็จ');
         } else {
           router.refresh();
         }
@@ -117,7 +117,7 @@ export default function SlipReviewForm({
     const totalInvoices = transaction.invoices?.length || 0;
 
     return (
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:border-[#5B58F2]/40 hover:shadow-md transition-all p-5 flex flex-col justify-between h-full group">
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:border-blue-500/40 hover:shadow-md transition-all p-5 flex flex-col justify-between h-full group">
         <div>
           {/* Card Top: ID & Ref */}
           <div className="flex items-center justify-between gap-2 mb-3">
@@ -169,7 +169,7 @@ export default function SlipReviewForm({
                 {firstInvoice ? `บ้าน ${firstInvoice.houseNumber}` : "ไม่ระบุบ้าน"}
               </span>
               {totalInvoices > 1 && (
-                <span className="text-[10px] font-bold text-[#5B58F2] bg-[#EEF0FF] px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">
                   +{totalInvoices - 1} บิล
                 </span>
               )}
@@ -306,7 +306,7 @@ export default function SlipReviewForm({
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-xl bg-white text-slate-700 flex items-center justify-center border border-slate-200 shadow-2xs shrink-0 font-mono font-bold text-xs">
-                        <Home size={14} className="text-[#5B58F2]" />
+                        <Home size={14} className="text-blue-600" />
                       </div>
                       <div>
                         <div className="font-bold text-slate-800 flex items-center gap-2">

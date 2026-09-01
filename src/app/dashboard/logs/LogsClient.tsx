@@ -53,7 +53,7 @@ export default function LogsClient({
       case "REJECT":
         return <span className="bg-amber-50 text-amber-700 border border-amber-200/60 px-2.5 py-0.5 rounded-md font-bold text-[10px]">ปฏิเสธ</span>;
       case "CREATE":
-        return <span className="bg-indigo-50 text-[#5B58F2] border border-indigo-200/60 px-2.5 py-0.5 rounded-md font-bold text-[10px]">สร้างใหม่</span>;
+        return <span className="bg-indigo-50 text-[blue-600] border border-indigo-200/60 px-2.5 py-0.5 rounded-md font-bold text-[10px]">สร้างใหม่</span>;
       case "UPDATE":
         return <span className="bg-blue-50 text-blue-700 border border-blue-200/60 px-2.5 py-0.5 rounded-md font-bold text-[10px]">แก้ไข</span>;
       case "DELETE":
@@ -113,7 +113,7 @@ export default function LogsClient({
                 onClick={() => setFilterAction(f.key)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   filterAction === f.key
-                    ? "bg-[#5B58F2] text-white shadow-2xs"
+                    ? "bg-[blue-600] text-white shadow-2xs"
                     : "bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100"
                 }`}
               >
@@ -128,7 +128,7 @@ export default function LogsClient({
               placeholder="ค้นหาเจ้าหน้าที่, บ้านเลขที่..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-[#5B58F2] outline-hidden"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-[blue-600] outline-hidden"
             />
           </div>
         </div>
@@ -194,7 +194,7 @@ export default function LogsClient({
                     <td className="py-3.5 px-3 text-center">
                       <button
                         onClick={() => setSelectedLog(log)}
-                        className="p-1.5 text-slate-500 hover:text-[#5B58F2] hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer"
+                        className="p-1.5 text-slate-500 hover:text-[blue-600] hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer"
                         title="ดูรายละเอียดเชิงลึก"
                       >
                         <Eye size={15} />
@@ -237,7 +237,7 @@ export default function LogsClient({
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <Shield size={18} className="text-[#5B58F2]" />
+                <Shield size={18} className="text-[blue-600]" />
                 <h3 className="font-bold text-slate-800 text-sm">รายละเอียดประวัติกิจกรรม #{selectedLog.id}</h3>
               </div>
               <button

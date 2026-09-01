@@ -105,7 +105,7 @@ export default function DatePicker({
         aria-label={`เลือกวันที่ (${displayValue})`}
         aria-expanded={isOpen}
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); !disabled && setIsOpen(!isOpen); } }}
-        className={`w-full flex items-center justify-between px-3 h-[42px] bg-white border border-slate-200 rounded-[12px] focus-within:ring-2 focus-within:ring-[#5B58F2]/20 focus-within:border-[#5B58F2] transition-all ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-50' : 'hover:border-slate-300 cursor-pointer'}`}
+        className={`w-full flex items-center justify-between px-3 h-[42px] bg-white border border-slate-200 rounded-[12px] focus-within:ring-2 focus-within:ring-[blue-600]/20 focus-within:border-[blue-600] transition-all ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-50' : 'hover:border-slate-300 cursor-pointer'}`}
         onClick={() => !disabled && setIsOpen(!isOpen)}
       >
         <span className={`text-sm truncate mr-2 ${parsedDate ? 'text-slate-800 font-medium' : 'text-slate-500'}`}>

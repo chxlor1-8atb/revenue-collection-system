@@ -211,7 +211,7 @@ export default async function SummaryReportPage(props: {
 
           <div className="border border-slate-300 rounded-xl p-3 bg-slate-50 text-center">
             <div className="text-[11px] text-slate-500 font-medium">ผ่าน LINE Bot</div>
-            <div className="text-lg font-bold font-mono text-[#5B58F2] mt-0.5">
+            <div className="text-lg font-bold font-mono text-[blue-600] mt-0.5">
               ฿{totalLineAmount.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
             </div>
             <div className="text-[10px] text-slate-400 mt-0.5">{totalLineCount} รายการ</div>

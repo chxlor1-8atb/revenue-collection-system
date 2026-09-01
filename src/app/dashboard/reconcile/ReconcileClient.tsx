@@ -89,7 +89,7 @@ export default function ReconcileClient() {
             placeholder="���Ҩӹǹ�Թ, ��ҹ�Ţ���, ���� Ref..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#5B58F2]"
+            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[blue-600]"
           />
         </div>
 
@@ -125,7 +125,7 @@ export default function ReconcileClient() {
                     type="checkbox" 
                     checked={filtered.length > 0 && selectedIds.length === filtered.length}
                     onChange={selectAll}
-                    className="w-4 h-4 rounded border-slate-300 text-[#5B58F2] focus:ring-[#5B58F2]"
+                    className="w-4 h-4 rounded border-slate-300 text-[blue-600] focus:ring-[blue-600]"
                   />
                 </th>
                 <th className="px-6 py-4">�ѹ���/���Ҫ���</th>
@@ -145,13 +145,13 @@ export default function ReconcileClient() {
                   </td>
                 </tr>
               ) : filtered.map(tx => (
-                <tr key={tx.id} className={`hover:bg-slate-50 transition-colors ${selectedIds.includes(tx.id) ? 'bg-[#5B58F2]/5' : ''}`}>
+                <tr key={tx.id} className={`hover:bg-slate-50 transition-colors ${selectedIds.includes(tx.id) ? 'bg-[blue-600]/5' : ''}`}>
                   <td className="px-6 py-4 text-center">
                     <input 
                       type="checkbox" 
                       checked={selectedIds.includes(tx.id)}
                       onChange={() => toggleSelect(tx.id)}
-                      className="w-4 h-4 rounded border-slate-300 text-[#5B58F2] focus:ring-[#5B58F2]"
+                      className="w-4 h-4 rounded border-slate-300 text-[blue-600] focus:ring-[blue-600]"
                     />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -174,7 +174,7 @@ export default function ReconcileClient() {
                     </div>
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <a href={tx.slipImageUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center p-2 text-slate-400 hover:text-[#5B58F2] hover:bg-[#5B58F2]/10 rounded-lg transition-colors">
+                    <a href={tx.slipImageUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center p-2 text-slate-400 hover:text-[blue-600] hover:bg-[blue-600]/10 rounded-lg transition-colors">
                       <ExternalLink size={16} />
                     </a>
                   </td>

@@ -207,7 +207,7 @@ export default function TopNav({ userName, settings }: { userName: string, setti
           <div className="relative w-full sm:max-w-md bg-slate-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
              <div className="px-5 py-4 border-b border-slate-200/80 bg-white/95 backdrop-blur-xs flex justify-between items-center shadow-xs z-10">
                <div className="flex items-center gap-2.5">
-                 <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#5B58F2] to-indigo-500 text-white flex items-center justify-center shadow-xs">
+                 <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[blue-600] to-indigo-500 text-white flex items-center justify-center shadow-xs">
                    <Settings size={16} />
                  </div>
                  <div>

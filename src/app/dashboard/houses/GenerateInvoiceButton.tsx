@@ -280,7 +280,7 @@ export default function GenerateInvoiceButton() {
                         type="checkbox"
                         checked={sendLineNotification}
                         onChange={(e) => setSendLineNotification(e.target.checked)}
-                        className="mt-0.5 rounded-md text-[#5B58F2] focus:ring-[#5B58F2] cursor-pointer"
+                        className="mt-0.5 rounded-md text-[blue-600] focus:ring-[blue-600] cursor-pointer"
                       />
                       <div>
                         <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">

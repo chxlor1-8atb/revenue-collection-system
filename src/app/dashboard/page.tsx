@@ -344,7 +344,7 @@ export default async function DashboardPage() {
             </div>
             <Link 
               href="/dashboard/review" 
-              className="text-[11px] text-[#5B58F2] hover:text-[#4A47D1] font-bold flex items-center gap-0.5 hover:underline"
+              className="text-[11px] text-[blue-600] hover:text-[blue-700] font-bold flex items-center gap-0.5 hover:underline"
             >
               <span>ไปตรวจสลิป</span>
               <ChevronRight size={12} strokeWidth={2.5} />
@@ -366,7 +366,7 @@ export default async function DashboardPage() {
             </div>
             <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap ${
               pendingLineSlipsCount > 0 
-                ? 'bg-[#EEF0FF] text-[#5B58F2] border border-[#D5D9FF]' 
+                ? 'bg-[blue-50] text-[blue-600] border border-[blue-200]' 
                 : 'bg-slate-100 text-slate-600 border border-slate-200'
             }`}>
               {pendingLineSlipsCount > 0 ? `${pendingLineSlipsCount} สลิปใหม่` : 'เรียบร้อย'}
@@ -379,7 +379,7 @@ export default async function DashboardPage() {
             </div>
             <Link 
               href="/dashboard/line-slips" 
-              className="text-[11px] text-[#5B58F2] hover:text-[#4A47D1] font-bold flex items-center gap-0.5 hover:underline"
+              className="text-[11px] text-[blue-600] hover:text-[blue-700] font-bold flex items-center gap-0.5 hover:underline"
             >
               <span>จัดการสลิป</span>
               <ChevronRight size={12} strokeWidth={2.5} />
@@ -402,7 +402,7 @@ export default async function DashboardPage() {
 
           {settings?.autoBillingDay && (
             <div className="bg-slate-900 rounded-[32px] p-6 lg:p-8 text-white shadow-lg relative overflow-hidden mt-6 xl:mt-8 border border-slate-800">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-[#5B58F2] opacity-10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[blue-600] opacity-10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
               
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
                 <div className="flex items-start gap-4">
@@ -438,7 +438,7 @@ export default async function DashboardPage() {
         <StaggerItem className="xl:col-span-1 bg-white rounded-[32px] p-8 lg:p-10 border border-slate-100 shadow-sm flex flex-col">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-semibold text-lg text-slate-800">รายการรับชำระล่าสุด</h2>
-            <Link href="/dashboard/history" className="text-sm font-semibold text-[#5B58F2] hover:underline">
+            <Link href="/dashboard/history" className="text-sm font-semibold text-[blue-600] hover:underline">
               ดูทั้งหมด
             </Link>
           </div>
@@ -453,14 +453,14 @@ export default async function DashboardPage() {
                 <div key={tx.id} className="group relative flex items-center gap-4 p-3 -mx-3 rounded-2xl hover:bg-slate-50 transition-colors cursor-pointer border border-transparent hover:border-slate-100">
                   <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center shrink-0 group-hover:bg-white group-hover:shadow-sm transition-all border border-slate-100">
                     {tx.paidVia === "LINE Bot" ? (
-                      <Smartphone size={16} className="text-[#5B58F2]" />
+                      <Smartphone size={16} className="text-[blue-600]" />
                     ) : (
                       <CheckCircle2 size={16} className="text-emerald-500" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-1">
-                      <h3 className="text-sm font-semibold text-slate-800 truncate group-hover:text-[#5B58F2] transition-colors">
+                      <h3 className="text-sm font-semibold text-slate-800 truncate group-hover:text-[blue-600] transition-colors">
                         {tx.houseNumber} - {tx.ownerName}
                       </h3>
                       <CurrencyDisplay amount={tx.amount} size="xs" variant="success" />
@@ -479,7 +479,7 @@ export default async function DashboardPage() {
                       </span>
                     </div>
                   </div>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center w-8 h-8 rounded-full bg-white shadow-sm shrink-0 text-[#5B58F2]">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center w-8 h-8 rounded-full bg-white shadow-sm shrink-0 text-[blue-600]">
                     <ChevronRight size={16} />
                   </div>
                 </div>

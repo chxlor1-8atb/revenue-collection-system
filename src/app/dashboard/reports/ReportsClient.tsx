@@ -48,7 +48,7 @@ export default function ReportsClient({
               <h1 className="font-bold text-2xl lg:text-3xl text-slate-800 tracking-tight">
                 ศูนย์รายงานการคลัง & สถิติชุมชน
               </h1>
-              <span className="bg-indigo-50 text-[#5B58F2] text-xs font-bold px-2.5 py-0.5 rounded-full border border-indigo-100 flex items-center gap-1">
+              <span className="bg-indigo-50 text-[blue-600] text-xs font-bold px-2.5 py-0.5 rounded-full border border-indigo-100 flex items-center gap-1">
                 <BarChart3 size={12} /> สถ. กองคลัง
               </span>
             </div>
@@ -103,13 +103,13 @@ export default function ReportsClient({
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-indigo-100 bg-indigo-50/20 shadow-2xs">
-          <div className="text-[#5B58F2] text-xs font-medium flex items-center justify-between">
+          <div className="text-[blue-600] text-xs font-medium flex items-center justify-between">
             <span>อัตราจัดเก็บรวม</span>
             <span className="font-bold">{overallCollectionRate}%</span>
           </div>
           <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden mt-3">
             <div 
-              className="bg-[#5B58F2] h-full rounded-full transition-all duration-500" 
+              className="bg-[blue-600] h-full rounded-full transition-all duration-500" 
               style={{ width: `${Math.min(overallCollectionRate, 100)}%` }}
             />
           </div>
@@ -125,7 +125,7 @@ export default function ReportsClient({
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 pb-4">
           <div>
             <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-              <Building2 size={18} className="text-[#5B58F2]" />
+              <Building2 size={18} className="text-[blue-600]" />
               จัดอันดับผลงานการจัดเก็บ 20 ชุมชน
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">เรียงลำดับตามอัตราความสำเร็จในการจัดเก็บรายได้</p>
@@ -136,7 +136,7 @@ export default function ReportsClient({
             placeholder="ค้นหาชื่อชุมชน..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full sm:w-64 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-[#5B58F2] outline-hidden"
+            className="w-full sm:w-64 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-[blue-600] outline-hidden"
           />
         </div>
 
@@ -187,7 +187,7 @@ export default function ReportsClient({
                             c.collectionRate >= 80 
                               ? "bg-emerald-500" 
                               : c.collectionRate >= 50 
-                                ? "bg-[#5B58F2]" 
+                                ? "bg-[blue-600]" 
                                 : "bg-amber-500"
                           }`}
                           style={{ width: `${Math.min(c.collectionRate, 100)}%` }}

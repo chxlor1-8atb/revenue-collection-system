@@ -16,7 +16,6 @@ import TablePagination from "@/components/TablePagination";
 import MonthPicker from "@/components/MonthPicker";
 import ConfirmModal from "@/components/ConfirmModal";
 import LineSendingModal from "@/components/LineSendingModal";
-import LottieIcon from "@/components/LottieIcon";
 
 export default function HousesClient({ 
   initialHouses,
@@ -459,7 +458,9 @@ export default function HousesClient({
         {/* 1. Header Section (Desktop only - mobile goes straight to actionable tools) */}
         <div className="hidden sm:flex p-6 lg:p-7 border-b border-slate-100 flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
           <div className="flex items-center gap-4">
-            <LottieIcon src="/icons/icons8-home.json" size={52} className="shrink-0" loop autoplay />
+            <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center shrink-0 border border-blue-100 shadow-sm">
+              <Home size={28} strokeWidth={2} />
+            </div>
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="font-bold text-2xl lg:text-3xl text-slate-800 tracking-tight">
@@ -914,8 +915,8 @@ export default function HousesClient({
         {/* Empty State */}
         {initialHouses.length === 0 && !isPending && (
           <div className="p-16 text-center">
-            <div className="w-16 h-16 rounded-3xl bg-slate-100 mx-auto flex items-center justify-center mb-4 overflow-hidden">
-              <LottieIcon src="/icons/icons8-home.json" size={36} className="opacity-60" loop autoplay />
+            <div className="w-16 h-16 bg-slate-50 text-slate-400 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-slate-100 shadow-sm">
+              <Home size={32} strokeWidth={1.5} />
             </div>
             <div className="text-slate-800 font-bold text-lg">ไม่พบข้อมูลบ้านที่ตรงกับเงื่อนไข</div>
             <p className="text-slate-500 text-sm mt-1 max-w-sm mx-auto">

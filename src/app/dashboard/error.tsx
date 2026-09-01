@@ -32,7 +32,7 @@ export default function DashboardError({
         <div className="flex flex-col sm:flex-row gap-2 pt-2">
           <button
             onClick={() => reset()}
-            className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 bg-[#5B58F2] hover:bg-[#4A47D1] text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
+            className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 bg-[blue-600] hover:bg-[blue-700] text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
           >
             <RefreshCw size={14} />
             <span>ลองใหม่อีกครั้ง</span>

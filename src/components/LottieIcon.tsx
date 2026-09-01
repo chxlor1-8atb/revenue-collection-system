@@ -33,7 +33,7 @@ export default function LottieIcon({
       animRef.current.destroy();
     }
 
-    import("lottie-web").then((lottieModule) => {
+    import("lottie-web/build/player/lottie_light").then((lottieModule) => {
       if (!isMounted || !containerRef.current) return;
       const lottie = lottieModule.default;
       

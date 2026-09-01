@@ -22,7 +22,6 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import LottieIcon from "@/components/LottieIcon";
 import LiveQrCountdown from "@/components/LiveQrCountdown";
 import CurrencyDisplay from "@/components/CurrencyDisplay";
 
@@ -51,6 +50,14 @@ export default function ReviewClient() {
   }, []);
 
   const [isBulking, setIsBulking] = useState(false);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (successMsg) {
+      const timer = setTimeout(() => setSuccessMsg(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMsg]);
 
   const handleBulkApprove = async () => {
     if (!pending || pending.length === 0 || isBulking) return;
@@ -83,7 +90,7 @@ export default function ReviewClient() {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        alert(`อนุมัติสำเร็จ ${data.count} รายการ`);
+        setSuccessMsg(`อนุมัติสำเร็จ ${data.count} รายการ`);
       } else {
         alert("เกิดข้อผิดพลาดในการอนุมัติ: " + (data.error || "Unknown error"));
       }
@@ -196,7 +203,9 @@ export default function ReviewClient() {
         {/* 1. Header Section */}
         <div className="hidden sm:flex p-6 lg:p-7 border-b border-slate-100 flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white">
           <div className="flex items-center gap-4">
-            <LottieIcon src="/icons/icons8-document.json" size={54} className="shrink-0" loop autoplay />
+            <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center shrink-0 border border-blue-100 shadow-sm">
+              <FileSignature size={28} strokeWidth={2} />
+            </div>
             <div>
               <h1 className="text-xl lg:text-2xl font-bold text-slate-900 tracking-tight">รายการตรวจสอบสลิป</h1>
               <p className="text-slate-500 text-sm mt-0.5">ตรวจสอบและยืนยันยอดเงินที่ผู้ใช้งานโอนผ่าน QR Code</p>
@@ -227,7 +236,7 @@ export default function ReviewClient() {
                   : "text-slate-500 hover:text-slate-800"
               }`}
             >
-              <FileSignature size={14} className={activeTab === "pending" ? "text-[#5B58F2]" : "text-slate-400"} />
+              <FileSignature size={14} className={activeTab === "pending" ? "text-blue-600" : "text-slate-400"} />
               <span>รอตรวจสอบสลิป</span>
               {pending.length > 0 ? (
                 <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full shadow-2xs">
@@ -500,7 +509,10 @@ export default function ReviewClient() {
                       <SlipReviewForm 
                         transaction={tx} 
                         layout={viewMode}
-                        onReviewed={() => mutate()} 
+                        onReviewed={(msg) => {
+                          if (msg) setSuccessMsg(msg);
+                          mutate();
+                        }} 
                       />
                     </motion.div>
                   ))}
@@ -510,6 +522,32 @@ export default function ReviewClient() {
           )}
         </div>
       </div>
+
+      {/* Centered Success Modal */}
+      <AnimatePresence>
+        {successMsg && (
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }} 
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/20 backdrop-blur-sm"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0, y: 10 }} 
+              animate={{ scale: 1, opacity: 1, y: 0 }} 
+              exit={{ scale: 0.9, opacity: 0, y: 10 }} 
+              transition={{ type: "spring", bounce: 0.4 }}
+              className="bg-white rounded-3xl p-6 shadow-2xl flex flex-col items-center justify-center max-w-xs text-center border border-slate-100"
+            >
+              <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle2 size={32} strokeWidth={2.5} />
+              </div>
+              <h3 className="font-bold text-slate-800 text-lg mb-1">สำเร็จ!</h3>
+              <p className="text-slate-500 text-sm">{successMsg}</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

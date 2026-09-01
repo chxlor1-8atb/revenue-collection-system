@@ -79,8 +79,8 @@ function FancyCheckbox({
         disabled
           ? "opacity-40 cursor-not-allowed bg-slate-100 border border-slate-200"
           : checked || indeterminate
-          ? "bg-[#5B58F2] text-white shadow-xs shadow-[#5B58F2]/30 border border-[#5B58F2] hover:bg-[#4A47D1] active:scale-95"
-          : "bg-white/90 backdrop-blur-xs border-2 border-slate-300 hover:border-[#5B58F2] hover:bg-indigo-50/30 active:scale-95"
+          ? "bg-[blue-600] text-white shadow-xs shadow-[blue-600]/30 border border-[blue-600] hover:bg-[blue-700] active:scale-95"
+          : "bg-white/90 backdrop-blur-xs border-2 border-slate-300 hover:border-[blue-600] hover:bg-indigo-50/30 active:scale-95"
       }`}
     >
       {checked && !indeterminate && (
@@ -588,7 +588,7 @@ export default function BlobClient({
             <div>
               <div className="flex items-center gap-2.5 flex-wrap">
                 <h1 className="font-bold text-2xl text-slate-900 tracking-tight">พื้นที่จัดเก็บไฟล์ (Vercel Blob)</h1>
-                <span className="bg-[#EEF0FF] text-[#5B58F2] text-xs font-bold px-2.5 py-0.5 rounded-full border border-[#D5D9FF]">
+                <span className="bg-[blue-50] text-[blue-600] text-xs font-bold px-2.5 py-0.5 rounded-full border border-[blue-200]">
                   {files.length.toLocaleString()} ไฟล์
                 </span>
                 <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold ${
@@ -621,7 +621,7 @@ export default function BlobClient({
 
             <button
               onClick={() => setIsUploadOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#5B58F2] hover:bg-[#4A47D1] text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[blue-600] hover:bg-[blue-700] text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer"
             >
               <Upload size={14} />
               <span>อัปโหลดไฟล์</span>
@@ -632,7 +632,7 @@ export default function BlobClient({
               disabled={loading && !cursor}
               className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold shadow-xs transition-all disabled:opacity-50 cursor-pointer"
             >
-              <RefreshCw size={14} className={loading && !cursor ? 'animate-spin text-[#5B58F2]' : 'text-slate-500'} />
+              <RefreshCw size={14} className={loading && !cursor ? 'animate-spin text-[blue-600]' : 'text-slate-500'} />
               <span>รีเฟรช</span>
             </button>
           </div>
@@ -644,14 +644,14 @@ export default function BlobClient({
           <div className="flex sm:hidden items-center justify-between gap-2 pb-1">
             <div className="flex items-center gap-1.5">
               <span className="font-bold text-sm text-slate-900">พื้นที่จัดเก็บ</span>
-              <span className="bg-[#EEF0FF] text-[#5B58F2] text-[11px] font-bold px-2 py-0.5 rounded-full">
+              <span className="bg-[blue-50] text-[blue-600] text-[11px] font-bold px-2 py-0.5 rounded-full">
                 {files.length} ไฟล์
               </span>
             </div>
             <div className="flex items-center gap-1.5">
               <button
                 onClick={() => setIsUploadOpen(true)}
-                className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#5B58F2] text-white rounded-xl text-xs font-bold shadow-xs"
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[blue-600] text-white rounded-xl text-xs font-bold shadow-xs"
               >
                 <Upload size={12} />
                 <span>อัปโหลด</span>
@@ -670,7 +670,7 @@ export default function BlobClient({
                 className="p-1.5 bg-white border border-slate-200 text-slate-700 rounded-xl text-xs font-semibold shadow-xs"
                 title="รีเฟรช"
               >
-                <RefreshCw size={13} className={loading && !cursor ? 'animate-spin text-[#5B58F2]' : ''} />
+                <RefreshCw size={13} className={loading && !cursor ? 'animate-spin text-[blue-600]' : ''} />
               </button>
             </div>
           </div>
@@ -703,7 +703,7 @@ export default function BlobClient({
                   ? 'bg-gradient-to-r from-amber-500 to-red-500' 
                   : usagePercentage > 75 
                   ? 'bg-gradient-to-r from-blue-500 to-amber-500' 
-                  : 'bg-gradient-to-r from-[#5B58F2] to-[#7B78FF]'
+                  : 'bg-gradient-to-r from-[blue-600] to-[#7B78FF]'
               }`}
               style={{ width: `${Math.min(100, Math.max(1, usagePercentage))}%` }}
             />
@@ -723,9 +723,9 @@ export default function BlobClient({
               <span className="text-[11px] font-medium text-slate-500">รองรับเพิ่ม</span>
               <span className="text-xs sm:text-sm font-bold text-emerald-600">~{loading && files.length === 0 ? '—' : estimatedRemainingImages.toLocaleString()} รูป</span>
             </div>
-            <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-[#EEF0FF]/60 border border-[#D5D9FF] shadow-2xs">
-              <span className="text-[11px] font-medium text-[#5B58F2]">เลือกอยู่</span>
-              <span className="text-xs sm:text-sm font-bold text-[#5B58F2]">{selectedUrls.size} ไฟล์</span>
+            <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-[blue-50]/60 border border-[blue-200] shadow-2xs">
+              <span className="text-[11px] font-medium text-[blue-600]">เลือกอยู่</span>
+              <span className="text-xs sm:text-sm font-bold text-[blue-600]">{selectedUrls.size} ไฟล์</span>
             </div>
           </div>
         </div>
@@ -742,7 +742,7 @@ export default function BlobClient({
                   onClick={() => setActiveTab(tab.prefix)}
                   className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
                     activeTab === tab.prefix
-                      ? 'bg-white text-[#5B58F2] shadow-xs'
+                      ? 'bg-white text-[blue-600] shadow-xs'
                       : 'text-slate-500 hover:text-slate-800'
                   }`}
                 >
@@ -762,7 +762,7 @@ export default function BlobClient({
                   placeholder="ค้นหาชื่อไฟล์..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-8.5 pr-8 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#5B58F2]/20 focus:border-[#5B58F2] transition-all"
+                  className="w-full pl-8.5 pr-8 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[blue-600]/20 focus:border-[blue-600] transition-all"
                 />
                 {searchQuery && (
                   <button
@@ -818,7 +818,7 @@ export default function BlobClient({
                 </select>
                 <button
                   onClick={() => setSortDir(prev => prev === 'asc' ? 'desc' : 'asc')}
-                  className="p-1 text-slate-500 hover:text-[#5B58F2] rounded-lg transition-colors cursor-pointer"
+                  className="p-1 text-slate-500 hover:text-[blue-600] rounded-lg transition-colors cursor-pointer"
                   title={sortDir === 'asc' ? 'น้อยไปมาก' : 'มากไปน้อย'}
                 >
                   <ArrowUpDown size={13} className={sortDir === 'desc' ? 'rotate-180 transition-transform' : 'transition-transform'} />
@@ -853,7 +853,7 @@ export default function BlobClient({
           <div className="pt-2.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mr-1">
-                <Sparkles size={13} className="text-[#5B58F2]" />
+                <Sparkles size={13} className="text-[blue-600]" />
                 เครื่องมือดูแลพื้นที่:
               </span>
 
@@ -914,7 +914,7 @@ export default function BlobClient({
         <div className="overflow-hidden bg-slate-50/20">
         {loading && !cursor && files.length === 0 ? (
           <div className="p-20 text-center space-y-3">
-            <RefreshCw size={36} className="animate-spin text-[#5B58F2] mx-auto opacity-80" />
+            <RefreshCw size={36} className="animate-spin text-[blue-600] mx-auto opacity-80" />
             <p className="text-sm font-semibold text-slate-600">กำลังดึงข้อมูลไฟล์จาก Vercel Blob...</p>
             <p className="text-xs text-slate-400">โปรดรอสักครู่</p>
           </div>
@@ -944,8 +944,8 @@ export default function BlobClient({
                     transition={{ duration: 0.2 }}
                     className={`group relative bg-white rounded-2xl border transition-all overflow-hidden flex flex-col shadow-2xs hover:shadow-md ${
                       isSelected 
-                        ? 'border-[#5B58F2] ring-2 ring-[#5B58F2]/20 bg-indigo-50/10' 
-                        : 'border-slate-200/90 hover:border-[#5B58F2]/40'
+                        ? 'border-[blue-600] ring-2 ring-[blue-600]/20 bg-indigo-50/10' 
+                        : 'border-slate-200/90 hover:border-[blue-600]/40'
                     }`}
                   >
                     {/* Thumbnail Image Container */}
@@ -1050,7 +1050,7 @@ export default function BlobClient({
                   >
                     <div className="flex items-center gap-1.5">
                       <span>ชื่อไฟล์และโฟลเดอร์</span>
-                      {sortKey === 'pathname' && <ArrowUpDown size={12} className="text-[#5B58F2]" />}
+                      {sortKey === 'pathname' && <ArrowUpDown size={12} className="text-[blue-600]" />}
                     </div>
                   </th>
                   <th 
@@ -1059,7 +1059,7 @@ export default function BlobClient({
                   >
                     <div className="flex items-center justify-end gap-1.5">
                       <span>ขนาด</span>
-                      {sortKey === 'size' && <ArrowUpDown size={12} className="text-[#5B58F2]" />}
+                      {sortKey === 'size' && <ArrowUpDown size={12} className="text-[blue-600]" />}
                     </div>
                   </th>
                   <th 
@@ -1068,7 +1068,7 @@ export default function BlobClient({
                   >
                     <div className="flex items-center justify-end gap-1.5">
                       <span>วันที่อัปโหลด</span>
-                      {sortKey === 'uploadedAt' && <ArrowUpDown size={12} className="text-[#5B58F2]" />}
+                      {sortKey === 'uploadedAt' && <ArrowUpDown size={12} className="text-[blue-600]" />}
                     </div>
                   </th>
                   <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right w-28">
@@ -1083,7 +1083,7 @@ export default function BlobClient({
                     <tr
                       key={file.url}
                       className={`transition-colors ${
-                        isSelected ? 'bg-[#EEF0FF]/40' : 'hover:bg-slate-50/60'
+                        isSelected ? 'bg-[blue-50]/40' : 'hover:bg-slate-50/60'
                       }`}
                     >
                       <td className="px-6 py-3.5 text-center">
@@ -1151,7 +1151,7 @@ export default function BlobClient({
             <button
               onClick={() => fetchFiles(true)}
               disabled={loading}
-              className="inline-flex items-center gap-2 px-4 py-1.5 bg-white border border-slate-200 text-[#5B58F2] text-xs font-bold rounded-xl shadow-xs hover:bg-[#EEF0FF] transition-colors disabled:opacity-50 cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-1.5 bg-white border border-slate-200 text-[blue-600] text-xs font-bold rounded-xl shadow-xs hover:bg-[blue-50] transition-colors disabled:opacity-50 cursor-pointer"
             >
               {loading && cursor ? <RefreshCw size={12} className="animate-spin" /> : <ChevronDown size={12} />}
               <span>โหลดไฟล์เพิ่มจากคลาวด์</span>
@@ -1292,7 +1292,7 @@ export default function BlobClient({
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-[#EEF0FF] text-[#5B58F2] flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-2xl bg-[blue-50] text-[blue-600] flex items-center justify-center">
                     <Upload size={20} />
                   </div>
                   <div>
@@ -1322,7 +1322,7 @@ export default function BlobClient({
                   <select
                     value={uploadFolder}
                     onChange={(e) => setUploadFolder(e.target.value as any)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#5B58F2]/20 focus:border-[#5B58F2]"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[blue-600]/20 focus:border-[blue-600]"
                   >
                     <option value="line-slips">line-slips/ (รูปสลิป)</option>
                     <option value="uploads">uploads/ (ไฟล์ทั่วไป)</option>
@@ -1339,7 +1339,7 @@ export default function BlobClient({
                       setUploadFile(e.dataTransfer.files[0]);
                     }
                   }}
-                  className="border-2 border-dashed border-slate-200 hover:border-[#5B58F2] bg-slate-50/50 hover:bg-[#EEF0FF]/30 rounded-2xl p-6 text-center cursor-pointer transition-all space-y-2"
+                  className="border-2 border-dashed border-slate-200 hover:border-[blue-600] bg-slate-50/50 hover:bg-[blue-50]/30 rounded-2xl p-6 text-center cursor-pointer transition-all space-y-2"
                 >
                   <input
                     ref={fileInputRef}
@@ -1384,7 +1384,7 @@ export default function BlobClient({
                   <button
                     type="submit"
                     disabled={!uploadFile || isUploading}
-                    className="flex-1 py-2.5 bg-[#5B58F2] hover:bg-[#4A47D1] text-white font-bold text-xs rounded-xl shadow-md transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                    className="flex-1 py-2.5 bg-[blue-600] hover:bg-[blue-700] text-white font-bold text-xs rounded-xl shadow-md transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                   >
                     {isUploading ? (
                       <>

@@ -275,7 +275,7 @@ export default function NotificationDropdown() {
         aria-label="การแจ้งเตือน"
         className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-slate-200/90 flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors relative cursor-pointer active:scale-95"
       >
-        <Bell size={18} strokeWidth={1.5} className={unreadCount > 0 ? "text-[#5B58F2]" : "text-slate-500"} />
+        <Bell size={18} strokeWidth={1.5} className={unreadCount > 0 ? "text-[blue-600]" : "text-slate-500"} />
         
         {/* Unread Badge on Bell Icon */}
         {unreadCount > 0 && (
@@ -497,7 +497,7 @@ export default function NotificationDropdown() {
             <Link
               href="/dashboard/review"
               onClick={() => setIsOpen(false)}
-              className="font-bold text-[#5B58F2] hover:text-indigo-700 flex items-center gap-1 py-1 px-2.5 rounded-xl hover:bg-indigo-50 transition-colors"
+              className="font-bold text-[blue-600] hover:text-indigo-700 flex items-center gap-1 py-1 px-2.5 rounded-xl hover:bg-indigo-50 transition-colors"
             >
               <span>ไปที่หน้าตรวจสอบสลิปทั้งหมด</span>
               <ChevronRight size={13} />

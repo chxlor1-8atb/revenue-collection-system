@@ -77,7 +77,7 @@ export default function HouseActionsClient({ house, customFieldsSchema }: { hous
             onClick={() => openQrModal(house)}
             className="flex items-center gap-1.5 hover:bg-slate-50 text-slate-700 px-3.5 py-2 text-xs font-bold transition-colors cursor-pointer border-r border-slate-200/90"
           >
-            <QrCode size={15} className="text-[#5B58F2]" />
+            <QrCode size={15} className="text-[blue-600]" />
             <span className="hidden sm:inline">QR ชำระเงิน</span>
           </button>
           
@@ -195,7 +195,7 @@ export default function HouseActionsClient({ house, customFieldsSchema }: { hous
               <X size={18} />
             </button>
 
-            <div className="w-12 h-12 rounded-2xl bg-indigo-100 text-[#5B58F2] flex items-center justify-center mx-auto mb-3">
+            <div className="w-12 h-12 rounded-2xl bg-indigo-100 text-[blue-600] flex items-center justify-center mx-auto mb-3">
               <QrCode size={24} />
             </div>
 
@@ -210,7 +210,7 @@ export default function HouseActionsClient({ house, customFieldsSchema }: { hous
               <a
                 href={qrModal.qrDataUrl}
                 download={`QR_House_${qrModal.houseNumber}.png`}
-                className="w-full py-2.5 bg-gradient-to-r from-[#5B58F2] to-indigo-600 hover:from-[#4A47D1] hover:to-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-indigo-500/20 flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-2.5 bg-gradient-to-r from-[blue-600] to-indigo-600 hover:from-[blue-700] hover:to-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-indigo-500/20 flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Download size={14} /> ดาวน์โหลดภาพ QR Code
               </a>
@@ -271,7 +271,7 @@ export default function HouseActionsClient({ house, customFieldsSchema }: { hous
                   step="0.01"
                   value={initialBillPrompt.amount}
                   onChange={(e) => setInitialBillPrompt({ ...initialBillPrompt, amount: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 focus:ring-2 focus:ring-[#5B58F2]/30 focus:border-[#5B58F2] outline-hidden"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 focus:ring-2 focus:ring-[blue-600]/30 focus:border-[blue-600] outline-hidden"
                 />
               </div>
 
@@ -298,7 +298,7 @@ export default function HouseActionsClient({ house, customFieldsSchema }: { hous
                       setError(res.error || "เกิดข้อผิดพลาดในการสร้างบิล");
                     }
                   }}
-                  className="px-5 py-2 text-xs font-bold text-white bg-gradient-to-r from-[#5B58F2] to-indigo-600 hover:from-[#4A47D1] hover:to-indigo-700 rounded-xl transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
+                  className="px-5 py-2 text-xs font-bold text-white bg-gradient-to-r from-[blue-600] to-indigo-600 hover:from-[blue-700] hover:to-indigo-700 rounded-xl transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
                 >
                   {isGeneratingBill ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
                   <span>ยืนยันออกบิล</span>

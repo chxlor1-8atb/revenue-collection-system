@@ -198,7 +198,7 @@ export default function CountdownTimer({ initialTimeLeft, transactionId, houseId
   if (isAutoRenewing) {
     return (
       <div className="w-full bg-indigo-50/80 border border-indigo-200/80 text-indigo-950 px-4 py-3 rounded-2xl text-xs font-sans font-semibold flex items-center justify-center gap-2.5 mb-6 animate-pulse">
-        <RefreshCw size={15} className="animate-spin text-[#5B58F2]" />
+        <RefreshCw size={15} className="animate-spin text-[blue-600]" />
         <span>ระบบกำลังต่ออายุ QR Code ให้อัตโนมัติ...</span>
       </div>
     );

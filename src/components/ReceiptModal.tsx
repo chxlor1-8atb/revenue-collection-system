@@ -210,7 +210,7 @@ export default function ReceiptModal({ isOpen, onClose, item }: ReceiptModalProp
             <div className="flex items-center gap-2">
               <button
                 onClick={handlePrint}
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold text-white bg-[#5B58F2] hover:bg-[#4A47D1] rounded-xl shadow-xs transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold text-white bg-[blue-600] hover:bg-[blue-700] rounded-xl shadow-xs transition-all cursor-pointer"
               >
                 <Printer size={14} />
                 <span>พิมพ์ใบเสร็จ (A4)</span>

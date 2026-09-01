@@ -192,7 +192,7 @@ export default function BroadcastClient({
         
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-5">
           <div className="flex items-center gap-4">
-            <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-[#5B58F2] via-indigo-600 to-purple-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20 shrink-0">
+            <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-[blue-600] via-indigo-600 to-purple-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20 shrink-0">
               <Megaphone size={26} className="animate-pulse" />
             </div>
             <div>
@@ -222,7 +222,7 @@ export default function BroadcastClient({
                   : "text-slate-500 hover:text-slate-900 hover:bg-white/40"
               }`}
             >
-              <Send size={15} className={activeMainTab === "dunning" ? "text-[#5B58F2]" : ""} />
+              <Send size={15} className={activeMainTab === "dunning" ? "text-[blue-600]" : ""} />
               <span>ยิงทวงหนี้ (Bulk Push)</span>
             </button>
 
@@ -348,7 +348,7 @@ export default function BroadcastClient({
             <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-3 relative z-30" ref={zoneDropdownRef}>
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-[#5B58F2] text-white text-xs font-black flex items-center justify-center shadow-xs">1</span>
+                  <span className="w-6 h-6 rounded-full bg-[blue-600] text-white text-xs font-black flex items-center justify-center shadow-xs">1</span>
                   <h2 className="text-sm sm:text-base font-bold text-slate-800">เลือกชุมชนเป้าหมาย</h2>
                 </div>
                 <span className="text-[11px] font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
@@ -368,14 +368,14 @@ export default function BroadcastClient({
                     onClick={() => setIsZoneDropdownOpen(!isZoneDropdownOpen)}
                     className={`w-full bg-slate-50/80 hover:bg-slate-100/80 border rounded-2xl px-4 py-3 text-xs sm:text-sm font-bold flex items-center justify-between transition-all cursor-pointer ${
                       isZoneDropdownOpen 
-                        ? "border-[#5B58F2] ring-2 ring-[#5B58F2]/20 bg-white shadow-xs" 
+                        ? "border-[blue-600] ring-2 ring-[blue-600]/20 bg-white shadow-xs" 
                         : "border-slate-200 text-slate-800"
                     }`}
                   >
                     <div className="flex items-center gap-2.5 truncate">
                       {selectedZone === "ALL" ? (
                         <>
-                          <div className="w-6 h-6 rounded-lg bg-indigo-100 text-[#5B58F2] flex items-center justify-center text-xs">
+                          <div className="w-6 h-6 rounded-lg bg-indigo-100 text-[blue-600] flex items-center justify-center text-xs">
                             🌐
                           </div>
                           <span className="text-slate-900 font-bold">ทุกชุมชนในเขตเทศบาลเมืองนางรอง (20 ชุมชน)</span>
@@ -389,7 +389,7 @@ export default function BroadcastClient({
                         </>
                       )}
                     </div>
-                    <ChevronDown size={16} className={`text-slate-400 transition-transform duration-200 ${isZoneDropdownOpen ? "rotate-180 text-[#5B58F2]" : ""}`} />
+                    <ChevronDown size={16} className={`text-slate-400 transition-transform duration-200 ${isZoneDropdownOpen ? "rotate-180 text-[blue-600]" : ""}`} />
                   </button>
 
                   {/* Custom Searchable Popover Menu */}
@@ -404,7 +404,7 @@ export default function BroadcastClient({
                           value={zoneSearch}
                           onChange={(e) => setZoneSearch(e.target.value)}
                           placeholder="พิมพ์ค้นหาชื่อชุมชน... เช่น วัดกลาง, หนองรี"
-                          className="w-full pl-9 pr-8 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-[#5B58F2]/30 focus:border-[#5B58F2] outline-hidden"
+                          className="w-full pl-9 pr-8 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-[blue-600]/30 focus:border-[blue-600] outline-hidden"
                           autoFocus
                         />
                         {zoneSearch && (
@@ -432,7 +432,7 @@ export default function BroadcastClient({
                             }}
                             className={`w-full p-2.5 rounded-xl text-xs font-bold text-left transition-all flex items-center justify-between cursor-pointer ${
                               selectedZone === "ALL"
-                                ? "bg-indigo-50 text-[#5B58F2] border border-indigo-200/70"
+                                ? "bg-indigo-50 text-[blue-600] border border-indigo-200/70"
                                 : "hover:bg-slate-100 text-slate-700"
                             }`}
                           >
@@ -440,7 +440,7 @@ export default function BroadcastClient({
                               <span>🌐</span>
                               <span>ทุกชุมชนในเขตเทศบาลเมืองนางรอง (20 ชุมชน)</span>
                             </div>
-                            {selectedZone === "ALL" && <Check size={14} className="text-[#5B58F2]" />}
+                            {selectedZone === "ALL" && <Check size={14} className="text-[blue-600]" />}
                           </button>
                         )}
 
@@ -457,7 +457,7 @@ export default function BroadcastClient({
                               }}
                               className={`w-full p-2.5 rounded-xl text-xs font-medium text-left transition-all flex items-center justify-between cursor-pointer ${
                                 selectedZone === z
-                                  ? "bg-indigo-50 text-[#5B58F2] font-bold border border-indigo-200/70"
+                                  ? "bg-indigo-50 text-[blue-600] font-bold border border-indigo-200/70"
                                   : "hover:bg-slate-100 text-slate-700"
                               }`}
                             >
@@ -465,7 +465,7 @@ export default function BroadcastClient({
                                 <span className="text-slate-400">🏘️</span>
                                 <span>ชุมชน{z}</span>
                               </div>
-                              {selectedZone === z && <Check size={14} className="text-[#5B58F2]" />}
+                              {selectedZone === z && <Check size={14} className="text-[blue-600]" />}
                             </button>
                           ))
                         ) : (
@@ -491,7 +491,7 @@ export default function BroadcastClient({
                       }}
                       className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
                         selectedZone === zKey
-                          ? "bg-[#5B58F2] text-white border-[#5B58F2] shadow-2xs"
+                          ? "bg-[blue-600] text-white border-[blue-600] shadow-2xs"
                           : "bg-slate-100 hover:bg-slate-200/70 text-slate-600 border-slate-200/70"
                       }`}
                     >
@@ -506,7 +506,7 @@ export default function BroadcastClient({
             <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-3">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-[#5B58F2] text-white text-xs font-black flex items-center justify-center shadow-xs">2</span>
+                  <span className="w-6 h-6 rounded-full bg-[blue-600] text-white text-xs font-black flex items-center justify-center shadow-xs">2</span>
                   <h2 className="text-sm sm:text-base font-bold text-slate-800">เกณฑ์ระยะเวลาค้างชำระ</h2>
                 </div>
                 <span className="text-[11px] font-semibold text-slate-400">Overdue Tier</span>
@@ -524,7 +524,7 @@ export default function BroadcastClient({
                     onClick={() => setMinMonths(item.value)}
                     className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                       minMonths === item.value
-                        ? "bg-[#5B58F2] text-white border-[#5B58F2] shadow-sm shadow-indigo-500/20 scale-[1.01]"
+                        ? "bg-[blue-600] text-white border-[blue-600] shadow-sm shadow-indigo-500/20 scale-[1.01]"
                         : "bg-slate-50/70 border-slate-200/80 text-slate-700 hover:bg-slate-100/80"
                     }`}
                   >
@@ -536,7 +536,7 @@ export default function BroadcastClient({
                     </div>
                     <div className="flex items-center justify-end mt-2">
                       <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                        minMonths === item.value ? "border-white bg-white text-[#5B58F2]" : "border-slate-300"
+                        minMonths === item.value ? "border-white bg-white text-[blue-600]" : "border-slate-300"
                       }`}>
                         {minMonths === item.value && <Check size={10} strokeWidth={3} />}
                       </div>
@@ -550,7 +550,7 @@ export default function BroadcastClient({
             <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-3">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-[#5B58F2] text-white text-xs font-black flex items-center justify-center shadow-xs">3</span>
+                  <span className="w-6 h-6 rounded-full bg-[blue-600] text-white text-xs font-black flex items-center justify-center shadow-xs">3</span>
                   <h2 className="text-sm sm:text-base font-bold text-slate-800">ข้อความประกาศเพิ่มเติมในบิล</h2>
                 </div>
                 <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-0.5 rounded-md">Optional</span>
@@ -560,7 +560,7 @@ export default function BroadcastClient({
                 {/* Preset Chips */}
                 <div className="flex items-center gap-1.5 flex-wrap mb-2">
                   <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
-                    <Sparkles size={11} className="text-[#5B58F2]" /> ข้อความสำเร็จรูป:
+                    <Sparkles size={11} className="text-[blue-600]" /> ข้อความสำเร็จรูป:
                   </span>
                   {dunningPresets.map((preset, idx) => (
                     <button
@@ -579,7 +579,7 @@ export default function BroadcastClient({
                   onChange={(e) => setCustomNote(e.target.value)}
                   placeholder="ระบุข้อความประกาศเพิ่มเติมที่จะไปแทรกอยู่ในการ์ดแจ้งเตือน เช่น 'กรุณาชำระก่อนวันที่ 5 สิ้นเดือนนี้...'"
                   rows={3}
-                  className="w-full bg-slate-50/80 border border-slate-200 rounded-xl p-3 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-[#5B58F2]/30 focus:border-[#5B58F2] outline-hidden transition-all"
+                  className="w-full bg-slate-50/80 border border-slate-200 rounded-xl p-3 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-[blue-600]/30 focus:border-[blue-600] outline-hidden transition-all"
                 />
               </div>
 
@@ -593,7 +593,7 @@ export default function BroadcastClient({
                 <button
                   onClick={() => setShowConfirm(true)}
                   disabled={isSending}
-                  className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-[#5B58F2] via-[#6366F1] to-[#7C3AED] hover:from-[#4A47D1] hover:to-[#6D28D9] text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md shadow-indigo-500/25 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 active:scale-[0.99]"
+                  className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-[blue-600] via-[#6366F1] to-[#7C3AED] hover:from-[blue-700] hover:to-[#6D28D9] text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md shadow-indigo-500/25 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 active:scale-[0.99]"
                 >
                   {isSending ? (
                     <>
@@ -616,7 +616,7 @@ export default function BroadcastClient({
           <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-3">
             <div className="flex items-center justify-between px-1">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                <Sparkles size={14} className="text-[#5B58F2]" /> ตัวอย่างหน้าจอจริงใน LINE ของลูกบ้าน
+                <Sparkles size={14} className="text-[blue-600]" /> ตัวอย่างหน้าจอจริงใน LINE ของลูกบ้าน
               </span>
               <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
                 Live Preview

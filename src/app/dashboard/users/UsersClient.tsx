@@ -102,7 +102,7 @@ export default function UsersClient({
             <div>
               <div className="flex items-center gap-2.5">
                 <h1 className="font-bold text-2xl text-slate-900 tracking-tight">ผู้ดูแลระบบ</h1>
-                <span className="bg-[#EEF0FF] text-[#5B58F2] text-xs font-bold px-2.5 py-0.5 rounded-full border border-[#D5D9FF]">
+                <span className="bg-[blue-50] text-[blue-600] text-xs font-bold px-2.5 py-0.5 rounded-full border border-[blue-200]">
                   {totalUsers} บัญชี
                 </span>
               </div>
@@ -135,7 +135,7 @@ export default function UsersClient({
 
             <button
               onClick={handleAdd}
-              className="flex items-center gap-1.5 bg-[#5B58F2] hover:bg-[#4A47D1] text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-md shadow-[#5B58F2]/25 cursor-pointer"
+              className="flex items-center gap-1.5 bg-[blue-600] hover:bg-[blue-700] text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-md shadow-[blue-600]/25 cursor-pointer"
             >
               <Plus size={15} />
               เพิ่มผู้ใช้งาน
@@ -159,12 +159,12 @@ export default function UsersClient({
                 {initialUsers.map((user, idx) => (
                   <div 
                     key={user.id} 
-                    className="bg-white border border-slate-200/90 hover:border-[#5B58F2]/40 rounded-2xl p-5 flex flex-col justify-between shadow-2xs hover:shadow-md transition-all relative overflow-hidden group"
+                    className="bg-white border border-slate-200/90 hover:border-[blue-600]/40 rounded-2xl p-5 flex flex-col justify-between shadow-2xs hover:shadow-md transition-all relative overflow-hidden group"
                   >
                     <div>
                       <div className="flex items-start justify-between gap-2 mb-4">
                         <div className="flex items-center gap-3 overflow-hidden">
-                          <div className="w-11 h-11 rounded-2xl bg-indigo-50 border border-indigo-100 text-[#5B58F2] flex items-center justify-center shrink-0 shadow-2xs font-bold text-sm">
+                          <div className="w-11 h-11 rounded-2xl bg-indigo-50 border border-indigo-100 text-[blue-600] flex items-center justify-center shrink-0 shadow-2xs font-bold text-sm">
                             {user.username.slice(0, 2).toUpperCase()}
                           </div>
                           <div className="overflow-hidden">
@@ -177,7 +177,7 @@ export default function UsersClient({
 
                         <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold shrink-0 border ${
                           user.role === 'admin' 
-                            ? 'bg-[#EEF0FF] text-[#5B58F2] border-[#D5D9FF]' 
+                            ? 'bg-[blue-50] text-[blue-600] border-[blue-200]' 
                             : 'bg-blue-50 text-blue-700 border-blue-200'
                         }`}>
                           <Shield size={10} />
@@ -234,7 +234,7 @@ export default function UsersClient({
                       <tr key={user.id} className="hover:bg-slate-50/80 transition-colors">
                         <td className="px-5 py-4 text-center text-slate-400 text-xs font-mono">{idx + 1}</td>
                         <td className="px-5 py-4 font-semibold text-slate-900 flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-[#5B58F2] font-bold text-xs">
+                          <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-[blue-600] font-bold text-xs">
                             {user.username.slice(0, 2).toUpperCase()}
                           </div>
                           {user.username}
@@ -242,7 +242,7 @@ export default function UsersClient({
                         <td className="px-5 py-4">
                           <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border ${
                             user.role === 'admin' 
-                              ? 'bg-[#EEF0FF] text-[#5B58F2] border-[#D5D9FF]' 
+                              ? 'bg-[blue-50] text-[blue-600] border-[blue-200]' 
                               : 'bg-blue-50 text-blue-700 border-blue-200'
                           }`}>
                             <Shield size={11} />
@@ -256,7 +256,7 @@ export default function UsersClient({
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => handleEdit(user)}
-                              className="p-2 text-slate-400 hover:text-[#5B58F2] hover:bg-indigo-50 rounded-xl transition-colors cursor-pointer"
+                              className="p-2 text-slate-400 hover:text-[blue-600] hover:bg-indigo-50 rounded-xl transition-colors cursor-pointer"
                               title="แก้ไข"
                             >
                               <Edit2 size={14} />

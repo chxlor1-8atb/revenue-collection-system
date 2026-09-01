@@ -205,7 +205,7 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
         <div className="bg-gradient-to-br from-white to-indigo-50/40 p-4 sm:p-5 rounded-3xl border border-indigo-200/80 shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-indigo-900">กระเป๋าเงิน / จ่ายล่วงหน้า</span>
-            <div className="w-8 h-8 rounded-xl bg-indigo-100 text-[#5B58F2] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-indigo-100 text-[blue-600] flex items-center justify-center">
               <Wallet size={16} />
             </div>
           </div>
@@ -253,7 +253,7 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
               
               {/* Full Address */}
               <div className="flex items-start gap-2.5">
-                <MapPin size={15} className="text-[#5B58F2] mt-0.5 shrink-0" />
+                <MapPin size={15} className="text-[blue-600] mt-0.5 shrink-0" />
                 <div>
                   <span className="text-[11px] font-semibold text-slate-400 block">ที่อยู่แบบเต็ม</span>
                   <span className="font-medium text-slate-800 leading-relaxed">{fullAddress || "-"}</span>
@@ -330,7 +330,7 @@ export default async function AdminHouseDetailPage({ params }: { params: Promise
           {/* Card Table Header */}
           <div className="p-5 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-indigo-100 text-[#5B58F2] flex items-center justify-center font-bold">
+              <div className="w-8 h-8 rounded-xl bg-indigo-100 text-[blue-600] flex items-center justify-center font-bold">
                 <Receipt size={16} />
               </div>
               <div>
